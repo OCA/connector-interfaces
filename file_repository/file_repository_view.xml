@@ -110,13 +110,9 @@
         </record>
 
         <menuitem name="File Repositories"
-                  id="menu_file_repository_root"
-                  parent="base.menu_administration"/>
-
-        <menuitem name="File Repositories"
                   id="menu_file_repository"
                   action="action_file_repository"
-                  parent="menu_file_repository_root"
+                  parent="file_buffer.menu_file_exchange_root"
                   sequence="10"/>
     </data>
 </openerp>
