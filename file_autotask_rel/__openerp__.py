@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 ###############################################################################
 #
-#   file_repository for OpenERP
-#   Authors: Emmanuel Samyn <emmanuel.samyn@akretion.com>
-#            Sebastien Beau <sebastien.beau@akretion.com>
+#   file_autotask_rel for OpenERP
+#   Authors: Sebastien Beau <sebastien.beau@akretion.com>
 #            Benoît Guillot <benoit.guillot@akretion.com>
 #   Copyright 2013 Akretion
 #
@@ -23,7 +22,7 @@
 ###############################################################################
 
 {
-    'name': 'file_repository',
+    'name': 'file_autoatask_rel',
     'version': '1.0',
     'category': 'Generic Modules/Others',
     'license': 'AGPL-3',

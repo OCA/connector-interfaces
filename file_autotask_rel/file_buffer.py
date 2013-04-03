@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ###############################################################################
 #
-#   file_repository for OpenERP
+#   file_autotask_rel for OpenERP
 #   Authors: Sebastien Beau <sebastien.beau@akretion.com>
 #   Copyright 2013 Akretion
 #
@@ -20,8 +20,7 @@
 #
 ###############################################################################
 
-from openerp.osv.orm import Model
-from openerp.osv import fields
+from openerp.osv import fields, orm
 
 available_tasks = []
 
@@ -31,7 +30,7 @@ def add_task(name):
         available_tasks.append(name)
 
 
-class file_buffer(Model):
+class file_buffer(orm.Model):
     _inherit = "file.buffer"
 
     def _get_tasks(self, cr, uid, context=None):
@@ -45,4 +44,3 @@ class file_buffer(Model):
     _columns = {
         'task_id': fields.reference('Task', selection=_get_tasks, size=128),
     }
-

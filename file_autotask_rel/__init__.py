@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 ###############################################################################
 #
-#   file_repository for OpenERP
+#   file_autotask_rel for OpenERP
 #   Authors: Sebastien Beau <sebastien.beau@akretion.com>
+#            Benoît Guillot <benoit.guillot@akretion.com>
 #   Copyright 2013 Akretion
 #
 #   This program is free software: you can redistribute it and/or modify
