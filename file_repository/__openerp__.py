@@ -41,7 +41,6 @@ Also it's used in file_exchange
     'data': [
         'file_repository_view.xml',
         'file_buffer_view.xml',
-        'file_buffer_data.xml',
         'security/ir.model.access.csv',
     ],
     'installable': True,

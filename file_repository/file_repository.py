@@ -27,6 +27,7 @@ from tools.translate import _
 import os
 from .file_connexion import FileConnection
 
+
 class file_repository(orm.Model):
     _name = "file.repository"
     _description = "File Repository"
@@ -129,48 +130,3 @@ class repository_task(orm.Model):
             if task.direction == 'in':
                 self.run_import(cr, uid, connection, task, context=context)
         return True
-
-
-
-
-
-#from openerp.osv.osv import except_osv
-#from base_file_protocole.base_file_protocole import FileConnection
-#from tools.translate import _
-#from base_external_referentials.external_referentials import REF_VISIBLE_FIELDS
-
-#REF_VISIBLE_FIELDS.update({
-#    'SFTP': ['location', 'apiusername', 'apipass'],
-#    'FTP': ['location', 'apiusername', 'apipass'],
-#})
-
-
-#class external_referential(orm.Model):
-#    _inherit = "external.referential"
-
-    #def external_connection(self, cr, uid, id, debug=False, logger=False, context=None):
-    #    if isinstance(id, list):
-    #        id=id[0]
-    #    referential = self.browse(cr, uid, id, context=context)
-    #    try:
-    #        return FileConnection(referential.type_id.code, referential.location, referential.apiusername,\
-    #                        referential.apipass, port=referential. port, allow_dir_creation = True, \
-    #                        home_folder=referential.home_folder)
-    #    except Exception, e:
-    #        raise except_osv(_("Base File Protocole Connection Error"),
-    #                         _("Could not connect to server\nCheck url & user & password.\n %s") % e)
-
-    #_columns={
-    #    'port': fields.integer('Port'),
-    #    'home_folder': fields.char('Home Folder', size=64),
-    #}
-
-    #def _prepare_external_referential_fieldnames(self, cr, uid, context=None):
-    #    res = super(external_referential, self)._prepare_external_referential_fieldnames(cr, uid, context=context)
-    #    res.append('protocole')
-    #    return res
-    #
-    #def _prepare_external_referential_vals(self, cr, uid, referential, context=None):
-    #    res = super(external_referential, self)._prepare_external_referential_vals(cr, uid, referential, context=context)
-    #    res['protocole'] = referential.protocole
-    #    return res

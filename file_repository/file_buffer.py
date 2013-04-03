@@ -22,17 +22,15 @@
 #
 ###############################################################################
 
-from openerp.osv.orm import Model
-from openerp.osv import fields
+from openerp.osv import fields, orm
 from openerp.addons.file_autotask_rel.file_buffer import add_task
 
 add_task('repository.task')
 
 
-class file_buffer(Model):
+class file_buffer(orm.Model):
     _inherit = "file.buffer"
 
     _columns = {
         'repository_id': fields.many2one('file.repository', 'File Repository'),
     }
-
