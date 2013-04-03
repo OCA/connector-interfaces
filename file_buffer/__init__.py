@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ###############################################################################
 #
-#   file_repository for OpenERP
+#   file_buffer for OpenERP
 #   Authors: Sebastien Beau <sebastien.beau@akretion.com>
 #            Benoît Guillot <benoit.guillot@akretion.com>
 #   Copyright 2013 Akretion
