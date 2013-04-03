@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  file_repository for OpenERP
+  Copyright (C) 2013 Akretion
+  Authors: Sébastien BEAU <sebastien.beau@akretion.com>
+           Benoît Guillot <benoit.guillot@akretion.com>
+  The licence is in the file __openerp__.py
+-->
+
+<openerp>
+    <data>
+
+        <record id="view_repository_task_form" model="ir.ui.view">
+            <field name="name">repository.task.view_form</field>
+            <field name="model">repository.task</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Task">
+                    <group name="fields" colspan="4">
+                        <field name="name"/>
+                        <field name="direction"/>
+                        <field name="type"/>
+                        <field name="file_name"/>
+                        <field name="home_folder"/>
+                        <field name="active"/>
+                    </group>
+                    <group name="cron" colspan="4">
+                        <button name="create_cron_from_abstract"
+                                type="object"
+                                string="Add Cron Task" colspan="4"/>
+                        <field name="cron_ids" nolabel="1"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_file_repository_tree" model="ir.ui.view">
+            <field name="name">file.repository.view_tree</field>
+            <field name="model">file.repository</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Tasks">
+                    <field name="name"/>
+                    <field name="direction"/>
+                    <field name="file_name"/>
+                    <field name="home_folder"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_file_repository_form" model="ir.ui.view">
+            <field name="name">file.repository.view_form</field>
+            <field name="model">file.repository</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="File Repository">
+                    <group name="name" colspan="4">
+                        <field name="name" />
+                    </group>
+                    <newline/>
+                    <group name="type" col="8" colspan="4">
+                        <field name="type" colspan="2"/>
+                        <field name="location" colspan="4"/>
+                        <field name="port" colspan="2"/>
+                    </group>
+                    <field name="username" colspan="2"/>
+                    <field name="password" colspan="2"/>
+                    <group name="tasks" colspan="4">
+                        <field name="task_ids" nolabel="1"
+                               context="{'active_test' : False}"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_file_repository_tree" model="ir.ui.view">
+            <field name="name">file.repository.view_tree</field>
+            <field name="model">file.repository</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="File Repository" >
+                    <field name="name"/>
+                    <field name="type"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_file_repository_search" model="ir.ui.view">
+            <field name="name">file.repository.search</field>
+            <field name="model">file.repository</field>
+            <field name="type">search</field>
+            <field name="arch" type="xml">
+                <search string="Search File Repository" >
+                    <field name="name" string="Name"/>
+                    <field name="type" string="Type"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_file_repository" model="ir.actions.act_window">
+            <field name="name">File Repositories</field>
+            <field name="res_model">file.repository</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,graph</field>
+            <field name="domain">[]</field>
+            <field name="context">{}</field>
+            <field name="search_view_id" ref="view_file_repository_search"/>
+            <field name="help" type="html"></field>
+        </record>
+
+        <menuitem name="File Repositories"
+                  id="menu_file_repository_root"
+                  parent="base.menu_administration"/>
+
+        <menuitem name="File Repositories"
+                  id="menu_file_repository"
+                  action="action_file_repository"
+                  parent="menu_file_repository_root"
+                  sequence="10"/>
+    </data>
+</openerp>
