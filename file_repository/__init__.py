@@ -22,5 +22,5 @@
 ###############################################################################
 
 import file_repository
-import file_buffer
+import file_document
 import file_connexion

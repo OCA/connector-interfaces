@@ -89,7 +89,7 @@ class repository_task(orm.Model):
             raise (_('Please use a file with an extention'))
         return shortname, ftype
 
-    def prepare_buffer_vals(self, cr, uid, task, context=None):
+    def prepare_document_vals(self, cr, uid, task, context=None):
         return {'name': task.name,
                 'active': True,
                 'repository_id': task.repository_id.id,
@@ -98,15 +98,15 @@ class repository_task(orm.Model):
                 }
 
     def run_import(self, cr, uid, connection, task, context=None):
-        buffer_obj = self.pool['file.buffer']
+        document_obj = self.pool['file.document']
         for file_name in connection.search(task.home_folder, task.file_name):
             file_toimport = connection.get(task.home_folder, file_name)
             datas = file_toimport.read()
-            vals = self.prepare_buffer_vals(cr, uid, task, context=context)
-            buffer_id = buffer_obj.create(cr, uid, vals, context=context)
+            vals = self.prepare_document_vals(cr, uid, task, context=context)
+            document_id = document_obj.create(cr, uid, vals, context=context)
             shortname, ftype = self._check_extension(file_name)
-            buffer_obj.create_file_buffer_attachment(cr, uid,
-                                                     buffer_id,
+            document_obj.create_file_document_attachment(cr, uid,
+                                                     document_id,
                                                      datas,
                                                      shortname,
                                                      context=context,
@@ -116,7 +116,7 @@ class repository_task(orm.Model):
     def run(self, cr, uid, ids, context=None):
         """ Execute the repository task.
         For import : - find the files on the repository,
-                     - create a file buffer for each found files
+                     - create a file document for each found files
                      - attach it the selected file
         """
         repo_obj = self.pool['file.repository']

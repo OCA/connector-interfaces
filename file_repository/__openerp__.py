@@ -40,7 +40,7 @@ Also it's used in file_exchange
     'demo': [],
     'data': [
         'file_repository_view.xml',
-        'file_buffer_view.xml',
+        'file_document_view.xml',
         'security/ir.model.access.csv',
     ],
     'installable': True,

@@ -112,7 +112,7 @@
         <menuitem name="File Repositories"
                   id="menu_file_repository"
                   action="action_file_repository"
-                  parent="file_buffer.menu_file_exchange_root"
+                  parent="file_document.menu_file_exchange_root"
                   sequence="10"/>
     </data>
 </openerp>

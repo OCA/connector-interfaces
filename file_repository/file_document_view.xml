@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  file_repository for OpenERP
+  Copyright (C) 2012 Akretion David BEAL <david.beal@akretion.com>
+  The licence is in the file __openerp__.py -->
+
+<openerp>
+    <data>
+
+        <!-- FORM -->
+        <record id="file_document_view_form" model="ir.ui.view">
+            <field name="name">file.document.view_form</field>
+            <field name="model">file.document</field>
+            <field name="type">form</field>
+            <field name="inherit_id" ref="file_document.file_document_view_form"/>
+            <field name="arch" type="xml">
+                <field name="direction" position="after">
+                    <field name="repository_id" string="file repo"/>
+                </field>
+            </field>
+        </record>
+
+        <!-- TREE -->
+        <record id="file_document_view_tree" model="ir.ui.view">
+            <field name="name">file.document.view_tree</field>
+            <field name="model">file.document</field>
+            <field name="type">tree</field>
+            <field name="inherit_id" ref="file_document.file_document_view_tree"/>
+            <field name="arch" type="xml">
+                <field name="direction" position="after">
+                    <field name="repository_id" string="file repo"/>
+                </field>
+            </field>
+        </record>
+
+     </data>
+</openerp>
