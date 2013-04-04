@@ -27,14 +27,14 @@
     'category': 'Generic Modules/Others',
     'license': 'AGPL-3',
     'description': """
-        Definition : an abstract module that allow to link a file buffer to an
+        Definition : an abstract module that allow to link a file document to an
         automatic task.
     """,
     'author': 'Akretion',
     'website': 'http://www.akretion.com/',
     'depends': [
         'abstract_automatic_task',
-        'file_buffer',
+        'file_document',
     ],
     'demo': [],
     'data': [

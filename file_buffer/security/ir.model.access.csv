@@ -1,3 +1,0 @@
-"id","name","model_id:id","group_id:id","perm_read","perm_write","perm_create","perm_unlink"
-"access_file_buffer_file_buffer_group_manager","file_buffer_file_buffer_group_manager","model_file_buffer","base.group_system",1,1,1,1
-"access_file_buffer_file_buffer_group_user","file_buffer_file_buffer_group_user","model_file_buffer","base.group_user",1,0,0,0

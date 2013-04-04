@@ -8,13 +8,13 @@
     <data>
 
         <!-- FORM -->
-        <record id="file_buffer_view_form" model="ir.ui.view">
-            <field name="name">file.buffer.view_form</field>
-            <field name="model">file.buffer</field>
+        <record id="file_document_view_form" model="ir.ui.view">
+            <field name="name">file.document.view_form</field>
+            <field name="model">file.document</field>
             <field name="type">form</field>
-            <field name="inherit_id" ref="file_buffer.file_buffer_view_form"/>
+            <field name="inherit_id" ref="file_document.file_document_view_form"/>
             <field name="arch" type="xml">
-                <form string="File Buffer">
+                <form string="File Document">
                     <field name="direction" position="after">
                         <field name="task_id" string="Task"/>
                     </field>
@@ -23,13 +23,13 @@
         </record>
 
         <!-- TREE -->
-        <record id="file_buffer_view_tree" model="ir.ui.view">
-            <field name="name">file.buffer.view_tree</field>
-            <field name="model">file.buffer</field>
+        <record id="file_document_view_tree" model="ir.ui.view">
+            <field name="name">file.document.view_tree</field>
+            <field name="model">file.document</field>
             <field name="type">tree</field>
-            <field name="inherit_id" ref="file_buffer.file_buffer_view_tree"/>
+            <field name="inherit_id" ref="file_document.file_document_view_tree"/>
             <field name="arch" type="xml">
-                <tree string="File Buffer">
+                <tree string="File Document">
                     <field name="direction" position="after">
                         <field name="task_id" string="Task"/>
                     </field>

@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 ###############################################################################
 #
-#   file_buffer for OpenERP
+#   file_autotask_rel for OpenERP
 #   Authors: Sebastien Beau <sebastien.beau@akretion.com>
-#            Benoît Guillot <benoit.guillot@akretion.com>
 #   Copyright 2013 Akretion
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -21,26 +20,27 @@
 #
 ###############################################################################
 
-{
-    'name': 'file_buffer',
-    'version': '1.0',
-    'category': 'Generic Modules/Others',
-    'license': 'AGPL-3',
-    'description': """
-Definition : an abstract module that add a file protocole on the external referential.
-It use in base_sale_multichannel to send the invoice, the rma report.
-Also it's used in file_exchange
-""",
-    'author': 'Akretion',
-    'website': 'http://www.akretion.com/',
-    'depends': ['abstract_automatic_task',
-                ],
-    'demo': [],
-    'data': [
-        'file_buffer_view.xml',
-        'file_buffer_data.xml',
-        'security/ir.model.access.csv',
-    ],
-    'installable': True,
-    'active': False,
-}
+from openerp.osv import fields, orm
+
+available_tasks = []
+
+#TODO improve
+def add_task(name):
+    if not name in available_tasks:
+        available_tasks.append(name)
+
+
+class file_document(orm.Model):
+    _inherit = "file.document"
+
+    def _get_tasks(self, cr, uid, context=None):
+        model_obj = self.pool.get('ir.model')
+        ids = model_obj.search(cr, uid,
+                               [('model', 'in', available_tasks)],
+                               context=context)
+        res = model_obj.read(cr, uid, ids, ['model', 'name'], context=context)
+        return [(r['model'], r['name']) for r in res]
+
+    _columns = {
+        'task_id': fields.reference('Task', selection=_get_tasks, size=128),
+    }
