@@ -26,6 +26,7 @@ from openerp.osv.osv import except_osv
 from tools.translate import _
 import os
 from .file_connexion import FileConnection
+import base64
 
 
 class file_repository(orm.Model):
@@ -82,19 +83,15 @@ class repository_task(orm.Model):
                                        ('out', 'Export')], 'Direction')
     }
 
-    def _check_extension(self, filename):
-        (shortname, ftype) = os.path.splitext(filename)
-        if not ftype:
-            #We do not use osv exception we do not want to have it logged
-            raise (_('Please use a file with an extention'))
-        return shortname, ftype
 
-    def prepare_document_vals(self, cr, uid, task, context=None):
-        return {'name': task.name,
+    def prepare_document_vals(self, cr, uid, task, file_name, datas, context=None):
+        return {'name': file_name,
                 'active': True,
                 'repository_id': task.repository_id.id,
                 'direction': 'input',
                 'task_id': self._name+','+str(task.id),
+                'datas': datas,
+                'datas_fname': file_name
                 }
 
     def run_import(self, cr, uid, connection, task, context=None):
@@ -102,15 +99,10 @@ class repository_task(orm.Model):
         for file_name in connection.search(task.home_folder, task.file_name):
             file_toimport = connection.get(task.home_folder, file_name)
             datas = file_toimport.read()
-            vals = self.prepare_document_vals(cr, uid, task, context=context)
+            datas_encoded = base64.encodestring(datas)
+            vals = self.prepare_document_vals(cr, uid, task, file_name,
+                                              datas_encoded, context=context)
             document_id = document_obj.create(cr, uid, vals, context=context)
-            shortname, ftype = self._check_extension(file_name)
-            document_obj.create_file_document_attachment(cr, uid,
-                                                     document_id,
-                                                     datas,
-                                                     shortname,
-                                                     context=context,
-                                                     extension=ftype.replace('.',''))
         return True
 
     def run(self, cr, uid, ids, context=None):
