@@ -120,5 +120,6 @@ class repository_task(orm.Model):
                                                         context=context)
             #only support the import for now
             if task.direction == 'in':
+                print "run_import"
                 self.run_import(cr, uid, connection, task, context=context)
         return True

@@ -11,7 +11,6 @@
         <record id="file_document_view_form" model="ir.ui.view">
             <field name="name">file.document.view_form</field>
             <field name="model">file.document</field>
-            <field name="type">form</field>
             <field name="inherit_id" ref="file_document.file_document_view_form"/>
             <field name="arch" type="xml">
                 <field name="direction" position="after">
@@ -24,7 +23,6 @@
         <record id="file_document_view_tree" model="ir.ui.view">
             <field name="name">file.document.view_tree</field>
             <field name="model">file.document</field>
-            <field name="type">tree</field>
             <field name="inherit_id" ref="file_document.file_document_view_tree"/>
             <field name="arch" type="xml">
                 <field name="direction" position="after">

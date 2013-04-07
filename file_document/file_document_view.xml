@@ -10,10 +10,9 @@
         <record id="file_document_view_search" model="ir.ui.view">
             <field name="name">file.document.search</field>
             <field name="model">file.document</field>
-            <field name="type">search</field>
             <field name="arch" type="xml">
                 <search string="Search Files Document">
-                    <group>
+<!--                    <group>
                         <filter icon="kanban-pause" name="wait" string="Waiting"
                                 domain="[('state','=','waiting')]"/>
                         <filter icon="gtk-apply" string="Done"
@@ -30,7 +29,7 @@
                                 domain="[('direction','=','output')]"/>
                         <field name="name" />
                         <field name="ext_id" string="Exchange file"/>
-                    </group>
+                    </group>-->
                     <field name="name" />
                     <field name="ext_id" string="External ID"/>
                     <field name="state"/>
@@ -42,7 +41,6 @@
         <record id="file_document_view_form" model="ir.ui.view">
             <field name="name">file.document.view_form</field>
             <field name="model">file.document</field>
-            <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="File Document">
                     <field name="name" />
@@ -71,7 +69,6 @@
         <record id="file_document_view_tree" model="ir.ui.view">
             <field name="name">file.document.view_tree</field>
             <field name="model">file.document</field>
-            <field name="type">tree</field>
             <field name="arch" type="xml">
                 <tree string="File Document">
                     <field name="name" />
