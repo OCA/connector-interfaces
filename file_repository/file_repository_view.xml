@@ -22,6 +22,8 @@
                         <field name="type"/>
                         <field name="file_name"/>
                         <field name="home_folder"/>
+                        <field name="archive_folder"
+                               attrs="{'invisible':[('direction', '!=', 'in')]}"/>
                         <field name="active"/>
                     </group>
                     <group name="cron" colspan="4">

@@ -27,6 +27,7 @@ from tools.translate import _
 import os
 from .file_connexion import FileConnection
 import base64
+from tempfile import TemporaryFile
 
 
 class file_repository(orm.Model):
@@ -73,14 +74,18 @@ class repository_task(orm.Model):
 
     _columns = {
         'name': fields.char('Name', size=64),
-        'home_folder': fields.char('Home Folder', size=64),
+        'home_folder': fields.char('Home Folder', size=64,
+                                   help="Folder where the file is on the repository"),
         'file_name': fields.char('File Name', size=64),
         'repository_id': fields.many2one('file.repository',
                                          string="Repository",
                                          required=True,
                                          ondelete="cascade"),
         'direction': fields.selection([('in', 'Import'),
-                                       ('out', 'Export')], 'Direction')
+                                       ('out', 'Export')], 'Direction'),
+        'archive_folder': fields.char('Archive Folder', size=64,
+                                      help="The file will be moved to this "
+                                      "folder after import"),
     }
 
 
@@ -103,6 +108,21 @@ class repository_task(orm.Model):
             vals = self.prepare_document_vals(cr, uid, task, file_name,
                                               datas_encoded, context=context)
             document_id = document_obj.create(cr, uid, vals, context=context)
+            if task.archive_folder:
+                connection.move(task.home_folder, task.archive_folder, file_name)
+        return True
+
+    def run_export(self, cr, uid, connection, task, context=None):
+        document_obj = self.pool['file.document']
+        document_ids = document_obj.search(cr, uid,
+                                           [('task_id', '=', self._name+','+str(task.id)),
+                                            ('direction', '=', 'output'),
+                                            ('active', '=', True)], context=context) #active useful ?
+        for document in document_obj.browse(cr, uid, document_ids, context=context):
+            outfile = TemporaryFile('w+b')
+            outfile.write(document.datas)
+            outfile.seek(0)
+            connection.send(task.home_folder, task.file_name, outfile)
         return True
 
     def run(self, cr, uid, ids, context=None):
@@ -121,4 +141,6 @@ class repository_task(orm.Model):
             #only support the import for now
             if task.direction == 'in':
                 self.run_import(cr, uid, connection, task, context=context)
+            elif task.direction == 'out':
+                self.run_export(cr, uid, connection, task, context=context)
         return True
