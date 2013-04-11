@@ -75,7 +75,8 @@ class repository_task(orm.Model):
     _columns = {
         'name': fields.char('Name', size=64),
         'home_folder': fields.char('Home Folder', size=64,
-                                   help="Folder where the file is on the repository"),
+                                   help="Folder where the file is on the "
+                                   "repository"),
         'file_name': fields.char('File Name', size=64),
         'repository_id': fields.many2one('file.repository',
                                          string="Repository",
@@ -99,18 +100,36 @@ class repository_task(orm.Model):
                 'datas_fname': file_name
                 }
 
+    def import_one_document(self, cr, uid, connection, task, file_name, context=None):
+        document_obj = self.pool['file.document']
+        file_toimport = connection.get(task.home_folder, file_name)
+        datas = file_toimport.read()
+        datas_encoded = base64.encodestring(datas)
+        vals = self.prepare_document_vals(cr, uid, task, file_name,
+                                          datas_encoded, context=context)
+        document_id = document_obj.create(cr, uid, vals, context=context)
+        if task.archive_folder:
+            connection.move(task.home_folder, task.archive_folder, file_name)
+        return True
+
     def run_import(self, cr, uid, connection, task, context=None):
         document_obj = self.pool['file.document']
+        document_ids = document_obj.search(cr, uid,
+                                           [('task_id', '=', self._name+','+str(task.id))],
+                                           context=context)
+        file_names = document_obj.read(cr, uid, document_ids, ['name'], context=context)
         for file_name in connection.search(task.home_folder, task.file_name):
-            file_toimport = connection.get(task.home_folder, file_name)
-            datas = file_toimport.read()
-            datas_encoded = base64.encodestring(datas)
-            vals = self.prepare_document_vals(cr, uid, task, file_name,
-                                              datas_encoded, context=context)
-            document_id = document_obj.create(cr, uid, vals, context=context)
-            if task.archive_folder:
-                connection.move(task.home_folder, task.archive_folder, file_name)
+            if not file_name in file_names:
+                self.import_one_document(cr, uid, connection, task, file_name, context=context)
         return True
+
+    def export_one_document(self, cr, uid, connection, task, document, context=None):
+        outfile = TemporaryFile('w+b')
+        decoded_datas = base64.decodestring(document.datas)
+        outfile.write(decoded_datas)
+        outfile.seek(0)
+        connection.send(task.home_folder, document.name, outfile)
+        return outfile
 
     def run_export(self, cr, uid, connection, task, context=None):
         document_obj = self.pool['file.document']
@@ -119,10 +138,7 @@ class repository_task(orm.Model):
                                             ('direction', '=', 'output'),
                                             ('active', '=', True)], context=context) #active useful ?
         for document in document_obj.browse(cr, uid, document_ids, context=context):
-            outfile = TemporaryFile('w+b')
-            outfile.write(document.datas)
-            outfile.seek(0)
-            connection.send(task.home_folder, task.file_name, outfile)
+            self.export_one_document(cr, uid, connection, task, document, context=context)
         return True
 
     def run(self, cr, uid, ids, context=None):
@@ -138,7 +154,6 @@ class repository_task(orm.Model):
             connection = repo_obj.repository_connection(cr, uid,
                                                         task.repository_id.id,
                                                         context=context)
-            #only support the import for now
             if task.direction == 'in':
                 self.run_import(cr, uid, connection, task, context=context)
             elif task.direction == 'out':
