@@ -159,3 +159,10 @@ class file_document(orm.Model):
     def check_state(self, cr, uid, ids, context=None):
         """ Inherit this function in your module """
         return True
+
+    def unlink(self, cr, uid, ids, context=None):
+        attachment_ids = []
+        for document in self.read(cr, uid, ids, ['attachment_id'], context=context):
+            attachment_ids.append(document['attachment_id'][0])
+        self.pool['ir.attachment'].unlink(cr, uid, [attachment_ids], context=context)
+        return True
