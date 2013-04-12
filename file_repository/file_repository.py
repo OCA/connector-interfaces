@@ -123,24 +123,6 @@ class repository_task(orm.Model):
                 self.import_one_document(cr, uid, connection, task, file_name, context=context)
         return True
 
-    def export_one_document(self, cr, uid, connection, task, document, context=None):
-        outfile = TemporaryFile('w+b')
-        decoded_datas = base64.decodestring(document.datas)
-        outfile.write(decoded_datas)
-        outfile.seek(0)
-        connection.send(task.home_folder, document.name, outfile)
-        return outfile
-
-    def run_export(self, cr, uid, connection, task, context=None):
-        document_obj = self.pool['file.document']
-        document_ids = document_obj.search(cr, uid,
-                                           [('task_id', '=', self._name+','+str(task.id)),
-                                            ('direction', '=', 'output'),
-                                            ('active', '=', True)], context=context) #active useful ?
-        for document in document_obj.browse(cr, uid, document_ids, context=context):
-            self.export_one_document(cr, uid, connection, task, document, context=context)
-        return True
-
     def run(self, cr, uid, ids, context=None):
         """ Execute the repository task.
         For import : - find the files on the repository,
@@ -154,8 +136,7 @@ class repository_task(orm.Model):
             connection = repo_obj.repository_connection(cr, uid,
                                                         task.repository_id.id,
                                                         context=context)
+            #support only import
             if task.direction == 'in':
                 self.run_import(cr, uid, connection, task, context=context)
-            elif task.direction == 'out':
-                self.run_export(cr, uid, connection, task, context=context)
         return True
