@@ -29,11 +29,9 @@
                         <filter icon="gtk-go-up" string="Out"
                                 domain="[('direction','=','output')]"/>
                         <field name="name" />
-                        <field name="ext_id" string="Exchange file"/>
+                        <field name="ext_id" string="External ID"/>
+                        <field name="state"/>
                     </group>
-                    <field name="name" />
-                    <field name="ext_id" string="External ID"/>
-                    <field name="state"/>
                </search>
             </field>
         </record>
@@ -46,6 +44,7 @@
             <field name="arch" type="xml">
                 <form string="File Document">
                     <field name="name" />
+                    <field name="sequence"/>
                     <field name="date" />
                     <field name="datas" filename="datas_fname"/>
                     <field name="datas_fname"/>
@@ -54,6 +53,7 @@
                     <field name="direction" readonly="1" />
                     <field name="file_type"/>
                     <field name="state"/>
+                    <field name="company_id" widget="selection" groups="base.group_multi_company"/>
                     <newline />
                     <button name="run" string="Run" colspan="2" type="object"
                             attrs="{'invisible':[('state','in', ('running','done'))]}"/>
@@ -74,6 +74,7 @@
             <field name="type">tree</field>
             <field name="arch" type="xml">
                 <tree string="File Document">
+                    <field name="sequence"/>
                     <field name="name" />
                     <field name="datas_fname"/>
                     <field name="state" />

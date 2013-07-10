@@ -24,6 +24,10 @@
 
 from openerp.osv import fields, orm
 import base64
+import logging
+
+_logger = logging.getLogger(__name__)
+
 #from base_external_referentials.external_osv import ExternalSession
 
 # name of the models usable by file.document
@@ -53,6 +57,7 @@ class file_document(orm.Model):
         return [(r['model'], r['name']) for r in res]
 
     _columns = {
+        'sequence': fields.integer('Sequence'),
         'ext_id': fields.char('External ID', size=64),
         'state': fields.selection((('waiting','Waiting'),
                                    ('running','Running'),
@@ -69,13 +74,16 @@ class file_document(orm.Model):
         'file_type': fields.selection(_get_file_document_type, 'Type'),
         'attachment_id': fields.many2one('ir.attachment', 'Attachament',
                             required=True, ondelete="cascade"),
+        'company_id': fields.many2one('res.company', 'Company', required=True),
     }
 
-    _order = 'date desc'
+    _order = 'sequence, date desc'
 
     _defaults = {
+        'company_id': lambda s, cr, uid, c: s.pool.get('res.company')._company_default_get(cr, uid, 'file.document', context=c),
         'active': 1,
         'state': 'waiting',
+	'sequence': 100,
     }
 
 #    def get_file(self, cr, uid, file_document_id, context=None):
@@ -140,16 +148,27 @@ class file_document(orm.Model):
         """
         Run the process for each file document
         """
-        for filedocument in self.browse(cr, uid, ids, context=context):
-            self._run(cr, uid, filedocument, context=context)
-            if filedocument.direction == 'input':
-                filedocument.done()
+        for file_id in ids:
+            try:
+                filedocument = self.browse(cr, uid, file_id, context=context)
+                self._run(cr, uid, filedocument, context=context)
+                if filedocument.direction == 'input':
+                    filedocument.done()
+            except Exception, e:
+                cr.rollback()
+                _logger.exception(e)
+                filedocument.write({'state': 'fail', 'response': e.message})
+                cr.commit()
+            else:
+                cr.commit()
         return True
 
     def _run(self, cr, uid, filedocument, context=None):
+        _logger.info('Start to process file document id %s'%filedocument.id)
         filedocument._set_state('running', context=context)
 
     def done(self, cr, uid, ids, context=None):
+        _logger.info('File document id %s have been processed'%ids)
         self._set_state(cr, uid, ids, 'done', context=context)
 
     def _set_state(self, cr, uid, ids, state, context=None):
@@ -162,7 +181,8 @@ class file_document(orm.Model):
 
     def unlink(self, cr, uid, ids, context=None):
         attachment_ids = []
+        #attachment must be delete one by one (ORM design :S)
         for document in self.read(cr, uid, ids, ['attachment_id'], context=context):
-            attachment_ids.append(document['attachment_id'][0])
-        self.pool['ir.attachment'].unlink(cr, uid, [attachment_ids], context=context)
+            self.pool['ir.attachment'].unlink(cr, uid,
+                                [document['attachment_id'][0]], context=context)
         return True
