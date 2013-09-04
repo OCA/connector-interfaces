@@ -76,6 +76,7 @@ class file_document(orm.Model):
     _defaults = {
         'active': 1,
         'state': 'waiting',
+        'date': fields.date.context_today,
     }
 
 #    def get_file(self, cr, uid, file_document_id, context=None):
