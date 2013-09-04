@@ -22,7 +22,7 @@
 ###############################################################################
 
 {
-    'name': 'file_autoatask_rel',
+    'name': 'file_autotask_rel',
     'version': '1.0',
     'category': 'Generic Modules/Others',
     'license': 'AGPL-3',

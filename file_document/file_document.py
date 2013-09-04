@@ -24,7 +24,6 @@
 
 from openerp.osv import fields, orm
 import base64
-from base_external_referentials.external_osv import ExternalSession
 
 # name of the models usable by file.document
 available_tasks = []
