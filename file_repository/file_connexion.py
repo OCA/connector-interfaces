@@ -117,50 +117,86 @@ class FileConnection(object):
 
     @open_and_close_connection
     def send(self, filepath, filename, output_file, create_patch=None):
+        #if self.is_('ftp'):
+        #    filepath = os.path.join(self.home_folder, filepath)
+        #    if self.allow_dir_creation:
+        #        self.connection.mkdirs(filepath)
+        #    self.connection.cwd(filepath)
+        #    self.connection.storbinary('STOR ' + filename, output_file)
+        #    output_file.close()
+        #    return True
+        #elif self.is_('filestore'):
+        #    if not os.path.isabs(filepath):
+        #        filepath = os.path.join(self.location, filepath)
+        #    if self.allow_dir_creation and not os.path.exists(filepath):
+        #        os.makedirs(filepath)
+        #    output = open(os.path.join(filepath, filename), 'w+b')
+        #    for line in output_file.readlines():
+        #        output.write(line)
+        #    output.close()
+        #    output_file.close()
+        #    return True
+        #elif self.is_('sftp'):
+        #    if not os.path.isabs(filepath):
+        #        filepath = os.path.join(self.home_folder, filepath)
+        #    if self.allow_dir_creation:
+        #        self.connection.mkdirs(filepath)
+        #    output = self.connection.open(os.path.join(filepath, filename), 'w+b')
+        #    for line in output_file.readlines():
+        #        output.write(line)
+        #    output.close()
+        #    output_file.close()
+        #    return True
         if self.is_('ftp'):
             filepath = os.path.join(self.home_folder, filepath)
             if self.allow_dir_creation:
                 self.connection.mkdirs(filepath)
             self.connection.cwd(filepath)
             self.connection.storbinary('STOR ' + filename, output_file)
-            output_file.close()
-            return True
+        elif self.is_('sftp'):
+            if not os.path.isabs(filepath):
+                filepath = os.path.join(self.home_folder, filepath)
+            if self.allow_dir_creation:
+                self.connection.mkdirs(filepath)
+            output = self.connection.open(
+                os.path.join(filepath, filename), 'w+b')
         elif self.is_('filestore'):
             if not os.path.isabs(filepath):
                 filepath = os.path.join(self.location, filepath)
             if self.allow_dir_creation and not os.path.exists(filepath):
                 os.makedirs(filepath)
             output = open(os.path.join(filepath, filename), 'w+b')
+        if self.is_('sftp') or self.is_('sftp'):
             for line in output_file.readlines():
                 output.write(line)
             output.close()
-            output_file.close()
-            return True
-        elif self.is_('sftp'):
-            if not os.path.isabs(filepath):
-                filepath = os.path.join(self.home_folder, filepath)
-            if self.allow_dir_creation:
-                self.connection.mkdirs(filepath)
-            output = self.connection.open(os.path.join(filepath, filename), 'w+b')
-            for line in output_file.readlines():
-                output.write(line)
-            output.close()
-            output_file.close()
-            return True
+        output_file.close()
+        return True
 
     @open_and_close_connection
     def get(self, filepath, filename):
-        if self.is_('ftp'):
+        #if self.is_('ftp'):
+        #    outfile = TemporaryFile('w+b')
+        #    self.connection.cwd(filepath)
+        #    self.connection.retrbinary("RETR " + filename, outfile.write)
+        #    outfile.seek(0)
+        #    return outfile
+        #elif self.is_('sftp'):
+        #    outfile = TemporaryFile('w+b')
+        #    self.connection.chdir(filepath)
+        #    remote_file = self.connection.file(filename)
+        #    outfile.write(remote_file.read())
+        #    outfile.seek(0)
+        #    return outfile
+        if self.is_('ftp') or self.is_('sftp'):
             outfile = TemporaryFile('w+b')
-            self.connection.cwd(filepath)
-            self.connection.retrbinary("RETR " + filename, outfile.write)
-            outfile.seek(0)
-            return outfile
-        elif self.is_('sftp'):
-            outfile = TemporaryFile('w+b')
-            self.connection.chdir(filepath)
-            remote_file = self.connection.file(filename)
-            outfile.write(remote_file.read())
+            if self.is_('ftp'):
+                self.connection.cwd(filepath)
+                self.connection.retrbinary("RETR " + filename, outfile.write)
+            elif self.is_('sftp'):
+                self.connection.chdir(filepath)
+                remote_file = self.connection.file(filename)
+                outfile.write(remote_file.read())
             outfile.seek(0)
             return outfile
         elif self.is_('filestore'):
@@ -168,22 +204,30 @@ class FileConnection(object):
 
     @open_and_close_connection
     def search(self, filepath, filename):
+        #if self.is_('ftp'):
+        #    self.connection.cwd(filepath)
+        #    #Take care that ftp lib use utf-8 and not unicode
+        #    return [x for x in self.connection.nlst() if filename.encode('utf-8') in x]
+        #elif self.is_('sftp'):
+        #    self.connection.chdir(filepath)
+        #    return [x for x in self.connection.listdir() if filename in x]
+        #elif self.is_('filestore'):
+        #    return [x for x in os.listdir(filepath) if filename in x]
         if self.is_('ftp'):
             self.connection.cwd(filepath)
             #Take care that ftp lib use utf-8 and not unicode
-            return [x for x in self.connection.nlst() if filename.encode('utf-8') in x]
+            filename = filename.encode('utf-8')
+            connection_list_result = self.connection.nlst()
         elif self.is_('sftp'):
             self.connection.chdir(filepath)
-            return [x for x in self.connection.listdir() if filename in x]
+            connection_list_result = self.connection.listdir()
         elif self.is_('filestore'):
-            return [x for x in os.listdir(filepath) if filename in x]
+            connection_list_result = os.listdir(filepath)
+        return [x for x in connection_list_result if filename in x]
 
     @open_and_close_connection
     def move(self, oldfilepath, newfilepath, filename):
-        if self.is_('ftp'):
-            self.connection.rename(os.path.join(oldfilepath, filename),
-                                   os.path.join(newfilepath, filename))
-        elif self.is_('sftp'):
+        if self.is_('ftp') or self.is_('sftp'):
             self.connection.rename(os.path.join(oldfilepath, filename),
                                    os.path.join(newfilepath, filename))
         elif self.is_('filestore'):
