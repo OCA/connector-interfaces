@@ -21,9 +21,11 @@
                         <field name="type"/>
                         <field name="file_name"/>
                         <field name="home_folder"/>
+                        <field name="archive_folder"
+                               attrs="{'invisible':[('direction', '!=', 'in')]}"/>
                         <field name="active"/>
                     </group>
-                    <group name="cron">
+                    <group name="cron" colspan="4">
                         <button name="create_cron_from_abstract"
                                 type="object"
                                 string="Add Cron Task" colspan="4"/>
