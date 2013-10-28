@@ -28,9 +28,9 @@
     'category': 'Generic Modules/Others',
     'license': 'AGPL-3',
     'description': """
-Definition : an abstract module that add a file protocole on the external referential.
-It use in base_sale_multichannel to send the invoice, the rma report.
-Also it's used in file_exchange
+Abstraction module that define file management parameters (location, protocol, access)
+to connect towards file storage places (external or internal).
+It's used by logistician_ modules to send csv file to external warehouse and by rma report to send the invoice
 """,
     'author': 'Akretion',
     'website': 'http://www.akretion.com/',

@@ -87,12 +87,12 @@ ftplib.FTP.mkdirs = ftp_mkdirs
 
 class FileConnection(object):
 
-    def is_(self, protocole):
-        return self.protocole.lower() == protocole
+    def is_(self, protocol):
+        return self.protocol.lower() == protocol
 
-    def __init__(self, protocole, location, user, pwd, port=None,
+    def __init__(self, protocol, location, user, pwd, port=None,
                  allow_dir_creation=None, home_folder='/', persistant=False):
-        self.protocole = protocole
+        self.protocol = protocol
         self.allow_dir_creation = allow_dir_creation
         self.location = location
         self.home_folder = home_folder or '/'
@@ -104,7 +104,7 @@ class FileConnection(object):
 
     def connect(self):
         if self.is_('ftp'):
-            self.connection = ftplib.FTP(self.location)
+            self.connection = ftplib.FTP(self.location, self.port)
             self.connection.login(self.user, self.pwd)
         elif self.is_('sftp'):
             transport = paramiko.Transport((self.location, self.port or 22))
@@ -181,6 +181,9 @@ class FileConnection(object):
     @open_and_close_connection
     def move(self, oldfilepath, newfilepath, filename):
         if self.is_('ftp'):
+            self.connection.rename(os.path.join(oldfilepath, filename),
+                                   os.path.join(newfilepath, filename))
+        elif self.is_('sftp'):
             self.connection.rename(os.path.join(oldfilepath, filename),
                                    os.path.join(newfilepath, filename))
         elif self.is_('filestore'):
