@@ -44,6 +44,7 @@
             <field name="arch" type="xml">
                 <form string="File Document">
                     <field name="name" />
+                    <field name="sequence"/>
                     <field name="date" />
                     <field name="datas" filename="datas_fname"/>
                     <field name="datas_fname"/>
@@ -52,6 +53,7 @@
                     <field name="direction" readonly="1" />
                     <field name="file_type"/>
                     <field name="state"/>
+                    <field name="company_id" widget="selection" groups="base.group_multi_company"/>
                     <newline />
                     <button name="run" string="Run" colspan="2" type="object"
                             attrs="{'invisible':[('state','in', ('running','done'))]}"/>
@@ -71,14 +73,15 @@
             <field name="model">file.document</field>
             <field name="arch" type="xml">
                 <tree string="File Document">
-                    <field name="name" />
+                    <field name="sequence" string="seq."/>
+                    <field name="name"/>
                     <field name="datas_fname"/>
-                    <field name="state" />
-                    <field name="active" string="act." />
-                    <field name="ext_id" />
+                    <field name="state"/>
+                    <field name="active" string="act."/>
+                    <field name="ext_id"/>
                     <field name="file_type"/>
-                    <field name="date" />
-                    <field name="direction" string="direct." />
+                    <field name="date"/>
+                    <field name="direction" string="direct."/>
                     <button name="run" string="Run"
                             icon="gtk-go-forward" type="object"/>
                 </tree>
