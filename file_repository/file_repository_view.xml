@@ -20,7 +20,7 @@
                         <field name="direction"/>
                         <field name="type"/>
                         <field name="file_name"/>
-                        <field name="home_folder"/>
+                        <field name="folder"/>
                         <field name="archive_folder"
                                attrs="{'invisible':[('direction', '!=', 'in')]}"/>
                         <field name="active"/>
@@ -44,7 +44,7 @@
                     <field name="direction"/>
                     <field name="type"/>
                     <field name="file_name"/>
-                    <field name="home_folder"/>
+                    <field name="folder"/>
                     <field name="active"/>
                 </tree>
             </field>
@@ -61,12 +61,19 @@
                             <field name="name" class="oe_inline" />
                         </h1>
                         <group name="repository_fields" col="4">
-                            <group name="type" colspan="4" col="8">
-                                <field name="type" colspan="2"/>
-                                <field name="location" colspan="4"/>
-                                <field name="port" colspan="2"/>
+                            <group name="type" colspan="6" col="8">
+                                <group colspan="4">
+                                    <field name="location"
+                                           attrs="{'invisible': [('type', '=', 'filestore')]}"/>
+                                    <field name="home_folder"/>
+                                </group>
+                                <group colspan="2">
+                                    <field name="type" />
+                                    <field name="port" attrs="{'invisible': [('type', '=', 'filestore')]}"/>
+                                </group>
                             </group>
-                            <group name="pass" colspan="4" col="4">
+                            <group name="pass" colspan="4" col="4"
+                                   attrs="{'invisible': [('type', '=', 'filestore')]}">
                                 <field name="username" colspan="2"/>
                                 <field name="password" colspan="2"/>
                             </group>

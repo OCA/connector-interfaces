@@ -29,7 +29,7 @@ import base64
 add_task('repository.task')
 
 
-class file_document(orm.Model):
+class FileDocument(orm.Model):
     _inherit = "file.document"
 
     _columns = {
@@ -38,22 +38,22 @@ class file_document(orm.Model):
             'File Repository'),
     }
 
-    def export_file_document(self, cr, uid, connection, filedocument,
+    def export_file_document(self, cr, uid, connection, file_doc,
                              context=None):
         outfile = TemporaryFile('w+b')
-        decoded_datas = base64.decodestring(filedocument.datas)
+        decoded_datas = base64.decodestring(file_doc.datas)
         outfile.write(decoded_datas)
         outfile.seek(0)
-        connection.send(filedocument.task_id.home_folder,
-                        filedocument.name, outfile)
+        connection.send(file_doc.task_id.folder,
+                        file_doc.name, outfile)
         return outfile
 
-    def _run(self, cr, uid, filedocument, context=None):
-        super(file_document, self)._run(cr, uid, filedocument, context=context)
+    def _run(self, cr, uid, file_doc, context=None):
+        super(FileDocument, self)._run(cr, uid, file_doc, context=context)
         repo_obj = self.pool['file.repository']
-        if filedocument.direction == 'output':
+        if file_doc.direction == 'output' and file_doc.active == True:
             connection = repo_obj.repository_connection(
-                cr, uid, filedocument.repository_id.id, context=context)
-            self.export_file_document(cr, uid, connection, filedocument,
+                cr, uid, file_doc.repository_id.id, context=context)
+            self.export_file_document(cr, uid, connection, file_doc,
                                       context=context)
-            filedocument.done()
+            file_doc.done()

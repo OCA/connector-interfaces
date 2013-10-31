@@ -30,7 +30,7 @@
     'description': """
 Abstraction module that define file management parameters (location, protocol, access)
 to connect towards file storage places (external or internal).
-It's used by logistician_ modules to send csv file to external warehouse and by rma report to send the invoice
+It's used by logistician_ modules to send csv file to external warehouse
 """,
     'author': 'Akretion',
     'website': 'http://www.akretion.com/',

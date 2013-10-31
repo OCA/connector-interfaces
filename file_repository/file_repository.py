@@ -40,6 +40,10 @@ class file_repository(orm.Model):
         'location': fields.char('Location', size=200),
         'username': fields.char('User Name', size=64),
         'password': fields.char('Password', size=64),
+        'home_folder': fields.char(
+            'Home folder',
+            size=64,
+            help="Absolute path in the repository",),
         'type': fields.selection(
             [('ftp', 'FTP'),
              ('sftp', 'SFTP'),
@@ -65,7 +69,8 @@ class file_repository(orm.Model):
             return FileConnection(repository.type, repository.location,
                                   repository.username, repository.password,
                                   port=repository.port,
-                                  allow_dir_creation=True)
+                                  allow_dir_creation=True,
+                                  home_folder=repository.home_folder)
         except Exception, e:
             raise except_osv(_("Repository Connection Error"),
                              _("Could not connect to repository\n"
@@ -79,13 +84,11 @@ class repository_task(orm.Model):
 
     _columns = {
         'name': fields.char('Name', size=64),
-        'home_folder': fields.char(
-            'Home Folder',
-            size=64,
-            help="Folder where the file is on the repository"),
         'file_name': fields.char(
             'File Name',
-            size=64),
+            size=64,
+            help="If the file name change, set here the common part "
+                "of this name (prefix or suffix)"),
         'repository_id': fields.many2one(
             'file.repository',
             string="Repository",
@@ -94,7 +97,13 @@ class repository_task(orm.Model):
         'direction': fields.selection(
             [('in', 'Import'),
              ('out', 'Export')],
-            'Direction'),
+            'Direction',
+            required=True),
+        'folder': fields.char(
+            'Folder',
+            size=64,
+            help="Folder where the file is on the repository "
+                 "(relative path to 'Home folder' repository field )"),
         'archive_folder': fields.char(
             'Archive Folder',
             size=64,
@@ -116,14 +125,14 @@ class repository_task(orm.Model):
     def import_one_document(self, cr, uid, connection, task, file_name,
                             context=None):
         document_obj = self.pool['file.document']
-        file_toimport = connection.get(task.home_folder, file_name)
+        file_toimport = connection.get(task.folder, file_name)
         datas = file_toimport.read()
         datas_encoded = base64.encodestring(datas)
         vals = self.prepare_document_vals(cr, uid, task, file_name,
                                           datas_encoded, context=context)
         document_obj.create(cr, uid, vals, context=context)
         if task.archive_folder:
-            connection.move(task.home_folder, task.archive_folder, file_name)
+            connection.move(task.folder, task.archive_folder, file_name)
         return True
 
     def run_import(self, cr, uid, connection, task, context=None):
@@ -133,7 +142,7 @@ class repository_task(orm.Model):
             context=context)
         file_names = document_obj.read(cr, uid, document_ids, ['name'],
                                        context=context)
-        for file_name in connection.search(task.home_folder, task.file_name):
+        for file_name in connection.search(task.folder, task.file_name):
             if not file_name in file_names:
                 self.import_one_document(cr, uid, connection, task, file_name,
                                          context=context)
