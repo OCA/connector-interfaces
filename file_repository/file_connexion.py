@@ -141,11 +141,11 @@ class FileConnection(object):
             if self.allow_dir_creation and not os.path.exists(filepath):
                 os.makedirs(filepath)
             output = open(os.path.join(filepath, filename), 'w+b')
-        if self.is_('ftp') or self.is_('sftp'):
+        if self.is_('filestore') or self.is_('sftp'):
             for line in output_file.readlines():
                 output.write(line)
             output.close()
-        output_file.close()
+            output_file.close()
         return True
 
     @open_and_close_connection
