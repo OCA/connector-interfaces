@@ -45,7 +45,7 @@ class FileDocument(orm.Model):
         outfile.write(decoded_datas)
         outfile.seek(0)
         connection.send(file_doc.task_id.folder,
-                        file_doc.name, outfile)
+                        file_doc.datas_fname, outfile)
         return outfile
 
     def _run(self, cr, uid, file_doc, context=None):
