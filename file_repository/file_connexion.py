@@ -28,6 +28,7 @@ import paramiko
 import errno
 import functools
 
+
 def open_and_close_connection(func):
     """
     Open And Close Decorator will automatically launch the connection
@@ -51,6 +52,7 @@ def open_and_close_connection(func):
             return response
     return wrapper
 
+
 # Extend paramiko lib with the method mkdirs
 def stfp_mkdirs(self, path, mode=511):
     try:
@@ -66,6 +68,7 @@ def stfp_mkdirs(self, path, mode=511):
                 else:
                     raise
 paramiko.SFTPClient.mkdirs = stfp_mkdirs
+
 
 # Extend ftplib with the method mkdirs
 def ftp_mkdirs(self, path):
@@ -84,6 +87,7 @@ def ftp_mkdirs(self, path):
                     raise
     self.cwd(current_dir)
 ftplib.FTP.mkdirs = ftp_mkdirs
+
 
 class FileConnection(object):
 
@@ -118,7 +122,6 @@ class FileConnection(object):
     @open_and_close_connection
     def send(self, filepath, filename, output_file, create_patch=None):
         if not filepath: filepath = ''
-        #print output_file
         if self.is_('ftp'):
             filepath = os.path.join(self.home_folder, filepath)
             if self.allow_dir_creation:
@@ -132,15 +135,13 @@ class FileConnection(object):
                 self.connection.mkdirs(filepath)
             output = self.connection.open(
                 os.path.join(filepath, filename), 'w+b')
-            for line in output_file.readlines():
-                output.write(line)
-            output.close()
         elif self.is_('filestore'):
             if not os.path.isabs(filepath):
                 filepath = os.path.join(self.home_folder, filepath)
             if self.allow_dir_creation and not os.path.exists(filepath):
                 os.makedirs(filepath)
             output = open(os.path.join(filepath, filename), 'w+b')
+        if self.is_('ftp') or self.is_('sftp'):
             for line in output_file.readlines():
                 output.write(line)
             output.close()
