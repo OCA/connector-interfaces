@@ -43,11 +43,10 @@
             <field name="model">file.document</field>
             <field name="arch" type="xml">
                 <form string="File Document">
-                    <field name="name" />
+                    <field name="datas" filename="datas_fname"/>
                     <field name="sequence"/>
                     <field name="date" />
-                    <field name="datas" filename="datas_fname"/>
-                    <field name="datas_fname"/>
+                    <field name="datas_fname" invisible="1"/>
                     <field name="ext_id" />
                     <field name="active"/>
                     <field name="direction" readonly="1" />
@@ -73,9 +72,8 @@
             <field name="model">file.document</field>
             <field name="arch" type="xml">
                 <tree string="File Document">
-                    <field name="sequence" string="seq."/>
-                    <field name="name"/>
                     <field name="datas_fname"/>
+                    <field name="sequence" string="seq."/>
                     <field name="state"/>
                     <field name="active" string="act."/>
                     <field name="ext_id"/>

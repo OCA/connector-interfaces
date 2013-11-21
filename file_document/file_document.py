@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 ###############################################################################
 #
-#   file_document for OpenERP
 #   Authors: Sebastien Beau <sebastien.beau@akretion.com>
 #            David BEAL <david.beal@akretion.com>
 #            Benoît Guillot <benoit.guillot@akretion.com>
@@ -23,13 +22,14 @@
 ###############################################################################
 
 from openerp.osv import fields, orm
-import base64
 import logging
 
 _logger = logging.getLogger(__name__)
 
 # name of the models usable by file.document
 available_tasks = []
+
+
 def add_task(name):
     if not name in available_tasks:
         available_tasks.append(name)
@@ -58,17 +58,17 @@ class file_document(orm.Model):
         'sequence': fields.integer('Sequence'),
         'ext_id': fields.char('External ID', size=64),
         'state': fields.selection(
-            (('waiting','Waiting'),
-             ('running','Running'),
-             ('done','Done'),
-             ('fail','Fail')),
+            (('waiting', 'Waiting'),
+             ('running', 'Running'),
+             ('done', 'Done'),
+             ('fail', 'Fail')),
             'State'),
         'active': fields.boolean('Active'), #still needed?
         'date': fields.datetime(
             'Date',
             help="GMT date given by external application"),
         'direction': fields.selection(
-            [('input', 'Input'),('output', 'Output')],
+            [('input', 'Input'), ('output', 'Output')],
             'Direction',
             help='flow direction of the file'),
         'response': fields.text(
