@@ -108,6 +108,7 @@ class repository_task(orm.Model):
             'Archive Folder',
             size=64,
             help="The file will be moved to this folder after import"),
+        'last_date': fields.datetime('Last execution date'),
     }
 
 
