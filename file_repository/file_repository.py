@@ -25,6 +25,7 @@ from openerp.osv import fields, orm
 from openerp.osv.osv import except_osv
 from tools.translate import _
 from .file_connexion import FileConnection
+from datetime import datetime
 import base64
 import logging
 
@@ -88,7 +89,7 @@ class repository_task(orm.Model):
             'File Name',
             size=64,
             help="If the file name change, set here the common part "
-                "of this name (prefix or suffix)"),
+                 "of this name (prefix or suffix)"),
         'repository_id': fields.many2one(
             'file.repository',
             string="Repository",
@@ -108,9 +109,7 @@ class repository_task(orm.Model):
             'Archive Folder',
             size=64,
             help="The file will be moved to this folder after import"),
-        'last_date': fields.datetime('Last execution date'),
     }
-
 
     def prepare_document_vals(self, cr, uid, task, file_name, datas,
                               context=None):
@@ -155,6 +154,8 @@ class repository_task(orm.Model):
                      - create a file document for each found files
                      - attach it the selected file
         """
+        vals = {'last_exe_date': datetime.now()}
+        self.write(cr, uid, ids, vals, context=context)
         repo_obj = self.pool['file.repository']
         for task in self.browse(cr, uid, ids, context=context):
             if not task.active:
