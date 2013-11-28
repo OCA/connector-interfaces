@@ -15,15 +15,20 @@
             <field name="model">repository.task</field>
             <field name="arch" type="xml">
                 <form string="Task" version="7.0">
-                    <group name="fields">
+                    <group name="fields" cols="4" >
+                    <group name="fields" cols="2" >
                         <field name="name"/>
                         <field name="direction"/>
                         <field name="type"/>
                         <field name="file_name"/>
                         <field name="folder"/>
+                    </group>
+                    <group name="uu" cols="2">
                         <field name="archive_folder"
                                attrs="{'invisible':[('direction', '!=', 'in')]}"/>
+                        <field name="last_exe_date"/>
                         <field name="active"/>
+                    </group>
                     </group>
                     <group name="cron" colspan="4">
                         <button name="create_cron_from_abstract"

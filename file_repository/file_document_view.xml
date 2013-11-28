@@ -14,7 +14,7 @@
             <field name="inherit_id" ref="file_document.file_document_view_form"/>
             <field name="arch" type="xml">
                 <field name="direction" position="after">
-                    <field name="repository_id" string="file repo"/>
+                    <field name="repository_id" string="Repository"/>
                 </field>
             </field>
         </record>
