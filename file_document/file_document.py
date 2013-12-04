@@ -95,7 +95,7 @@ class file_document(orm.Model):
         'active': 1,
         'state': 'waiting',
         'sequence': 100,
-        'date': fields.date.context_today,
+        'date': fields.datetime.now,
     }
 
 #    def get_file(self, cr, uid, file_document_id, context=None):

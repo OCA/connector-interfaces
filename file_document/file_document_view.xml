@@ -72,6 +72,7 @@
             <field name="model">file.document</field>
             <field name="arch" type="xml">
                 <tree string="File Document">
+		    <field name="id"/>
                     <field name="datas_fname"/>
                     <field name="sequence" string="seq."/>
                     <field name="state"/>
