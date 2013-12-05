@@ -185,9 +185,6 @@ class FileConnection(object):
         if self.is_('ftp') or self.is_('sftp'):
             self.connection.rename(os.path.join(oldfilepath, filename),
                                    os.path.join(newfilepath, filename))
-        elif self.is_('sftp'):
-            self.connection.rename(os.path.join(oldfilepath, filename),
-                                   os.path.join(newfilepath, filename))
         elif self.is_('filestore'):
             os.rename(os.path.join(oldfilepath, filename),
                       os.path.join(newfilepath, filename))
