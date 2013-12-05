@@ -22,6 +22,7 @@
 ###############################################################################
 
 from openerp.osv import fields, orm
+import base64
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -37,6 +38,7 @@ def add_task(name):
 
 class file_document(orm.Model):
     _inherits = {'ir.attachment': 'attachment_id'}
+    _inherit = ['mail.thread', 'ir.needaction_mixin']
     _name = "file.document"
     _description = "File Document"
 

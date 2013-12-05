@@ -32,8 +32,10 @@ Example : logisticians, e-commerce platforms, automated machines
 """,
     'author': 'Akretion',
     'website': 'http://www.akretion.com/',
-    'depends': ['abstract_automatic_task',
-                ],
+    'depends': [
+        'abstract_automatic_task',
+        'mail',
+    ],
     'demo': [],
     'data': [
         'file_document_view.xml',
