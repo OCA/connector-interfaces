@@ -43,6 +43,7 @@
             <field name="model">file.document</field>
             <field name="arch" type="xml">
                 <form string="File Document">
+                    <field name="name"/>
                     <field name="datas" filename="datas_fname"/>
                     <field name="sequence"/>
                     <field name="date" />
