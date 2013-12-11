@@ -10,126 +10,127 @@
 <openerp>
     <data>
 
-        <record id="view_repository_task_form" model="ir.ui.view">
-            <field name="name">repository.task.view_form</field>
-            <field name="model">repository.task</field>
-            <field name="arch" type="xml">
-                <form string="Task" version="7.0">
-                    <group name="fields" cols="4" >
-                    <group name="fields" cols="2" >
-                        <field name="name"/>
-                        <field name="direction"/>
-                        <field name="type"/>
-                        <field name="file_name"/>
-                        <field name="folder"/>
-                    </group>
-                    <group name="uu" cols="2">
-                        <field name="archive_folder"
-                               attrs="{'invisible':[('direction', '!=', 'in')]}"/>
-                        <field name="last_exe_date"/>
-                        <field name="active"/>
-                    </group>
-                    </group>
-                    <group name="cron" colspan="4">
-                        <button name="create_cron_from_abstract"
-                                type="object"
-                                string="Add Cron Task" colspan="4"/>
-                        <field name="cron_ids" nolabel="1"/>
-                    </group>
-                </form>
-            </field>
-        </record>
-
-        <record id="view_repository_task_tree" model="ir.ui.view">
-            <field name="name">repository.task.view_tree</field>
-            <field name="model">repository.task</field>
-            <field name="arch" type="xml">
-                <tree string="Tasks" version="7.0">
+<record id="view_repository_task_form" model="ir.ui.view">
+    <field name="name">repository.task.view_form</field>
+    <field name="model">repository.task</field>
+    <field name="arch" type="xml">
+        <form string="Task" version="7.0">
+            <group name="main" cols="4" >
+                <group name="left" cols="2" >
                     <field name="name"/>
                     <field name="direction"/>
                     <field name="type"/>
                     <field name="file_name"/>
                     <field name="folder"/>
+                </group>
+                <group name="right" cols="2">
+                    <field name="archive_folder"
+                           attrs="{'invisible':[('direction', '!=', 'in')]}"/>
+                    <field name="last_exe_date"/>
                     <field name="active"/>
-                </tree>
-            </field>
-        </record>
+                </group>
+            </group>
+            <group name="cron" colspan="4">
+                <button name="create_cron_from_abstract"
+                        type="object"
+                        string="Add Cron Task" colspan="4"/>
+                <field name="cron_ids" nolabel="1"/>
+            </group>
+        </form>
+    </field>
+</record>
 
-        <record id="view_file_repository_form" model="ir.ui.view">
-            <field name="name">file.repository.view_form</field>
-            <field name="model">file.repository</field>
-            <field name="arch" type="xml">
-                <form string="File Repository" version="7.0">
-                    <sheet>
-                        <h1>
-                            <label string="Repository " />
-                            <field name="name" class="oe_inline" />
-                        </h1>
-                        <group name="repository_fields" col="4">
-                            <group name="type" colspan="6" col="8">
-                                <group colspan="4">
-                                    <field name="location"
-                                           attrs="{'invisible': [('type', '=', 'filestore')]}"/>
-                                    <field name="home_folder"/>
-                                </group>
-                                <group colspan="2">
-                                    <field name="type" />
-                                    <field name="port" attrs="{'invisible': [('type', '=', 'filestore')]}"/>
-                                </group>
-                            </group>
-                            <group name="pass" colspan="4" col="4"
-                                   attrs="{'invisible': [('type', '=', 'filestore')]}">
-                                <field name="username" colspan="2"/>
-                                <field name="password" colspan="2"/>
-                            </group>
+<record id="view_repository_task_tree" model="ir.ui.view">
+    <field name="name">repository.task.view_tree</field>
+    <field name="model">repository.task</field>
+    <field name="arch" type="xml">
+        <tree string="Tasks" version="7.0">
+            <field name="name"/>
+            <field name="direction"/>
+            <field name="type"/>
+            <field name="file_name"/>
+            <field name="folder"/>
+            <field name="active"/>
+        </tree>
+    </field>
+</record>
+
+<record id="view_file_repository_form" model="ir.ui.view">
+    <field name="name">file.repository.view_form</field>
+    <field name="model">file.repository</field>
+    <field name="arch" type="xml">
+        <form string="File Repository" version="7.0">
+            <sheet>
+                <h1>
+                    <label string="Repository " />
+                    <field name="name" class="oe_inline" />
+                </h1>
+                <group name="repository_fields" col="4">
+                    <group name="type" colspan="6" col="8">
+                        <group colspan="4">
+                            <field name="location"
+                                   attrs="{'invisible': [('type', '=', 'filestore')]}"/>
+                            <field name="home_folder"/>
                         </group>
-                        <group name="tasks">
-                            <field name="task_ids" nolabel="1"
-                                   context="{'active_test' : False}">
-                            </field>
+                        <group colspan="2">
+                            <field name="type" />
+                            <field name="port" attrs="{'invisible': [('type', '=', 'filestore')]}"/>
                         </group>
-                    </sheet>
-                </form>
-            </field>
-        </record>
+                    </group>
+                    <group name="pass" colspan="4" col="4"
+                           attrs="{'invisible': [('type', '=', 'filestore')]}">
+                        <field name="username" colspan="2"/>
+                        <field name="password" colspan="2" password="True"/>
+                    </group>
+                </group>
+                <group name="tasks">
+                    <field name="task_ids" nolabel="1"
+                           context="{'active_test' : False}">
+                    </field>
+                </group>
+            </sheet>
+        </form>
+    </field>
+</record>
 
-        <record id="view_file_repository_tree" model="ir.ui.view">
-            <field name="name">file.repository.view_tree</field>
-            <field name="model">file.repository</field>
-            <field name="arch" type="xml">
-                <tree string="File Repository" >
-                    <field name="name"/>
-                    <field name="type"/>
-                </tree>
-            </field>
-        </record>
+<record id="view_file_repository_tree" model="ir.ui.view">
+    <field name="name">file.repository.view_tree</field>
+    <field name="model">file.repository</field>
+    <field name="arch" type="xml">
+        <tree string="File Repository" >
+            <field name="name"/>
+            <field name="type"/>
+        </tree>
+    </field>
+</record>
 
-        <record id="view_file_repository_search" model="ir.ui.view">
-            <field name="name">file.repository.search</field>
-            <field name="model">file.repository</field>
-            <field name="arch" type="xml">
-                <search string="Search File Repository" >
-                    <field name="name" string="Name"/>
-                    <field name="type" string="Type"/>
-                </search>
-            </field>
-        </record>
+<record id="view_file_repository_search" model="ir.ui.view">
+    <field name="name">file.repository.search</field>
+    <field name="model">file.repository</field>
+    <field name="arch" type="xml">
+        <search string="Search File Repository" >
+            <field name="name" string="Name"/>
+            <field name="type" string="Type"/>
+        </search>
+    </field>
+</record>
 
-        <record id="action_file_repository" model="ir.actions.act_window">
-            <field name="name">File Repositories</field>
-            <field name="res_model">file.repository</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,form,graph</field>
-            <field name="domain">[]</field>
-            <field name="context">{}</field>
-            <field name="search_view_id" ref="view_file_repository_search"/>
-            <field name="help" type="html"></field>
-        </record>
+<record id="action_file_repository" model="ir.actions.act_window">
+    <field name="name">File Repositories</field>
+    <field name="res_model">file.repository</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form,graph</field>
+    <field name="domain">[]</field>
+    <field name="context">{}</field>
+    <field name="search_view_id" ref="view_file_repository_search"/>
+    <field name="help" type="html"></field>
+</record>
 
-        <menuitem name="File Repositories"
-                  id="menu_file_repository"
-                  action="action_file_repository"
-                  parent="file_document.menu_file_exchange_root"
-                  sequence="10"/>
+<menuitem name="File Repositories"
+          id="menu_file_repository"
+          action="action_file_repository"
+          parent="file_document.menu_file_exchange_root"
+          sequence="10"/>
+
     </data>
 </openerp>
