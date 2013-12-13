@@ -26,6 +26,7 @@ from openerp.osv.osv import except_osv
 from tools.translate import _
 from .file_connexion import FileConnection
 from datetime import datetime
+import os
 import base64
 import logging
 
@@ -123,16 +124,16 @@ class repository_task(orm.Model):
                 }
 
     def import_one_document(self, cr, uid, connection, task, file_name,
-                            context=None):
+                            folder_path, context=None):
         document_obj = self.pool['file.document']
-        file_toimport = connection.get(task.folder, file_name)
+        file_toimport = connection.get(folder_path, file_name)
         datas = file_toimport.read()
         datas_encoded = base64.encodestring(datas)
         vals = self.prepare_document_vals(cr, uid, task, file_name,
                                           datas_encoded, context=context)
         document_obj.create(cr, uid, vals, context=context)
         if task.archive_folder:
-            connection.move(task.folder, task.archive_folder, file_name)
+            connection.move(folder_path, task.archive_folder, file_name)
         return True
 
     def run_import(self, cr, uid, connection, task, context=None):
@@ -142,10 +143,11 @@ class repository_task(orm.Model):
             context=context)
         file_names = document_obj.read(cr, uid, document_ids, ['name'],
                                        context=context)
-        for file_name in connection.search(task.folder, task.file_name):
+        folder_path = get_full_path(task.repository_id.home_folder, task.folder)
+        for file_name in connection.search(folder_path, task.file_name):
             if not file_name in file_names:
                 self.import_one_document(cr, uid, connection, task, file_name,
-                                         context=context)
+                                         folder_path, context=context)
         return True
 
     def run(self, cr, uid, ids, context=None):
@@ -168,3 +170,9 @@ class repository_task(orm.Model):
                 _logger.info('Start to run import task %s'%task.name)
                 self.run_import(cr, uid, connection, task, context=context)
         return True
+
+
+def get_full_path(path1, path2):
+    path1 = path1 or ''
+    path2 = path2 or ''
+    return os.path.join(path1, path2)
