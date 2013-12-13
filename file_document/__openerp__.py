@@ -41,6 +41,7 @@ Example : logisticians, e-commerce platforms, automated machines
         'file_document_view.xml',
         'file_document_data.xml',
         'security/ir.model.access.csv',
+        'security/file_document_security.xml',
     ],
     'installable': True,
     'active': False,
