@@ -44,14 +44,13 @@ class FileDocument(orm.Model):
         decoded_datas = base64.decodestring(file_doc.datas)
         outfile.write(decoded_datas)
         outfile.seek(0)
-        connection.send(file_doc.task_id.folder,
-                        file_doc.datas_fname, outfile)
+        connection.send(file_doc.task_id.folder, file_doc.datas_fname, outfile)
         return outfile
 
     def _run(self, cr, uid, file_doc, context=None):
         super(FileDocument, self)._run(cr, uid, file_doc, context=context)
         repo_obj = self.pool['file.repository']
-        if file_doc.direction == 'output' and file_doc.active == True:
+        if file_doc.direction == 'output' and file_doc.active is True:
             connection = repo_obj.repository_connection(
                 cr, uid, file_doc.repository_id.id, context=context)
             self.export_file_document(cr, uid, connection, file_doc,

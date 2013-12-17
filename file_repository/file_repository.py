@@ -65,7 +65,7 @@ class file_repository(orm.Model):
 
     def repository_connection(self, cr, uid, id, context=None):
         if isinstance(id, list):
-            id=id[0]
+            id = id[0]
         repository = self.browse(cr, uid, id, context=context)
         try:
             return FileConnection(repository.type, repository.location,
