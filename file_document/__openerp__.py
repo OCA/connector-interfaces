@@ -28,7 +28,7 @@
     'license': 'AGPL-3',
     'description': """
 Abstraction module that allow to store informations in files used to exchange datas (import/export) with any external applications (file exchange or web services)
-Example : logisticians, e-commerce platforms, automated machines
+Example : logistic_center, e-commerce platforms, automated machines
 """,
     'author': 'Akretion',
     'website': 'http://www.akretion.com/',

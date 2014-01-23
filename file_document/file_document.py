@@ -93,54 +93,13 @@ class file_document(orm.Model):
     _order = 'sequence, date desc'
 
     _defaults = {
-        'company_id': lambda s, cr, uid, c: s.pool.get('res.company')._company_default_get(cr, uid, 'file.document', context=c),
+        'company_id': lambda s, cr, uid, c: s.pool.get('res.company').
+        _company_default_get(cr, uid, 'file.document', context=c),
         'active': 1,
         'state': 'waiting',
         'sequence': 100,
         'date': fields.datetime.now,
     }
-
-#    def get_file(self, cr, uid, file_document_id, context=None):
-#        """
-#        Fonction that return the content of the attachment
-#        :param int file_id : id of the file document
-#        :rtype: str
-#        :return: the content attachment
-#        """
-#        attach_obj = self.pool['ir.attachment']
-#        attachment_id = attach_obj.search(cr, uid,
-#                                          [('res_model','=','file.document'),
-#                                           ('res_id','=', file_document_id)],
-#                                          context=context)
-#        if not attachment_id:
-#            return False
-#        attachment = attach_obj.browse(cr, uid, attachment_id[0], context=context)
-#        return base64.decodestring(attachment.datas)
-#
-#    def create_file_document_attachment(self, cr, uid, file_document_id, datas,
-#                                      file_name, context=None, extension='csv',
-#                                      prefix_file_name='report'):
-#        """
-#        Create file attachment to file.document object
-#        :param int file_document_id:
-#        :param str datas: file content
-#        :param str file_name: file name component
-#        :param str extension: file extension
-#        :param str prefix_file_name:
-#        :rtype: boolean
-#        :return: True
-#        """
-#        if context is None: context = {}
-#        attach_obj = self.pool['ir.attachment']
-#        context.update({'default_res_id': file_document_id,
-#                        'default_res_model': 'file.document'})
-#        datas_encoded = base64.encodestring(datas)
-#        attach_name = '%s_%s.%s' % (prefix_file_name, file_name, extension)
-#        vals_attachment = {'name': attach_name,
-#                           'datas': datas_encoded,
-#                           'datas_fname': attach_name}
-#        attachment_id = attach_obj.create(cr, uid, vals_attachment, context=context)
-#        return True
 
     def check_state_file_document_scheduler(self, cr, uid, domain=None,
                                             context=None):
@@ -179,11 +138,11 @@ class file_document(orm.Model):
         return True
 
     def _run(self, cr, uid, filedocument, context=None):
-        _logger.info('Start to process file document id %s'%filedocument.id)
+        _logger.info('Start to process file document id %s' % filedocument.id)
         filedocument._set_state('running', context=context)
 
     def done(self, cr, uid, ids, context=None):
-        _logger.info('File document id %s have been processed'%ids)
+        _logger.info('File document id %s have been processed' % ids)
         self._set_state(cr, uid, ids, 'done', context=context)
 
     def _set_state(self, cr, uid, ids, state, context=None):
@@ -195,10 +154,9 @@ class file_document(orm.Model):
         return True
 
     def unlink(self, cr, uid, ids, context=None):
-        #attachment must be delete one by one (ORM design :S)
+        #attachment must be delete one by one (ORM design: S)
         for document in self.read(cr, uid, ids, ['attachment_id'],
                                   context=context):
-            self.pool['ir.attachment'].unlink(cr, uid,
-                                              [document['attachment_id'][0]],
-                                              context=context)
+            self.pool['ir.attachment'].unlink(
+                cr, uid, [document['attachment_id'][0]], context=context)
         return True
