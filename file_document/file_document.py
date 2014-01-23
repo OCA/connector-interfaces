@@ -65,7 +65,7 @@ class file_document(orm.Model):
              ('done', 'Done'),
              ('fail', 'Fail')),
             'State'),
-        'active': fields.boolean('Active'), #still needed?
+        'active': fields.boolean('Active'),
         'date': fields.datetime(
             'Date',
             help="GMT date given by external application"),
@@ -172,7 +172,7 @@ class file_document(orm.Model):
             except Exception, e:
                 cr.rollback()
                 _logger.exception(e)
-                filedocument.write({'state': 'fail', 'response': e.message})
+                filedocument.write({'state': 'fail', 'response': unicode(e)})
                 cr.commit()
             else:
                 cr.commit()
