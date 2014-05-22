@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 ###############################################################################
 #
-#   file_repository for OpenERP
 #   Authors: Sebastien Beau <sebastien.beau@akretion.com>
 #            Benoît Guillot <benoit.guillot@akretion.com>
 #   Copyright 2013 Akretion
@@ -22,7 +21,6 @@
 ###############################################################################
 
 from openerp.osv import fields, orm
-from openerp.osv.osv import except_osv
 from tools.translate import _
 from .file_connexion import FileConnection
 from datetime import datetime
@@ -31,6 +29,12 @@ import base64
 import logging
 
 _logger = logging.getLogger(__name__)
+
+
+def get_full_path(path1, path2):
+    path1 = path1 or ''
+    path2 = path2 or ''
+    return os.path.join(path1, path2)
 
 
 class file_repository(orm.Model):
@@ -74,9 +78,9 @@ class file_repository(orm.Model):
                                   allow_dir_creation=True,
                                   home_folder=repository.home_folder)
         except Exception, e:
-            raise except_osv(_("Repository Connection Error"),
-                             _("Could not connect to repository\n"
-                               "Check url, user & password.\n %s") % e)
+            raise orm.except_orm(_("Repository Connection Error"),
+                                 _("Could not connect to repository\n"
+                                 "Check url, user & password.\n %s") % e)
 
 
 class repository_task(orm.Model):
@@ -167,12 +171,16 @@ class repository_task(orm.Model):
                                                         context=context)
             #only support the import for now
             if task.direction == 'in':
-                _logger.info('Start to run import task %s'%task.name)
+                _logger.info('Start to run import task %s' % task.name)
                 self.run_import(cr, uid, connection, task, context=context)
         return True
 
 
-def get_full_path(path1, path2):
-    path1 = path1 or ''
-    path2 = path2 or ''
-    return os.path.join(path1, path2)
+class AutomaticTask(orm.Model):
+    _inherit = 'automatic.task'
+
+    def get_task_type(self, cr, uid, context=None):
+        types = super(AutomaticTask, self).get_task_type(
+            cr, uid, context=context)
+        types.append(('export', 'Export'))
+        return types

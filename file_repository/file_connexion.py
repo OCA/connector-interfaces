@@ -89,6 +89,10 @@ def ftp_mkdirs(self, path):
 ftplib.FTP.mkdirs = ftp_mkdirs
 
 
+class NoFileNameExcept(Exception):
+    ""
+
+
 class FileConnection(object):
 
     def is_(self, protocol):
@@ -112,7 +116,7 @@ class FileConnection(object):
             self.connection.login(self.user, self.pwd)
         elif self.is_('sftp'):
             transport = paramiko.Transport((self.location, self.port or 22))
-            transport.connect(username = self.user, password = self.pwd)
+            transport.connect(username=self.user, password=self.pwd)
             self.connection = paramiko.SFTPClient.from_transport(transport)
 
     def close(self):
@@ -168,6 +172,8 @@ class FileConnection(object):
     @open_and_close_connection
     def search(self, filepath, filename):
         if not filepath: filepath = ''
+        if filename is False:
+            raise NoFileNameExcept("Filename is not defined")
         if self.is_('ftp'):
             self.connection.cwd(filepath)
             #Take care that ftp lib use utf-8 and not unicode

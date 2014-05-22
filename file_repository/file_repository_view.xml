@@ -19,7 +19,9 @@
                 <group name="left" cols="2" >
                     <field name="name"/>
                     <field name="direction"/>
-                    <field name="type"/>
+                    <field name="type"
+                           help="Type is needed for import task to determine how to import datas.
+For 'Export' direction, choose Export value"/>
                     <field name="file_name"/>
                     <field name="folder"/>
                 </group>
@@ -85,7 +87,7 @@
                 </group>
                 <group name="tasks">
                     <field name="task_ids" nolabel="1"
-                           context="{'active_test' : False}">
+                           context="{'active_test': False}">
                     </field>
                 </group>
             </sheet>
