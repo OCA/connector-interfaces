@@ -46,7 +46,7 @@ class file_document(orm.Model):
         return self.get_file_document_type(cr, uid, context=context)
 
     def get_file_document_type(self, cr, uid, context=None):
-        return []
+        return [('export', 'Export')]
 
     def _get_tasks(self, cr, uid, context=None):
         model_obj = self.pool.get('ir.model')
