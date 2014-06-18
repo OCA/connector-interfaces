@@ -42,6 +42,7 @@ It's used by logistic_center modules to send csv file to external warehouse
         'file_repository_view.xml',
         'file_document_view.xml',
         'security/ir.model.access.csv',
+        'security/rule.xml',
     ],
     'installable': True,
     'active': False,

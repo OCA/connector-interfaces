@@ -30,6 +30,7 @@ For 'Export' direction, choose Export value"/>
                            attrs="{'invisible':[('direction', '!=', 'in')]}"/>
                     <field name="last_exe_date"/>
                     <field name="active"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
                 </group>
             </group>
             <group name="cron" colspan="4">
@@ -53,6 +54,7 @@ For 'Export' direction, choose Export value"/>
             <field name="file_name"/>
             <field name="folder"/>
             <field name="active"/>
+            <field name="company_id" groups="base.group_multi_company"/>
         </tree>
     </field>
 </record>
@@ -77,6 +79,7 @@ For 'Export' direction, choose Export value"/>
                         <group colspan="2">
                             <field name="type" />
                             <field name="port" attrs="{'invisible': [('type', '=', 'filestore')]}"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
                         </group>
                     </group>
                     <group name="pass" colspan="4" col="4"
@@ -102,6 +105,7 @@ For 'Export' direction, choose Export value"/>
         <tree string="File Repository" >
             <field name="name"/>
             <field name="type"/>
+            <field name="company_id" groups="base.group_multi_company"/>
         </tree>
     </field>
 </record>

@@ -37,12 +37,13 @@ def get_full_path(path1, path2):
     return os.path.join(path1, path2)
 
 
-class file_repository(orm.Model):
+class FileRepository(orm.Model):
     _name = "file.repository"
     _description = "File Repository"
 
     _columns = {
         'name': fields.char('Name', required=True, size=64),
+        'company_id': fields.many2one('res.company', 'Company'),
         'location': fields.char('Location', size=200),
         'username': fields.char('User Name', size=64),
         'password': fields.char('Password', size=64),
@@ -83,13 +84,14 @@ class file_repository(orm.Model):
                                  "Check url, user & password.\n %s") % e)
 
 
-class repository_task(orm.Model):
+class RepositoryTask(orm.Model):
     _name = 'repository.task'
     _description = 'Repository Task'
     _inherit = 'abstrack.task'
 
     _columns = {
         'name': fields.char('Name', size=64),
+        'company_id': fields.many2one('res.company', 'Company'),
         'file_name': fields.char(
             'File Name',
             size=64,
