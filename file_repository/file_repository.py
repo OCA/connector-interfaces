@@ -64,6 +64,10 @@ class FileRepository(orm.Model):
             string="Tasks"),
     }
 
+    _defaults = {
+        'company_id': lambda s, cr, uid, c: s.pool['res.company']._company_default_get(cr, uid, 'file.repository', context=c),
+    }
+
     _sql_constraints = [
         ('name_uniq', 'unique (name)', 'Repository names must be unique !')
     ]
@@ -116,6 +120,10 @@ class RepositoryTask(orm.Model):
             'Archive Folder',
             size=64,
             help="The file will be moved to this folder after import"),
+    }
+
+    _defaults = {
+        'company_id': lambda s, cr, uid, c: s.pool['res.company']._company_default_get(cr, uid, 'repository.task', context=c),
     }
 
     def prepare_document_vals(self, cr, uid, task, file_name, datas,
