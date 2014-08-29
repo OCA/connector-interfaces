@@ -1,0 +1,64 @@
+<openerp>
+  <data>
+    <record id="master_data_connector_backend_form" model="ir.ui.view">
+      <field name="name">master data connector backend form</field>
+      <field name="model">connector.odbc.data.server.backend</field>
+      <field name="arch" type="xml">
+        <form version="7.0" string="ODBC Data connector">
+          <sheet>
+            <group col="4">
+              <field name="name"/>
+              <field name="version"/>
+            </group>
+            <notebook>
+              <page string="Actions">
+                <label string="Import all datas from ODBC: "/>
+                <button name="import_all"
+                        type="object"
+                        string="Import all"/>
+              </page>
+              <page string="Info">
+                <group>
+                  <field name="dsn"/>
+                  <field name="last_import_start_date"/>
+                </group>
+              </page>
+            </notebook>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <record id="master_data_connector_backend_list" model="ir.ui.view">
+      <field name="name">master data connector backend form</field>
+      <field name="model">connector.odbc.data.server.backend</field>
+      <field name="arch" type="xml">
+        <tree version="7.0" string="ODBC Data connector">
+          <field name="name"/>
+        </tree>
+      </field>
+    </record>
+
+    <menuitem
+        name="ODBC data backend"
+        parent="connector.menu_connector_root"
+        id="root_master_data_sql_backend_menu"/>
+
+    <record model="ir.actions.act_window" id="master_data_sql_backend">
+      <field name="name">SQL server Backend</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">connector.odbc.data.server.backend</field>
+      <field name="domain"></field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+      <field name="view_id" ref="master_data_connector_backend_list"/>
+    </record>
+
+
+    <menuitem
+        name="SQL server Backend"
+        parent="root_master_data_sql_backend_menu"
+        action="master_data_sql_backend"
+        id="master_data_sql_backend_menu"/>
+  </data>
+</openerp>
