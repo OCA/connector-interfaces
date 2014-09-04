@@ -18,6 +18,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+# flake8: noqa
+# automatically captured data
 import datetime
 from collections import namedtuple
 DummRecord = namedtuple('mega_code_table', 'mg_name, mg_code, mg_desc, x_date, x_datetime, create_time, modify_time')

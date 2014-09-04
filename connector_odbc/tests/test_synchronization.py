@@ -20,9 +20,7 @@
 ##############################################################################
 import time
 import psycopg2
-from mock import patch
-import pyodbc  # Must be imported to be patched
-from openerp.tools.misc import DEFAULT_SERVER_DATETIME_FORMAT
+
 
 from . import odbc_test_common
 from .adapter_data import simulated_mega_table
@@ -45,21 +43,44 @@ class test_direct_synchro(odbc_test_common.ODBCBaseTestClass):
         self.assertEqual(existing, [])
         with odbc_test_common.mock_adapter('mega_code_table', 'mg_code',
                                            simulated_mega_table):
-            self.backend.direct_import(['odbc.data.connector.test.code.a'], full=True)
+            self.backend.direct_import(['odbc.data.connector.test.code.a'],
+                                       full=True)
         codes = ['1', '2', '3', '4', '5']
         # we validate relation Model between backend, external data and openerp
-        imported = self.connector_model.search(cr, uid, [('odbc_code', 'in', codes),
-                                                         ('backend_id', '=', self.backend.id)])
-        self.assertEqual(len(imported), 5, "Did not find 5 relations in OpenERP")
+        imported = self.connector_model.search(
+            cr, uid, [('odbc_code', 'in', codes),
+                      ('backend_id', '=', self.backend.id)]
+        )
+        self.assertEqual(len(imported), 5,
+                         "Did not find 5 relations in OpenERP")
         # we validate openerp Model were correctly inserted and transformed
-        openerp_ids = self.target_model.search(cr, uid, [('code', 'in', codes)])
+        openerp_ids = self.target_model.search(cr, uid,
+                                               [('code', 'in', codes)])
         self.assertEqual(len(openerp_ids), 5, "Did not find 5 rows in OpenERP")
         br_to_validate = self.target_model.browse(cr, uid, openerp_ids[0])
-        self.assertEqual(br_to_validate.name, 'name 1', 'invalid name')
-        self.assertEqual(br_to_validate.code, '1', 'invalid code')
-        self.assertEqual(br_to_validate.test_date, '2010-01-01', 'invalide date')
-        self.assertEqual(br_to_validate.test_datetime, '2011-01-01 00:00:00', 'invalide date')
-        back_date = self.backend_model.browse(cr, uid, self.backend.id).last_import_start_date
+
+        self.assertEqual(
+            br_to_validate.name,
+            'name 1', 'invalid name'
+        )
+        self.assertEqual(
+            br_to_validate.code,
+            '1',
+            'invalid code'
+        )
+        self.assertEqual(
+            br_to_validate.test_date,
+            '2010-01-01',
+            'invalide date'
+        )
+        self.assertEqual(
+            br_to_validate.test_datetime,
+            '2011-01-01 00:00:00',
+            'invalide date'
+        )
+        back_date = self.backend_model.browse(
+            cr, uid, self.backend.id).last_import_start_date
+
         self.assertTrue(back_date, msg="backend date not set")
 
     def test_03_update_import(self):
@@ -67,19 +88,31 @@ class test_direct_synchro(odbc_test_common.ODBCBaseTestClass):
         # I simulate the last import date
         cr, uid = self.cr, self.uid
         self.backend.write({'last_import_start_date': "2012-06-01 00:00:00"})
-        cr.execute('Select MAX(sync_date) FROM odbc_data_connector_test_code_a')
+        cr.execute(
+            'Select MAX(sync_date) FROM odbc_data_connector_test_code_a'
+        )
         highest_update_date = cr.fetchone()[0]
         time.sleep(1)
         with odbc_test_common.mock_adapter('mega_code_table', 'mg_code',
                                            simulated_mega_table):
-            self.backend.direct_import(['odbc.data.connector.test.code.a'], full=False)
-        updated_ids = self.connector_model.search(cr, uid,
-                                                  [('sync_date', '>', highest_update_date)])
-        self.assertEqual(len(updated_ids), 1,
-                         msg="Wrong number of update")
+            self.backend.direct_import(
+                ['odbc.data.connector.test.code.a'],
+                full=False
+            )
+        updated_ids = self.connector_model.search(
+            cr, uid,
+            [('sync_date', '>', highest_update_date)]
+        )
+        self.assertEqual(
+            len(updated_ids), 1,
+            msg="Wrong number of update"
+        )
         br_to_validate = self.connector_model.browse(cr, uid, updated_ids[0])
-        self.assertEqual(br_to_validate.desc, 'comment updated',
-                         msg="Attribute was not updated")
+        self.assertEqual(
+            br_to_validate.desc,
+            'comment updated',
+            msg="Attribute was not updated"
+        )
 
     def test_04_correct_delete_row(self):
         """I test deletion of data in OpenERP in a correct manner"""
@@ -91,17 +124,23 @@ class test_direct_synchro(odbc_test_common.ODBCBaseTestClass):
         related = to_del_br.openerp_id
         # we delete the correct way by supressing binding then related
         self.connector_model.unlink(cr, uid, to_del_br.id)
-        self.assertFalse(self.connector_model.search(cr, uid,
-                                                     [('id', '=', to_del_ids[0])]))
-        self.assertTrue(self.target_model.search(cr, uid,
-                                                 [('id', '=', related.id)]))
+        self.assertFalse(self.connector_model.search(
+            cr, uid,
+            [('id', '=', to_del_ids[0])])
+        )
+        self.assertTrue(self.target_model.search(
+            cr, uid,
+            [('id', '=', related.id)])
+        )
         self.assertTrue(self.target_model.unlink(cr, uid, related.id))
 
     def test_05_incorrect_delete_row(self):
         """Test that we can not delete row linked to bindings"""
         cr, uid = self.cr, self.uid
-        to_del_ids = self.connector_model.search(cr, uid,
-                                                 [('odbc_code', '=', '5')])
+        to_del_ids = self.connector_model.search(
+            cr, uid,
+            [('odbc_code', '=', '5')]
+        )
         self.assertTrue(to_del_ids)
         # it should fail
         with self.assertRaises(psycopg2.IntegrityError):
@@ -118,10 +157,22 @@ class test_direct_synchro(odbc_test_common.ODBCBaseTestClass):
         self.backend.write({'last_import_start_date': "2012-06-03 00:00:00"})
         with odbc_test_common.mock_adapter('mega_code_table', 'mg_code',
                                            simulated_mega_table):
-            self.backend.direct_import(['odbc.data.connector.test.code.a'], full=False)
-        deactivated = self.target_model.search(cr, uid, [('code', '=', '3'),
-                                                         ('active', '=', False)])
-        self.assertTrue(deactivated, msg="Nothing was deactivated")
-        self.assertEqual(len(deactivated), 1, msg="Wrong number of deactivations")
+            self.backend.direct_import(
+                ['odbc.data.connector.test.code.a'],
+                full=False
+            )
+        deactivated = self.target_model.search(
+            cr, uid, [('code', '=', '3'),
+                      ('active', '=', False)]
+        )
+        self.assertTrue(
+            deactivated,
+            msg="Nothing was deactivated"
+        )
+        self.assertEqual(
+            len(deactivated),
+            1,
+            msg="Wrong number of deactivations"
+        )
         deact_br = self.connector_model.browse(cr, uid, deactivated[0])
         self.assertEqual(deact_br.code, '3')

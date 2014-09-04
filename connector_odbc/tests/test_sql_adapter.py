@@ -33,7 +33,10 @@ class test_sql_adapter(odbc_test_common.ODBCBaseTestClass):
     @patch('pyodbc.connect', pyodbc_common.pyodbc_mock)
     def test_00_test_sql_adapter_search(self):
         """ We test there is no regression in code that search external DB,
-        This is a simple test that ensure Generated SQL is matched in a collection"""
+        This is a simple test that ensure Generated
+        SQL is matched in a collection
+
+        """
         adapter = self.env.get_connector_unit(ODBCAdapter)
         self.assertEqual(adapter._table_name, 'mega_code_table')
         search_res = adapter.search()
@@ -42,8 +45,11 @@ class test_sql_adapter(odbc_test_common.ODBCBaseTestClass):
     @patch('pyodbc.connect', pyodbc_common.pyodbc_mock)
     def test_01_test_sql_adapter_read(self):
         """ We test there is no regression in code that search external DB,
-        This is a simple test that ensure Generated SQL is matched in a collection.
-        We also walidate memoizer"""
+        This is a simple test that ensure Generated SQL
+        is matched in a collection.
+        We also validate memoizer
+
+        """
         adapter = self.env.get_connector_unit(ODBCAdapter)
         self.assertEqual(adapter._table_name, 'mega_code_table')
         read_res = adapter.read(['2', '1', '3', '4', '5'])
@@ -53,9 +59,11 @@ class test_sql_adapter(odbc_test_common.ODBCBaseTestClass):
         # I test len of recordset
         self.assertEqual(len(data), 5,
                          msg="Recordset has not the correct items number")
-        read_res_optimized = adapter.read(['2', '1', '3', '4', '5'], data_set=data)
+        read_res_optimized = adapter.read(['2', '1', '3', '4', '5'],
+                                          data_set=data)
         optimized_data = [x for x in read_res_optimized]
         # I test return is sorted and correct
-        self.assertTrue(optimized_data[1].mg_code == '1', msg="Incorrect optimized order")
+        self.assertTrue(optimized_data[1].mg_code == '1',
+                        msg="Incorrect optimized order")
         # I test len of recordset
         self.assertEqual(len(optimized_data), 5)

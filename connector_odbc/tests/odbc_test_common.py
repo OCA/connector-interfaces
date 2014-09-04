@@ -43,9 +43,13 @@ class ODBCBaseTestClass(test_common.SingleTransactionCase):
 
     def setUp(self):
         super(ODBCBaseTestClass, self).setUp()
-        self.backend_model = self.registry('connector.odbc.data.server.backend')
+        self.backend_model = self.registry(
+            'connector.odbc.data.server.backend'
+        )
         self.backend = self._get_backend()
-        self.env = self._get_backend().get_environment('odbc.data.connector.test.code.a')
+        self.env = self._get_backend().get_environment(
+            'odbc.data.connector.test.code.a'
+        )
         # We do not want to commit during test
         import_synchronizer.BLOC_COMMIT = False
 
@@ -82,7 +86,8 @@ class SQLAdapterMock(MagicMock):
     def read(self, codes, data_set=None):
         if data_set:
             for code in codes:
-                tmp = (x for x in data_set if getattr(x, self._code_column, None) == code)
+                tmp = (x for x in data_set
+                       if getattr(x, self._code_column, None) == code)
                 for row in tmp:
                     yield row
             return
@@ -100,8 +105,9 @@ class SQLAdapterMock(MagicMock):
 def mock_adapter(table_name, code_column, simulated_data):
     """Mock adapter context manager receive external
     system table and mocked recoreds in entry"""
-    cl = "openerp.addons.connector.unit.synchronizer.Synchronizer.backend_adapter"
-    with patch(cl, SQLAdapterMock(name="SQLAdapterMock_%s" % table_name)) as adapter:
+    cl = "openerp.addons.connector.unit.synchronizer.Synchronizer.backend_adapter"  # noqa
+    mock = SQLAdapterMock(name="SQLAdapterMock_%s" % table_name)
+    with patch(cl, mock) as adapter:
         adapter._table_name = table_name
         adapter._code_column = code_column
         adapter._simulated_data = simulated_data

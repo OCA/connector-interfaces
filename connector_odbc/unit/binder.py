@@ -34,9 +34,11 @@ class ODBCBinder(Binder):
     def to_openerp(self, odbc_code, unwrap=False):
         """ Give the OpenERP ID for an external ID""
         """
-        binding_ids = self.session.search(self.model._name,
-                                          [('odbc_code', '=', odbc_code),
-                                           ('backend_id', '=', self.backend_record.id)])
+        binding_ids = self.session.search(
+            self.model._name,
+            [('odbc_code', '=', odbc_code),
+             ('backend_id', '=', self.backend_record.id)]
+        )
         if not binding_ids:
             return None
         assert len(binding_ids) == 1, "Several records found: %s" % binding_ids
@@ -81,12 +83,12 @@ class ODBCBinder(Binder):
                 return container
 
         parents = parent_model([], binding_class)
-        if not "external.binding" in parents:
+        if "external.binding" not in parents:
             raise TypeError('You try to bin a model that does'
                             ' not inherit from external.binding')
 
         class_name = binding_class._name
-        if not class_name in cls._model_name:
+        if class_name not in cls._model_name:
             cls._model_name.append(class_name)
 
     def bind(self, external_id, binding_id):

@@ -20,6 +20,7 @@
 ##############################################################################
 from openerp.addons.connector.unit.mapper import ImportMapper
 
+
 class ODBCRowImportMapper(ImportMapper):
 
     binding_id = None

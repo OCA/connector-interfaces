@@ -71,7 +71,9 @@ class ODBCAdapter(BackendAdapter):
             cursor.close()
 
     def get_unique_key_column(self):
-        raise NotImplemented('get_unique_key_column not implemented for %s' % self)
+        raise NotImplemented(
+            'get_unique_key_column not implemented for %s' % self
+        )
 
     def get_date_columns(self):
         """ shoulde return a tuple (create_date, modify_date) or None"""
@@ -86,7 +88,8 @@ class ODBCAdapter(BackendAdapter):
         query result row"""
         if not self.get_date_columns():
             return ''
-        return ", %s as create_time, %s as modify_time" % self.get_date_columns()
+        return (", %s as create_time, %s as modify_time" %
+                self.get_date_columns())
 
     def adapt_dates_filter(self, date):
         return " create_time > ? or modify_time > ?", [date, date]
@@ -94,15 +97,18 @@ class ODBCAdapter(BackendAdapter):
     def get_read_sql(self, code_slice):
         # pyodbc does not support array formatting
         in_format = ', '.join(['?' for c in code_slice])
-        sql = "SELECT *%s FROM %s WHERE %s IN (%s)" % (self.adapt_dates_query(),
-                                                       self._table_name,
-                                                       self.get_unique_key_column(),
-                                                       in_format)
+        sql = "SELECT *%s FROM %s WHERE %s IN (%s)" % (
+            self.adapt_dates_query(),
+            self._table_name,
+            self.get_unique_key_column(),
+            in_format
+        )
         return sql
 
     def lookup_data_set(self, data_set, code):
         """ Return a generator of matching data in data_set memoizer"""
-        return (x for x in data_set if getattr(x, self.get_unique_key_column(), None) == code)
+        return (x for x in data_set
+                if getattr(x, self.get_unique_key_column(), None) == code)
 
     def read(self, odbc_codes, data_set=None):
         if not isinstance(odbc_codes, list):
@@ -129,10 +135,12 @@ class ODBCAdapter(BackendAdapter):
     def get_missing_sql(self, code_slice):
         # pyodbc does not support array formatting
         in_format = ', '.join(['?' for c in code_slice])
-        sql = "SELECT %s FROM %s WHERE %s  IN (%s)" % (self.get_unique_key_column(),
-                                                       self._table_name,
-                                                       self.get_unique_key_column(),
-                                                       in_format)
+        sql = "SELECT %s FROM %s WHERE %s  IN (%s)" % (
+            self.get_unique_key_column(),
+            self._table_name,
+            self.get_unique_key_column(),
+            in_format
+        )
         return sql
 
     def missing(self, codes):

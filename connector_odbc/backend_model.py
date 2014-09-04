@@ -26,7 +26,8 @@ from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from openerp.addons.connector import session as csession, connector
 from .unit.import_synchronizer import batch_import, delayed_batch_import
 
-# TODO transform this into model related to backend. This should be manually configurable
+# TODO transform this into model related to backend.
+# This should be manually configurable
 MODEL_REGISTRY = []
 
 
@@ -38,7 +39,8 @@ class odbc_backend(orm.Model):
     _description = """Base ODBC Data sync with ODBC supported backend"""
     _backend_type = "odbc_server"
 
-    def get_environment(self, cursor, uid, ids, model_name, filter=None, context=None):
+    def get_environment(self, cursor, uid, ids, model_name,
+                        filter=None, context=None):
         if context is None:
             context = {}
         if isinstance(ids, list):
@@ -58,20 +60,27 @@ class odbc_backend(orm.Model):
         """
         return [('1.0', '1.0')]
 
-    _columns = {'dsn': fields.char('DSN', required=True),
-                'last_import_start_date': fields.datetime('Last import start date'),
-                'version': fields.selection(_select_versions,
-                                            string='Version',
-                                            required=True),
-                }
+    _columns = {
+        'dsn': fields.char('DSN', required=True),
+        'last_import_start_date': fields.datetime(
+            'Last import start date'
+        ),
+        'version': fields.selection(
+            _select_versions,
+            string='Version',
+            required=True
+        ),
+    }
 
-    def _import(self, cursor, uid, ids, models, mode, full=False, context=None):
+    def _import(self, cursor, uid, ids, models, mode,
+                full=False, context=None):
         assert mode in ['direct', 'delay'], "Invalid mode"
         context = context or {}
         session = csession.ConnectorSession(cursor, uid, context=context)
         if isinstance(ids, (int, long)):
             ids = [ids]
-        import_start_time = datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+        df = DEFAULT_SERVER_DATETIME_FORMAT
+        import_start_time = datetime.now().strftime(df)
 
         for backend in self.read(cursor, uid, ids, context=context):
             for model in models:  # to be done in UI when time available.
@@ -82,25 +91,34 @@ class odbc_backend(orm.Model):
                 else:
                     delayed_batch_import(session, model, backend['id'],
                                          date=date)
-            self.write(cursor, uid, backend['id'],
-                       {'last_import_start_date': import_start_time}, context=context)
+            self.write(
+                cursor, uid,
+                backend['id'],
+                {'last_import_start_date': import_start_time},
+                context=context
+            )
         return True
 
     def delay_import(self, cursor, uid, ids, models, full=False, context=None):
-        return self._import(cursor, uid, ids, models, 'delay', full=full, context=context)
+        return self._import(cursor, uid, ids, models, 'delay',
+                            full=full, context=context)
 
-    def direct_import(self, cursor, uid, ids, models, full=False, context=None):
-        return self._import(cursor, uid, ids, models, 'direct', full=full, context=context)
+    def direct_import(self, cursor, uid, ids, models,
+                      full=False, context=None):
+        return self._import(cursor, uid, ids, models, 'direct',
+                            full=full, context=context)
 
     def import_all(self, cursor, uid, ids, context=None):
         """Do a global direct import of all data"""
         models = MODEL_REGISTRY
-        return self.direct_import(cursor, uid, ids, models, full=True, context=context)
+        return self.direct_import(cursor, uid, ids, models,
+                                  full=True, context=context)
 
     def synchronize_all(self, cursor, uid, ids, context=None):
         """Do a global direct import of all data"""
         models = MODEL_REGISTRY
-        return self.delay_import(cursor, uid, ids, models, full=True, context=context)
+        return self.delay_import(cursor, uid, ids, models,
+                                 full=True, context=context)
 
 
 class base_odbc_binding(orm.AbstractModel):
@@ -108,10 +126,12 @@ class base_odbc_binding(orm.AbstractModel):
     _name = "obdc.base.server.binding"
     _inherit = 'external.binding'
 
-    _columns = {'backend_id': fields.many2one('connector.odbc.data.server.backend',
-                                              'ODBC Data Backend',
-                                              required=True,
-                                              ondelete='restrict')}
+    _columns = {
+        'backend_id': fields.many2one('connector.odbc.data.server.backend',
+                                      'ODBC Data Backend',
+                                      required=True,
+                                      ondelete='restrict'),
+    }
 
 
 class odbc_binding(orm.AbstractModel):
@@ -122,9 +142,11 @@ class odbc_binding(orm.AbstractModel):
     _name = "odbc.string.server.binding"
     _description = """Abstact binding class for ODBC data"""
 
-    _columns = {'odbc_code': fields.char('ODBC unique Code',
-                                         help="Store unique value of ODBC source"
-                                         " mulitpe key is not supported yet")}
+    _columns = {
+        'odbc_code': fields.char('ODBC unique Code',
+                                 help="Store unique value of ODBC source"
+                                 " mulitpe key is not supported yet"),
+    }
 
 
 class odbc_numerical_binding(orm.AbstractModel):
@@ -134,9 +156,11 @@ class odbc_numerical_binding(orm.AbstractModel):
     _name = "odbc.numerical.server.binding"
     _inherit = 'obdc.base.server.binding'
     _description = """Abstact binding class for odbc data"""
-    _columns = {'odbc_code': fields.integer('ODBC numerical unique id',
-                                            help="Store unique value of ODBC source"
-                                            " mulitpe key is not supported yet")}
+    _columns = {
+        'odbc_code': fields.integer('ODBC numerical unique id',
+                                    help="Store unique value of ODBC source"
+                                    " mulitpe key is not supported yet"),
+    }
 
 
 class odbc_datetime_binding(orm.AbstractModel):
@@ -146,6 +170,8 @@ class odbc_datetime_binding(orm.AbstractModel):
     _name = "odbc.datetime.server.binding"
     _inherit = 'obdc.base.server.binding'
     _description = """Abstact binding class for odbc data"""
-    _columns = {'odbc_code': fields.datetime('ODBC datetime unique id',
-                                             help="Store unique value of ODBC source"
-                                             " mulitpe key is not supported yet")}
+    _columns = {
+        'odbc_code': fields.datetime('ODBC datetime unique id',
+                                     help="Store unique value of ODBC source"
+                                     " mulitpe key is not supported yet")
+    }

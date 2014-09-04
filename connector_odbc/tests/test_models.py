@@ -59,8 +59,10 @@ class odbc_code_a(orm.Model):
                                               required=True,
                                               ondelete='restrict')}
 
-    _sql_contraints = [('odbc_uniq', 'unique(backend_id, odbc_code)',
-                        'A test code with same ODBC data code allready exists')]
+    _sql_contraints = [
+        ('odbc_uniq', 'unique(backend_id, odbc_code)',
+         'A test code with same ODBC data code allready exists')
+    ]
 
 
 @odbc_backend
@@ -99,10 +101,12 @@ class CustomerMapper(ODBCRowImportMapper):
     direct = [('mg_name', 'name'),
               ('mg_code', 'code'),
               ('mg_desc', 'desc')]
+
     @only_create
     @mapping
     def odbc_code(self, record):
         return {'odbc_code': record.mg_code}
+
     @only_create
     @mapping
     def backend_id(self, record):

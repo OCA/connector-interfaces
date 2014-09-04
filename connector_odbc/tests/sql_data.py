@@ -18,6 +18,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+# flake8: noqa
+# automatically captured data
 """Serialize data to mock SQL"""
 import datetime
 from collections import namedtuple

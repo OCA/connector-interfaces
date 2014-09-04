@@ -23,7 +23,8 @@ from datetime import datetime
 from openerp.tools.translate import _
 from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
 from openerp.addons.connector.unit.synchronizer import ImportSynchronizer
-from openerp.addons.connector.exception import IDMissingInBackend, ManyIDSInBackend
+from openerp.addons.connector.exception import (IDMissingInBackend,
+                                                ManyIDSInBackend)
 from openerp.addons.connector.queue.job import job
 
 _logger = logging.getLogger(__name__)
@@ -50,11 +51,15 @@ class ODBCSynchronizer(ImportSynchronizer):
         # read return a generator
         res = list(self.backend_adapter.read(self.odbc_code, self.data_set))
         if not res:
-            raise IDMissingInBackend('No value found for %s %s' % (self.model._name,
-                                                                   self.odbc_code))
+            raise IDMissingInBackend(
+                'No value found for %s %s' % (self.model._name,
+                                              self.odbc_code)
+            )
         if len(res) > 1:
-            raise ManyIDSInBackend('Many value found for %s %s' % (self.model._name,
-                                                                   self.odbc_code))
+            raise ManyIDSInBackend(
+                'Many value found for %s %s' % (self.model._name,
+                                                self.odbc_code)
+            )
         return res[0]
 
     def _before_import(self):
@@ -63,8 +68,10 @@ class ODBCSynchronizer(ImportSynchronizer):
         return
 
     def _get_odbc_revelant_update_date(self):
-        dates = [self.odbc_record.create_time if hasattr(self.odbc_code, 'create_time') else False,
-                 self.odbc_record.modify_time if hasattr(self.odbc_code, 'modify_time') else False]
+        dates = [
+            getattr(self.odbc_code, 'create_time', False),
+            getattr(self.odbc_code, 'modify_time', False)
+        ]
         filtered_dates = [x for x in dates if x]
         if not filtered_dates:
             return None
@@ -108,7 +115,9 @@ class ODBCSynchronizer(ImportSynchronizer):
         if 'active' in self.model._inherit_fields:
             self.session.write(self.model._name, binding_id, {'active': False})
         else:
-            raise AttributeError('Model %s does not have "active" col' % self.model._name)
+            raise AttributeError(
+                'Model %s does not have "active" col' % self.model._name
+            )
         return binding_id
 
     def _create(self, data):
@@ -205,7 +214,9 @@ class DirectBatchODBCSynchronizer(BatchODBCSynchronizer):
             if BLOC_COMMIT:
                 self.session.cr.commit()
         existing_ids = self.session.search(self.model._name, [])
-        codes_to_check = self.session.read(self.model._name, existing_ids, ['odbc_code'])
+        codes_to_check = self.session.read(self.model._name,
+                                           existing_ids,
+                                           ['odbc_code'])
         codes_to_check = [x['odbc_code'] for x in codes_to_check]
 
         # looking for data deleted in backend
