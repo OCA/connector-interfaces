@@ -21,7 +21,7 @@
 import time
 import psycopg2
 
-
+from openerp.tools.misc import mute_logger
 from . import odbc_test_common
 from .adapter_data import simulated_mega_table
 
@@ -143,8 +143,9 @@ class test_direct_synchro(odbc_test_common.ODBCBaseTestClass):
         )
         self.assertTrue(to_del_ids)
         # it should fail
-        with self.assertRaises(psycopg2.IntegrityError):
-            self.target_model.unlink(cr, uid, to_del_ids[0])
+        with mute_logger('openerp.sql_db'):
+            with self.assertRaises(psycopg2.IntegrityError):
+                self.target_model.unlink(cr, uid, to_del_ids[0])
         cr.rollback()
 
     def test_06_update_delete(self):
