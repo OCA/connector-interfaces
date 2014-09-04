@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from openerp.addons.connector.unit.mapper import mapping
+from openerp.addons.connector.unit.mapper import mapping, only_create
 from ..unit.mapper import ODBCRowImportMapper
 from ..backend import odbc_backend
 from ..unit.binder import odbc_binded
@@ -99,15 +99,16 @@ class CustomerMapper(ODBCRowImportMapper):
     direct = [('mg_name', 'name'),
               ('mg_code', 'code'),
               ('mg_desc', 'desc')]
-
+    @only_create
     @mapping
     def odbc_code(self, record):
         return {'odbc_code': record.mg_code}
-
+    @only_create
     @mapping
     def backend_id(self, record):
         return {'backend_id': self.backend_record.id}
 
+    @only_create
     @mapping
     def date_datetime(self, record):
         # odbc return real date datetime object
