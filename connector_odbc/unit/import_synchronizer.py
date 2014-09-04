@@ -90,7 +90,7 @@ class ODBCSynchronizer(ImportSynchronizer):
     def _map_data(self):
         """ Call the convert on the Mapper so the converted record can
         be obtained using mapper.data or mapper.data_for_create"""
-        self.mapper.convert(self.odbc_record)
+        return self.mapper.map_record(self.odbc_record)
 
     def _validate_data(self, data):
         """ Check if the values to import are correct
@@ -143,14 +143,14 @@ class ODBCSynchronizer(ImportSynchronizer):
         # performance tweak
         if binding_id:
             self.mapper.binding_id = binding_id
-        self._map_data()
+        record_mapper = self._map_data()
 
         if binding_id:
-            record = self.mapper.data
+            record = record_mapper.values()
             self._validate_data(record)
             self._update(binding_id, record)
         else:
-            record = self.mapper.data_for_create
+            record = record_mapper.values(for_create=True)
             self._validate_data(record)
             binding_id = self._create(record)
 
