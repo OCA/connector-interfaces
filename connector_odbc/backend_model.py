@@ -24,7 +24,10 @@ from openerp.osv import orm, fields
 from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 from openerp.addons.connector import session as csession, connector
+from openerp.addons.connector.connector import install_in_connector
 from .unit.import_synchronizer import batch_import, delayed_batch_import
+
+install_in_connector()
 
 # TODO transform this into model related to backend.
 # This should be manually configurable
