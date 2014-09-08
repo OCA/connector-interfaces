@@ -106,6 +106,19 @@ class ODBCBinder(Binder):
                                       'sync_date': now_fmt},
                                      context=context)
 
+    def create_binding_from_record(self, external_id, internal_id):
+        """Create a binding on a exsiting record"""
+        now_fmt = datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+        return self.environment.model.create(
+            self.session.cr,
+            self.session.uid,
+            {'odbc_code': external_id,
+             'sync_date': now_fmt,
+             'openerp_id': internal_id,
+             'backend_id': self.backend_record.id},
+            context=self.session.context
+        )
+
 
 def odbc_binded(cls):
     ODBCBinder.register_external_binding(cls)
