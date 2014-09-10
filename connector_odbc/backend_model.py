@@ -52,7 +52,7 @@ class odbc_backend(orm.Model):
         else:
             back_id = ids
         session = csession.ConnectorSession(cursor, uid, context=context)
-        backend = session.browse(self._name, back_id)
+        backend = session.browse(self._name, back_id)[0]
         env = connector.Environment(backend, session, model_name)
         return env
 
