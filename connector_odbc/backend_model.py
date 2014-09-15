@@ -281,15 +281,15 @@ class odbc_backend(orm.Model):
         """Do a global direct import of all data"""
         assert len(ids) == 1
         models = self.browse(cursor, uid, ids[0], context).import_register_ids
-        models = [x.model for x in models]
+        models = [x.model_id.model for x in models]
         return self.direct_import(cursor, uid, ids, models,
                                   full=True, context=context)
 
-    def import_delay_all(self, cursor, uid, ids, context=None):
+    def import_all_delayed(self, cursor, uid, ids, context=None):
         """Do a global delayed import of all data"""
         assert len(ids) == 1
         models = self.browse(cursor, uid, ids[0], context).import_register_ids
-        models = [x.model for x in models]
+        models = [x.model_id.model for x in models]
         return self.delay_import(cursor, uid, ids, models,
                                  full=True, context=context)
 
