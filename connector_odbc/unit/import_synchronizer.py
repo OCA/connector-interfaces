@@ -37,7 +37,7 @@ BLOC_COMMIT = True
 
 
 class ODBCSynchronizer(ImportSynchronizer):
-    """Base importer from sql server DWH"""
+    """Base importer for ODBC sources DWH"""
 
     def __init__(self, environment):
         """
@@ -47,7 +47,7 @@ class ODBCSynchronizer(ImportSynchronizer):
         super(ODBCSynchronizer, self).__init__(environment)
 
     def _get_odbc_data(self):
-        """ Return the raw SQL Server data of given ODBC code"""
+        """ Return the raw data of given ODBC code"""
         # read return a generator
         res = list(self.backend_adapter.read(self.odbc_code, self.data_set))
         if not res:
@@ -241,7 +241,7 @@ class DirectBatchODBCSynchronizer(BatchODBCSynchronizer):
 
 
 class DelayedBatchODBCSynchronizer(BatchODBCSynchronizer):
-    """Base importer from sql server DWH"""
+    """Base delayed importer for ODBC data source"""
 
     def _import_record(self, odbc_code):
         record_import.delay(self.session,

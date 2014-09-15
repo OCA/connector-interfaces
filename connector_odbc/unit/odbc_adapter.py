@@ -161,7 +161,7 @@ class ODBCAdapter(BackendAdapter):
 
     def search(self, date=False):
         """Get unique key using date normalisation"""
-        # SQL server does not suport alias in where clause
+        # Some databases does not suport alias in where clause
         # we have to do a derived table
         # Derived table allow to add global where clause
         # Maybe add a hook get_search_sql but it does not seems
