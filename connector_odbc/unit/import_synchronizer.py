@@ -244,11 +244,13 @@ class DelayedBatchODBCSynchronizer(BatchODBCSynchronizer):
     """Base delayed importer for ODBC data source"""
 
     def _import_record(self, odbc_code):
+        priority = next(x for x in self.backend_record.import_register_ids
+                        if x.model_id.model == self.model._name)
         record_import.delay(self.session,
                             self.model._name,
                             self.backend_record.id,
-                            odbc_code)
-
+                            odbc_code,
+                            priority=priority)
 
 def batch_import(session, model_name, backend_id, date=False):
     env = session.browse('connector.odbc.data.server.backend',
