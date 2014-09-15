@@ -20,6 +20,8 @@
 ##############################################################################
 from __future__ import absolute_import
 from datetime import datetime
+from lxml import etree
+
 from openerp.osv import orm, fields
 from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
@@ -30,12 +32,12 @@ from .unit.import_synchronizer import (batch_import,
                                        ODBCSynchronizer)
 install_in_connector()
 
-# TODO transform this into model related to backend.
-# This should be manually configurable
-MODEL_REGISTRY = []
-
 
 class import_configurator(orm.TransientModel):
+    """ODBC import register
+    Each created register will correspond to
+    a model to import using ODBC
+    """
     _name = 'connector.odbc.import.configurator'
 
     _rec_name = 'model_id'
@@ -57,6 +59,7 @@ class import_configurator(orm.TransientModel):
     }
 
     def _get_default_backend(self, cr, uid, context=None):
+        """Retrieve active id from context"""
         if context is None:
             context = self.pool['res.users'].context_get(cr, uid)
         active_id = context.get('active_id')
@@ -68,26 +71,57 @@ class import_configurator(orm.TransientModel):
 
     _defaults = {'backend_id': _get_default_backend}
 
-    def _get_valid_importer(self, cr, uid, backend_id, context=None):
-        """Return the name of valid bining model
+    def _get_valid_importers(self, cr, uid, backend_id, context=None):
+        """Return a list of valid model name
 
-        That are bound to a ``ODBCSynchronizer`` subclass
+        Model must be bound to a :py:class:``.unit.importer.ODBCSynchronizer``
+        subclass
 
+        :backend_id: id of a `` model
+
+        :return: list of corresponding class
+        :rtype: list
         """
+
+        def _classes(backend_class, accumulator):
+            """Recursively get all the registered class for a given
+            backend
+
+            :param backend_class: Connector backend class to introspect
+            :type backend_class: :py:class:`connector.backend.Backend`
+            :param accumulator: accumulation list for the result
+            :type accumulator: list
+
+            :return: a set of available class registered to the unit
+                     note a registered class is a named tuple
+                     with cls, openerp_module, replaced_by keys
+            :rtype: list
+            """
+            assert isinstance(accumulator, list)
+            accumulator.extend(backend_class._class_entries)
+            if not backend_class.parent:
+                return accumulator
+            return _classes(backend_class.parent, accumulator)
+
         backend_model = self.pool['connector.odbc.data.server.backend']
-        model_model = self.pool['ir.model']
+        irmodel_model = self.pool['ir.model']
         backend = backend_model.browse(cr, uid, backend_id, context=context)
-        avail_models = set(x._model_name for x in backend._class_entries
-                           if issubclass(x, ODBCSynchronizer))
-        model_ids = self.search(cr, uid, ['model', 'in', avail_models])
+        backend_class = backend.get_backend()[0]
+        avail_models = [x.cls._model_name for x in _classes(backend_class, [])
+                        if issubclass(x.cls, ODBCSynchronizer)]
+        model_ids = irmodel_model.search(cr, uid,
+                                         [('model', 'in', avail_models)])
         if not model_ids:
             raise NotImplementedError(
                 'No class overriding ODBCSynchronizer are available'
             )
-            return [x.id for x in
-                    model_model.browse(cr, uid, model_ids, context=context)]
+        return model_ids
 
     def create_register(self, cr, uid, ids, context=None):
+        """Create a import register from model fields value
+
+        This will add a model to import with odbc backend
+        """
         register_model = self.pool["connector.odbc.data.import.register"]
         if isinstance(ids, (int, long)):
             ids = [ids]
@@ -100,6 +134,38 @@ class import_configurator(orm.TransientModel):
             }
             register_model.create(cr, uid, data, context=context)
         return True
+
+    def fields_view_get(self, cr, uid, view_id=None, view_type=False,
+                        context=None, toolbar=False, submenu=False):
+        """Add dynamic domain on model_id field
+
+        In order to popose a domain Odoo model linked to
+        `ODBCSynchronizer` subclasses using the connector
+        backend class decorator
+        """
+        if context is None:
+            context = self.pool['res.users'].context_get(cr, uid)
+        backend_id = self._get_default_backend(cr, uid, context=context)
+        res = super(import_configurator, self).fields_view_get(
+            cr,
+            uid,
+            view_id=view_id,
+            view_type=view_type,
+            context=context,
+            toolbar=toolbar,
+            submenu=submenu
+        )
+        doc = etree.XML(res['arch'])
+        nodes = doc.xpath("//field[@name='model_id']")
+        model_ids = self._get_valid_importers(cr, uid, backend_id,
+                                              context=context)
+        for node in nodes:
+            node.set(
+                'domain',
+                "[('id', 'in', [%s])]" % ', '.join([str(x) for x in model_ids])
+            )
+        res['arch'] = etree.tostring(doc)
+        return res
 
 
 class odcb_register(orm.Model):
@@ -213,13 +279,17 @@ class odbc_backend(orm.Model):
 
     def import_all(self, cursor, uid, ids, context=None):
         """Do a global direct import of all data"""
-        models = MODEL_REGISTRY
+        assert len(ids) == 1
+        models = self.browse(cursor, uid, ids[0], context).import_register_ids
+        models = [x.model for x in models]
         return self.direct_import(cursor, uid, ids, models,
                                   full=True, context=context)
 
-    def synchronize_all(self, cursor, uid, ids, context=None):
-        """Do a global direct import of all data"""
-        models = MODEL_REGISTRY
+    def import_delay_all(self, cursor, uid, ids, context=None):
+        """Do a global delayed import of all data"""
+        assert len(ids) == 1
+        models = self.browse(cursor, uid, ids[0], context).import_register_ids
+        models = [x.model for x in models]
         return self.delay_import(cursor, uid, ids, models,
                                  full=True, context=context)
 
