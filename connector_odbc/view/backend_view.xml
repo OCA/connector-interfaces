@@ -1,10 +1,18 @@
 <openerp>
   <data>
+
     <record id="master_data_connector_backend_form" model="ir.ui.view">
       <field name="name">master data connector backend form</field>
       <field name="model">connector.odbc.data.server.backend</field>
       <field name="arch" type="xml">
         <form version="7.0" string="ODBC Data connector">
+          <header>
+            <button name="%(action_importer_add)d"
+                    string="Add an import"
+                    type="action"
+                    help="This button will allows you to add a preconfigured ODBC import"/>
+
+          </header>
           <sheet>
             <group col="4">
               <field name="name"/>
@@ -17,10 +25,21 @@
                         type="object"
                         string="Import all"/>
               </page>
-              <page string="Info">
+              <page string="Configuration">
                 <group>
+                  <group>
                   <field name="dsn"/>
                   <field name="last_import_start_date"/>
+                  </group>
+                  <field name="import_register_ids"
+                         colspan="4"
+                         nolabel="1">
+                    <tree name="Registery"
+                          create="false">
+                      <field name="sequence"/>
+                      <field name="model_id"/>
+                    </tree>
+                  </field>
                 </group>
               </page>
             </notebook>
@@ -45,7 +64,7 @@
         id="root_master_data_sql_backend_menu"/>
 
     <record model="ir.actions.act_window" id="master_data_sql_backend">
-      <field name="name">SQL server Backend</field>
+      <field name="name">ODBC Backend</field>
       <field name="type">ir.actions.act_window</field>
       <field name="res_model">connector.odbc.data.server.backend</field>
       <field name="domain"></field>
@@ -60,5 +79,52 @@
         parent="root_master_data_sql_backend_menu"
         action="master_data_sql_backend"
         id="master_data_sql_backend_menu"/>
+
+
+    <record id="add_connector_odbc_importer_config" model="ir.ui.view">
+      <field name="name">add connector odbc importer config</field>
+      <field name="model">connector.odbc.import.configurator</field>
+      <field name="arch" type="xml">
+        <form version="7.0" string="Add an import">
+          <separator string="Configure what to import from current DSN" colspan="4"/>
+          <newline/>
+          <notebook>
+            <page string="Data to import">
+              <group>
+                <field name="backend_id"/>
+                <field name="model_id"/>
+                <field name="priority"/>
+              </group>
+            </page>
+          </notebook>
+          <newline/>
+          <footer>
+            <button class="oe_highlight"
+                    name="create_register"
+                    string="Add data to import"
+                    type="object"/>
+            or
+            <button
+                class="oe_link"
+                special="cancel"
+                string="Cancel"/>
+          </footer>
+
+        </form>
+      </field>
+    </record>
+
+    <!-- for button -->
+    <record id="action_importer_add" model="ir.actions.act_window">
+      <field name="name">Add an odbc import</field>
+      <field name="res_model">connector.odbc.import.configurator</field>
+      <field name="src_model">connector.odbc.data.server.backend</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="view_id" ref="add_connector_odbc_importer_config"/>
+      <field name="target">new</field>
+      <field name="help">help</field>
+    </record>
+
   </data>
 </openerp>
