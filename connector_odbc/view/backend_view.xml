@@ -24,6 +24,11 @@
                 <button name="import_all"
                         type="object"
                         string="Import all"/>
+                <newline/>
+                <label string="Import all datas from ODBC using jobs: "/>
+                <button name="import_all_delayed"
+                        type="object"
+                        string="Import all using jobs"/>
               </page>
               <page string="Configuration">
                 <group>
