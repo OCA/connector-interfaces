@@ -19,11 +19,9 @@
 #
 ##############################################################################
 from __future__ import absolute_import
-from datetime import datetime
 from lxml import etree
 
-from openerp.osv import orm, fields
-from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
+from openerp import models, fields, api
 
 from openerp.addons.connector import session as csession, connector
 from openerp.addons.connector.connector import install_in_connector
@@ -33,7 +31,7 @@ from .unit.import_synchronizer import (batch_import,
 install_in_connector()
 
 
-class import_configurator(orm.TransientModel):
+class import_configurator(models.TransientModel):
     """ODBC import register
     Each created register will correspond to
     a model to import using ODBC
@@ -42,36 +40,33 @@ class import_configurator(orm.TransientModel):
 
     _rec_name = 'model_id'
 
-    _columns = {
-        'model_id': fields.many2one(
-            'ir.model',
-            'What to import'
-        ),
-        'backend_id': fields.many2one(
-            'connector.odbc.data.server.backend',
-            'Backend to configure',
-            required=True
-        ),
-        'priority': fields.integer(
-            'Priority',
-            help='Smaller value = greater priority'
-        ),
-    }
+    model_id = fields.Many2one(
+        'ir.model',
+        'What to import'
+    )
+    backend_id = fields.Many2one(
+        'connector.odbc.data.server.backend',
+        'Backend to configure',
+        required=True,
+        default=lambda self: self._get_default_backend(),
+    )
+    priority = fields.Integer(
+        'Priority',
+        help='Smaller value = greater priority'
+    )
 
-    def _get_default_backend(self, cr, uid, context=None):
+    @api.model
+    def _get_default_backend(self):
         """Retrieve active id from context"""
-        if context is None:
-            context = self.pool['res.users'].context_get(cr, uid)
-        active_id = context.get('active_id')
+        active_id = self.env.context.get('active_id')
         if not active_id:
-            active_ids = context.get('active_ids', [None])
+            active_ids = self.env.context.get('active_ids', [None])
             active_id = active_ids[0]
         assert active_id, "No active_id in context"
-        return active_id
+        return self.env['connector.odbc.data.server.backend'].browse(active_id)
 
-    _defaults = {'backend_id': _get_default_backend}
-
-    def _get_valid_importers(self, cr, uid, backend_id, context=None):
+    @api.model
+    def _get_valid_importers(self, backend_id):
         """Return a list of valid model name
 
         Model must be bound to a :py:class:``.unit.importer.ODBCSynchronizer``
@@ -103,36 +98,33 @@ class import_configurator(orm.TransientModel):
                 return accumulator
             return _classes(backend_class.parent, accumulator)
 
-        backend_model = self.pool['connector.odbc.data.server.backend']
-        irmodel_model = self.pool['ir.model']
-        backend = backend_model.browse(cr, uid, backend_id, context=context)
+        backend_model = self.env['connector.odbc.data.server.backend']
+        irmodel_model = self.env['ir.model']
+        backend = backend_model.browse(backend_id)
         backend_class = backend.get_backend()[0]
         avail_models = [x.cls._model_name for x in _classes(backend_class, [])
                         if issubclass(x.cls, ODBCSynchronizer)]
-        model_ids = irmodel_model.search(cr, uid,
-                                         [('model', 'in', avail_models)])
+        model_ids = irmodel_model.search([('model', 'in', avail_models)])
         if not model_ids:
             raise NotImplementedError(
                 'No class overriding ODBCSynchronizer are available'
             )
         return model_ids
 
-    def create_register(self, cr, uid, ids, context=None):
+    @api.multi
+    def create_register(self):
         """Create a import register from model fields value
 
         This will add a model to import with odbc backend
         """
-        register_model = self.pool["connector.odbc.import.register"]
-        if isinstance(ids, (int, long)):
-            ids = [ids]
-        assert len(ids) == 1
-        for current in self.browse(cr, uid, ids, context=context):
+        register_model = self.env["connector.odbc.import.register"]
+        for current in self:
             data = {
                 'backend_id': current.backend_id.id,
                 'model_id': current.model_id.id,
                 'sequence': current.priority,
             }
-            register_model.create(cr, uid, data, context=context)
+            register_model.create(data)
         return True
 
     def fields_view_get(self, cr, uid, view_id=None, view_type=False,
@@ -157,18 +149,18 @@ class import_configurator(orm.TransientModel):
         )
         doc = etree.XML(res['arch'])
         nodes = doc.xpath("//field[@name='model_id']")
-        model_ids = self._get_valid_importers(cr, uid, backend_id,
+        model_ids = self._get_valid_importers(cr, uid, backend_id.id,
                                               context=context)
         for node in nodes:
             node.set(
                 'domain',
-                "[('id', 'in', [%s])]" % ', '.join([str(x) for x in model_ids])
+                "[('id', 'in', [%s])]" % ', '.join([str(x.id) for x in model_ids])
             )
         res['arch'] = etree.tostring(doc)
         return res
 
 
-class odcb_register(orm.Model):
+class odcb_register(models.Model):
     """Configurable connector model register"""
 
     _name = "connector.odbc.import.register"
@@ -176,41 +168,41 @@ class odcb_register(orm.Model):
     _order = 'sequence'
     _rec_name = 'model_id'
 
-    _columns = {
-        'model_id': fields.many2one(
-            'ir.model',
-            'What to Import',
-            readonly=True,
-            required=True
-        ),
+    model_id = fields.Many2one(
+        'ir.model',
+        'What to Import',
+        readonly=True,
+        required=True
+    )
 
-        'sequence': fields.integer(
-            'Priority',
-            required=True
-        ),
+    sequence = fields.Integer(
+        'Priority',
+        required=True
+    )
 
-        'last_import_date': fields.datetime(
-            'Last import date'
-        ),
-        'backend_id': fields.many2one(
-            'connector.odbc.data.server.backend',
-            'Related Backend',
-            required=True
-        )
-    }
+    last_import_date = fields.Datetime(
+        'Last import date'
+    )
+    backend_id = fields.Many2one(
+        'connector.odbc.data.server.backend',
+        'Related Backend',
+        required=True
+    )
 
-    def direct_import(self, cr, uid, ids, context=None):
-        for register in self.browse(cr, uid, ids, context=context):
+    @api.multi
+    def direct_import(self):
+        for register in self:
             register.backend_id.direct_import([register.model_id.model])
         return True
 
-    def delay_import(self, cr, uid, ids, context=None):
-        for register in self.browse(cr, uid, ids, context=context):
+    @api.multi
+    def delay_import(self):
+        for register in self:
             register.backend_id.delay_import([register.model_id.model])
         return True
 
 
-class odbc_backend(orm.Model):
+class odbc_backend(models.Model):
     """Base ODBC Data sync backend with odbc supported server"""
 
     _name = "connector.odbc.data.server.backend"
@@ -218,57 +210,58 @@ class odbc_backend(orm.Model):
     _description = """Base ODBC Data sync with ODBC supported backend"""
     _backend_type = "odbc_server"
 
-    def get_environment(self, cursor, uid, ids, model_name,
-                        filter=None, context=None):
-        if context is None:
-            context = {}
-        if isinstance(ids, list):
-            assert len(ids) == 1, "You can get environement only for one id"
-            back_id = ids[0]
-        else:
-            back_id = ids
-        session = csession.ConnectorSession(cursor, uid, context=context)
-        backend = session.browse(self._name, back_id)[0]
+    @api.multi
+    def get_environment(self, model_name, filter=None):
+        session = csession.ConnectorSession(
+            self.env.cr,
+            self.env.uid,
+            self.env.context
+        )
+        backend = self
         env = connector.Environment(backend, session, model_name)
         return env
 
-    def _select_versions(self, cr, uid, context=None):
+    def _select_versions(self):
         """ Available versions
 
         Can be inherited to add custom versions.
         """
         return [('1.0', '1.0')]
 
-    _columns = {
-        'dsn': fields.char('DSN', required=True),
-        'version': fields.selection(
-            _select_versions,
-            string='Version',
-            required=True
-        ),
-        'import_register_ids': fields.one2many(
-            'connector.odbc.import.register',
-            'backend_id',
-            'Model to import')
-    }
+    dsn = fields.Char('DSN', required=True)
+    version = fields.Selection(
+        _select_versions,
+        string='Version',
+        required=True
+    )
+    import_register_ids = fields.One2many(
+        'connector.odbc.import.register',
+        'backend_id',
+        'Model to import'
+    )
 
-    def _get_register(self, cr, uid, ids, model_name, context=None):
-        current = self.browse(cr, uid, ids, context=context)
-        return next(x for x in current.import_register_ids
-                    if x.model_id.model == model_name)
+    @api.one
+    @api.returns('connector.odbc.import.register')
+    def _get_register(self, model_name, context=None):
+        current = self
+        try:
+            return next(x for x in current.import_register_ids
+                        if x.model_id.model == model_name)
+        except StopIteration:
+            raise ValueError('No register for model %s' % model_name)
 
-    def _import(self, cursor, uid, ids, models, mode,
-                full=False, context=None):
+    @api.multi
+    def _import(self, models, mode, full=False,):
         assert mode in ['direct', 'delay'], "Invalid mode"
-        context = context or {}
-        session = csession.ConnectorSession(cursor, uid, context=context)
-        if isinstance(ids, (int, long)):
-            ids = [ids]
-        df = DEFAULT_SERVER_DATETIME_FORMAT
-        import_start_time = datetime.now().strftime(df)
-        for backend in self.browse(cursor, uid, ids, context=context):
+        session = csession.ConnectorSession(
+            self.env.cr,
+            self.env.uid,
+            self.env.context
+        )
+        import_start_time = fields.Datetime.now()
+        for backend in self:
             for model in models:
-                register = backend._get_register(model, context=context)
+                register = backend._get_register(model)
                 date = register.last_import_date if not full else False
                 if mode == 'direct':
                     batch_import(session, model, backend['id'],
@@ -281,46 +274,43 @@ class odbc_backend(orm.Model):
             )
         return True
 
-    def delay_import(self, cursor, uid, ids, models, full=False, context=None):
-        return self._import(cursor, uid, ids, models, 'delay',
-                            full=full, context=context)
+    @api.multi
+    def delay_import(self, models, full=False):
+        return self._import(models, 'delay', full=full)
 
-    def direct_import(self, cursor, uid, ids, models,
-                      full=False, context=None):
-        return self._import(cursor, uid, ids, models, 'direct',
-                            full=full, context=context)
+    @api.multi
+    def direct_import(self, models, full=False):
+        return self._import(models, 'direct', full=full)
 
-    def import_all(self, cursor, uid, ids, context=None):
+    @api.one
+    def import_all(self):
         """Do a global direct import of all data"""
-        assert len(ids) == 1
-        models = self.browse(cursor, uid, ids[0], context).import_register_ids
+        models = self.import_register_ids
         models = [x.model_id.model for x in models]
-        return self.direct_import(cursor, uid, ids, models,
-                                  full=True, context=context)
+        return self.direct_import(models, full=False)
 
-    def import_all_delayed(self, cursor, uid, ids, context=None):
+    @api.one
+    def import_all_delayed(self):
         """Do a global delayed import of all data"""
-        assert len(ids) == 1
-        models = self.browse(cursor, uid, ids[0], context).import_register_ids
+        models = self.import_register_ids
         models = [x.model_id.model for x in models]
-        return self.delay_import(cursor, uid, ids, models,
-                                 full=True, context=context)
+        return self.delay_import(models, full=False)
 
 
-class base_odbc_binding(orm.AbstractModel):
+class base_odbc_binding(models.AbstractModel):
 
     _name = "obdc.base.server.binding"
     _inherit = 'external.binding'
 
-    _columns = {
-        'backend_id': fields.many2one('connector.odbc.data.server.backend',
-                                      'ODBC Data Backend',
-                                      required=True,
-                                      ondelete='restrict'),
-    }
+    backend_id = fields.Many2one(
+        'connector.odbc.data.server.backend',
+        'ODBC Data Backend',
+        required=True,
+        ondelete='restrict'
+    )
 
 
-class odbc_binding(orm.AbstractModel):
+class odbc_binding(models.AbstractModel):
     """Abstact class to create binding between backend browse odbc id, openerp id
     based on a string code"""
 
@@ -328,36 +318,37 @@ class odbc_binding(orm.AbstractModel):
     _name = "odbc.string.server.binding"
     _description = """Abstact binding class for ODBC data"""
 
-    _columns = {
-        'odbc_code': fields.char('ODBC unique Code',
-                                 help="Store unique value of ODBC source"
-                                 " mulitpe key is not supported yet"),
-    }
+    odbc_code = fields.Char(
+        'ODBC unique Code',
+        help="Store unique value of ODBC source"
+        " mulitpe key is not supported yet"
+    )
 
 
-class odbc_numerical_binding(orm.AbstractModel):
+class odbc_numerical_binding(models.AbstractModel):
     """Abstact class to create binding between backend browse odbc id, openerp id
     based on a numerical id"""
 
     _name = "odbc.numerical.server.binding"
     _inherit = 'obdc.base.server.binding'
     _description = """Abstact binding class for odbc data"""
-    _columns = {
-        'odbc_code': fields.integer('ODBC numerical unique id',
-                                    help="Store unique value of ODBC source"
-                                    " mulitpe key is not supported yet"),
-    }
+    odbc_code = fields.Integer(
+        'ODBC numerical unique id',
+        help="Store unique value of ODBC source"
+        " mulitpe key is not supported yet"
+    )
 
 
-class odbc_datetime_binding(orm.AbstractModel):
+class odbc_datetime_binding(models.AbstractModel):
     """Abstact class to create binding between backend browse odbc id, openerp id
     based on a datetime"""
 
     _name = "odbc.datetime.server.binding"
     _inherit = 'obdc.base.server.binding'
     _description = """Abstact binding class for odbc data"""
-    _columns = {
-        'odbc_code': fields.datetime('ODBC datetime unique id',
-                                     help="Store unique value of ODBC source"
-                                     " mulitpe key is not supported yet")
-    }
+
+    odbc_code = fields.Datetime(
+        'ODBC datetime unique id',
+        help="Store unique value of ODBC source"
+        " mulitpe key is not supported yet"
+    )
