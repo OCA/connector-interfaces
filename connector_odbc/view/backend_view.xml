@@ -99,7 +99,7 @@
 
 
     <menuitem
-        name="SQL server Backend"
+        name="ODBC server Backend"
         parent="root_master_data_sql_backend_menu"
         action="master_data_sql_backend"
         id="master_data_sql_backend_menu"/>

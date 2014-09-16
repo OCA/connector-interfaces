@@ -193,7 +193,7 @@ class BatchODBCSynchronizer(ImportSynchronizer):
 
 
 class DirectBatchODBCSynchronizer(BatchODBCSynchronizer):
-    """Base importer from sql server DWH"""
+    """Base importer from odbc server DWH"""
 
     def __init__(self, environment):
         """
