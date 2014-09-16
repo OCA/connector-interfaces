@@ -195,6 +195,16 @@ class odcb_register(orm.Model):
         )
     }
 
+    def direct_import(self, cr, uid, ids, context=None):
+        for register in self.browse(cr, uid, ids, context=context):
+            register.backend_id.direct_import([register.model_id.model])
+        return True
+
+    def delay_import(self, cr, uid, ids, context=None):
+        for register in self.browse(cr, uid, ids, context=context):
+            register.backend_id.delay_import([register.model_id.model])
+        return True
+
 
 class odbc_backend(orm.Model):
     """Base ODBC Data sync backend with odbc supported server"""
