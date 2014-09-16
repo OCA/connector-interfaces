@@ -25,5 +25,8 @@ from . import odbc_test_common
 from . import pyodbc_common
 from . import sql_data
 from . import adapter_data
-checks = [test_sql_adapter,
-          test_synchronization]
+from . import test_configurator
+
+fast_suite = [test_sql_adapter,
+              test_synchronization,
+              test_configurator]
