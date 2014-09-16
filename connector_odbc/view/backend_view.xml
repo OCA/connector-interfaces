@@ -1,5 +1,15 @@
 <openerp>
   <data>
+    <!-- for button -->
+    <record id="action_importer_add" model="ir.actions.act_window">
+      <field name="name">Add an odbc import</field>
+      <field name="res_model">connector.odbc.import.configurator</field>
+      <field name="src_model">connector.odbc.data.server.backend</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+      <field name="help">help</field>
+    </record>
 
     <record id="master_data_connector_backend_form" model="ir.ui.view">
       <field name="name">master data connector backend form</field>
@@ -20,21 +30,23 @@
             </group>
             <notebook>
               <page string="Actions">
+                <group>
                 <label string="Import all datas from ODBC: "/>
                 <button name="import_all"
                         type="object"
                         string="Import all"/>
-                <newline/>
+                </group>
+                <group>
                 <label string="Import all datas from ODBC using jobs: "/>
                 <button name="import_all_delayed"
                         type="object"
                         string="Import all using jobs"/>
+                </group>
               </page>
               <page string="Configuration">
                 <group>
                   <group>
                   <field name="dsn"/>
-                  <field name="last_import_start_date"/>
                   </group>
                   <field name="import_register_ids"
                          colspan="4"
@@ -43,6 +55,13 @@
                           create="false">
                       <field name="sequence"/>
                       <field name="model_id"/>
+                      <field name="last_import_date"/>
+                      <button name="direct_import"
+                              type="object"
+                              string="Import directly"/>
+                      <button name="delay_import"
+                              type="object"
+                              string="Import using jobs"/>
                     </tree>
                   </field>
                 </group>
@@ -121,14 +140,7 @@
 
     <!-- for button -->
     <record id="action_importer_add" model="ir.actions.act_window">
-      <field name="name">Add an odbc import</field>
-      <field name="res_model">connector.odbc.import.configurator</field>
-      <field name="src_model">connector.odbc.data.server.backend</field>
-      <field name="view_type">form</field>
-      <field name="view_mode">form</field>
       <field name="view_id" ref="add_connector_odbc_importer_config"/>
-      <field name="target">new</field>
-      <field name="help">help</field>
     </record>
 
   </data>
