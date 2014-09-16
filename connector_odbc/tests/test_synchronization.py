@@ -32,6 +32,20 @@ class test_direct_synchro(odbc_test_common.ODBCBaseTestClass):
         super(test_direct_synchro, self).setUp()
         self.connector_model = self.registry('odbc.data.connector.test.code.a')
         self.target_model = self.registry('odbc.connector.test.code.a')
+        irmodel_model = self.registry('ir.model')
+        model = irmodel_model.search(
+            self.cr, self.uid,
+            [('model', '=', self.connector_model._name)]
+        )
+        self.assertTrue(model, msg='No model found')
+        register_model = self.registry('connector.odbc.import.register')
+        register_model.create(
+            self.cr,
+            self.uid,
+            {'model_id': model[0],
+             'backend_id': self.backend.id,
+             'sequence': 1}
+        )
 
     def test_02_first_direct_import(self):
         """Test first import"""
@@ -78,8 +92,11 @@ class test_direct_synchro(odbc_test_common.ODBCBaseTestClass):
             '2011-01-01 00:00:00',
             'invalide date'
         )
-        back_date = self.backend_model.browse(
-            cr, uid, self.backend.id).last_import_start_date
+        # we rebrowse refrech does not seems to work
+        backend = self.backend_model.browse(
+            cr, uid, self.backend.id)
+        back_date = backend._get_register(
+            self.connector_model._name).last_import_date
 
         self.assertTrue(back_date, msg="backend date not set")
 
@@ -87,7 +104,8 @@ class test_direct_synchro(odbc_test_common.ODBCBaseTestClass):
         """Test second pass of import. Row with code 1 has been updated"""
         # I simulate the last import date
         cr, uid = self.cr, self.uid
-        self.backend.write({'last_import_start_date': "2012-06-01 00:00:00"})
+        register = self.backend._get_register(self.connector_model._name)
+        register.write({'last_import_date': "2012-06-01 00:00:00"})
         cr.execute(
             'Select MAX(sync_date) FROM odbc_data_connector_test_code_a'
         )
@@ -155,7 +173,8 @@ class test_direct_synchro(odbc_test_common.ODBCBaseTestClass):
         # code 3  will be imported
         # and when checking missing
         # we mock 3 was deleted from ODBC data source
-        self.backend.write({'last_import_start_date': "2012-06-03 00:00:00"})
+        register = self.backend._get_register(self.connector_model._name)
+        register.write({'last_import_date': "2012-06-03 00:00:00"})
         with odbc_test_common.mock_adapter('mega_code_table', 'mg_code',
                                            simulated_mega_table):
             self.backend.direct_import(
