@@ -171,7 +171,7 @@ class import_configurator(orm.TransientModel):
 class odcb_register(orm.Model):
     """Configurable connector model register"""
 
-    _name = "connector.odbc.data.import.register"
+    _name = "connector.odbc.import.register"
 
     _order = 'sequence'
     _rec_name = 'model_id'
