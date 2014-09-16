@@ -188,6 +188,10 @@ class odcb_register(orm.Model):
             'Priority',
             required=True
         ),
+
+        'last_import_date': fields.datetime(
+            'Last import date'
+        ),
         'backend_id': fields.many2one(
             'connector.odbc.data.server.backend',
             'Related Backend',
@@ -262,21 +266,18 @@ class odbc_backend(orm.Model):
             ids = [ids]
         df = DEFAULT_SERVER_DATETIME_FORMAT
         import_start_time = datetime.now().strftime(df)
-
-        for backend in self.read(cursor, uid, ids, context=context):
-            for model in models:  # to be done in UI when time available.
-                date = backend['last_import_start_date'] if not full else False
+        for backend in self.browse(cursor, uid, ids, context=context):
+            for model in models:
+                register = backend._get_register(model, context=context)
+                date = register.last_import_date if not full else False
                 if mode == 'direct':
                     batch_import(session, model, backend['id'],
                                  date=date)
                 else:
                     delayed_batch_import(session, model, backend['id'],
                                          date=date)
-            self.write(
-                cursor, uid,
-                backend['id'],
-                {'last_import_start_date': import_start_time},
-                context=context
+            register.write(
+                {'last_import_date': import_start_time},
             )
         return True
 
