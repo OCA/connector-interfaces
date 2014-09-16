@@ -122,7 +122,7 @@ class import_configurator(orm.TransientModel):
 
         This will add a model to import with odbc backend
         """
-        register_model = self.pool["connector.odbc.data.import.register"]
+        register_model = self.pool["connector.odbc.import.register"]
         if isinstance(ids, (int, long)):
             ids = [ids]
         assert len(ids) == 1
@@ -227,19 +227,21 @@ class odbc_backend(orm.Model):
 
     _columns = {
         'dsn': fields.char('DSN', required=True),
-        'last_import_start_date': fields.datetime(
-            'Last import start date'
-        ),
         'version': fields.selection(
             _select_versions,
             string='Version',
             required=True
         ),
         'import_register_ids': fields.one2many(
-            'connector.odbc.data.import.register',
+            'connector.odbc.import.register',
             'backend_id',
             'Model to import')
     }
+
+    def _get_register(self, cr, uid, ids, model_name, context=None):
+        current = self.browse(cr, uid, ids, context=context)
+        return next(x for x in current.import_register_ids
+                    if x.model_id.model == model_name)
 
     def _import(self, cursor, uid, ids, models, mode,
                 full=False, context=None):
