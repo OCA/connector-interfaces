@@ -20,7 +20,13 @@
 ##############################################################################
 import threading
 import logging
-import pyodbc
+
+try:
+    import pyodbc
+except ImportError:
+    _logger = logging.getLogger(__name__)
+    logger.warning('pyodbc not available')
+
 from openerp.addons.connector.unit.backend_adapter import BackendAdapter
 _logger = logging.getLogger(__name__)
 
