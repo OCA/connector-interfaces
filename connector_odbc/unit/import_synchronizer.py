@@ -29,25 +29,27 @@ from openerp.addons.connector.queue.job import job
 
 _logger = logging.getLogger(__name__)
 
-#  For direct import we may want to import by chunk
-#  in order not too eat too munch memory on postgres side
+# For direct import we may want to import by chunk
+# in order not too eat too munch memory on PostgreSQL side
 MAX_PROC_BLOC = 2000
 # do an intermediate commit for each bloc
 BLOC_COMMIT = True
 
 
 class ODBCSynchronizer(ImportSynchronizer):
-    """Base importer for ODBC sources DWH"""
+    """Base connector ODBC importer"""
 
     def __init__(self, environment):
         """
-        :param environment: current environment (backend, session, ...)
+        :param environment: connector Environment
         :type environment: :py:class:`connector.connector.Environment`
         """
         super(ODBCSynchronizer, self).__init__(environment)
 
     def _get_odbc_data(self):
-        """ Return the raw data of given ODBC code"""
+        """ Return the raw query data of given ODBC code
+        :return: an pyodbc row see https://code.google.com/p/pyodbc/wiki/Rows
+        """
         # read return a generator
         res = list(self.backend_adapter.read(self.odbc_code, self.data_set))
         if not res:
@@ -63,11 +65,17 @@ class ODBCSynchronizer(ImportSynchronizer):
         return res[0]
 
     def _before_import(self):
-        """ Hook called before the import, when we have the Magento
+        """ Hook called before the import, when we have the ODBC data
         data"""
         return
 
     def _get_odbc_revelant_update_date(self):
+        """Return the date determining last update of current row
+        doing a lookup on create and update time
+
+        :return: last update date of current row
+        :rtype: datetime.datetime or None
+        """
         dates = [
             getattr(self.odbc_code, 'create_time', False),
             getattr(self.odbc_code, 'modify_time', False)
@@ -78,11 +86,18 @@ class ODBCSynchronizer(ImportSynchronizer):
         return max(filtered_dates)
 
     def _is_uptodate(self, binding_id):
-        """Return True if the import should be skipped because
-        it is already up-to-date in OpenERP"""
+        """Predicate that checks if the import should be skipped because
+        it is already up-to-date in Odoo
+
+        :param binding_id: id of the binding record
+        :type binding_id: int
+
+        :return: True is current row is up to date
+        :rtype: bool
+        """
         assert self.odbc_record
         if not binding_id:
-            return
+            return False
         binding = self.session.browse(self.model._name, binding_id)
         local_sync_date = binding.sync_date
         if not local_sync_date:
@@ -95,24 +110,40 @@ class ODBCSynchronizer(ImportSynchronizer):
         return local_sync_date < odbc_date
 
     def _map_data(self):
-        """ Call the convert on the Mapper so the converted record can
-        be obtained using mapper.data or mapper.data_for_create"""
+        """ Call the convert function of the Mapper
+
+        in order to get converted record by using
+        mapper.data or mapper.data_for_create
+
+        :return: mapped dic of data to be used by
+                 :py:fun:``models.Model.create``
+        :rtype: dict
+        """
         return self.mapper.map_record(self.odbc_record)
 
     def _validate_data(self, data):
         """ Check if the values to import are correct
 
-        Pro-actively check before the ``_create`` or
+        :param data: data to validate
+        Proactively check before the ``_create`` or
         ``_update`` if some fields are missing or invalid.
 
         Raise `InvalidDataError`
         """
+        # we may want to return an NotImplementedError
         return
 
     def _deactivate(self, binding_id):
+        """Deactivate an Odoo model
+
+        :param binding_id: id of the binding record
+
+        :return: id of the binding record
+        :rtype: int
+        """
         if not binding_id:
             raise ValueError('Deactivate code can not be empty')
-        if 'active' in self.model._inherit_fields:
+        if 'active' in self.model._fields:
             self.session.write(self.model._name, binding_id, {'active': False})
         else:
             raise AttributeError(
@@ -250,6 +281,7 @@ class DelayedBatchODBCSynchronizer(BatchODBCSynchronizer):
                             self.backend_record.id,
                             odbc_code,
                             priority=priority)
+
 
 def batch_import(session, model_name, backend_id, date=False):
     env = session.browse('connector.odbc.data.server.backend',
