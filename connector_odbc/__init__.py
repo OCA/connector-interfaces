@@ -21,5 +21,4 @@
 from . import backend
 from . import unit
 from . import backend_model
-from . import data_adapter
 from . import tests
