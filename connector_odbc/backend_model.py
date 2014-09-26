@@ -116,7 +116,7 @@ class import_configurator(models.TransientModel):
 
     @api.multi
     def create_register(self):
-        """Create a import register from model fields value
+        """Create a import register from `self` fields value
 
         This will add a model to import with odbc backend
         """
@@ -134,9 +134,9 @@ class import_configurator(models.TransientModel):
                         context=None, toolbar=False, submenu=False):
         """Add dynamic domain on model_id field
 
-        In order to popose a domain Odoo model linked to
-        `ODBCSynchronizer` subclasses using the connector
-        backend class decorator
+        In order to limit selection on Odoo model realted to a
+        `ODBCSynchronizer` subclasses.
+        The relation is made using the connector backend class decorator
         """
         if context is None:
             context = self.pool['res.users'].context_get(cr, uid)
@@ -157,14 +157,21 @@ class import_configurator(models.TransientModel):
         for node in nodes:
             node.set(
                 'domain',
-                "[('id', 'in', [%s])]" % ', '.join([str(x.id) for x in model_ids])
+                "[('id', 'in', [%s])]" % ', '.join(
+                    [str(x.id) for x in model_ids]
+                )
             )
         res['arch'] = etree.tostring(doc)
         return res
 
 
 class odcb_register(models.Model):
-    """Configurable connector model register"""
+    """Configurable import register
+
+    A row of this model represents a data lot to import.
+    The model must be related to a `ODBCSynchronizer` subclasses.
+
+    """
 
     _name = "connector.odbc.import.register"
 
@@ -194,27 +201,52 @@ class odcb_register(models.Model):
 
     @api.multi
     def direct_import(self):
+        """Run a data import of the register without using jobs
+
+        :return: True in case of success or raise an error
+        :rtype: bool
+
+        """
         for register in self:
             register.backend_id.direct_import([register.model_id.model])
         return True
 
     @api.multi
     def delay_import(self):
+        """Run a data import of the register without using jobs
+
+        :return: True in case of success or raise an error
+        :rtype: bool
+
+        """
         for register in self:
             register.backend_id.delay_import([register.model_id.model])
         return True
 
 
 class odbc_backend(models.Model):
-    """Base ODBC Data sync backend with odbc supported server"""
+    """Base ODBC connector backend
+
+    Please refer to connector backend documentation
+
+    """
 
     _name = "connector.odbc.data.server.backend"
     _inherit = "connector.backend"
-    _description = """Base ODBC Data sync with ODBC supported backend"""
+    _description = """ODBC backend"""
     _backend_type = "odbc_server"
 
     @api.multi
     def get_environment(self, model_name, filter=None):
+        """Returns a connector environment related to model and current backend
+
+        :param model_name: Odoo model name taken form `_name` property
+        :type model_name: str
+
+        :return: a connector environment related to model and current backend
+        :rtype: :py:class:``connector.Environment``
+
+        """
         session = csession.ConnectorSession(
             self.env.cr,
             self.env.uid,
@@ -228,6 +260,9 @@ class odbc_backend(models.Model):
         """ Available versions
 
         Can be inherited to add custom versions.
+
+        :return: list of tuple of available versions
+        :rtype: list
         """
         return [('1.0', '1.0')]
 
@@ -246,6 +281,14 @@ class odbc_backend(models.Model):
     @api.one
     @api.returns('connector.odbc.import.register')
     def _get_register(self, model_name, context=None):
+        """Return connector import register related to model name
+
+        :param model_name: Odoo model name taken form `_name` property
+
+        :return: a record of model `connector.odbc.import.register`
+        :rtype: :py:class: `model.Model` record
+
+        """
         current = self
         try:
             return next(x for x in current.import_register_ids
@@ -255,6 +298,17 @@ class odbc_backend(models.Model):
 
     @api.multi
     def _import(self, models, mode, full=False,):
+        """Run imports for given models
+
+        :param models: list of Odoo model name taken form `_name` property
+        :type models: list
+        :param mode: `direct` or `delay`. Direct mode will import without jobs
+                                          Delay mode will import using jobs
+        :type mode: str
+
+        :return: True if succes else error
+        :rtype: bool
+        """
         assert mode in ['direct', 'delay'], "Invalid mode"
         session = csession.ConnectorSession(
             self.env.cr,
