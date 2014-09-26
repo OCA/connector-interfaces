@@ -28,11 +28,21 @@ from openerp.addons.connector_odbc.backend import odbc_backend
 
 @odbc_backend
 class ODBCBinder(Binder):
-    """ does binding between Models and odbc data"""
+    """ Manage bindings between Models identifier and ODBC identifier"""
     _model_name = []
 
     def to_openerp(self, odbc_code, unwrap=False):
-        """ Give the OpenERP ID for an external ID""
+        """Returns the Odoo id for an external ID""
+
+        :param odbc_code: odbc row unique idenifier
+        :type odbc_code: str
+
+        :param unwrap: If True returns the id of the record related
+                       to the binding record
+
+        :return: id of binding or if unwrapped the id of the record related
+                 to the binding record
+        :rtype: int
         """
         binding_ids = self.session.search(
             self.model._name,
@@ -51,16 +61,24 @@ class ODBCBinder(Binder):
             return binding_id
 
     def to_backend(self, binding_id):
-        """ Give the external ID for an OpenERP ID"""
+        """Return the external code for a given binding model id
+
+        :param binding_id: id of a binding model
+        :type binding_id: int
+
+        :return: external code of `binding_id`
+        """
         odbc_record = self.session.read(self.model._name,
                                         binding_id,
                                         ['odbc_code'])
-        assert odbc_record
+        assert odbc_record, 'No corresponding binding found'
         return odbc_record['odbc_code']
 
     @classmethod
     def register_external_binding(cls, binding_class):
-        """ Register model that inherit from external.binding"""
+        """ Register a binding model that inherits from external.binding
+        :param binding_class: class to register
+        """
         if not issubclass(binding_class, orm.Model):
             raise TypeError('You try to bind a non orm.Model subclass')
 
@@ -92,8 +110,12 @@ class ODBCBinder(Binder):
             cls._model_name.append(class_name)
 
     def bind(self, external_id, binding_id):
-        """ Create the link between an external ID and an OpenERP ID and
-        update the last synchronization date.
+        """ Create the link between an external id and an Odoo row and
+        by updating the last synchronization date and the external code.
+
+        :param external_id: ODBC unique identifier
+        :param binding_id: Binding record id
+        :type binding_id: int
         """
         # avoid to trigger the export when we modify the `odbc code`
         context = self.session.context.copy()
@@ -107,7 +129,13 @@ class ODBCBinder(Binder):
                                      context=context)
 
     def create_binding_from_record(self, external_id, internal_id):
-        """Create a binding on a exsiting record"""
+        """Create a binding record for a exsiting Odoo record
+
+        :param external_id: ODBC unique identifier
+        :param internal_id: Odoo record id
+        :type internal_id: int
+
+        """
         now_fmt = datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT)
         return self.environment.model.create(
             self.session.cr,
@@ -121,5 +149,8 @@ class ODBCBinder(Binder):
 
 
 def odbc_binded(cls):
+    """ Register a binding model that inherits from external.binding
+    :param cls: class to register
+    """
     ODBCBinder.register_external_binding(cls)
     return cls

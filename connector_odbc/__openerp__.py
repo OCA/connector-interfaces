@@ -22,7 +22,7 @@
  'author': 'Camptocamp',
  'maintainer': 'Camptocamp',
  'category': 'Connector',
- 'complexity': "normal",  # easy, normal, expert
+ 'complexity': "normal",
  'depends': ['connector'],
  'description': """synchronize data from odbc compatible DB""",
  'data': ['view/backend_view.xml'],
