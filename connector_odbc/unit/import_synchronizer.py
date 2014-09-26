@@ -116,7 +116,7 @@ class ODBCSynchronizer(ImportSynchronizer):
         mapper.data or mapper.data_for_create
 
         :return: mapped dic of data to be used by
-                 :py:fun:``models.Model.create``
+                 :py:meth:``models.Model.create``
         :rtype: dict
         """
         return self.mapper.map_record(self.odbc_record)
@@ -152,19 +152,40 @@ class ODBCSynchronizer(ImportSynchronizer):
         return binding_id
 
     def _create(self, data):
-        """ Create the OpenERP record """
+        """ Create the OpenERP record of current ODBC row
+
+        :param data: dict of data to be used by
+                     :py:meth:``models.Model.create``
+
+        :return: created row id
+        :rtype: int
+        """
         return self.session.create(self.model._name, data)
 
     def _update(self, binding_id, data):
-        """ Update an OpenERP record """
+        """ Update the binding record of current ODBC row
+
+        :param binding_id: id of the binding record
+        :param data: dict of data to be used by
+                     :py:meth:``models.Model.create``
+
+        :return: Success bool
+        :rtype: bool
+        """
         return self.session.write(self.model._name, binding_id, data)
 
     def _after_import(self, binding_id):
-        """ Hook called at the end of the import """
+        """Hook called at the end of the import
+        :param binding_id: id of the binding record
+        """
         return
 
     def run(self, model_name, odbc_code):
-        """ Run the synchronization
+        """Run the synchronization for given model
+        and external code
+
+        :param model_name: list of Odoo model name taken form `_name` property
+        :param odbc_code: External system code
         """
         self.odbc_code = odbc_code
         self._before_import()
@@ -205,17 +226,29 @@ class BatchODBCSynchronizer(ImportSynchronizer):
         super(BatchODBCSynchronizer, self).__init__(environment)
 
     def _before_batch_import(self):
-        """Hook"""
+        """Hook called before import"""
         return
 
     def _after_batch_import(self):
-        """Hook"""
+        """Hook call after import"""
         return
 
-    def _import_record(self, odbc_code, code):
+    def _import_record(self, odbc_code):
+        """Synchronize external row for given code
+        :param odbc_code: External system code
+
+        Abstact method
+        """
+
         raise NotImplementedError('Record importation not implemented')
 
     def run(self, model_name, date=False):
+        """Run the synchronization for given model
+        at lookup date
+
+        :param model_name: list of Odoo model name taken form `_name` property
+        :param date: past lookup date for external data
+        """
         self._before_batch_import()
         codes = self.backend_adapter.search(date=date)
         for code in codes:
@@ -224,7 +257,7 @@ class BatchODBCSynchronizer(ImportSynchronizer):
 
 
 class DirectBatchODBCSynchronizer(BatchODBCSynchronizer):
-    """Base importer from odbc server DWH"""
+    """Base connector ODBC batch importer class without jobs"""
 
     def __init__(self, environment):
         """
@@ -234,6 +267,13 @@ class DirectBatchODBCSynchronizer(BatchODBCSynchronizer):
         super(BatchODBCSynchronizer, self).__init__(environment)
 
     def run(self, model_name, date=False, direct=False):
+        """Run the synchronization for all the rows of given model
+
+        :param model_name: Odoo model name taken form `_name` property
+        :param date: past lookup date for external data
+        :type date: date string
+        :param direct: if True no job will be used
+        """
         self._before_batch_import()
         _logger.debug("Direct batch import of %s started" % model_name)
         codes = self.backend_adapter.search(date=date)
@@ -264,6 +304,12 @@ class DirectBatchODBCSynchronizer(BatchODBCSynchronizer):
         _logger.debug("Direct batch import of %s ended" % model_name)
 
     def _import_record(self, odbc_code, data_set=False):
+        """Synchronize external row for given code
+        :param odbc_code: External system code
+        :param data_set: performace memoizer dict
+        :type data_set: dict
+
+        """
         record_import(self.session,
                       self.model._name,
                       self.backend_record.id,
@@ -272,9 +318,14 @@ class DirectBatchODBCSynchronizer(BatchODBCSynchronizer):
 
 
 class DelayedBatchODBCSynchronizer(BatchODBCSynchronizer):
-    """Base delayed importer for ODBC data source"""
+    """Base batch connector ODBC using jobs"""
 
     def _import_record(self, odbc_code):
+        """Synchronize external row for given code
+        :param odbc_code: External system code
+        :param data_set: performace memoizer dict
+
+        """
         priority = self.backend_record._get_register(self.model._name).priority
         record_import.delay(self.session,
                             self.model._name,
@@ -284,6 +335,13 @@ class DelayedBatchODBCSynchronizer(BatchODBCSynchronizer):
 
 
 def batch_import(session, model_name, backend_id, date=False):
+    """Run the synchronization for given model
+    at lookup date
+
+    :param model_name: list of Odoo model name taken form `_name` property
+    :param data_set: performace memoizer dict
+    :param backend_id: id of current connector ODBC backend
+    """
     env = session.browse('connector.odbc.data.server.backend',
                          backend_id).get_environment(model_name)
     importer = env.get_connector_unit(DirectBatchODBCSynchronizer)
@@ -292,6 +350,15 @@ def batch_import(session, model_name, backend_id, date=False):
 
 @job
 def record_import(session, model_name, backend_id, odbc_code, data_set=None):
+    """Synchronize external row for given code
+
+    :param model_name: list of Odoo model name taken form `_name` property
+    :param data_set: performace memoizer dict
+    :param backend_id: id of current connector ODBC backend
+    :param odbc_code: External system code
+    :param date: past lookup date for external data
+
+    """
     env = session.browse('connector.odbc.data.server.backend',
                          backend_id).get_environment(model_name)
     importer = env.get_connector_unit(ODBCSynchronizer)
@@ -301,6 +368,13 @@ def record_import(session, model_name, backend_id, odbc_code, data_set=None):
 
 @job
 def delayed_batch_import(session, model_name, backend_id, date=False):
+    """Run the synchronization for given model
+    at lookup date using jobs
+
+    :param model_name: list of Odoo model name taken form `_name` property
+    :param data_set: performace memoizer dict
+    :param backend_id: id of current connector ODBC backend
+    """
     env = session.browse('connector.odbc.data.server.backend',
                          backend_id).get_environment(model_name)
     importer = env.get_connector_unit(DelayedBatchODBCSynchronizer)
