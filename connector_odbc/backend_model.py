@@ -33,8 +33,7 @@ install_in_connector()
 
 class import_configurator(models.TransientModel):
     """ODBC import register
-    Each created register will correspond to
-    a model to import using ODBC
+    Each created register will correspond to a model to import using ODBC
     """
     _name = 'connector.odbc.import.configurator'
 
@@ -67,18 +66,20 @@ class import_configurator(models.TransientModel):
 
     @api.model
     def _get_valid_importers(self, backend_id):
-        """Return a list of valid model name
+        """Return a list of valid model name that can be imported
+        using ODBC connector
 
         Model must be bound to a :py:class:``.unit.importer.ODBCSynchronizer``
         subclass
 
-        :backend_id: id of a `` model
+        :param backend_id: id of a `connector.odbc.data.server.backend` model
+        :type backend_id: int
 
         :return: list of corresponding class
         :rtype: list
         """
 
-        def _classes(backend_class, accumulator):
+        def _classes(backend_class):
             """Recursively get all the registered class for a given
             backend
 
