@@ -93,17 +93,19 @@ class import_configurator(models.TransientModel):
                      with cls, openerp_module, replaced_by keys
             :rtype: list
             """
-            assert isinstance(accumulator, list)
-            accumulator.extend(backend_class._class_entries)
+            for x in backend_class._class_entries:
+                yield x
             if not backend_class.parent:
-                return accumulator
-            return _classes(backend_class.parent, accumulator)
+                return
+            # is there a way to import yield form from future
+            for x in _classes(backend_class.parent):
+                yield x
 
         backend_model = self.env['connector.odbc.data.server.backend']
         irmodel_model = self.env['ir.model']
         backend = backend_model.browse(backend_id)
         backend_class = backend.get_backend()[0]
-        avail_models = [x.cls._model_name for x in _classes(backend_class, [])
+        avail_models = [x.cls._model_name for x in _classes(backend_class)
                         if issubclass(x.cls, ODBCSynchronizer)]
         model_ids = irmodel_model.search([('model', 'in', avail_models)])
         if not model_ids:
