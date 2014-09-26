@@ -19,8 +19,7 @@
 #
 ##############################################################################
 from __future__ import absolute_import
-from datetime import datetime
-from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
+from openerp import fields
 from openerp.osv import orm
 from openerp.addons.connector.connector import Binder
 from openerp.addons.connector_odbc.backend import odbc_backend
@@ -120,7 +119,7 @@ class ODBCBinder(Binder):
         # avoid to trigger the export when we modify the `odbc code`
         context = self.session.context.copy()
         context['connector_no_export'] = True
-        now_fmt = datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+        now_fmt = fields.Datetime.now()
         self.environment.model.write(self.session.cr,
                                      self.session.uid,
                                      binding_id,
@@ -136,7 +135,7 @@ class ODBCBinder(Binder):
         :type internal_id: int
 
         """
-        now_fmt = datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+        now_fmt = fields.Datetime.now()
         return self.environment.model.create(
             self.session.cr,
             self.session.uid,
