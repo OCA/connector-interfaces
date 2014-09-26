@@ -220,7 +220,6 @@ class ODBCAdapter(BackendAdapter):
         # SQL server number of remote argument are limited to 2100
         # we slice code in part of 2000
         # Slice code taken from Python cookbook
-        #
         sliced_codes = [codes[i:i + ODBC_MAX_CHUNK]
                         for i in xrange(0, len(codes), ODBC_MAX_CHUNK)]
         res = []
