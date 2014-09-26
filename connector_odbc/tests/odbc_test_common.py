@@ -69,7 +69,6 @@ class SQLAdapterMock(MagicMock):
         key = (self._table_name,
                'search',
                tuple(kwargs.items()) if kwargs else None)
-        print key
         data = self._simulated_data[key]
         _logger.debug(data)
         return data
@@ -78,7 +77,6 @@ class SQLAdapterMock(MagicMock):
         key = (self._table_name,
                'missing',
                tuple(codes))
-        print key
         data = self._simulated_data[key]
         _logger.debug(data)
         return data
