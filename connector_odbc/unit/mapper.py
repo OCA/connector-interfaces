@@ -22,8 +22,5 @@ from openerp.addons.connector.unit.mapper import ImportMapper
 
 
 class ODBCRowImportMapper(ImportMapper):
-
+    """Base connector ODBC mapper class"""
     binding_id = None
-
-    def _map_direct(self, record, from_attr, to_attr):
-        return getattr(record, from_attr, None)
