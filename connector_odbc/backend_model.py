@@ -172,7 +172,6 @@ class odcb_register(models.Model):
     The model must be related to a `ODBCSynchronizer` subclasses.
 
     """
-
     _name = "connector.odbc.import.register"
 
     _order = 'sequence'
@@ -230,7 +229,6 @@ class odbc_backend(models.Model):
     Please refer to connector backend documentation
 
     """
-
     _name = "connector.odbc.data.server.backend"
     _inherit = "connector.backend"
     _description = """ODBC backend"""
@@ -335,29 +333,53 @@ class odbc_backend(models.Model):
 
     @api.multi
     def delay_import(self, models, full=False):
+        """Run imports for given models using jobs
+
+        :param models: list of Odoo model name taken form `_name` property
+        :type models: list
+        :type mode: str
+
+        :return: True if succes else error
+        :rtype: bool
+        """
         return self._import(models, 'delay', full=full)
 
     @api.multi
     def direct_import(self, models, full=False):
+        """Run imports for given models without jobs
+
+        :param models: list of Odoo model name taken form `_name` property
+        :type models: list
+        :type mode: str
+
+        :return: True if succes else error
+        :rtype: bool
+        """
         return self._import(models, 'direct', full=full)
 
     @api.one
     def import_all(self):
-        """Do a global direct import of all data"""
+        """Do a global direct import of all current backend registers without jobs
+        :return: True if succes else error
+        :rtype: bool
+        """
         models = self.import_register_ids
         models = [x.model_id.model for x in models]
         return self.direct_import(models, full=False)
 
     @api.one
     def import_all_delayed(self):
-        """Do a global delayed import of all data"""
+        """Do a global direct import of all current backend registers using jobs
+        :return: True if succes else error
+        :rtype: bool
+        """
         models = self.import_register_ids
         models = [x.model_id.model for x in models]
         return self.delay_import(models, full=False)
 
 
 class base_odbc_binding(models.AbstractModel):
-
+    """Base abstract binding model"""
     _name = "obdc.base.server.binding"
     _inherit = 'external.binding'
 
@@ -370,8 +392,10 @@ class base_odbc_binding(models.AbstractModel):
 
 
 class odbc_binding(models.AbstractModel):
-    """Abstact class to create binding between backend browse odbc id, openerp id
-    based on a string code"""
+    """Abstact binding model to create binding between backend
+    unique code and openerp id based on a string code
+
+    """
 
     _inherit = 'obdc.base.server.binding'
     _name = "odbc.string.server.binding"
@@ -385,9 +409,10 @@ class odbc_binding(models.AbstractModel):
 
 
 class odbc_numerical_binding(models.AbstractModel):
-    """Abstact class to create binding between backend browse odbc id, openerp id
-    based on a numerical id"""
+    """Abstact binding model to create binding between backend
+    unique code and openerp id based on a numerical code
 
+    """
     _name = "odbc.numerical.server.binding"
     _inherit = 'obdc.base.server.binding'
     _description = """Abstact binding class for odbc data"""
@@ -400,8 +425,9 @@ class odbc_numerical_binding(models.AbstractModel):
 
 class odbc_datetime_binding(models.AbstractModel):
     """Abstact class to create binding between backend browse odbc id, openerp id
-    based on a datetime"""
+    based on a datetime id
 
+    """
     _name = "odbc.datetime.server.binding"
     _inherit = 'obdc.base.server.binding'
     _description = """Abstact binding class for odbc data"""
