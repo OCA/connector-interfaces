@@ -35,6 +35,7 @@ ODBC_MAX_CHUNK = 2000
 
 
 class ODBCAdapter(BackendAdapter):
+    """Base connector ODBC adapter"""
     _cnx = None
     _table_name = None
     # unique identifier of the odbc database
@@ -62,6 +63,13 @@ class ODBCAdapter(BackendAdapter):
         return ODBCAdapter._cnx
 
     def _sql_query(self, sql, *args):
+        """Execute an SQL query and return pyodbc rows
+
+        :param sql: SQL query
+        :type sql: str
+
+        :return: pyodbc rows see https://code.google.com/p/pyodbc/wiki/Rows
+        """
         # pyodbc has no context manager
         # see http://code.google.com/p/pyodbc/issues/detail?id=100
         cursor = self.cnx.cursor()
@@ -77,20 +85,28 @@ class ODBCAdapter(BackendAdapter):
             cursor.close()
 
     def get_unique_key_column(self):
+        """Retrun the unique key of a SQL row
+
+        :return: unique key
+        :rtype: str
+        """
         raise NotImplemented(
             'get_unique_key_column not implemented for %s' % self
         )
 
     def get_date_columns(self):
-        """ shoulde return a tuple (create_date, modify_date) or None"""
+        """Define creation and update columns of SQL row
+
+        :return: can return  a tuple (create_date, modify_date) or None
+        """
         return None
 
     def get_sql_conditions(self):
-        """ Return where SQL + args"""
+        """ Return where clause + args"""
         return ('', [])
 
     def adapt_dates_query(self):
-        """ function that adds required SQL to add create_time and modify_time to
+        """Adds required SQL to add create_time and modify_time to
         query result row"""
         if not self.get_date_columns():
             return ''
@@ -98,9 +114,25 @@ class ODBCAdapter(BackendAdapter):
                 self.get_date_columns())
 
     def adapt_dates_filter(self, date):
+        """Standardize date columns name
+
+        :param date: tuple of (create_date_name, update_date_name)
+        :type date: tuple
+
+        :return: unified date clause
+        :rtype: str
+
+        """
         return " create_time > ? or modify_time > ?", [date, date]
 
     def get_read_sql(self, code_slice):
+        """Provides default SQL to read from ODBC data
+
+        :param code_slice: list of external code to read
+        :type code_slice: iterable of string
+        :return: SQL query
+        :rtype: str
+        """
         # pyodbc does not support array formatting
         in_format = ', '.join(['?' for c in code_slice])
         sql = "SELECT *%s FROM %s WHERE %s IN (%s)" % (
@@ -112,11 +144,31 @@ class ODBCAdapter(BackendAdapter):
         return sql
 
     def lookup_data_set(self, data_set, code):
-        """ Return a generator of matching data in data_set memoizer"""
+        """ Return a generator of matching data in data_set memoizer
+
+        :param data_set: Memoizer dict
+        :type data_set: dict
+
+        :param code: lookup code
+        :type code: str
+
+        :return: a generator of matching data in data_set memoizer
+        :rtype: generator
+        """
         return (x for x in data_set
                 if getattr(x, self.get_unique_key_column(), None) == code)
 
     def read(self, odbc_codes, data_set=None):
+        """ Return a generator of data read from ODBC date source
+
+        :odbc_codes: list of code to read
+        :type odbc_code: list
+        :param data_set: Memoizer dict
+        :type data_set: dict
+
+        :return: a generator of data read from ODBC date source
+        :rtype: generator
+        """
         if not isinstance(odbc_codes, list):
             odbc_codes = [odbc_codes]
         # Optimisation tweak, negotiate database connexion is consumming
@@ -139,6 +191,14 @@ class ODBCAdapter(BackendAdapter):
                 yield row
 
     def get_missing_sql(self, code_slice):
+        """Provides default SQL to read ODBC data
+        that are not in openerp
+
+        :param code_slice: list of external code to read
+        :type code_slice: iterable of string
+        :return: SQL query
+        :rtype: str
+        """
         # pyodbc does not support array formatting
         in_format = ', '.join(['?' for c in code_slice])
         sql = "SELECT %s FROM %s WHERE %s  IN (%s)" % (
@@ -150,7 +210,13 @@ class ODBCAdapter(BackendAdapter):
         return sql
 
     def missing(self, codes):
-        """Get missing records in backend"""
+        """Get missing records in Odoo for current backend
+        :param codes: list of missing codes
+        :type codes: list
+
+        :return: list of missing pyodbc rows
+                 see https://code.google.com/p/pyodbc/wiki/Row
+        """
         # SQL server number of remote argument are limited to 2100
         # we slice code in part of 2000
         # Slice code taken from Python cookbook
@@ -166,7 +232,13 @@ class ODBCAdapter(BackendAdapter):
         return list(existing - res)
 
     def search(self, date=False):
-        """Get unique key using date normalisation"""
+        """Search all data in ODBC backend at lookup date
+
+        :param date: lookup date for data
+        :type date: Odoo date string
+        :return: a list of odbc code
+        :rtype: list
+        """
         # Some databases does not suport alias in where clause
         # we have to do a derived table
         # Derived table allow to add global where clause
@@ -186,4 +258,5 @@ class ODBCAdapter(BackendAdapter):
             args += date_args
             sql += "WHERE %s" % date_where
         res = self._sql_query(sql, *args)
+        # we may want to return generator but lsit seems more usable
         return [x[0] for x in res]
