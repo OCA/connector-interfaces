@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# flake8: noqa
 ##############################################################################
 #
 #    Author: Nicolas Bessi
@@ -18,7 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-# flake8: noqa
 # automatically captured data
 import datetime
 from collections import namedtuple
