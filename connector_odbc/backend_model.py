@@ -327,8 +327,6 @@ class odbc_backend(models.Model):
             register.write(
                 {'last_import_date': import_start_time},
             )
-            self.env.cr.commit()
-            self.env.invalidate_all()
         return True
 
     @api.multi
