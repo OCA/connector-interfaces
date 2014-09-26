@@ -254,6 +254,7 @@ class odbc_backend(models.Model):
         env = connector.Environment(backend, session, model_name)
         return env
 
+    @api.model
     def _select_versions(self):
         """ Available versions
 
@@ -266,7 +267,7 @@ class odbc_backend(models.Model):
 
     dsn = fields.Char('DSN', required=True)
     version = fields.Selection(
-        _select_versions,
+        '_select_versions',
         string='Version',
         required=True
     )
