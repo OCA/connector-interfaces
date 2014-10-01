@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+
+<menuitem id="menu_file_document_wh"
+          action="file_document.action_file_document"
+          parent="stock.menu_stock_warehouse_mgmt"
+          sequence="90" />
+
+    </data>
+</openerp>
