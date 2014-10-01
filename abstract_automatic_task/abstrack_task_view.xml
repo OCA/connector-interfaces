@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  file_repository for OpenERP
+  Copyright (C) 2013 Akretion
+  Author: Benoît Guillot <benoit.guillot@akretion.com>
+  The licence is in the file __openerp__.py
+-->
+
+<openerp>
+    <data>
+        <!-- repeat the cron view to add a button to save and close the view -->
+        <record model="ir.ui.view" id="automatic_cron_form_view">
+            <field name="name">automatic_cron_form_view</field>
+            <field name="model">ir.cron</field>
+            <!-- priotity to be selected only with the button create cron  -->
+            <field name="priority">51</field>
+            <field name="arch" type="xml">
+                <form string="Cron task" version="7.0">
+                    <sheet>
+                        <group col="4">
+                            <field name="name"/>
+                            <field name="active"/>
+                            <field name="user_id" />
+                            <field name="priority" />
+                        </group>
+                        <notebook>
+                            <page string="Information">
+                                <group col="4">
+                                    <field name="interval_number"/>
+                                    <field name="interval_type"/>
+                                    <newline/>
+                                    <field name="nextcall"/>
+                                    <field name="numbercall"/>
+                                    <field name="doall"/>
+                                </group>
+                            </page>
+                            <page string="Technical Data"
+                                  groups="base.group_no_one">
+                                <group string="Action to Trigger">
+                                    <field name="model"/>
+                                    <field name="function"/>
+                                </group>
+                                <label for="args"/>
+                                <field name="args"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <footer>
+                        <button name="save_and_close_cron"
+                                string="Save and Close"
+                                type="object" class="oe_highlight"/>
+                        or
+                        <button special="cancel" string="Cancel" class="oe_link"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+    </data>
+</openerp>
