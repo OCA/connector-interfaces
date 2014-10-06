@@ -326,11 +326,16 @@ class DelayedBatchODBCSynchronizer(BatchODBCSynchronizer):
         :param data_set: performace memoizer dict
 
         """
-        priority = self.backend_record._get_register(self.model._name).priority
+        register = self.backend_record._get_register(self.model._name)
+        model = register.model_id
+        msg = 'Importing %s using connector odbc' % model.name
+
+        priority = register.sequence
         record_import.delay(self.session,
                             self.model._name,
                             self.backend_record.id,
                             odbc_code,
+                            description=msg,
                             priority=priority)
 
 
