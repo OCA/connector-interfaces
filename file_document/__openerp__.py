@@ -40,7 +40,6 @@ Example : logistic_center, e-commerce platforms, automated machines
     'data': [
         'file_document_view.xml',
         'file_document_data.xml',
-        'stock_view.xml',
         'security/ir.model.access.csv',
         'security/file_document_security.xml',
     ],
