@@ -160,6 +160,7 @@ class ODBCSynchronizer(ImportSynchronizer):
         :return: created row id
         :rtype: int
         """
+        ModelData = self.session.pool['ir.model.data'].clear_caches()
         return self.session.create(self.model._name, data)
 
     def _update(self, binding_id, data):
