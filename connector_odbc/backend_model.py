@@ -325,9 +325,10 @@ class odbc_backend(models.Model):
                 else:
                     delayed_batch_import(session, model, backend['id'],
                                          date=date)
-            register.write(
-                {'last_import_date': import_start_time},
-            )
+                register.write(
+                    {'last_import_date': import_start_time},
+                )
+                self.env.cr.commit()
         return True
 
     @api.multi
