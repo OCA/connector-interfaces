@@ -363,6 +363,8 @@ class odbc_backend(models.Model):
         :rtype: bool
         """
         models = self.import_register_ids
+        # there seems to be a strange behavior on the order with one2many
+        models = sorted(models, key=lambda x: x.sequence)
         models = [x.model_id.model for x in models]
         return self.direct_import(models, full=False)
 
