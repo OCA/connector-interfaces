@@ -329,7 +329,7 @@ class odbc_backend(models.Model):
                         model,
                         backend['id'],
                         date=date,
-                        priority=register.sequence
+                        priority=-1
                     )
                 register.write(
                     {'last_import_date': import_start_time},
