@@ -324,8 +324,13 @@ class odbc_backend(models.Model):
                     batch_import(session, model, backend['id'],
                                  date=date)
                 else:
-                    delayed_batch_import(session, model, backend['id'],
-                                         date=date)
+                    delayed_batch_import.delay(
+                        session,
+                        model,
+                        backend['id'],
+                        date=date,
+                        priority=register.sequence
+                    )
                 register.write(
                     {'last_import_date': import_start_time},
                 )
