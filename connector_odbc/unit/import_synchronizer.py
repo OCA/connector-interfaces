@@ -296,6 +296,7 @@ class DirectBatchODBCSynchronizer(BatchODBCSynchronizer):
         for codes_chunk in [missing[i:i + MAX_PROC_BLOC]
                             for i in xrange(0, len(missing), MAX_PROC_BLOC)]:
             for code in codes_chunk:
+                _logger.debug("importing %s" % code)
                 self._import_record(code)
         if BLOC_COMMIT:
             self.session.cr.commit()
