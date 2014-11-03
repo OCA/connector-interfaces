@@ -31,7 +31,7 @@ _logger = logging.getLogger(__name__)
 
 # For direct import we may want to import by chunk
 # in order not too eat too munch memory on PostgreSQL side
-MAX_PROC_BLOC = 2000
+MAX_PROC_BLOC = 200
 # do an intermediate commit for each bloc
 BLOC_COMMIT = True
 
