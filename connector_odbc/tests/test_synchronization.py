@@ -51,7 +51,6 @@ class test_direct_synchro(odbc_test_common.ODBCBaseTestClass):
         """Test first import"""
         # You can not mock instance of Adapter
         # As Synchronizer has a factory for adapter
-
         cr, uid = self.cr, self.uid
         existing = self.target_model.search(cr, uid, [])
         self.assertEqual(existing, [])
@@ -152,21 +151,7 @@ class test_direct_synchro(odbc_test_common.ODBCBaseTestClass):
         )
         self.assertTrue(self.target_model.unlink(cr, uid, related.id))
 
-    def test_05_incorrect_delete_row(self):
-        """Test that we can not delete row linked to bindings"""
-        cr, uid = self.cr, self.uid
-        to_del_ids = self.connector_model.search(
-            cr, uid,
-            [('odbc_code', '=', '5')]
-        )
-        self.assertTrue(to_del_ids)
-        # it should fail
-        with mute_logger('openerp.sql_db'):
-            with self.assertRaises(psycopg2.IntegrityError):
-                self.target_model.unlink(cr, uid, to_del_ids[0])
-        cr.rollback()
-
-    def test_06_update_delete(self):
+    def test_05_update_delete(self):
         """Test second pass of import. Row with code 3 has been deleted
         in external data source"""
         cr, uid = self.cr, self.uid
@@ -196,3 +181,17 @@ class test_direct_synchro(odbc_test_common.ODBCBaseTestClass):
         )
         deact_br = self.connector_model.browse(cr, uid, deactivated[0])
         self.assertEqual(deact_br.code, '3')
+
+    def test_06_incorrect_delete_row(self):
+        """Test that we can not delete row linked to bindings"""
+        cr, uid = self.cr, self.uid
+        to_del_ids = self.connector_model.search(
+            cr, uid,
+            [('odbc_code', '=', '5')]
+        )
+        self.assertTrue(to_del_ids)
+        # it should fail
+        with mute_logger('openerp.sql_db'):
+            with self.assertRaises(psycopg2.IntegrityError):
+                self.target_model.unlink(cr, uid, to_del_ids[0])
+        cr.rollback()

@@ -81,6 +81,6 @@ simulated_mega_table = {
                                                                    datetime.datetime(2011, 01, 01),
                                                                    datetime.datetime(2010, 01, 01),
                                                                    datetime.datetime(2011, 01, 01))],
-    ('mega_code_table', 'missing', (u'1', u'2', u'3', u'4')): ['3'],
+    ('mega_code_table', 'missing', (u'1', u'2', u'3', u'5', u'4')): ['3'],
 
 }

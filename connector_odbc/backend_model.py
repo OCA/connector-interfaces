@@ -25,10 +25,10 @@ from openerp import models, fields, api
 
 from openerp.addons.connector import session as csession, connector
 from openerp.addons.connector.connector import install_in_connector
+from .unit import import_synchronizer
 from .unit.import_synchronizer import (batch_import,
                                        delayed_batch_import,
-                                       ODBCSynchronizer,
-                                       BLOC_COMMIT)
+                                       ODBCSynchronizer)
 install_in_connector()
 
 
@@ -334,7 +334,8 @@ class odbc_backend(models.Model):
                 register.write(
                     {'last_import_date': import_start_time},
                 )
-                if BLOC_COMMIT:
+
+                if import_synchronizer.BLOC_COMMIT:
                     self.env.cr.commit()
         return True
 

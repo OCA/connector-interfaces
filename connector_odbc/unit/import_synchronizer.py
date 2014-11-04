@@ -339,7 +339,8 @@ class DelayedBatchODBCSynchronizer(BatchODBCSynchronizer):
                             odbc_code,
                             description=msg,
                             priority=priority)
-        self.session.cr.commit()
+        if BLOC_COMMIT:
+            self.session.cr.commit()
 
 
 def batch_import(session, model_name, backend_id, date=False):
