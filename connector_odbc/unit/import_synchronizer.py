@@ -33,7 +33,7 @@ _logger = logging.getLogger(__name__)
 # in order not too eat too munch memory on PostgreSQL side
 MAX_PROC_BLOC = 200
 # do an intermediate commit for each bloc
-BLOC_COMMIT = True
+FORCE_COMMIT = True
 
 
 class ODBCSynchronizer(ImportSynchronizer):
@@ -283,7 +283,7 @@ class DirectBatchODBCSynchronizer(BatchODBCSynchronizer):
             data = list(self.backend_adapter.read(codes_chunk))
             for code in codes_chunk:
                 self._import_record(code, data_set=data)
-            if BLOC_COMMIT:
+            if FORCE_COMMIT:
                 self.session.cr.commit()
         existing_ids = self.session.search(self.model._name, [])
         codes_to_check = self.session.read(self.model._name,
@@ -298,7 +298,7 @@ class DirectBatchODBCSynchronizer(BatchODBCSynchronizer):
             for code in codes_chunk:
                 _logger.debug("importing %s" % code)
                 self._import_record(code)
-        if BLOC_COMMIT:
+        if FORCE_COMMIT:
             self.session.cr.commit()
 
         self._after_batch_import()
@@ -339,7 +339,7 @@ class DelayedBatchODBCSynchronizer(BatchODBCSynchronizer):
                             odbc_code,
                             description=msg,
                             priority=priority)
-        if BLOC_COMMIT:
+        if FORCE_COMMIT:
             self.session.cr.commit()
 
 

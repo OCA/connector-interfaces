@@ -335,7 +335,7 @@ class odbc_backend(models.Model):
                     {'last_import_date': import_start_time},
                 )
 
-                if import_synchronizer.BLOC_COMMIT:
+                if import_synchronizer.FORCE_COMMIT:
                     self.env.cr.commit()
         return True
 

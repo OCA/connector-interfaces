@@ -51,12 +51,12 @@ class ODBCBaseTestClass(test_common.SingleTransactionCase):
             'odbc.data.connector.test.code.a'
         )
         # We do not want to commit during test
-        import_synchronizer.BLOC_COMMIT = False
+        import_synchronizer.FORCE_COMMIT = False
 
     def tearDown(self):
         super(ODBCBaseTestClass, self).tearDown()
         # We enable commit after tests
-        import_synchronizer.BLOC_COMMIT = True
+        import_synchronizer.FORCE_COMMIT = True
 
 
 class SQLAdapterMock(MagicMock):
