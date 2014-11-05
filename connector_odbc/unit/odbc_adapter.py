@@ -75,8 +75,11 @@ class ODBCAdapter(BackendAdapter):
         cursor = self.cnx.cursor()
         try:
             if args:
-                return cursor.execute(sql, args).fetchall()
-            return cursor.execute(sql).fetchall()
+                cursor.execute(sql, args)
+            else:
+                cursor.execute(sql)
+            # We may use fetchmany with smaller data range
+            return cursor.fetchall()
         except pyodbc.DatabaseError as exc:
             _logger.error((sql, args))
             _logger.error(repr(exc))
