@@ -297,7 +297,7 @@ class odbc_backend(models.Model):
             raise ValueError('No register for model %s' % model_name)
 
     @api.multi
-    def _import(self, models, mode, full=False,):
+    def _import(self, models, mode, full=False):
         """Run imports for given models
 
         :param models: list of Odoo model name taken form `_name` property
