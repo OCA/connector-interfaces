@@ -225,11 +225,11 @@ class ODBCAdapter(BackendAdapter):
         # Slice code taken from Python cookbook
         sliced_codes = [codes[i:i + ODBC_MAX_CHUNK]
                         for i in xrange(0, len(codes), ODBC_MAX_CHUNK)]
-        res = []
+        res = set()
         for code_slice in sliced_codes:
             sql = self.get_missing_sql(code_slice)
-            res.extend([x[0] for x in self._sql_query(sql, *code_slice)])
-        res = set(res)
+            for x in self._sql_query(sql, *code_slice):
+                res.add(x[0])
         existing = set(codes)
         return list(existing - res)
 
