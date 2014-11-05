@@ -333,6 +333,8 @@ class DelayedBatchODBCSynchronizer(BatchODBCSynchronizer):
         msg = 'Importing %s using connector odbc' % model.name
 
         priority = register.sequence
+        # We may have trouble if we have many jobs low priority
+        # jobs with higher priority may nerver be run
         record_import.delay(self.session,
                             self.model._name,
                             self.backend_record.id,
