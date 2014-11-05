@@ -260,5 +260,5 @@ class ODBCAdapter(BackendAdapter):
             args += date_args
             sql += "WHERE %s" % date_where
         res = self._sql_query(sql, *args)
-        # we may want to return generator but lsit seems more usable
+        # we may want to return generator but list seems more usable
         return [x[0] for x in res]
