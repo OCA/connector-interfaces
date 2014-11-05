@@ -134,7 +134,7 @@ class ODBCAdapter(BackendAdapter):
         :rtype: str
         """
         # pyodbc does not support array formatting
-        in_format = ', '.join(['?' for c in code_slice])
+        in_format = ', '.join(['?'] * len(code_slice))
         sql = "SELECT *%s FROM %s WHERE %s IN (%s)" % (
             self.adapt_dates_query(),
             self._table_name,
@@ -200,7 +200,7 @@ class ODBCAdapter(BackendAdapter):
         :rtype: str
         """
         # pyodbc does not support array formatting
-        in_format = ', '.join(['?' for c in code_slice])
+        in_format = ', '.join(['?'] * len(code_slice))
         sql = "SELECT %s FROM %s WHERE %s  IN (%s)" % (
             self.get_unique_key_column(),
             self._table_name,
