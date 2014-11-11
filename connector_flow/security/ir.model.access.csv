@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_impexp_task_flow,Read-only access to impexp.task_flow,model_impexp_task_flow,base.group_user,1,0,0,0
+access_impexp_task,Read-only access to impexp.task,model_impexp_task,base.group_user,1,0,0,0
+access_impexp_task_transition,Read-only access to impexp.task_transition,model_impexp_task_transition,base.group_user,1,0,0,0
+access_impexp_file,Read/write access to impexp.file,model_impexp_file,base.group_user,1,1,1,1
+access_impexp_chunk,Read/write access to impexp.chunk,model_impexp_chunk,base.group_user,1,1,1,1
