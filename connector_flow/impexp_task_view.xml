@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <!-- impexp.task -->
+
+        <record model="ir.ui.view" id="task_tree">
+            <field name="name">impexp.task.tree</field>
+            <field name="model">impexp.task</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Task Tree">
+                    <field name="name"/>
+                    <field name="task"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="task_form">
+            <field name="name">impexp.task.form</field>
+            <field name="model">impexp.task</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Task Form" version="7.0">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="task"/>
+                            <field name="max_retries"/>
+                            <field name="flow_id"/>
+                            <field name="flow_start"/>
+                            <field name="config"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- impexp.task.flow -->
+
+        <record model="ir.ui.view" id="task_flow_tree">
+            <field name="name">impexp.task.flow.tree</field>
+            <field name="model">impexp.task.flow</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <tree string="Task Flow Form">
+                    <field name="name"/>
+                    <field name="task_ids"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="task_flow_form">
+            <field name="name">impexp.task.flow.form</field>
+            <field name="model">impexp.task.flow</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Task Flow Form" version="7.0">
+                    <sheet>
+                        <h2><field name="name"/></h2>
+                        <field name="task_ids"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="task_flow_diagram">
+            <field name="name">impexp.task.flow.diagram</field>
+            <field name="model">impexp.task.flow</field>
+            <field name="type">diagram</field>
+            <field name="arch" type="xml">
+                <diagram string="Task Flow Diagram">
+                    <node object="impexp.task" bgcolor="gray:flow_start==True">
+                        <field name="name"/>
+                        <field name="task"/>
+                        <field name="flow_start" invisible="1"/>
+                    </node>
+                    <arrow object="impexp.task.transition" source="task_from_id" destination="task_to_id">
+                        <field name="task_from_id"/>
+                        <field name="task_to_id"/>
+                    </arrow>
+                </diagram>
+            </field>
+        </record>
+
+        <!-- impexp.task.transition -->
+
+        <record model="ir.ui.view" id="task_transition_form">
+            <field name="name">impexp.task.transition.form</field>
+            <field name="model">impexp.task.transition</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Task Transition Form">
+                    <group>
+                        <field name="task_from_id"/>
+                        <field name="task_to_id"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <!-- menu and window actions -->
+
+        <record model="ir.actions.act_window" id="task_view_action">
+            <field name="name">Tasks</field>
+            <field name="res_model">impexp.task</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="task_tree"/>
+            <field name="target">current</field>
+        </record>
+
+        <record model="ir.actions.act_window" id="task_flow_view_action">
+            <field name="name">Task Flows</field>
+            <field name="res_model">impexp.task.flow</field>
+            <field name="view_mode">tree,diagram,form</field>
+            <field name="view_type">form</field>
+            <field name="target">current</field>
+        </record>
+
+        <menuitem id="menu_impexp_root"
+                  parent="connector.menu_connector_root"
+                  name="Import/Export"
+                  sequence="10"
+                  groups="connector.group_connector_manager"/>
+
+        <menuitem id="menu_impexp_task"
+                  name="Tasks"
+                  parent="menu_impexp_root"
+                  action="task_view_action"/>
+
+        <menuitem id="menu_impexp_task_flow"
+                  name="Task Flows"
+                  parent="menu_impexp_root"
+                  action="task_flow_view_action"/>
+
+    </data>
+</openerp>
