@@ -23,6 +23,8 @@ install:
   - export PATH=${HOME}/maintainer-quality-tools/travis:${PATH}
   - travis_install_nightly
   - git clone https://github.com/OCA/connector -b ${VERSION} $HOME/connector
+  - pip install ftputil
+  - pip install xlrd
 
 script:
   - travis_run_tests
