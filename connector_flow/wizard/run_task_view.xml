@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+
+        <record model="ir.ui.view" id="run_task_form">
+            <field name="name">impexp.wizard.runtask.form</field>
+            <field name="model">impexp.wizard.runtask</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Task Form" version="7.0">
+                    <field name="state" invisible="1"/>
+                    <group states="input">
+                        <field name="flow_id" on_change="onchange_flow(flow_id)"/>
+                        <field name="task_id"/>
+                        <field name="datas" filename="datas_fname" />
+                        <field name="datas_fname" invisible="1"/>
+                        <field name="async"/>
+                    </group>
+                    <div states="output">
+                        The task returned <field name="attachment_id" readonly="1" />
+                    </div>
+                    <footer states="input">
+                        <button name="run_task" string="Run Task" type="object" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" class="oe_link" special="cancel"/>
+                    </footer>
+                    <footer states="output">
+                        <button special="cancel" string="Close" type="object"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="run_task_view_action">
+            <field name="name">Run Task</field>
+            <field name="res_model">impexp.wizard.runtask</field>
+            <field name="view_mode">form</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="task_tree"/>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem id="menu_impexp_run_task"
+                  name="Run Task"
+                  parent="menu_impexp_root"
+                  action="run_task_view_action"/>
+
+    </data>
+</openerp>
