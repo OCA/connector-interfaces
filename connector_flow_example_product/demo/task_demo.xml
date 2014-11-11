@@ -23,7 +23,7 @@
             <field name="flow_id" ref="task_flow_product_catalog_import"/>
         </record>
 
-        <record model="impexp.task.transition" id="task_product_catalog_import_1">
+        <record model="impexp.task.transition" id="task_transition_product_catalog_import_1">
             <field name="task_from_id" ref="task_product_catalog_import_1"/>
             <field name="task_to_id" ref="task_product_catalog_import_2"/>
         </record>
