@@ -30,7 +30,7 @@ from openerp.models import AbstractModel, TransientModel
 from openerp.models import fix_import_export_id_paths
 from openerp.tools.translate import _
 
-from openerp.addons.connector.queue.job import job
+from openerp.addons.connector.queue.job import job, related_action
 from openerp.addons.connector.session import ConnectorSession
 from openerp.addons.connector.exception import FailedJobError
 
@@ -119,7 +119,22 @@ def _extract_records(session, model_obj, fields, data, chunk_size):
         yield row_from, len(data) - 1
 
 
+def related_attachment(session, job):
+    attachment_id = job.args[1]
+
+    action = {
+        'name': _("Attachment"),
+        'type': 'ir.actions.act_window',
+        'res_model': "ir.attachment",
+        'view_type': 'form',
+        'view_mode': 'form',
+        'res_id': attachment_id,
+    }
+    return action
+
+
 @job
+@related_action(action=related_attachment)
 def import_one_chunk(session, res_model, att_id, options):
     model_obj = session.pool[res_model]
     fields, data = _read_csv_attachment(session, att_id, options)
