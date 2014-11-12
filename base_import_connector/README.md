@@ -15,7 +15,7 @@ chunk is then imported in a separate background job.
 
 When an import fails, the job is marked as such and the
 user can read the error in the job status. The CSV chunk
-being imported is stored as attachments to the jobs, making
+being imported is stored as an attachment to the job, making
 it easy to download it, fix it and run a new import, possibly
 in synchronous mode since the chunks are small.
 
@@ -32,16 +32,17 @@ automate ETL flows.
 Other modules may benefit from this infrastructure in the following way
 
 1. create an instance of `base_import.import` and populate its fields
-   (`res_model`, `file`, `file_name`, `file_type`),
+   (`res_model`, `file`, `file_name`),
 2. invoke the `do` method with appropriate options 
-   (`header`, `encoding`, `separator`, `quoting`, `use_connector`).
+   (`header`, `encoding`, `separator`, `quoting`,
+   `use_connector`, `chunk_size`).
 
 Known limitations
 =================
 
-* The number of lines per chunk is currently hard coded to 100.
-  If this proves to be an issue, it is easy to add an option
-  to let the user choose the chunk size.
+* There is currently no user interface to control the chunk size,
+  which is currently 100 by default. Should this proves to be an issue,
+  it is easy to add an option to extend the import screen.
 * Validation cannot be run in the background.
 
 Credits
