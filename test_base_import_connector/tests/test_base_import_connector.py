@@ -76,10 +76,6 @@ class TestBaseImportConnector(common.TransactionCase):
         return self.import_obj.do(
             self.cr, self.uid, import_id, self.FIELDS, options)
 
-    def _perform_job(self, job_uuid):
-        job = self.storage.load(job_uuid)
-        job.perform(self.session)
-
     def _check_import_result(self):
         move_ids = self.move_obj.search(
             self.cr, self.uid,
