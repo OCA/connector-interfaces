@@ -23,9 +23,18 @@
 import os
 
 import openerp.tests.common as common
-from openerp.addons.base_import_connector.models.base_import_connector import \
-    OPT_HAS_HEADER, OPT_QUOTING, OPT_SEPARATOR, \
+from openerp.addons.base_import_connector.models.base_import_connector import (
+    OPT_HAS_HEADER, OPT_QUOTING, OPT_SEPARATOR,
     OPT_CHUNK_SIZE, OPT_USE_CONNECTOR
+)
+from openerp.addons.connector.queue.job import (
+    Job,
+    OpenERPJobStorage,
+    job,
+)
+from openerp.addons.connector.session import (
+    ConnectorSession,
+)
 
 
 class TestBaseImportConnector(common.TransactionCase):
@@ -53,6 +62,9 @@ class TestBaseImportConnector(common.TransactionCase):
         super(TestBaseImportConnector, self).setUp()
         self.import_obj = self.registry['base_import.import']
         self.move_obj = self.registry['account.move']
+        self.job_obj = self.registry['queue.job']
+        self.session = ConnectorSession(self.cr, self.uid)
+        self.storage = OpenERPJobStorage(self.session)
 
     def _read_test_file(self, file_name):
         file_name = os.path.join(os.path.dirname(__file__), file_name)
@@ -70,6 +82,10 @@ class TestBaseImportConnector(common.TransactionCase):
         return self.import_obj.do(
             self.cr, self.uid, import_id, self.FIELDS, options)
 
+    def _perform_job(self, job_uuid):
+        job = self.storage.load(job_uuid)
+        job.perform(self.session)
+
     def test_normal_import(self):
         res = self._do_import('account.move.csv', use_connector=False)
         self.assertFalse(res, repr(res))
@@ -86,3 +102,17 @@ class TestBaseImportConnector(common.TransactionCase):
             self.cr, self.uid,
             [('name', 'in', ('TEST-1', 'TEST-2', 'TEST-3'))])
         self.assertEqual(len(move_ids), 0)
+        # but we must have one job to split the file
+        job_ids = self.job_obj.search(self.cr, self.uid, [])
+        self.assertEqual(len(job_ids), 1)
+        job = self.job_obj.browse(self.cr, self.uid, job_ids)
+        # job names are important
+        self.assertEqual(job.name,
+                         "Import Account Entry from file account.move.csv")
+        # perform job
+        self.storage.load(job.uuid).perform(self.session)
+        job_ids = self.job_obj.search(self.cr, self.uid, [('state', '=', 'done')])
+        self.assertEqual(len(job_ids), 1)
+        job_ids = self.job_obj.search(self.cr, self.uid, [('state', '!=', 'done')])
+        self.assertEqual(len(job_ids), 1)
+        job = self.job_obj.browse(self.cr, self.uid, job_ids)
