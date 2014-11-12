@@ -239,4 +239,4 @@ class BaseImportConnector(TransientModel):
                                     description=description)
         _link_attachment_to_job(session, job_uuid, att_id)
 
-        return {'messages': []}
+        return []

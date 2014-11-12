@@ -32,7 +32,7 @@ automate ETL flows.
 Other modules may benefit from this infrastructure in the following way
 
 1. create an instance of `base_import.import` and populate its fields
-   (`file`, `file_name`, `file_type`),
+   (`res_model`, `file`, `file_name`, `file_type`),
 2. invoke the `do` method with appropriate options 
    (`header`, `encoding`, `separator`, `quoting`, `use_connector`).
 
@@ -42,7 +42,9 @@ Known limitations
 * The number of lines per chunk is currently hard coded to 100.
   If this proves to be an issue, it is easy to add an option
   to let the user choose the chunk size.
-* There are no tests.
+* Validation cannot be run in the background.
+* There are not enough tests: 
+  I don't know how to force jobs to run from test (yet).
 
 Credits
 =======
