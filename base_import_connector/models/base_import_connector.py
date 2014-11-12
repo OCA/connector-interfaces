@@ -41,9 +41,10 @@ OPT_QUOTING = 'quoting'
 OPT_ENCODING = 'encoding'
 # options defined in base_import_connector/import.js
 OPT_USE_CONNECTOR = 'use_connector'
+OPT_CHUNK_SIZE = 'chunk_size'
 
 INIT_PRIORITY = 100
-MIN_ROWS = 100
+DEFAULT_CHUNK_SIZE = 100
 
 
 class BaseImportConnectorInstalled(AbstractModel):
@@ -100,7 +101,7 @@ def _link_attachment_to_job(session, job_uuid, att_id):
     }, context=session.context)
 
 
-def _extract_records(session, model_obj, fields, data):
+def _extract_records(session, model_obj, fields, data, chunk_size):
     """ Split the data on record boundaries,
     in chunks of minimum MIN_ROWS """
     fields = map(fix_import_export_id_paths, fields)
@@ -111,7 +112,7 @@ def _extract_records(session, model_obj, fields, data):
                                            data,
                                            context=session.context):
         rows = rows[1]['rows']
-        if rows['to'] - row_from > MIN_ROWS:
+        if rows['to'] - row_from > chunk_size:
             yield row_from, rows['to']
             row_from = rows['to'] + 1
     if row_from < len(data):
@@ -148,7 +149,9 @@ def split_file(session, model_name, translated_model_name,
         header_offset = 1
     else:
         header_offset = 0
-    for row_from, row_to in _extract_records(session, model_obj, fields, data):
+    for row_from, row_to in _extract_records(
+            session, model_obj, fields, data,
+            options.get(OPT_CHUNK_SIZE, DEFAULT_CHUNK_SIZE)):
         chunk = str(priority - INIT_PRIORITY).zfill(padding)
         description = _("Import %s from file %s - #%s - lines %s to %s") % \
             (translated_model_name,
