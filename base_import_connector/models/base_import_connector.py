@@ -112,7 +112,7 @@ def _extract_records(session, model_obj, fields, data, chunk_size):
                                            data,
                                            context=session.context):
         rows = rows[1]['rows']
-        if rows['to'] - row_from > chunk_size:
+        if rows['to'] - row_from + 1 >= chunk_size:
             yield row_from, rows['to']
             row_from = rows['to'] + 1
     if row_from < len(data):
@@ -155,8 +155,6 @@ def split_file(session, model_name, translated_model_name,
                att_id, options, file_name="file.csv"):
     """ Split a CSV attachment in smaller import jobs """
     model_obj = session.pool[model_name]
-    if session.context is None:
-        session.context = {}
     fields, data = _read_csv_attachment(session, att_id, options)
     padding = len(str(len(data)))
     priority = INIT_PRIORITY
@@ -164,9 +162,12 @@ def split_file(session, model_name, translated_model_name,
         header_offset = 1
     else:
         header_offset = 0
-    for row_from, row_to in _extract_records(
-            session, model_obj, fields, data,
-            options.get(OPT_CHUNK_SIZE, DEFAULT_CHUNK_SIZE)):
+    chunk_size = options.get(OPT_CHUNK_SIZE) or DEFAULT_CHUNK_SIZE
+    for row_from, row_to in _extract_records(session,
+                                             model_obj,
+                                             fields,
+                                             data,
+                                             chunk_size):
         chunk = str(priority - INIT_PRIORITY).zfill(padding)
         description = _("Import %s from file %s - #%s - lines %s to %s") % \
             (translated_model_name,

@@ -43,8 +43,6 @@ Known limitations
   If this proves to be an issue, it is easy to add an option
   to let the user choose the chunk size.
 * Validation cannot be run in the background.
-* There are not enough tests: 
-  I don't know how to force jobs to run from test (yet).
 
 Credits
 =======
@@ -61,4 +59,3 @@ Other contributors include:
 * David Béal (Akretion)
 * Jonathan Nemry (ACSONE)
 * Laurent Mignon (ACSONE)
-
