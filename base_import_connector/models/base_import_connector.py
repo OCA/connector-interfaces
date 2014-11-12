@@ -105,12 +105,12 @@ def _extract_records(session, model_obj, fields, data):
     in chunks of minimum MIN_ROWS """
     fields = map(fix_import_export_id_paths, fields)
     row_from = 0
-    for _, rows in model_obj._extract_records(session.cr,
-                                              session.uid,
-                                              fields,
-                                              data,
-                                              context=session.context):
-        rows = rows['rows']
+    for rows in model_obj._extract_records(session.cr,
+                                           session.uid,
+                                           fields,
+                                           data,
+                                           context=session.context):
+        rows = rows[1]['rows']
         if rows['to'] - row_from > MIN_ROWS:
             yield row_from, rows['to']
             row_from = rows['to'] + 1
