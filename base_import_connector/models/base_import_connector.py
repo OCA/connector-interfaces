@@ -103,7 +103,7 @@ def _link_attachment_to_job(session, job_uuid, att_id):
 
 def _extract_records(session, model_obj, fields, data, chunk_size):
     """ Split the data on record boundaries,
-    in chunks of minimum MIN_ROWS """
+    in chunks of minimum chunk_size """
     fields = map(fix_import_export_id_paths, fields)
     row_from = 0
     for rows in model_obj._extract_records(session.cr,
