@@ -26,7 +26,7 @@ import csv
 import os
 from cStringIO import StringIO
 
-from openerp.models import AbstractModel, TransientModel
+from openerp.models import TransientModel
 from openerp.models import fix_import_export_id_paths
 from openerp.tools.translate import _
 
@@ -45,10 +45,6 @@ OPT_CHUNK_SIZE = 'chunk_size'
 
 INIT_PRIORITY = 100
 DEFAULT_CHUNK_SIZE = 100
-
-
-class BaseImportConnectorInstalled(AbstractModel):
-    _name = 'base_import_connector.connector'
 
 
 def _encode(row, encoding):
