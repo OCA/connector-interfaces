@@ -1,4 +1,4 @@
-openerp.base_import_connector = function (instance) {
+openerp.base_import_async = function (instance) {
 
     var QWeb = instance.web.qweb;
     var _t = instance.web._t;

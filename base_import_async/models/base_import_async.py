@@ -39,7 +39,7 @@ OPT_HAS_HEADER = 'headers'
 OPT_SEPARATOR = 'separator'
 OPT_QUOTING = 'quoting'
 OPT_ENCODING = 'encoding'
-# options defined in base_import_connector/import.js
+# options defined in base_import_async/import.js
 OPT_USE_CONNECTOR = 'use_connector'
 OPT_CHUNK_SIZE = 'chunk_size'
 

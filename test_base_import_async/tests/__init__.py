@@ -3,9 +3,7 @@
 #
 #   Module for OpenERP
 #   Copyright (C) 2014 ACSONE SA/NV (http://acsone.eu).
-#   Copyright (C) 2013 Akretion (http://www.akretion.com).
 #   @author Stéphane Bidoul <stephane.bidoul@acsone.eu>
-#   @author Sébastien BEAU <sebastien.beau@akretion.com>
 #
 #   This program is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU Affero General Public License as
@@ -21,22 +19,5 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ###############################################################################
-{
-    'name': 'Asynchronous Import',
-    'version': '1.0',
-    'author': ['Akretion', 'ACSONE SA/NV'],
-    'license': 'AGPL-3',
-    'category': 'Generic Modules',
-    'depends': [
-        'base_import',
-        'connector',
-    ],
-    'data': [
-        'views/base_import_connector.xml',
-    ],
-    'qweb': [
-        'static/src/xml/import.xml',
-    ],
-    'installable': True,
-    'application': False,
-}
+
+from . import test_base_import_async

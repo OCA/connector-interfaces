@@ -22,4 +22,4 @@
 #
 ###############################################################################
 
-from . import base_import_connector
+from . import base_import_async

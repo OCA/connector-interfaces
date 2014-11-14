@@ -23,7 +23,7 @@
 import os
 
 import openerp.tests.common as common
-from openerp.addons.base_import_connector.models.base_import_connector import (
+from openerp.addons.base_import_async.models.base_import_async import (
     OPT_HAS_HEADER, OPT_QUOTING, OPT_SEPARATOR,
     OPT_CHUNK_SIZE, OPT_USE_CONNECTOR
 )

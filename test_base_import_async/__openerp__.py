@@ -19,5 +19,20 @@
 #   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ###############################################################################
+{
+    'name': 'Test suite for base_import_async',
+    'version': '1.0',
+    'author': ['ACSONE SA/NV'],
+    'license': 'AGPL-3',
+    'category': 'Generic Modules',
+    'description': """Test suite for base_import_async.
 
-from . import test_base_import_connector
+    Normally you don't need to install this.
+    """,
+    'depends': [
+        'base_import_async',
+        'account',
+    ],
+    'installable': True,
+    'application': False,
+}
