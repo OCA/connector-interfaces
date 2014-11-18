@@ -42,7 +42,8 @@ a high priority that generates a lot job
 it may prevent task with lower priority to be imported
 """,
  'data': ['data.xml',
-          'view/backend_view.xml'],
+          'view/backend_view.xml',
+          'security/ir.model.access.csv'],
  'test': [],
  'installable': True,
  'auto_install': False,
