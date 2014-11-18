@@ -17,7 +17,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-{'name': 'ODBC data synchronizer',
+{'name': 'ODBC connector',
  'version': '0.1',
  'author': 'Camptocamp',
  'maintainer': 'Camptocamp',
@@ -25,9 +25,10 @@
  'complexity': "normal",
  'depends': ['connector'],
  'description': """
-Import data from other databases using connector Framework.
-Synchronize data from odbc compatible Database source.
-You will find in test a sample of implementation.
+Import data from other databases using connector framework.
+
+Synchronize data from odbc compatible database source.
+You will find in tests folder a sample of implementation.
 
 Under the sample folder you will find sample
 demonstrating the most common use cases.
@@ -36,10 +37,9 @@ When importing hierarchical data do not forget to
 manage `defer_parent_store_computation` in context.
 
 There is an open issue with the management of the
-priority in connector. When using delayed
-import, if you have a task with
-a high priority that generates a lot job
-it may prevent task with lower priority to be imported
+priority in connector.
+When using delayed import, if you have a task with a high priority
+that generates a lot job it may prevent task with lower priority to be imported
 """,
  'data': ['data.xml',
           'view/backend_view.xml',
