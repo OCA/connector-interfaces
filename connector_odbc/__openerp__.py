@@ -24,8 +24,25 @@
  'category': 'Connector',
  'complexity': "normal",
  'depends': ['connector'],
- 'description': """synchronize data from odbc compatible DB""",
- 'data': ['view/backend_view.xml'],
+ 'description': """
+Import data from other databases using connector Framework.
+Synchronize data from odbc compatible Database source.
+You will find in test a sample of implementation.
+
+Under the sample folder you will find sample
+demonstrating the most common use cases.
+
+When importing hierarchical data do not forget to
+manage `defer_parent_store_computation` in context.
+
+There is an open issue with the management of the
+priority in connector. When using delayed
+import, if you have a task with
+a high priority that generates a lot job
+it may prevent task with lower priority to be imported
+""",
+ 'data': ['data.xml',
+          'view/backend_view.xml'],
  'test': [],
  'installable': True,
  'auto_install': False,
