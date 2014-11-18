@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data noupdate="1">
+    <record forcecreate="True" id="ir_cron_odbc_import_all_directly" model="ir.cron">
+           <field name="name">Import all data directly using connector odbc</field>
+           <field eval="False" name="active"/>
+           <field name="user_id" ref="base.user_root"/>
+           <field name="interval_number">1</field>
+           <field name="interval_type">days</field>
+           <field name="numbercall">-1</field>
+           <field eval="'connector.odbc.data.server.backend'" name="model"/>
+           <field eval="'import_all'" name="function"/>
+           <field eval="'()'" name="args"/>
+        </record>
+        <record forcecreate="True" id="ir_cron_odbc_import_all_job" model="ir.cron">
+           <field name="name">Import all data with jobs using connector odbc</field>
+           <field eval="False" name="active"/>
+           <field name="user_id" ref="base.user_root"/>
+           <field name="interval_number">1</field>
+           <field name="interval_type">days</field>
+           <field name="numbercall">-1</field>
+           <field eval="'connector.odbc.data.server.backend'" name="model"/>
+           <field eval="'import_all_delayed'" name="function"/>
+           <field eval="'()'" name="args"/>
+        </record>
+  </data>
+</openerp>
