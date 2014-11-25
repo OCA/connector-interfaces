@@ -42,6 +42,7 @@ class ODBCAdapter(BackendAdapter):
     # multiple column key not identified
     _prefix = None
     _data_set_lookup_disable = False
+    _filter_read = False
 
     def _connect(self):
         ODBCAdapter._cnx = pyodbc.connect(self.backend_record.dsn,
@@ -133,17 +134,27 @@ class ODBCAdapter(BackendAdapter):
 
         :param code_slice: list of external code to read
         :type code_slice: iterable of string
+
         :return: SQL query
         :rtype: str
         """
         # pyodbc does not support array formatting
         in_format = ', '.join(['?'] * len(code_slice))
-        sql = "SELECT *%s FROM %s WHERE %s IN (%s)" % (
-            self.adapt_dates_query(),
-            self._table_name,
-            self.get_unique_key_column(),
-            in_format
-        )
+        if self._filter_read:
+            sql = "SELECT *%s FROM %s %s AND %s IN (%s)" % (
+                self.adapt_dates_query(),
+                self._table_name,
+                self.get_sql_conditions()[0],
+                self.get_unique_key_column(),
+                in_format
+            )
+        else:
+            sql = "SELECT *%s FROM %s WHERE %s IN (%s)" % (
+                self.adapt_dates_query(),
+                self._table_name,
+                self.get_unique_key_column(),
+                in_format
+            )
         return sql
 
     def lookup_data_set(self, data_set, code):
@@ -190,6 +201,9 @@ class ODBCAdapter(BackendAdapter):
                         for i in xrange(0, len(odbc_codes), ODBC_MAX_CHUNK)]
         for code_slice in sliced_codes:
             sql = self.get_read_sql(code_slice)
+            if self._filter_read:
+                # we preprend other where clause arguments
+                code_slice[0:0] = self.get_sql_conditions()[1]
             for row in self._sql_query(sql, *code_slice):
                 yield row
 
