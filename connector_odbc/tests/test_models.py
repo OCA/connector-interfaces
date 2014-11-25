@@ -21,7 +21,7 @@
 from openerp.addons.connector.unit.mapper import mapping, only_create
 from ..unit.mapper import ODBCRowImportMapper
 from ..backend import odbc_backend
-from ..unit.binder import odbc_binded
+from ..unit.binder import odbc_bound
 from ..unit.import_synchronizer import (DirectBatchODBCSynchronizer,
                                         DelayedBatchODBCSynchronizer,
                                         ODBCSynchronizer)
@@ -46,7 +46,7 @@ class test_code_a(orm.Model):
     _defaults = {'active': True}
 
 
-@odbc_binded
+@odbc_bound
 class odbc_code_a(orm.Model):
     """Test model"""
     _inherit = "odbc.string.server.binding"
@@ -61,7 +61,7 @@ class odbc_code_a(orm.Model):
 
     _sql_contraints = [
         ('odbc_uniq', 'unique(backend_id, odbc_code)',
-         'A test code with same ODBC data code allready exists')
+         'A test code with same ODBC data code already exists')
     ]
 
 

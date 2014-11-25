@@ -200,7 +200,7 @@ class ODBCSynchronizer(ImportSynchronizer):
             return
         binding_id = self.binder.to_openerp(odbc_code)
         if self._is_uptodate(binding_id):
-            return _('Record %s %s allready up-to-date') % (self.model._name,
+            return _('Record %s %s already up-to-date') % (self.model._name,
                                                             odbc_code)
         # performance tweak
         if binding_id:

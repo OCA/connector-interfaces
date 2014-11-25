@@ -147,7 +147,7 @@ class ODBCBinder(Binder):
         )
 
 
-def odbc_binded(cls):
+def odbc_bound(cls):
     """ Register a binding model that inherits from external.binding
     :param cls: class to register
     """
