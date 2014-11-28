@@ -37,7 +37,7 @@ class test_sql_adapter(odbc_test_common.ODBCBaseTestClass):
         SQL is matched in a collection
 
         """
-        adapter = self.env.get_connector_unit(ODBCAdapter)
+        adapter = self.connector_env.get_connector_unit(ODBCAdapter)
         self.assertEqual(adapter._table_name, 'mega_code_table')
         search_res = adapter.search()
         self.assertEqual(search_res, ['1', '2', '3', '4', '5'])
@@ -50,7 +50,7 @@ class test_sql_adapter(odbc_test_common.ODBCBaseTestClass):
         We also validate memoizer
 
         """
-        adapter = self.env.get_connector_unit(ODBCAdapter)
+        adapter = self.connector_env.get_connector_unit(ODBCAdapter)
         self.assertEqual(adapter._table_name, 'mega_code_table')
         read_res = adapter.read(['2', '1', '3', '4', '5'])
         data = [x for x in read_res]  # read_res is a generator

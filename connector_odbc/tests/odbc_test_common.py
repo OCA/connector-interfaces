@@ -47,7 +47,7 @@ class ODBCBaseTestClass(test_common.SingleTransactionCase):
             'connector.odbc.data.server.backend'
         )
         self.backend = self._get_backend()
-        self.env = self._get_backend().get_environment(
+        self.connector_env = self._get_backend().get_environment(
             'odbc.data.connector.test.code.a'
         )
         # We do not want to commit during test
