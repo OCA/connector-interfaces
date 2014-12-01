@@ -26,7 +26,9 @@ class ConfiguratorTester(test_common.TransactionCase):
     def test_import_configurator(self):
         """Test the creation of a register with configurator"""
         backend_model = self.registry('connector.odbc.data.server.backend')
-        configurator_model = self.registry('connector.odbc.import.configurator')
+        configurator_model = self.registry(
+            'connector.odbc.import.configurator'
+            )
         b_id = backend_model.create(
             self.cr,
             self.uid,
@@ -66,7 +68,9 @@ class ConfiguratorTester(test_common.TransactionCase):
 
     def test_fields_view_get(self):
         backend_model = self.registry('connector.odbc.data.server.backend')
-        configurator_model = self.registry('connector.odbc.import.configurator')
+        configurator_model = self.registry(
+            'connector.odbc.import.configurator'
+            )
 
         b_id = backend_model.create(
             self.cr,
@@ -76,4 +80,7 @@ class ConfiguratorTester(test_common.TransactionCase):
              'dsn': 'Dummy'}
         )
         context = {'active_id': b_id}
-        configurator_model.fields_view_get(self.cr, self.uid, view_type='form', context=context)
+        configurator_model.fields_view_get(self.cr,
+                                           self.uid,
+                                           view_type='form',
+                                           context=context)
