@@ -1,0 +1,310 @@
+# -*- coding: utf-8 -*-
+##############################################################################
+#
+#    Author: Nicolas Bessi
+#    Copyright 2014 Camptocamp SA
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+##############################################################################
+from __future__ import absolute_import
+import simplejson
+from ..utils.oauth2_utils import SalesForceOauth2MAnager
+from openerp.osv import orm, fields
+from openerp.tools.translate import _
+from openerp.addons.connector import session as csession, connector
+from openerp.addons.connector.connector import install_in_connector
+
+install_in_connector()
+
+
+class SalesforceBackend(orm.Model):
+    """Salesforce backend
+
+    Please refer to connector backend documentation
+
+    There are 2 supported ways to access a Salesforce instance
+    Oauth2 flow
+    -----------
+    In order to use it you have to add a remote application in sales force
+    and enable Oauth login. In the callback url you will have
+    to copy the provided callback url into Salesforce
+
+    User Password flow
+    ------------------
+    This flow allows a user to connect to api using SOAP access
+    in order to get a token. This approach is simpler but less secure
+    The first is to pass the domain of your Salesforce instance
+    and an access token straight to.
+
+    If you have the full URL e.g (https://na1.salesforce.com) of your instance.
+
+    There are also two means of authentication:
+    - Using username, password and security token
+    - Using IP filtering, username, password and organizationId
+    """
+
+    _name = "connector.salesforce.backend"
+    _inherit = "connector.backend"
+    _description = """Salesforce Backend"""
+    _backend_type = "salesforce"
+
+    def _select_versions(self, cr, uid, context=None):
+        """ Available versions
+
+        Can be inherited to add custom versions.
+
+        :return: list of tuple of available versions
+        :rtype: list
+        """
+        return [('15', "Winter'15")]
+
+    _columns = {
+        'authentication_method': fields.selection(
+            [
+                ('pwd_token', 'Based on User, Password, Token'),
+                ('oauth2', 'OAuth 2'),
+                ('ip_filtering', 'Based on IP Filter and OrganizationId')
+            ],
+            string='Authentication Method',
+        ),
+
+        'name': fields.char(
+            'Name',
+            required=True
+        ),
+
+        'version': fields.selection(
+            _select_versions,
+            string='Version',
+            required=True
+        ),
+
+        'url': fields.char(
+            'URL',
+            required=True,
+        ),
+
+        'user_name': fields.char(
+            'User Name',
+        ),
+
+        'password': fields.char(
+            'Password',
+        ),
+
+        'consumer_key': fields.char(
+            'OAuth2 Consumer Key',
+        ),
+
+        'consumer_secret': fields.char(
+            'OAuth2 secret',
+        ),
+
+        'consumer_code': fields.char(
+            'OAuth2 client authorization code'
+        ),
+        'consumer_refresh_token': fields.char(
+            'OAuth2 Refresh Token'
+        ),
+        'consumer_token': fields.char(
+            'OAuth2 Token'
+        ),
+        'callback_url': fields.char(
+            'Public secure URL of Odoo (HTTPS)',
+        ),
+        'token': fields.char(
+            'Password flow Security API token',
+        ),
+
+        'organization_uuid': fields.char('OrganizationId'),
+
+        'sandbox': fields.boolean(
+            'Connect on sandbox instance',
+        ),
+    }
+
+    _defaults = {'authentication_method': 'pwd_token'}
+
+    def _enforce_param(self, cr, uid, backend_record, param_name,
+                       context=None):
+        """Ensure configuration parameter is set on backend record
+
+        :param backend_record: record of `connector.salesforce.backend`
+        :type backend_record: :py:class:`openerp.osv.orm.Model`
+
+        :return: True is parameter is set or raise an exception
+        :rtype: bool
+        """
+        if not backend_record[param_name]:
+            f_model = self.pool['ir.model.fields']
+            field_id = f_model.search(
+                cr,
+                uid,
+                [('model', '=', self._name),
+                 ('name', '=', param_name)],
+                context=context
+            )
+            if len(field_id) == 1:
+                field = f_model.browse(
+                    cr,
+                    uid,
+                    field_id[0],
+                    context=context
+                )
+                field_name = field.field_description
+            else:
+                field_name = param_name
+            raise orm.except_orm(
+                _('Configuration error'),
+                _('Configuration %s is mandatory with '
+                  'current authentication method') % field_name
+            )
+        return True
+
+    def _validate_configuration(self, cr, uid, ids, context=None):
+        """Ensure configuration on backend record is correct
+
+        We also test required parameters in order to
+        support eventual server env based configuration
+        """
+        for config in self.browse(cr, uid, ids, context=context):
+            self._enforce_param(cr, uid, config, 'url',
+                                context=context)
+            if config.authentication_method == 'ip_filtering':
+                self._enforce_param(cr, uid, config, 'organization_uuid',
+                                    context=context)
+                self._enforce_param(cr, uid, config, 'user_name',
+                                    context=context)
+                self._enforce_param(cr, uid, config, 'password',
+                                    context=context)
+            if config.authentication_method == 'pwd_token':
+                self._enforce_param(cr, uid, config, 'token',
+                                    context=context)
+                self._enforce_param(cr, uid, config, 'user_name',
+                                    context=context)
+                self._enforce_param(cr, uid, config, 'password',
+                                    context=context)
+            if config.authentication_method == 'oauth2':
+                self._enforce_param(cr, uid, config, 'consumer_key',
+                                    context=context)
+                self._enforce_param(cr, uid, config, 'consumer_secret',
+                                    context=context)
+                self._enforce_param(cr, uid, config, 'callback_url',
+                                    context=context)
+        return True
+
+    _constraints = [
+        (_validate_configuration, 'Configuration is invalid', [])
+    ]
+
+    def _manage_ids(self, ids):
+        """Boilerplate to manage various ids type"""
+        if isinstance(ids, (list, tuple)):
+            assert len(ids) == 1, 'One id expected'
+            backend_id = ids[0]
+        else:
+            backend_id = ids
+        return backend_id
+
+    def get_connector_environment(self, cr, uid, ids, model_name,
+                                  context=None):
+        """Returns a connector environment related to model and current backend
+
+        :param model_name: Odoo model name taken form `_name` property
+        :type model_name: str
+
+        :return: a connector environment related to model and current backend
+        :rtype: :py:class:``connector.Environment``
+
+        """
+        backend_id = self._manage_ids(ids)
+        session = csession.ConnectorSession(
+            cr,
+            uid,
+            context
+        )
+        backend = self.browse(cr, uid, backend_id, context=context)
+        env = connector.Environment(backend, session, model_name)
+        return env
+
+    def _get_oauth2_handler(self, cr, uid, ids, context=None):
+        backend_id = self._manage_ids(ids)
+        current = self.browse(cr, uid, backend_id, context=context)
+
+        oauth2_handler = SalesForceOauth2MAnager(
+            current
+        )
+        return oauth2_handler
+
+    def redirect_to_validation_url(self, cr, uid, ids, context=None):
+        """Retrieve Oauth2 authorization URL WIP"""
+        backend_id = self._manage_ids(ids)
+        current = self.browse(cr, uid, backend_id, context=context)
+        oauth2_handler = current._get_oauth2_handler()
+        auth_url = oauth2_handler.authorize_url(
+            response_type='code',
+            state=simplejson.dumps(
+                {'backend_id': current.id, 'dbname': cr.dbname}
+            )
+        )
+        return {
+            'name': 'Authorize Odoo/OpenERP',
+            'type': 'ir.actions.act_url',
+            'target': 'new',
+            'url': auth_url
+        }
+
+    def refresh_token(self, cr, uid, ids, force_refresh=False, context=None):
+        """
+        """
+        backend_id = self._manage_ids(ids)
+        current = self.browse(cr, uid, backend_id, context=context)
+        current._get_token(force_refresh=True)
+        return {}
+
+    def _get_token(self, cr, uid, ids, refresh=False, context=None):
+        """
+        """
+        backend_id = self._manage_ids(ids)
+        current = self.browse(cr, uid, backend_id, context=context)
+        oauth2_handler = current._get_oauth2_handler()
+        if refresh:
+            if not current.consumer_refresh_token:
+                raise ValueError(
+                    'Trying to refresh token but no saved refresh token'
+                )
+            response = oauth2_handler.get_token(
+                grant_type='refresh_token',
+                refresh_token=current.consumer_refresh_token
+            )
+        else:
+            response = oauth2_handler.get_token(
+                current.consumer_code,
+                grant_type='authorization_code'
+            )
+        if response.get('error'):
+            raise Exception(
+                'Can not get Token: %s %s' % (
+                    response['error'],
+                    response['error_description']
+                )
+            )
+        # refresh token must absolutly be saved else
+        # all authorization process must be redone
+        token_vals = {'consumer_token': response['access_token']}
+        if response.get('refresh_token'):
+            token_vals['consumer_refresh_token'] = response['refresh_token']
+        current.write(token_vals)
+        return response
