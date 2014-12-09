@@ -27,13 +27,13 @@
                   <group>
                     <field name="url"/>
                     <field name="authentication_method"/>
-                    <field name="user_name"
+                    <field name="username"
                            attrs="{'invisible': [('authentication_method', '=', 'oauth2')], 'required': [('authentication_method','in', ('ip_filtering', 'pwd_token'))]}"
                            />
                     <field name="password"
                            attrs="{'invisible': [('authentication_method','=', 'oauth2')], 'required': [('authentication_method', 'in', ('ip_filtering', 'pwd_token'))]}"
                            />
-                    <field name="token"
+                    <field name="security_token"
                            attrs="{'invisible': [('authentication_method', 'in', ('ip_filtering', 'oauth2'))], 'required': [('authentication_method', '=', 'pwd_token')]}"
                            />
                     <field name="sandbox"
