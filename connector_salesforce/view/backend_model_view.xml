@@ -15,12 +15,7 @@
             </group>
             <notebook>
               <page string="Actions">
-                <group>
-                  <label string="Import Customer data"/>
-                  <button name="import_accounts"
-                          type="object"
-                          string="Import Accounts"/>
-                </group>
+
               </page>
               <page string="Configuration">
                 <group>
@@ -34,6 +29,7 @@
                            attrs="{'invisible': [('authentication_method','=', 'oauth2')], 'required': [('authentication_method', 'in', ('ip_filtering', 'pwd_token'))]}"
                            />
                     <field name="security_token"
+                           widget='password'
                            attrs="{'invisible': [('authentication_method', 'in', ('ip_filtering', 'oauth2'))], 'required': [('authentication_method', '=', 'pwd_token')]}"
                            />
                     <field name="sandbox"
@@ -46,12 +42,26 @@
                            />
 
                     <field name="consumer_secret"
+                           widget='password'
                            attrs="{'invisible': [('authentication_method', '!=', 'oauth2')], 'required': [('authentication_method', '=', 'oauth2')]}"
                            />
                     <field name="callback_url"
                            attrs="{'invisible': [('authentication_method', '!=', 'oauth2')], 'required': [('authentication_method', '=', 'oauth2')]}"
                            />
                     <field name="consumer_code"
+                           widget='password'
+                           attrs="{'invisible': [('authentication_method', '!=', 'oauth2')]}"
+                           />
+                    <field name="consumer_token"
+                           widget='password'
+                           attrs="{'invisible': [('authentication_method', '!=', 'oauth2')]}"
+                           />
+                    <field name="consumer_refresh_token"
+                           widget='password'
+                           attrs="{'invisible': [('authentication_method', '!=', 'oauth2')]}"
+                           />
+                    <field name="consumer_code"
+                           widget='password'
                            attrs="{'invisible': [('authentication_method', '!=', 'oauth2')]}"
                            />
                     <button name="redirect_to_validation_url"
