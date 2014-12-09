@@ -96,7 +96,7 @@ class SalesforceBackend(orm.Model):
             required=True,
         ),
 
-        'user_name': fields.char(
+        'username': fields.char(
             'User Name',
         ),
 
@@ -124,7 +124,7 @@ class SalesforceBackend(orm.Model):
         'callback_url': fields.char(
             'Public secure URL of Odoo (HTTPS)',
         ),
-        'token': fields.char(
+        'security_token': fields.char(
             'Password flow Security API token',
         ),
 
@@ -185,14 +185,14 @@ class SalesforceBackend(orm.Model):
             if config.authentication_method == 'ip_filtering':
                 self._enforce_param(cr, uid, config, 'organization_uuid',
                                     context=context)
-                self._enforce_param(cr, uid, config, 'user_name',
+                self._enforce_param(cr, uid, config, 'username',
                                     context=context)
                 self._enforce_param(cr, uid, config, 'password',
                                     context=context)
             if config.authentication_method == 'pwd_token':
-                self._enforce_param(cr, uid, config, 'token',
+                self._enforce_param(cr, uid, config, 'security_token',
                                     context=context)
-                self._enforce_param(cr, uid, config, 'user_name',
+                self._enforce_param(cr, uid, config, 'username',
                                     context=context)
                 self._enforce_param(cr, uid, config, 'password',
                                     context=context)
