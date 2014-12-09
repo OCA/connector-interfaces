@@ -39,7 +39,10 @@ The *connector_flow_example_{ftp,product}* modules provide pre-configured
 demo flows.
 
 This module was definitely inspired by the works of Akretion (file_repository)
-and Camptocamp (connector_file).""",
+and Camptocamp (connector_file).
+
+A very brief tutorial can be found at http://blog.initos.com/?p=1220
+""",
     'category': 'Connector',
     'author': 'initOS GmbH & Co. KG',
     'license': 'AGPL-3',
