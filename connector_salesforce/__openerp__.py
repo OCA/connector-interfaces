@@ -40,7 +40,10 @@ Export to Salesforce are supported and implemented but
 there is no default export provided at current time.
 
 """,
- 'data': ['view/backend_model_view.xml'],
+ 'data': [
+     'view/backend_model_view.xml',
+     'salesforce_account/view/backend_view.xml',
+ ],
  'test': [],
  'installable': True,
  'auto_install': False,

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+    <record id="add_import_account_button" model="ir.ui.view">
+      <field name="name">add import account button</field>
+      <field name="model">connector.salesforce.backend</field>
+      <field name="inherit_id" ref="connector_salesforce_backend_form"/>
+      <field name="arch" type="xml">
+        <page string="Action" position="inside">
+          <group>
+            <label string="Import Customer data"/>
+            <button name="import_sf_account"
+                    type="object"
+                    string="Import Accounts Directly"/>
+          </group>
+        </page>
+      </field>
+    </record>
+
+  </data>
+</openerp>
