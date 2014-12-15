@@ -41,12 +41,3 @@ class SalesforceAccount(orm.Model):
     ]
 
 SalesforeceBinder._model_name.append('connector.salesforce.account')
-
-
-class res_partner(orm.Model):
-
-    _inherit = 'res.partner'
-
-    _columns = {
-        'sf_warning': fields.boolean('SF Account Warning'),
-    }
