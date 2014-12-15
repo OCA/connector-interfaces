@@ -8,14 +8,16 @@
       <field name="arch" type="xml">
         <page string="Actions" position="inside">
           <group>
-            <label string="Import Customer data"/>
-            <button name="import_sf_account"
-                    type="object"
-                    string="Import Accounts Directly"/>
+            <label string="Customer data"/>
+            <group>
+              <field name="last_sf_account_import_sync_date"/>
+              <button name="import_sf_account"
+                      type="object"
+                      string="Import Accounts Directly"/>
+            </group>
           </group>
         </page>
       </field>
     </record>
-
   </data>
 </openerp>
