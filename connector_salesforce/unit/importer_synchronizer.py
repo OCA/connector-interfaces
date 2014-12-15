@@ -19,25 +19,20 @@
 #
 ##############################################################################
 import logging
-from openerp.tools.translate import _
 from openerp.addons.connector.queue.job import job
-from openerp.addons.connector.connector import ConnectorUnit
 from openerp.addons.connector.unit.synchronizer import ImportSynchronizer
-from openerp.addons.connector.unit.mapper import ImportMapper
 from openerp.addons.connector.exception import (IDMissingInBackend,
                                                 RetryableJobError)
-from ..backend import salesforce_backend
 
 _logger = logging.getLogger('salesforce_import_synchronizer')
 
 
-@salesforce_backend
 class SalesforceImportSynchronizer(ImportSynchronizer):
 
     def __init__(self, connector_env):
         super(SalesforceImportSynchronizer, self).__init__(connector_env)
-        self.sf_id
-        self.sf_record
+        self.salesforce_id = None
+        self.salesforce_record = None
 
     def _after_import(self, binding_id):
         """ Hook called after the import"""
@@ -51,7 +46,7 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
         return self.session.create(self.model._name, data)
 
     def _get_record(self):
-        return self.backend_adapter.read(self.sf_id)
+        return self.backend_adapter.read(self.salesforce_id)
 
     def _map_data_for_update(self, mapper, **kwargs):
         """ Call the convert function of the Mapper
@@ -63,8 +58,8 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
                  :py:meth:``models.Model.create``
         :rtype: dict
         """
-        self._validate_data(self.sf_record)
-        return mapper.values(self.sf_record, **kwargs)
+        self._validate_data(self.salesforce_record)
+        return mapper.values(**kwargs)
 
     def _map_data_for_create(self, mapper, **kwargs):
         """ Call the convert function of the Mapper
@@ -76,8 +71,8 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
                  :py:meth:``models.Model.create``
         :rtype: dict
         """
-        self._validate_data(self.sf_record)
-        data = mapper.values(self.sf_record, for_create=True, **kwargs)
+        self._validate_data(self.salesforce_record)
+        data = mapper.values(for_create=True, **kwargs)
         self._validate_data(data)
         return data
 
@@ -100,40 +95,100 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
         return
 
     def _import(self, binding_id):
-        record_mapper = self.mapper.map_record(self.sf_record)
+        record_mapper = self.mapper.map_record(self.salesforce_record)
         if binding_id:
+            # optimisation trick to avoid lookup binding
+            record_mapper.binding_id = binding_id
             data = self._map_data_for_update(record_mapper)
             self._update(binding_id, data)
         else:
-            data = self._map_data_for_create(self.sf_record)
-            self._create(data)
-        self.binder.bind(self.sf_id, binding_id)
+            data = self._map_data_for_create(record_mapper)
+            binding_id = self._create(data)
+        self.binder.bind(self.salesforce_id, binding_id)
+        self._after_import(binding_id)
 
-    def run(self, sf_id, force=False):
-        self.sf_id = sf_id
-        self.record = self.get_record()
-        if not self.record:
+    def run(self, salesforce_id, force=False):
+        self.salesforce_id = salesforce_id
+        self.salesforce_record = self._get_record()
+        if not self.salesforce_record:
             raise IDMissingInBackend(
                 'id %s does not exists in Salesforce for %s' % (
                     self.backend_adapter._sf_type
                 )
             )
         self._before_import()
-        binding_id = self.binder.to_openerp(self.sf_id)
+        binding_id = self.binder.to_openerp(self.salesforce_id)
+        # calls _after_import
         self._import(binding_id)
-        self._after_import(binding_id)
 
 
-@salesforce_backend
-class SalesforceBatchSynchronizer(SalesforceImportSynchronizer):
-    pass
+
+class SalesforceBatchSynchronizer(ImportSynchronizer):
+
+    def before_batch_import(self):
+        pass
+
+    def after_batch_import(self):
+        pass
+
+    def run(self, model_name, date=False):
+        self.before_batch_import()
+        salesforce_ids = self.backend_adapter.get_updated(date)
+        for salesforce_id in salesforce_ids:
+            self._import_record(salesforce_id)
+        self.after_batch_import()
+
+    def import_record(self):
+        """ Import a record directly or delay the import of the record.
+        Method to implement in sub-classes.
+        """
+        raise NotImplementedError
 
 
-@salesforce_backend
 class SalesforceDelayedBatchSynchronizer(SalesforceBatchSynchronizer):
     pass
 
 
-@salesforce_backend
 class SalesforceDirectBatchSynchronizer(SalesforceBatchSynchronizer):
-    pass
+    def _import_record(self, salesforce_id):
+        import_record(self.session,
+                      self.model._name,
+                      self.backend_record.id,
+                      salesforce_id)
+
+
+def batch_import(session, model_name, backend_id, date=False):
+    backend = session.browse(
+        'connector.salesforce.backend',
+        backend_id
+    )
+    connector_env = backend.get_connector_environment(model_name)
+    importer = connector_env.get_connector_unit(
+        SalesforceDirectBatchSynchronizer
+    )
+    importer.run(model_name, date=date)
+
+
+def delayed_batch_import(session, model_name, backend_id, date=False):
+    backend = session.browse(
+        'connector.salesforce.backend',
+        backend_id
+    )
+    connector_env = backend.get_connector_environment(model_name)
+    importer = connector_env.get_connector_unit(
+        SalesforceDelayedBatchSynchronizer
+    )
+    importer.run(model_name, date=date)
+
+
+@job
+def import_record(session, model_name, backend_id, salesforce_id, force=False):
+    backend = session.browse(
+        'connector.salesforce.backend',
+        backend_id
+    )
+    connector_env = backend.get_connector_environment(model_name)
+    importer = connector_env.get_connector_unit(
+        SalesforceImportSynchronizer
+    )
+    importer.run(salesforce_id, force=True)

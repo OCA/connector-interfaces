@@ -27,5 +27,4 @@ from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
 def convert_to_utc_datetime(datetime_str):
     d_time = datetime.datetime.strptime(datetime_str,
                                         DEFAULT_SERVER_DATETIME_FORMAT)
-    utc = pytz.timezone(pytz.UTC)
-    return utc.localize(d_time)
+    return pytz.utc.localize(d_time)

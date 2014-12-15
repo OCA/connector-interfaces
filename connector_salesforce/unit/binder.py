@@ -19,10 +19,9 @@
 #
 ##############################################################################
 from __future__ import absolute_import
-from openerp import fields
-from openerp.osv import orm
+from openerp.osv import fields
 from openerp.addons.connector.connector import Binder
-from openerp.addons.connector_salesforce.backend import salesforce_backend
+from ..backend import salesforce_backend
 
 
 @salesforce_backend
@@ -30,11 +29,11 @@ class SalesforeceBinder(Binder):
     """ Manage bindings between Models identifier and Salesforce identifier"""
     _model_name = []
 
-    def to_openerp(self, sf_id, unwrap=False):
+    def to_openerp(self, salesforce_id, unwrap=False):
         """Returns the Odoo id for an external ID""
 
-        :param sf_id: sf_id row unique idenifier
-        :type sf_id: str
+        :param salesforce_id: salesforce_id row unique idenifier
+        :type salesforce_id: str
 
         :param unwrap: If True returns the id of the record related
                        to the binding record
@@ -45,7 +44,7 @@ class SalesforeceBinder(Binder):
         """
         binding_ids = self.session.search(
             self.model._name,
-            [('sf_id', '=', sf_id),
+            [('salesforce_id', '=', salesforce_id),
              ('backend_id', '=', self.backend_record.id)]
         )
         if not binding_ids:
@@ -68,13 +67,12 @@ class SalesforeceBinder(Binder):
         :return: external code of `binding_id`
         """
         sf_record = self.session.read(self.model._name,
-                                        binding_id,
-                                        ['sf_id'])
+                                      binding_id,
+                                      ['salesforce_id'])
         assert sf_record, 'No corresponding binding found'
-        return sf_record['sf_id']
+        return sf_record['salesforce_id']
 
-
-    def bind(self, sf_id, binding_id):
+    def bind(self, salesforce_id, binding_id):
         """ Create the link between an external id and an Odoo row and
         by updating the last synchronization date and the external code.
 
@@ -85,10 +83,10 @@ class SalesforeceBinder(Binder):
         # avoid to trigger the export when we modify the `odbc code`
         context = self.session.context.copy()
         context['connector_no_export'] = True
-        now_fmt = fields.Datetime.now()
+        now_fmt = fields.datetime.now()
         self.environment.model.write(self.session.cr,
                                      self.session.uid,
                                      binding_id,
-                                     {'sf_id': external_id,
-                                      'sf_sync_date': now_fmt},
+                                     {'salesforce_id': salesforce_id,
+                                      'salesforce_sync_date': now_fmt},
                                      context=context)

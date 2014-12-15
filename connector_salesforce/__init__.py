@@ -18,10 +18,9 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+from . import unit
 from . import connector
 from . import salesforce_backend
-from . import model
-from . import unit
 from . import controllers
 from . import lib
 from . import salesforce_account

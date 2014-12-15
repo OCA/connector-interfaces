@@ -6,7 +6,7 @@
       <field name="model">connector.salesforce.backend</field>
       <field name="inherit_id" ref="connector_salesforce_backend_form"/>
       <field name="arch" type="xml">
-        <page string="Action" position="inside">
+        <page string="Actions" position="inside">
           <group>
             <label string="Import Customer data"/>
             <button name="import_sf_account"

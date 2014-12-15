@@ -107,7 +107,7 @@ class SalesforceRestAdapter(BackendAdapter):
     def get_updated(self, start_datetime_str=None, end_datetime_str=None):
         if start_datetime_str:
             if end_datetime_str is None:
-                end_datetime_str = '2100-01-01 00:00:00UTC'
+                end_datetime_str = '2100-01-01 00:00:00'
             start = convert_to_utc_datetime(start_datetime_str)
             end = convert_to_utc_datetime(end_datetime_str)
             with error_handler():
@@ -115,12 +115,20 @@ class SalesforceRestAdapter(BackendAdapter):
         else:
             # helper to manage long result does not correspond to SF queryAll
             with error_handler():
-                result = self.sf_type.query_all("Select id from %s" % self._sf_type)
+                result = self.sf.query_all("Select id from %s" % self._sf_type)
             if result['records']:
-                return (x['id'] for x in result['records'])
+                return (x['Id'] for x in result['records'])
             else:
                 return []
 
-    def read(self, sf_id):
+    def create(self, data):
+        with error_handler:
+            return self.sf_type.create(data)
+
+    def write(self, salesforce_id, data):
+        with error_handler:
+            return self.sf_type.update(salesforce_id, data)
+
+    def read(self, salesforce_id):
         with error_handler():
-            return self.sf_type.get(sf_id)
+            return self.sf_type.get(salesforce_id)

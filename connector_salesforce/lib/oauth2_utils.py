@@ -55,19 +55,42 @@ class SalesForceOauth2MAnager(object):
             urlencode(oauth_params)
         )
 
-    def get_token(self, code=None, **kwargs):
+    def get_token(self, **kwargs):
         """
         Requests an access token
         """
         url = "%s%s" % (self.base_login_url, quote(self.token_url))
-        data = {'redirect_uri': self.redirect_uri,
+        data = {'code': self.backend.consumer_code,
+                'grant_type': 'authorization_code',
+                'redirect_uri': self.redirect_uri,
                 'client_id': self.backend.consumer_key,
                 'client_secret': self.backend.consumer_secret}
-        if code:
-                data['code'] = code
         data.update(kwargs)
         response = requests.post(url, data=data)
 
+        if isinstance(response.content, basestring):
+            try:
+                content = json.loads(response.content)
+            except ValueError:
+                content = parse_qs(response.content)
+        else:
+            content = response.content
+        return content
+
+    def refresh_token(self, **kwargs):
+        """
+        Requests an access token
+        """
+        import pdb; pdb.set_trace()
+        url = "%s%s" % (self.base_login_url, quote(self.token_url))
+        data = {'refresh_token': self.backend.consumer_refresh_token,
+                'client_id': self.backend.consumer_key,
+                'client_secret': self.backend.consumer_secret,
+                'grant_type': 'refresh_token'
+        }
+        data.update(kwargs)
+        headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+        response = requests.post(url, data=data, headers=headers)
         if isinstance(response.content, basestring):
             try:
                 content = json.loads(response.content)
