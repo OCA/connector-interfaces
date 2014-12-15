@@ -36,6 +36,8 @@ By default following action are supported:
   Salesforce is the master
 - Import of chosen Opportunity into OpenERP/Odoo Salesforce is the master
 
+Parent relation of Account is not supported at that time
+
 Export to Salesforce are supported and implemented but
 there is no default export provided at current time.
 
@@ -43,6 +45,7 @@ there is no default export provided at current time.
  'data': [
      'view/backend_model_view.xml',
      'salesforce_account/view/backend_view.xml',
+     'salesforce_account/view/res_partner_view.xml',
  ],
  'test': [],
  'installable': True,

@@ -18,9 +18,9 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from openerp.osv import orm
-from .importer import SalesForceAccountImporter
-from ..unit.binder import Binder
+from openerp.osv import orm, fields
+from ..unit.binder import SalesforeceBinder
+
 
 class SalesforceAccount(orm.Model):
     _inherit = 'salesforce.binding'
@@ -28,9 +28,25 @@ class SalesforceAccount(orm.Model):
     _name = 'connector.salesforce.account'
     _description = 'Import SF Account into res.partner model'
 
+    _columns = {
+        'sf_shipping_partner_id': fields.many2one(
+            'res.partner',
+            'Salesforce shipping partner'
+        )
+    }
+
     _sql_contraints = [
         ('sf_id_uniq', 'unique(backend_id, sf_id)',
          'A parnter with same Salesforce id already exists')
     ]
 
-Binder._models.append('connector.salesforce.account')
+SalesforeceBinder._model_name.append('connector.salesforce.account')
+
+
+class res_partner(orm.Model):
+
+    _inherit = 'res.partner'
+
+    _columns = {
+        'sf_warning': fields.boolean('SF Account Warning'),
+    }

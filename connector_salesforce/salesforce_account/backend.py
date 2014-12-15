@@ -18,7 +18,9 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-class SalesforceAccountBackend(orm.model):
+from openerp.osv import orm, fields
+
+class SalesforceAccountBackend(orm.Model):
 
     _inherit = 'connector.salesforce.backend'
 
@@ -37,7 +39,7 @@ class SalesforceAccountBackend(orm.model):
         backend_id = self._manage_ids(ids)
         current = self.browse(cr, uid, backend_id, context=context)
         current._import(
-            self._name,
+            'connector.salesforce.account',
             'direct',
             'last_sf_account_import_sync_date',
         )

@@ -24,7 +24,7 @@ from ..lib.oauth2_utils import SalesForceOauth2MAnager
 from openerp.osv import orm, fields
 from openerp.tools.translate import _
 from openerp.addons.connector import session as csession, connector
-from .unit.import_synchronizer import batch_import, delayed_batch_import
+from ..unit.importer_synchronizer import batch_import, delayed_batch_import
 
 
 class SalesforceBackend(orm.Model):
@@ -38,6 +38,16 @@ class SalesforceBackend(orm.Model):
     In order to use it you have to add a remote application in sales force
     and enable Oauth login. In the callback url you will have
     to copy the provided callback url into Salesforce
+
+    To use oauth you must create a remote access app
+    with following parameter:
+    Permitted Users -->	All users may self-authorize
+    Callback URL --> public_Odoo_url/salesforce/oauth
+
+
+    after that manage your app and:
+
+    ensure `Refresh token is valid until revoked` is set
 
     User Password flow
     ------------------
@@ -269,7 +279,7 @@ class SalesforceBackend(orm.Model):
         """
         backend_id = self._manage_ids(ids)
         current = self.browse(cr, uid, backend_id, context=context)
-        current._get_token(force_refresh=True)
+        current._get_token(refresh=True)
         return {}
 
     def _get_token(self, cr, uid, ids, refresh=False, context=None):
@@ -283,15 +293,9 @@ class SalesforceBackend(orm.Model):
                 raise ValueError(
                     'Trying to refresh token but no saved refresh token'
                 )
-            response = oauth2_handler.get_token(
-                grant_type='refresh_token',
-                refresh_token=current.consumer_refresh_token
-            )
+            response = oauth2_handler.refresh_token()
         else:
-            response = oauth2_handler.get_token(
-                current.consumer_code,
-                grant_type='authorization_code'
-            )
+            response = oauth2_handler.get_token()
         if response.get('error'):
             raise Exception(
                 'Can not get Token: %s %s' % (
@@ -307,34 +311,34 @@ class SalesforceBackend(orm.Model):
         current.write(token_vals)
         return response
 
-        def _import(self, cr, uid, ids, model, mode, date_field,
-                    full=False, context=None):
-            assert mode in ['direct', 'delay'], "Invalid mode"
-            import_start_time = fields.Datetime.now()
-            session = csession.ConnectorSession(
-                cr,
-                uid,
-                context
+    def _import(self, cr, uid, ids, model, mode, date_field,
+                full=False, context=None):
+        assert mode in ['direct', 'delay'], "Invalid mode"
+        import_start_time = fields.datetime.now()
+        session = csession.ConnectorSession(
+            cr,
+            uid,
+            context
+        )
+        backend_id = self._manage_ids(ids)
+        current = self.browse(cr, uid, backend_id, context=context)
+        date = current[date_field] if full is False else False
+        if mode == 'direct':
+            batch_import(
+                session,
+                model,
+                current.id,
+                date=date
             )
-            backend_id = self._manage_ids(ids)
-            current = self.browse(cr, uid, backend_id, context=context)
-            date = current[date_field] if full is False else False
-            if mode == 'direct':
-                batch_import(
-                    session,
-                    model,
-                    current.id,
-                    date=date
-                )
-            else:
-                delayed_batch_import.delay(
-                    session,
-                    model,
-                    current.id,
-                    date=date,
-                    priority=-1
-                )
-            current.write({date_field: import_start_time})
+        else:
+            delayed_batch_import.delay(
+                session,
+                model,
+                current.id,
+                date=date,
+                priority=-1
+            )
+        current.write({date_field: import_start_time})
 
 
 class SalesforceBindingModel(orm.AbstractModel):
@@ -349,6 +353,6 @@ class SalesforceBindingModel(orm.AbstractModel):
             required=True,
             ondelete='restrict'
         ),
-        'sf_id':  fields.char('Salesforce ID'),
-        'sf_sync_date': fields.datetime('Salesforce Synchro. Date')
+        'salesforce_id':  fields.char('Salesforce ID'),
+        'salesforce_sync_date': fields.datetime('Salesforce Synchro. Date')
     }
