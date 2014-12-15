@@ -274,7 +274,7 @@ class SalesforceBackend(orm.Model):
             'url': auth_url
         }
 
-    def refresh_token(self, cr, uid, ids, force_refresh=False, context=None):
+    def refresh_token(self, cr, uid, ids, context=None):
         """
         """
         backend_id = self._manage_ids(ids)
