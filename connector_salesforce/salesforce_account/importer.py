@@ -23,11 +23,9 @@ from openerp.addons.connector.unit.mapper import ImportMapper
 from openerp.addons.connector.exception import MappingError
 from openerp.addons.connector.unit.mapper import mapping, only_create
 from ..backend import salesforce_backend
-from ..unit.importer_synchronizer import (
-    SalesforceDelayedBatchSynchronizer,
-    SalesforceDirectBatchSynchronizer,
-    SalesforceImportSynchronizer,
-)
+from ..unit.importer_synchronizer import (SalesforceDelayedBatchSynchronizer,
+                                          SalesforceDirectBatchSynchronizer,
+                                          SalesforceImportSynchronizer)
 from ..unit.rest_api_adapter import SalesforceRestAdapter
 
 _logger = logging.getLogger('salesforce_connector_account_mapping')

@@ -21,8 +21,8 @@
 import logging
 from openerp.addons.connector.queue.job import job
 from openerp.addons.connector.unit.synchronizer import ImportSynchronizer
-from openerp.addons.connector.exception import (IDMissingInBackend,
-                                                RetryableJobError)
+from openerp.addons.connector.exception import IDMissingInBackend
+from ..unit.rest_api_adapter import with_retry_on_expiration
 
 _logger = logging.getLogger('salesforce_import_synchronizer')
 
@@ -157,6 +157,7 @@ class SalesforceDirectBatchSynchronizer(SalesforceBatchSynchronizer):
                       salesforce_id)
 
 
+@with_retry_on_expiration
 def batch_import(session, model_name, backend_id, date=False):
     backend = session.browse(
         'connector.salesforce.backend',
@@ -169,6 +170,7 @@ def batch_import(session, model_name, backend_id, date=False):
     importer.run(model_name, date=date)
 
 
+@with_retry_on_expiration
 def delayed_batch_import(session, model_name, backend_id, date=False):
     backend = session.browse(
         'connector.salesforce.backend',

@@ -34,6 +34,8 @@ class SalesforceResponseError(SalesforceRESTAPIError):
     def __str__(self):
         return repr(self.sf_error)
 
+class SalesforceSessionExpiredError(RetryableJobError):
+    """Authentication error with Salesforce"""
 
 class SalesforceQuotaError(RetryableJobError):
     """To be used when API call quota is consumed to postpone the job"""

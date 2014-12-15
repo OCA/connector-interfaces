@@ -20,10 +20,12 @@
 ##############################################################################
 from __future__ import unicode_literals
 from contextlib import contextmanager
+from functools import wraps
 import logging
 try:
     from simple_salesforce import Salesforce
-    from simple_salesforce.login import SalesforceAuthenticationFailed
+    from simple_salesforce import (SalesforceAuthenticationFailed,
+                                   SalesforceExpiredSession)
 except ImportError:
     logger = logging.getLogger('connector_salesforce_rest_adapter_import')
     logger.warning('Library simple_salesforce is not available')
@@ -31,19 +33,37 @@ except ImportError:
 from openerp.addons.connector.unit.backend_adapter import BackendAdapter
 from . import exceptions as connector_exception
 from ..lib.date_convertion import convert_to_utc_datetime
-
+from . exceptions import SalesforceSessionExpiredError
 
 _logger = logging.getLogger('connector_salesforce_rest_adapter')
 
 
+def with_retry_on_expiration(fun):
+    @wraps(fun)
+    def retry(*args, **kwargs):
+        try:
+            return fun(*args, **kwargs)
+        except (SalesforceExpiredSession, SalesforceSessionExpiredError):
+            msg = "Session expired retrying"
+            _logger.warning(msg)
+            return fun(*args, **kwargs)
+    return retry
+
+
 @contextmanager
-def error_handler():
+def error_handler(backend_record):
     try:
         yield
     except SalesforceAuthenticationFailed:
         raise connector_exception.SalesforceSecurityError(
             'An authentication error occur please validate your credentials '
             'in backend'
+        )
+    except SalesforceExpiredSession:
+        backend_record.refresh_token()
+        raise SalesforceSessionExpiredError(
+            'Token expired and was refreshed job will be retried '
+            'or in context of manual action it must be restarted manually'
         )
     except Exception as exc:
         # simple salesforce exception does not devrive form common exception
@@ -66,7 +86,7 @@ class SalesforceRestAdapter(BackendAdapter):
         self.sf_type = self.sf.__getattr__(self._sf_type)
 
     def _sf_from_login_password(self):
-        with error_handler():
+        with error_handler(self.backend_record):
             sf = Salesforce(
                 instance_url=self.backend_record.url,
                 username=self.backend_record.username,
@@ -76,7 +96,7 @@ class SalesforceRestAdapter(BackendAdapter):
         return sf
 
     def _sf_from_oauth2(self):
-        with error_handler():
+        with error_handler(self.backend_record):
             sf = Salesforce(
                 instance_url=self.backend_record.url,
                 session_id=self.backend_record.consumer_token,
@@ -85,7 +105,7 @@ class SalesforceRestAdapter(BackendAdapter):
         return sf
 
     def _sf_from_organization_id(self):
-        with error_handler():
+        with error_handler(self.backend_record):
             sf = Salesforce(
                 username=self.backend_record.username,
                 password=self.backend_record.password,
@@ -110,11 +130,11 @@ class SalesforceRestAdapter(BackendAdapter):
                 end_datetime_str = '2100-01-01 00:00:00'
             start = convert_to_utc_datetime(start_datetime_str)
             end = convert_to_utc_datetime(end_datetime_str)
-            with error_handler():
+            with error_handler(self.backend_record):
                 return self.sf_type.updated(start, end)['ids']
         else:
             # helper to manage long result does not correspond to SF queryAll
-            with error_handler():
+            with error_handler(self.backend_record):
                 result = self.sf.query_all("Select id from %s" % self._sf_type)
             if result['records']:
                 return (x['Id'] for x in result['records'])
@@ -130,5 +150,5 @@ class SalesforceRestAdapter(BackendAdapter):
             return self.sf_type.update(salesforce_id, data)
 
     def read(self, salesforce_id):
-        with error_handler():
+        with error_handler(self.backend_record):
             return self.sf_type.get(salesforce_id)
