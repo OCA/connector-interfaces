@@ -45,6 +45,21 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
     def _create(self, data):
         return self.session.create(self.model._name, data)
 
+    def _deactivate(self):
+        assert self.salesforce_id
+        model = self.session.pool[self.model._name]
+        cols = set(model._columns.keys())
+        cols.update(model._inherit_fields.keys())
+        if not 'active' in cols:
+            raise NotImplementedError(
+                'Model %s does not have an active field. '
+                'custom _deactivate must be implemented'
+            )
+        current_id = self.binder.to_openerp(self.salesforce_id)
+        self.session.write(self.model._name,
+                           [current_id],
+                           {'active': False})
+
     def _get_record(self):
         return self.backend_adapter.read(self.salesforce_id)
 
@@ -107,8 +122,11 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
         self.binder.bind(self.salesforce_id, binding_id)
         self._after_import(binding_id)
 
-    def run(self, salesforce_id, force=False):
+    def run(self, salesforce_id, deactivate=False):
         self.salesforce_id = salesforce_id
+        if deactivate:
+            self._deactivate()
+            return
         self.salesforce_record = self._get_record()
         if not self.salesforce_record:
             raise IDMissingInBackend(
@@ -120,7 +138,6 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
         binding_id = self.binder.to_openerp(self.salesforce_id)
         # calls _after_import
         self._import(binding_id)
-
 
 
 class SalesforceBatchSynchronizer(ImportSynchronizer):
@@ -136,6 +153,9 @@ class SalesforceBatchSynchronizer(ImportSynchronizer):
         salesforce_ids = self.backend_adapter.get_updated(date)
         for salesforce_id in salesforce_ids:
             self._import_record(salesforce_id)
+        salesforce_ids = self.backend_adapter.get_deleted(date)
+        for salesforce_id in salesforce_ids:
+            self._deactivate_record(salesforce_id)
         self.after_batch_import()
 
     def import_record(self):
@@ -155,6 +175,13 @@ class SalesforceDirectBatchSynchronizer(SalesforceBatchSynchronizer):
                       self.model._name,
                       self.backend_record.id,
                       salesforce_id)
+
+    def _deactivate_record(self, salesforce_id):
+        deactivate_record(self.session,
+                          self.model._name,
+                          self.backend_record.id,
+                          salesforce_id)
+
 
 
 @with_retry_on_expiration
@@ -193,4 +220,17 @@ def import_record(session, model_name, backend_id, salesforce_id, force=False):
     importer = connector_env.get_connector_unit(
         SalesforceImportSynchronizer
     )
-    importer.run(salesforce_id, force=True)
+    importer.run(salesforce_id)
+
+
+@job
+def deactivate_record(session, model_name, backend_id, salesforce_id, force=False):
+    backend = session.browse(
+        'connector.salesforce.backend',
+        backend_id
+    )
+    connector_env = backend.get_connector_environment(model_name)
+    importer = connector_env.get_connector_unit(
+        SalesforceImportSynchronizer
+    )
+    importer.run(salesforce_id, deactivate=True)

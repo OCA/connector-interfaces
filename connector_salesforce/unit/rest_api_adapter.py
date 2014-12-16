@@ -141,6 +141,18 @@ class SalesforceRestAdapter(BackendAdapter):
             else:
                 return []
 
+    def get_deleted(self, start_datetime_str=None, end_datetime_str=None):
+        if start_datetime_str is None:
+            return [] # Salesforce API as past lookup limitation
+        if end_datetime_str is None:
+            end_datetime_str = '2100-01-01 00:00:00'
+        start = convert_to_utc_datetime(start_datetime_str)
+        end = convert_to_utc_datetime(end_datetime_str)
+        with error_handler(self.backend_record):
+            deleted = (rec['id'] for rec in
+                       self.sf_type.deleted(start, end)['deletedRecords'])
+            return deleted
+
     def create(self, data):
         with error_handler:
             return self.sf_type.create(data)
