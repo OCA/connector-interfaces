@@ -50,7 +50,7 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
         model = self.session.pool[self.model._name]
         cols = set(model._columns.keys())
         cols.update(model._inherit_fields.keys())
-        if not 'active' in cols:
+        if 'active' not in cols:
             raise NotImplementedError(
                 'Model %s does not have an active field. '
                 'custom _deactivate must be implemented'
@@ -199,7 +199,6 @@ class SalesforceDirectBatchSynchronizer(SalesforceBatchSynchronizer):
                           self.model._name,
                           self.backend_record.id,
                           salesforce_id)
-
 
 
 @with_retry_on_expiration
