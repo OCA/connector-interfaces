@@ -28,11 +28,6 @@ class SalesforceAccountBackend(orm.Model):
         'last_sf_account_import_sync_date': fields.datetime(
             'Last Account Import Date'
         ),
-
-        'last_sf_account_Delete_sync_date': fields.datetime(
-            'Last Account Delete Date'
-        ),
-
     }
 
     def import_sf_account(self, cr, uid, ids, context=None):
@@ -41,5 +36,14 @@ class SalesforceAccountBackend(orm.Model):
         current._import(
             'connector.salesforce.account',
             'direct',
+            'last_sf_account_import_sync_date',
+        )
+
+    def import_sf_account_delay(self, cr, uid, ids, context=None):
+        backend_id = self._manage_ids(ids)
+        current = self.browse(cr, uid, backend_id, context=context)
+        current._import(
+            'connector.salesforce.account',
+            'delay',
             'last_sf_account_import_sync_date',
         )

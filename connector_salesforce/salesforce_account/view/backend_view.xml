@@ -14,6 +14,9 @@
               <button name="import_sf_account"
                       type="object"
                       string="Import Accounts Directly"/>
+              <button name="import_sf_account_delay"
+                      type="object"
+                      string="Import Accounts Using Jobs"/>
             </group>
           </group>
         </page>
