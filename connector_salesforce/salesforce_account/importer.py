@@ -126,7 +126,7 @@ class SalesforceAccountMapper(AddressMapper):
             else:
                 shipp_id = self.session.create(
                     'res.partner',
-                    self._prepare_shipp_addresse_data(record)
+                    self._prepare_shipp_addresse_data(record, current_partner)
                 )
         else:
             shipp_id = False
