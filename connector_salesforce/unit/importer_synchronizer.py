@@ -228,7 +228,7 @@ def delayed_batch_import(session, model_name, backend_id, date=False):
 
 
 @job
-def import_record(session, model_name, backend_id, salesforce_id, force=False):
+def import_record(session, model_name, backend_id, salesforce_id):
     backend = session.browse(
         'connector.salesforce.backend',
         backend_id
@@ -241,7 +241,7 @@ def import_record(session, model_name, backend_id, salesforce_id, force=False):
 
 
 @job
-def deactivate_record(session, model_name, backend_id, salesforce_id, force=False):
+def deactivate_record(session, model_name, backend_id, salesforce_id):
     backend = session.browse(
         'connector.salesforce.backend',
         backend_id
