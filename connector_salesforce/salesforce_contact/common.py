@@ -18,10 +18,19 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from . import unit
-from . import connector
-from . import salesforce_backend
-from . import controllers
-from . import lib
-from . import salesforce_account
-from . import salesforce_contact
+from openerp.osv import orm, fields
+from ..unit.binder import SalesforeceBinder
+
+
+class SalesforceContact(orm.Model):
+    _inherit = 'salesforce.binding'
+    _inherits = {'res.partner': 'openerp_id'}
+    _name = 'connector.salesforce.contact'
+    _description = 'Import SF Contact into res.partner model'
+
+    _sql_contraints = [
+        ('sf_id_uniq', 'unique(backend_id, sf_id)',
+         'A parnter with same Salesforce id already exists')
+    ]
+
+SalesforeceBinder._model_name.append('connector.salesforce.contact')

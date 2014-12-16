@@ -45,6 +45,7 @@ there is no default export provided at current time.
  'data': [
      'view/backend_model_view.xml',
      'salesforce_account/view/backend_view.xml',
+     'salesforce_contact/view/backend_view.xml',
  ],
  'test': [],
  'installable': True,

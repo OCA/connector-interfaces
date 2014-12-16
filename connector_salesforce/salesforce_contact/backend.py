@@ -18,10 +18,33 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from . import unit
-from . import connector
-from . import salesforce_backend
-from . import controllers
-from . import lib
-from . import salesforce_account
-from . import salesforce_contact
+from openerp.osv import orm, fields
+
+class SalesforceContactBackend(orm.Model):
+
+    _inherit = 'connector.salesforce.backend'
+
+    _columns = {
+        'last_sf_contact_import_sync_date': fields.datetime(
+            'Last Contact Import Date'
+        ),
+
+    }
+
+    def import_sf_contact(self, cr, uid, ids, context=None):
+        backend_id = self._manage_ids(ids)
+        current = self.browse(cr, uid, backend_id, context=context)
+        current._import(
+            'connector.salesforce.contact',
+            'direct',
+            'last_sf_contact_import_sync_date',
+        )
+
+    def import_sf_contact_delay(self, cr, uid, ids, context=None):
+        backend_id = self._manage_ids(ids)
+        current = self.browse(cr, uid, backend_id, context=context)
+        current._import(
+            'connector.salesforce.contact',
+            'delay',
+            'last_sf_contact_import_sync_date',
+        )
