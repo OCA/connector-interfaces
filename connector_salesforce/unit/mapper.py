@@ -18,4 +18,54 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-"""Mapping utils"""
+from openerp.addons.connector.unit.mapper import ImportMapper
+from openerp.addons.connector.exception import MappingError
+
+
+class AddressMapper(ImportMapper):
+
+    def _state_id(self, record, state_key, country_key):
+        state = record.get(state_key)
+        if not state:
+            return False
+        state_id = self.session.search(
+            'res.country.state',
+            [('name', '=', state)]
+        )
+        if state_id:
+            return state_id[0]
+        else:
+            country_id = self._country_id(record, country_key)
+            if country_id:
+                return self.session.create(
+                    'res.country.state',
+                    {'name': state,
+                     'country_id': country_id}
+                )
+        return False
+
+    def _country_id(self, record, country_key):
+        """Map Salesforce countrycode to Odoo code"""
+        country_code = record.get(country_key)
+        if not country_code:
+            return {'country_id': False}
+
+        country_id = self.session.search(
+            'res.country',
+            [('code', '=', country_code)]
+        )
+        # we tolerate the fact that country is null
+        if len(country_id) > 1:
+            raise MappingError(
+                'Many countries found to be linked with partner %s' % record
+            )
+
+        if not country_id:
+            country_id = False
+            raise MappingError(
+                "No country %s found when mapping partner %s" % (
+                    country_code,
+                    record
+                )
+            )
+        return country_id[0] if country_id else False
