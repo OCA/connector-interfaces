@@ -81,7 +81,6 @@ class SalesForceOauth2MAnager(object):
         """
         Requests an access token
         """
-        import pdb; pdb.set_trace()
         url = "%s%s" % (self.base_login_url, quote(self.token_url))
         data = {'refresh_token': self.backend.consumer_refresh_token,
                 'client_id': self.backend.consumer_key,
