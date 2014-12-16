@@ -19,7 +19,6 @@
 #
 ##############################################################################
 import logging
-from openerp.addons.connector.unit.mapper import ImportMapper
 from openerp.addons.connector.exception import MappingError
 from openerp.addons.connector.unit.mapper import mapping, only_create
 from ..backend import salesforce_backend
@@ -27,6 +26,8 @@ from ..unit.importer_synchronizer import (SalesforceDelayedBatchSynchronizer,
                                           SalesforceDirectBatchSynchronizer,
                                           SalesforceImportSynchronizer)
 from ..unit.rest_api_adapter import SalesforceRestAdapter
+from ..unit.mapper import AddressMapper
+
 
 _logger = logging.getLogger('salesforce_connector_account_mapping')
 
@@ -62,7 +63,7 @@ class SalesforceAccountAdapter(SalesforceRestAdapter):
 
 
 @salesforce_backend
-class SalesforceAccountMapper(ImportMapper):
+class SalesforceAccountMapper(AddressMapper):
     _model_name = 'connector.salesforce.account'
 
     direct = [
@@ -136,52 +137,6 @@ class SalesforceAccountMapper(ImportMapper):
                     {'active': False}
                 )
         return {'sf_shipping_partner_id': shipp_id}
-
-    def _country_id(self, record, country_key):
-        """Map Salesforce countrycode to Odoo code"""
-        country_code = record.get(country_key)
-        if not country_code:
-            return {'country_id': False}
-
-        country_id = self.session.search(
-            'res.country',
-            [('code', '=', country_code)]
-        )
-        # we tolerate the fact that country is null
-        if len(country_id) > 1:
-            raise MappingError(
-                'Many countries found to be linked with partner %s' % record
-            )
-
-        if not country_id:
-            country_id = False
-            _logger.warning(
-                "No country %s found when mapping partner %s" % (
-                    country_code,
-                    record
-                )
-            )
-        return country_id[0] if country_id else False
-
-    def _state_id(self, record, state_key, country_key):
-        state = record.get(state_key)
-        if not state:
-            return False
-        state_id = self.session.search(
-            'res.country.state',
-            [('name', '=', state)]
-        )
-        if state_id:
-            return state_id[0]
-        else:
-            country_id = self._country_id(record, country_key)
-            if country_id:
-                return self.session.create(
-                    'res.country.state',
-                    {'name': state,
-                     'country_id': country_id}
-                )
-        return False
 
     @only_create
     @mapping
