@@ -126,7 +126,7 @@ class SalesforceRestAdapter(BackendAdapter):
 
     def get_updated(self, start_datetime_str=None, end_datetime_str=None):
         if start_datetime_str:
-            if end_datetime_str is None:
+            if not end_datetime_str:
                 end_datetime_str = '2100-01-01 00:00:00'
             start = convert_to_utc_datetime(start_datetime_str)
             end = convert_to_utc_datetime(end_datetime_str)
@@ -142,9 +142,9 @@ class SalesforceRestAdapter(BackendAdapter):
                 return []
 
     def get_deleted(self, start_datetime_str=None, end_datetime_str=None):
-        if start_datetime_str is None:
+        if not start_datetime_str:
             return [] # Salesforce API as past lookup limitation
-        if end_datetime_str is None:
+        if not end_datetime_str:
             end_datetime_str = '2100-01-01 00:00:00'
         start = convert_to_utc_datetime(start_datetime_str)
         end = convert_to_utc_datetime(end_datetime_str)
