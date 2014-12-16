@@ -112,7 +112,9 @@ class SalesforceAccountMapper(ImportMapper):
             binding_id,
         )
         shipp_id = None
-        if any(field.startswith('Shipping') for field in record):
+        shipp_fields = (field for field in record
+                        if field.startswith('Shipping'))
+        if any(record[field] for field in shipp_fields):
             if current_partner.sf_shipping_partner_id:
                 shipp_id = current_partner.sf_shipping_partner_id.id
                 self.session.write(
@@ -204,3 +206,7 @@ class SalesforceAccountMapper(ImportMapper):
     @mapping
     def customer(self, record):
         return {'customer': True}
+
+    @mapping
+    def active(self, record):
+        return {'active': True}
