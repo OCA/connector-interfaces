@@ -331,12 +331,11 @@ class SalesforceBackend(orm.Model):
                 date=date
             )
         else:
-            delayed_batch_import.delay(
+            delayed_batch_import(
                 session,
                 model,
                 current.id,
                 date=date,
-                priority=-1
             )
         current.write({date_field: import_start_time})
 

@@ -158,7 +158,13 @@ class SalesforceBatchSynchronizer(ImportSynchronizer):
             self._deactivate_record(salesforce_id)
         self.after_batch_import()
 
-    def import_record(self):
+    def _import_record(self):
+        """ Import a record directly or delay the import of the record.
+        Method to implement in sub-classes.
+        """
+        raise NotImplementedError
+
+    def _deactivate_record(self):
         """ Import a record directly or delay the import of the record.
         Method to implement in sub-classes.
         """
@@ -166,10 +172,22 @@ class SalesforceBatchSynchronizer(ImportSynchronizer):
 
 
 class SalesforceDelayedBatchSynchronizer(SalesforceBatchSynchronizer):
-    pass
+
+    def _import_record(self, salesforce_id):
+        import_record.delay(self.session,
+                            self.model._name,
+                            self.backend_record.id,
+                            salesforce_id)
+
+    def _deactivate_record(self, salesforce_id):
+        deactivate_record.delay(self.session,
+                                self.model._name,
+                                self.backend_record.id,
+                                salesforce_id)
 
 
 class SalesforceDirectBatchSynchronizer(SalesforceBatchSynchronizer):
+
     def _import_record(self, salesforce_id):
         import_record(self.session,
                       self.model._name,
