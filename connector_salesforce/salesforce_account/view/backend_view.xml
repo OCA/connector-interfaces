@@ -7,17 +7,15 @@
       <field name="inherit_id" ref="connector_salesforce_backend_form"/>
       <field name="arch" type="xml">
         <page string="Actions" position="inside">
+          <separator string="Account data"/>
           <group>
-            <label string="Customer data"/>
-            <group>
-              <field name="last_sf_account_import_sync_date"/>
-              <button name="import_sf_account"
-                      type="object"
-                      string="Import Accounts Directly"/>
-              <button name="import_sf_account_delay"
-                      type="object"
-                      string="Import Accounts Using Jobs"/>
-            </group>
+            <field name="last_sf_account_import_sync_date"/>
+            <button name="import_sf_account"
+                    type="object"
+                    string="Import Accounts Directly"/>
+            <button name="import_sf_account_delay"
+                    type="object"
+                    string="Import Accounts Using Jobs"/>
           </group>
         </page>
       </field>
