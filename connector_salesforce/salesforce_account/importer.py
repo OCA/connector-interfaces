@@ -29,7 +29,7 @@ from ..unit.rest_api_adapter import SalesforceRestAdapter
 from ..unit.mapper import AddressMapper
 
 
-_logger = logging.getLogger('salesforce_connector_account_mapping')
+_logger = logging.getLogger('salesforce_connector_account_import')
 
 
 @salesforce_backend
