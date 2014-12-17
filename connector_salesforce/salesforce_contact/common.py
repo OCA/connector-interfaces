@@ -34,3 +34,12 @@ class SalesforceContact(orm.Model):
     ]
 
 SalesforeceBinder._model_name.append('connector.salesforce.contact')
+
+
+class SalesForceResPartner(orm.Model):
+    _inherit = 'res.partner'
+
+    _columns = {
+        'sf_assistant_phone': fields.char('Assistant Phone'),
+        'sf_other_phone': fields.char('Other Phone'),
+    }
