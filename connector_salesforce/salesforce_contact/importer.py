@@ -28,7 +28,7 @@ from ..unit.importer_synchronizer import (SalesforceDelayedBatchSynchronizer,
                                           import_record)
 from ..unit.rest_api_adapter import SalesforceRestAdapter
 from ..unit.mapper import AddressMapper
-_logger = logging.getLogger('salesforce_connector_contact_mapping')
+_logger = logging.getLogger('salesforce_connector_contact_import')
 
 
 @salesforce_backend
