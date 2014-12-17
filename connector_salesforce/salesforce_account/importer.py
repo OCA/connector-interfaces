@@ -73,6 +73,7 @@ class SalesforceAccountMapper(AddressMapper):
         ('BillingCity', 'city'),
         ('Fax', 'fax'),
         ('Phone', 'phone'),
+        ('VATNumber__c', 'vat'),
     ]
 
     def _prepare_shipp_addresse_data(self, record, partner_record):
@@ -87,6 +88,7 @@ class SalesforceAccountMapper(AddressMapper):
             'parent_id': partner_record.openerp_id.id,
             'type': 'delivery',
             'customer': True,
+
         }
         country_id = self._country_id(record, 'ShippingCountryCode')
         data['country_id'] = country_id
