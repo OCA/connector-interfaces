@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+    <record id="add_import_product_button" model="ir.ui.view">
+      <field name="name">add import/export product button</field>
+      <field name="model">connector.salesforce.backend</field>
+      <field name="inherit_id" ref="connector_salesforce_backend_form"/>
+      <field name="priority" eval="18"/>
+      <field name="arch" type="xml">
+        <page string="Actions" position="inside">
+          <separator string="From Salesforce Product Towards ERP"
+                     attrs="{'invisible': [('sf_product_master', '=', 'erp')]}"/>
+          <separator string="From ERP Towards Salesforce product"
+                     attrs="{'invisible': [('sf_product_master', '=', 'sf')]}"/>
+          <group attrs="{'invisible': [('sf_product_master', '=', 'erp')]}">
+            <div>
+              <label for="sf_last_product_import_sync_date"/>
+              <br/>
+              <field name="sf_last_product_import_sync_date"/>
+              <button name="import_sf_product"
+                      class="oe_highlight"
+                      type="object"
+                      string="Import Products Directly"/>
+              <button name="import_sf_product_delay"
+                      class="oe_highlight"
+                      type="object"
+                      string="Import Products Using Jobs"/>
+            </div>
+            <br/>
+          </group>
+          <br/>
+          <group attrs="{'invisible': [('sf_product_master', '=', 'sf')]}">
+            <div>
+              <label for="sf_last_product_export_sync_date"/>
+              <br/>
+              <field name="sf_last_product_export_sync_date"/>
+              <button name="export_sf_product"
+                      class="oe_highlight"
+                      type="object"
+                      string="Export Products Directly"/>
+              <button name="export_sf_product_delay"
+                      class="oe_highlight"
+                      type="object"
+                      string="Export Products Using Jobs"/>
+            </div>
+            <br/>
+          </group>
+        </page>
+        <page string="Import/Export Options" position="inside">
+          <separator string="Product options"/>
+          <div>Select the master for the products. <br/>
+          Bidirectional/Conflicts are not managed so <span style="color:red">once set
+          you should NOT modify the master</span>
+          </div>
+          <group>
+            <field name="sf_product_master"/>
+          </group>
+        </page>
+      </field>
+    </record>
+  </data>
+</openerp>
