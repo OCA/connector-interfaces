@@ -7,16 +7,26 @@
       <field name="inherit_id" ref="connector_salesforce_backend_form"/>
       <field name="arch" type="xml">
         <page string="Actions" position="inside">
-          <separator string="Account data"/>
+          <separator string="From Salesforce Accounts Towards ERP"/>
+          <div>
+            In Salesforce you can create an "Account" without any "Contacts"
+          </div>
           <group>
-            <field name="sf_last_account_import_sync_date"/>
-            <button name="import_sf_account"
-                    type="object"
-                    string="Import Accounts Directly"/>
-            <button name="import_sf_account_delay"
-                    type="object"
-                    string="Import Accounts Using Jobs"/>
+            <div>
+              <label for="sf_last_account_import_sync_date"/>
+              <br/>
+              <field name="sf_last_account_import_sync_date"/>
+              <button name="import_sf_account"
+                      class="oe_highlight"
+                      type="object"
+                      string="Import Accounts Directly"/>
+              <button name="import_sf_account_delay"
+                      class="oe_highlight"
+                      type="object"
+                      string="Import Accounts Using Jobs"/>
+            </div>
           </group>
+          <br/>
         </page>
       </field>
     </record>

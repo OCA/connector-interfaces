@@ -5,7 +5,7 @@
       <field name="name">Salesforce backend form</field>
       <field name="model">connector.salesforce.backend</field>
       <field name="arch" type="xml">
-        <form version="7.0" string="ODBC Data connector">
+        <form version="7.0" string="Salesforce Backend">
           <header>
           </header>
           <sheet>
@@ -17,7 +17,34 @@
               <page string="Actions">
 
               </page>
-              <page string="Configuration">
+              <page string="Authentication Configuration">
+                <div class="buttons">
+                  <button name="redirect_to_validation_url"
+                          class="oe_highlight"
+                          string="Authorize Odoo in SalesForce"
+                          type="object"
+                          attrs="{'invisible': [('authentication_method', '!=', 'oauth2')]}"/>
+                  <button name="refresh_token"
+                          class="oe_highlight"
+                          string="Refresh token"
+                          type="object"
+                          attrs="{'invisible': [('authentication_method', '!=', 'oauth2')]}"/>
+                </div>
+                <div attrs="{'invisible': [('authentication_method', '!=', 'oauth2')]}">
+                  <separator string="Oauth2 Setup Instructions"/>
+                  <p>In order to use Oauth2 you have to add a remote application in Salesforce
+                  and enable Oauth login.</p>
+
+                  <p> The created remote access app must have following parameters:
+                  Permitted Users --> All users may self-authorize<br/>
+                  Callback URL --> public_Odoo_url/salesforce/oauth<br/>
+
+                  </p>
+                  <p>
+                    Once done you have to manage your app ensure the `Refresh token is valid until revoked` parameter is set
+                  </p>
+                </div>
+
                 <group>
                   <group>
                     <field name="url"/>
@@ -29,7 +56,7 @@
                            attrs="{'invisible': [('authentication_method','=', 'oauth2')], 'required': [('authentication_method', 'in', ('ip_filtering', 'pwd_token'))]}"
                            />
                     <field name="security_token"
-                           widget='password'
+                           password="True"
                            attrs="{'invisible': [('authentication_method', 'in', ('ip_filtering', 'oauth2'))], 'required': [('authentication_method', '=', 'pwd_token')]}"
                            />
                     <field name="sandbox"
@@ -42,38 +69,33 @@
                            />
 
                     <field name="consumer_secret"
-                           widget='password'
+                           password="True"
                            attrs="{'invisible': [('authentication_method', '!=', 'oauth2')], 'required': [('authentication_method', '=', 'oauth2')]}"
                            />
                     <field name="callback_url"
                            attrs="{'invisible': [('authentication_method', '!=', 'oauth2')], 'required': [('authentication_method', '=', 'oauth2')]}"
                            />
                     <field name="consumer_code"
-                           widget='password'
+                           password="True"
                            attrs="{'invisible': [('authentication_method', '!=', 'oauth2')]}"
                            />
                     <field name="consumer_token"
-                           widget='password'
+                           password="True"
                            attrs="{'invisible': [('authentication_method', '!=', 'oauth2')]}"
                            />
                     <field name="consumer_refresh_token"
-                           widget='password'
+                           password="True"
                            attrs="{'invisible': [('authentication_method', '!=', 'oauth2')]}"
                            />
                     <field name="consumer_code"
-                           widget='password'
+                           password="True"
                            attrs="{'invisible': [('authentication_method', '!=', 'oauth2')]}"
                            />
-                    <button name="redirect_to_validation_url"
-                            string="Authorize Odoo in SalesForce"
-                            type="object"
-                            attrs="{'invisible': [('authentication_method', '!=', 'oauth2')]}"/>
-                    <button name="refresh_token"
-                            string="Refresh token"
-                            type="object"
-                            attrs="{'invisible': [('authentication_method', '!=', 'oauth2')]}"/>
                   </group>
                 </group>
+              </page>
+              <page string="Import/Export Options">
+
               </page>
             </notebook>
           </sheet>

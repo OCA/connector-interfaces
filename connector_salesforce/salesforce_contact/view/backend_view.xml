@@ -8,16 +8,23 @@
       <field name="priority" eval="17"/>
       <field name="arch" type="xml">
         <page string="Actions" position="inside">
-          <separator string="Contact data"/>
+          <separator string="From Salesforce Contact Towards ERP"/>
           <group>
-            <field name="sf_last_contact_import_sync_date"/>
-            <button name="import_sf_contact"
-                    type="object"
-                    string="Import Contacts Directly"/>
-            <button name="import_sf_contact_delay"
-                    type="object"
-                    string="Import Contacts Using Jobs"/>
+            <div>
+              <label for="sf_last_contact_import_sync_date"/>
+              <br/>
+              <field name="sf_last_contact_import_sync_date"/>
+              <button name="import_sf_contact"
+                      class="oe_highlight"
+                      type="object"
+                      string="Import Contacts Directly"/>
+              <button name="import_sf_contact_delay"
+                      class="oe_highlight"
+                      type="object"
+                      string="Import Contacts Using Jobs"/>
+            </div>
           </group>
+          <br/>
         </page>
       </field>
     </record>
