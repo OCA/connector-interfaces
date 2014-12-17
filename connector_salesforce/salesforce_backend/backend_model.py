@@ -35,19 +35,19 @@ class SalesforceBackend(orm.Model):
     There are 2 supported ways to access a Salesforce instance
     Oauth2 flow
     -----------
-    In order to use it you have to add a remote application in sales force
-    and enable Oauth login. In the callback url you will have
-    to copy the provided callback url into Salesforce
+    In order to use it you have to add a remote application in Salesforce
+    and enable Oauth login.
 
-    To use oauth you must create a remote access app
-    with following parameter:
+    The The created remote access app must have following parameters:
+
     Permitted Users -->	All users may self-authorize
     Callback URL --> public_Odoo_url/salesforce/oauth
 
 
     after that manage your app and:
 
-    ensure `Refresh token is valid until revoked` is set
+    Once done you have to manage your app ensure the
+    `Refresh token is valid until revoked` parameter is set.
 
     User Password flow
     ------------------
