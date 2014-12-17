@@ -10,7 +10,7 @@
         <page string="Actions" position="inside">
           <separator string="Contact data"/>
           <group>
-            <field name="last_sf_contact_import_sync_date"/>
+            <field name="sf_last_contact_import_sync_date"/>
             <button name="import_sf_contact"
                     type="object"
                     string="Import Contacts Directly"/>
