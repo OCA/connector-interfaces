@@ -28,7 +28,6 @@ class SalesforceContactBackend(orm.Model):
         'sf_last_contact_import_sync_date': fields.datetime(
             'Last Contact Import Date'
         ),
-
     }
 
     def import_sf_contact(self, cr, uid, ids, context=None):
