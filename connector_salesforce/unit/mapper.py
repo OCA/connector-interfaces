@@ -48,8 +48,7 @@ class AddressMapper(ImportMapper):
         """Map Salesforce countrycode to Odoo code"""
         country_code = record.get(country_key)
         if not country_code:
-            return {'country_id': False}
-
+            return False
         country_id = self.session.search(
             'res.country',
             [('code', '=', country_code)]
@@ -69,3 +68,22 @@ class AddressMapper(ImportMapper):
                 )
             )
         return country_id[0] if country_id else False
+
+    def _title_id(self, record, title_key):
+        title = record.get(title_key)
+        if not title:
+            return False
+        title_id = self.session.search(
+            'res.partner.title',
+            [('name', '=', title)],
+        )
+        if len(title_id) > 1:
+            raise MappingError(
+                'Many countitle found to be linked with partner %s' % record
+            )
+        if title_id:
+            return title_id[0]
+        return self.session.create(
+            'res.partner.title',
+            {'name': title}
+        )

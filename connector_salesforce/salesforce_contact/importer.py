@@ -77,6 +77,11 @@ class SalesforceContactMapper(AddressMapper):
         ('MailingCity', 'city'),
         ('Fax', 'fax'),
         ('Phone', 'phone'),
+        ('sf_assistant_phone', 'sf_assistant_phone'),
+        ('OtherPhone', 'sf_other_phone'),
+        ('MobilePhone', 'mobile'),
+        ('Title', 'function'),
+        ('Email', 'email')
     ]
 
     @only_create
@@ -112,6 +117,11 @@ class SalesforceContactMapper(AddressMapper):
     @mapping
     def active(self, record):
         return {'active': True}
+
+    @mapping
+    def title_id(self, record):
+        title_id = self._title_id(record, 'Salutation')
+        return {'title': title_id}
 
     @mapping
     def parent_id(self, record):
