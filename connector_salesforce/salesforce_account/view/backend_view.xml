@@ -9,7 +9,7 @@
         <page string="Actions" position="inside">
           <separator string="Account data"/>
           <group>
-            <field name="last_sf_account_import_sync_date"/>
+            <field name="sf_last_account_import_sync_date"/>
             <button name="import_sf_account"
                     type="object"
                     string="Import Accounts Directly"/>

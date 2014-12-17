@@ -25,7 +25,7 @@ class SalesforceAccountBackend(orm.Model):
     _inherit = 'connector.salesforce.backend'
 
     _columns = {
-        'last_sf_account_import_sync_date': fields.datetime(
+        'sf_last_account_import_sync_date': fields.datetime(
             'Last Account Import Date'
         ),
     }
@@ -36,7 +36,7 @@ class SalesforceAccountBackend(orm.Model):
         current._import(
             'connector.salesforce.account',
             'direct',
-            'last_sf_account_import_sync_date',
+            'sf_last_account_import_sync_date',
         )
 
     def import_sf_account_delay(self, cr, uid, ids, context=None):
@@ -45,5 +45,5 @@ class SalesforceAccountBackend(orm.Model):
         current._import(
             'connector.salesforce.account',
             'delay',
-            'last_sf_account_import_sync_date',
+            'sf_last_account_import_sync_date',
         )

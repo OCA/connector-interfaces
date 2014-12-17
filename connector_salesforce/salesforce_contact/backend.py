@@ -25,7 +25,7 @@ class SalesforceContactBackend(orm.Model):
     _inherit = 'connector.salesforce.backend'
 
     _columns = {
-        'last_sf_contact_import_sync_date': fields.datetime(
+        'sf_last_contact_import_sync_date': fields.datetime(
             'Last Contact Import Date'
         ),
 
@@ -37,7 +37,7 @@ class SalesforceContactBackend(orm.Model):
         current._import(
             'connector.salesforce.contact',
             'direct',
-            'last_sf_contact_import_sync_date',
+            'sf_last_contact_import_sync_date',
         )
 
     def import_sf_contact_delay(self, cr, uid, ids, context=None):
@@ -46,5 +46,5 @@ class SalesforceContactBackend(orm.Model):
         current._import(
             'connector.salesforce.contact',
             'delay',
-            'last_sf_contact_import_sync_date',
+            'sf_last_contact_import_sync_date',
         )
