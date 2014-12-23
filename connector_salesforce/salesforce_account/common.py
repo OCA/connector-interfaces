@@ -32,7 +32,13 @@ class SalesforceAccount(orm.Model):
         'sf_shipping_partner_id': fields.many2one(
             'res.partner',
             'Salesforce shipping partner'
-        )
+        ),
+
+        'openerp_id': fields.many2one('res.partner',
+                                      string='Partner',
+                                      required=True,
+                                      select=True,
+                                      ondelete='restrict'),
     }
 
     _sql_contraints = [

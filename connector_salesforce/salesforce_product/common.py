@@ -28,6 +28,14 @@ class SalesforceProduct(orm.Model):
     _name = 'connector.salesforce.product'
     _description = 'Import SF Product into res.partner model'
 
+    _columns = {
+        'openerp_id': fields.many2one('product.product',
+                                      string='Product',
+                                      required=True,
+                                      select=True,
+                                      ondelete='restrict'),
+    }
+
     _sql_contraints = [
         ('sf_id_uniq', 'unique(backend_id, sf_id)',
          'A parnter with same Salesforce id already exists')
