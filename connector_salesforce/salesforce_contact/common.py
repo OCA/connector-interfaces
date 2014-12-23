@@ -28,6 +28,14 @@ class SalesforceContact(orm.Model):
     _name = 'connector.salesforce.contact'
     _description = 'Import SF Contact into res.partner model'
 
+    _columns = {
+        'openerp_id': fields.many2one('res.partner',
+                                      string='Partner',
+                                      required=True,
+                                      select=True,
+                                      ondelete='restrict'),
+    }
+
     _sql_contraints = [
         ('sf_id_uniq', 'unique(backend_id, sf_id)',
          'A parnter with same Salesforce id already exists')
