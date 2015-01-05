@@ -77,7 +77,8 @@ def error_handler(backend_record):
 class SalesforceRestAdapter(BackendAdapter):
     """Salesforce adapter for REST API"""
     _sf_type = None
-
+    # lookup date must be use only if model is exported only
+    _sf_lookup = None
     def __init__(self, connector_environment):
         super(SalesforceRestAdapter, self).__init__(connector_environment)
         self.sf = self.get_sf_connection()
@@ -154,13 +155,40 @@ class SalesforceRestAdapter(BackendAdapter):
             return deleted
 
     def create(self, data):
-        with error_handler:
+        with error_handler(self.backend_record):
             return self.sf_type.create(data)
 
+    def exists(self, salesforce_id):
+        with error_handler(self.backend_record):
+            result = self.sf.query_all(
+                "Select id from %s where Id = '%s'" % (self._sf_type,
+                                                       salesforce_id)
+            )
+        return result['records']
+
     def write(self, salesforce_id, data):
-        with error_handler:
+        with error_handler(self.backend_record):
             return self.sf_type.update(salesforce_id, data)
+
+    def upsert(self, salesforce_id, data):
+        if self._sf_lookup:
+            with error_handler(self.backend_record):
+                resp = self.sf_type.upsert(
+                    "%s/%s" % (self._sf_lookup, salesforce_id),
+                    data
+                )
+                return resp['id']
+        else:
+            if salesforce_id:
+                self.write(salesforce_id, data)
+                return salesforce_id
+
+            return self.create(data)
 
     def read(self, salesforce_id):
         with error_handler(self.backend_record):
             return self.sf_type.get(salesforce_id)
+
+    def delete(self, salesforce_id):
+        with error_handler(self.backend_record):
+            return self.sf_type.delete(salesforce_id)
