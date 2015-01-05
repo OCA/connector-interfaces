@@ -87,13 +87,9 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
                  :py:meth:``models.Model.create``
         :rtype: dict
         """
-        self._validate_data(self.salesforce_record)
         data = mapper.values(for_create=True, **kwargs)
         self._validate_data(data)
         return data
-
-    def _needs_update(self):
-        pass
 
     def _update(self, binding_id, data):
         self.session.write(self.model._name, binding_id, data)
