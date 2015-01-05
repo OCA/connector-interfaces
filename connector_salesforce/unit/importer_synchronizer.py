@@ -73,8 +73,9 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
                  :py:meth:``models.Model.create``
         :rtype: dict
         """
-        self._validate_data(self.salesforce_record)
-        return mapper.values(**kwargs)
+        data = mapper.values(**kwargs)
+        self._validate_data(data)
+        return data
 
     def _map_data_for_create(self, mapper, **kwargs):
         """ Call the convert function of the Mapper
