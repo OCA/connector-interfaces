@@ -20,22 +20,22 @@
 ##############################################################################
 import logging
 from openerp.addons.connector.unit.mapper import ImportMapper
-from openerp.addons.connector.exception import MappingError
 from openerp.addons.connector.unit.mapper import mapping, only_create
 from ..backend import salesforce_backend
 from ..unit.importer_synchronizer import (SalesforceDelayedBatchSynchronizer,
                                           SalesforceDirectBatchSynchronizer,
                                           SalesforceImportSynchronizer,
                                           import_record)
-from ..unit.rest_api_adapter import SalesforceRestAdapter
-from ..unit.mapper import AddressMapper
+
 _logger = logging.getLogger('salesforce_connector_product_mapping')
 
 TYPE_MAP_REGISTER = {'Service': 'service'}
 
+
 @salesforce_backend
 class SalesforceProductImporter(SalesforceImportSynchronizer):
     _model_name = 'connector.salesforce.product'
+
 
 @salesforce_backend
 class SalesforceDirectBatchProductImporter(SalesforceDirectBatchSynchronizer):
@@ -49,19 +49,13 @@ class SalesforceDelayedBatchProductImporter(
 
 
 @salesforce_backend
-class SalesforceProductAdapter(SalesforceRestAdapter):
-    _model_name = 'connector.salesforce.product'
-    _sf_type = 'Product2'
-
-
-@salesforce_backend
 class SalesforceProductMapper(ImportMapper):
     _model_name = 'connector.salesforce.product'
 
     direct = [
         ('IsActive', 'active'),
         ('ProductCode', 'code'),
-        ('ProductDescription', 'description'),
+        ('Description', 'description'),
         ('Name', 'name'),
     ]
 
@@ -70,25 +64,17 @@ class SalesforceProductMapper(ImportMapper):
     def backend_id(self, record):
         return {'backend_id': self.backend_record.id}
 
-    def get_default_type(self):
-        stock = self.session.search(
-            'ir.module.module',
-            [('name', '=', 'stock'),
-             ('state', '=', 'installed')],
-        )
-        if stock:
-           return 'product'
-        return 'consu'
+    @mapping
+    def sale_ok(self, record):
+        return {'sale_ok': True}
 
     @mapping
-    def product_type(self, record):
-        product_type = record.get('Family')
-        if product_type:
-            map = TYPE_MAP_REGISTER
-            product_type = map.get(
-                product_type,
-                self.get_default_type()
-            )
-        else:
-            product_type = self.get_default_type()
+    def product_type(self, record, **kwargs):
+        backend = self.options['backend_record']
+        family = record.get('Family')
+        mapping = {rec.sf_family: rec.product_type
+                   for rec in backend.sf_product_type_mapping_ids}
+        product_type = mapping.get(family)
+        if not product_type:
+            return {}
         return {'type': product_type}
