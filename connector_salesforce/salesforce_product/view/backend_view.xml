@@ -37,11 +37,11 @@
               <button name="export_sf_product"
                       class="oe_highlight"
                       type="object"
-                      string="Export Products Directly"/>
+                      string="Export of Products"/>
               <button name="export_sf_product_delay"
                       class="oe_highlight"
                       type="object"
-                      string="Export Products Using Jobs"/>
+                      string="Export of Products Using Jobs"/>
             </div>
             <br/>
           </group>
@@ -54,6 +54,17 @@
           </div>
           <group>
             <field name="sf_product_master"/>
+          </group>
+          <div>Set up your mapping between Product type and SalesForce family </div>
+          <group colspan="4">
+            <field name="sf_product_type_mapping_ids"
+                   colspan="4"
+                   nolabel="1">
+              <tree editable="top">
+                <field name="product_type"/>
+                <field name="sf_family"/>
+              </tree>
+            </field>
           </group>
         </page>
       </field>

@@ -28,9 +28,11 @@ class SalesforceProductBackend(orm.Model):
         'sf_last_product_import_sync_date': fields.datetime(
             'Last Product Import Date'
         ),
+
         'sf_last_product_export_sync_date': fields.datetime(
             'Last Product Export Date'
         ),
+
         'sf_product_master': fields.selection(
             [('sf', 'Salesforce'), ('erp', 'OpenERP/Odoo')],
             string='Select Master For Product',
@@ -38,6 +40,11 @@ class SalesforceProductBackend(orm.Model):
                  'Bidirectional/Conflicts are not managed so once set '
                  'you should not modify direction',
             required=True,
+        ),
+        'sf_product_type_mapping_ids': fields.one2many(
+            'connector.salesforce.product.type.mapping',
+            'backend_id',
+            'Product Type to SF Family Mapping'
         ),
     }
 
@@ -51,6 +58,7 @@ class SalesforceProductBackend(orm.Model):
             'direct',
             'sf_last_product_import_sync_date',
         )
+        return True
 
     def import_sf_product_delay(self, cr, uid, ids, context=None):
         backend_id = self._manage_ids(ids)
@@ -60,6 +68,7 @@ class SalesforceProductBackend(orm.Model):
             'delay',
             'sf_last_product_import_sync_date',
         )
+        return True
 
     def export_sf_product(self, cr, uid, ids, context=None):
         backend_id = self._manage_ids(ids)
@@ -69,6 +78,7 @@ class SalesforceProductBackend(orm.Model):
             'direct',
             'sf_last_product_export_sync_date',
         )
+        return True
 
     def export_sf_product_delay(self, cr, uid, ids, context=None):
         backend_id = self._manage_ids(ids)
@@ -78,3 +88,28 @@ class SalesforceProductBackend(orm.Model):
             'delay',
             'sf_last_product_export_sync_date',
         )
+        return True
+
+class SalesforceProductTypeMApping(orm.Model):
+
+    _name = 'connector.salesforce.product.type.mapping'
+
+    def _get_product_types(self, cr, uid, context=None):
+        return self.pool['product.template']._columns['type'].selection
+
+    _columns = {
+        'product_type': fields.selection(
+            _get_product_types,
+            'Odoo/OpenERP product type',
+            required=True,
+        ),
+        'sf_family': fields.char(
+            'Sales Force Product Family',
+            required=True,
+        ),
+        'backend_id': fields.many2one(
+            'connector.salesforce.backend',
+            'Salesforce Backend',
+            required=True,
+        )
+    }
