@@ -215,7 +215,7 @@ def batch_import(session, model_name, backend_id, date=False):
     importer = connector_env.get_connector_unit(
         SalesforceDirectBatchSynchronizer
     )
-    importer.run(model_name, date=date)
+    importer.run(date=date)
 
 
 @with_retry_on_expiration
@@ -228,7 +228,7 @@ def delayed_batch_import(session, model_name, backend_id, date=False):
     importer = connector_env.get_connector_unit(
         SalesforceDelayedBatchSynchronizer
     )
-    importer.run(model_name, date=date)
+    importer.run(date=date)
 
 
 @job
