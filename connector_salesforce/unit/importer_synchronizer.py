@@ -114,11 +114,14 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
         record_mapper = self.mapper.map_record(self.salesforce_record)
         if binding_id:
             # optimisation trick to avoid lookup binding
-            record_mapper.binding_id = binding_id
-            data = self._map_data_for_update(record_mapper)
+            data = self._map_data_for_update(record_mapper,
+                                             binding_id=binding_id,
+                                             backend_record=self.backend_record)
             self._update(binding_id, data)
         else:
-            data = self._map_data_for_create(record_mapper)
+            data = self._map_data_for_create(record_mapper,
+                                             binding_id=binding_id,
+                                             backend_record=self.backend_record)
             binding_id = self._create(data)
         self.binder.bind(self.salesforce_id, binding_id)
         self._after_import(binding_id)
