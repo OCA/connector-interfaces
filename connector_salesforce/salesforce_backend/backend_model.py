@@ -25,6 +25,7 @@ from openerp.osv import orm, fields
 from openerp.tools.translate import _
 from openerp.addons.connector import session as csession, connector
 from ..unit.importer_synchronizer import batch_import, delayed_batch_import
+from ..unit.exporter_synchronizer import batch_export, delayed_batch_export
 
 
 class SalesforceBackend(orm.Model):
@@ -335,9 +336,38 @@ class SalesforceBackend(orm.Model):
                 session,
                 model,
                 current.id,
-                date=date,
             )
         current.write({date_field: import_start_time})
+        return import_start_time
+
+    def _export(self, cr, uid, ids, model, mode, date_field,
+                full=False, context=None):
+        assert mode in ['direct', 'delay'], "Invalid mode"
+        session = csession.ConnectorSession(
+            cr,
+            uid,
+            context
+        )
+        export_start_time = fields.datetime.now()
+        backend_id = self._manage_ids(ids)
+        current = self.browse(cr, uid, backend_id, context=context)
+        date = current[date_field] if full is False else False
+        if mode == 'direct':
+            batch_export(
+                session,
+                model,
+                current.id,
+                date=date,
+            )
+        else:
+            delayed_batch_export(
+                session,
+                model,
+                current.id,
+                date=date
+            )
+        current.write({date_field: export_start_time})
+        return export_start_time
 
 
 class SalesforceBindingModel(orm.AbstractModel):
