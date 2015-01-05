@@ -152,7 +152,7 @@ class SalesforceBatchSynchronizer(ImportSynchronizer):
     def after_batch_import(self):
         pass
 
-    def run(self, model_name, date=False):
+    def run(self, date=False):
         self.before_batch_import()
         salesforce_ids = self.backend_adapter.get_updated(date)
         for salesforce_id in salesforce_ids:
