@@ -66,7 +66,7 @@ def error_handler(backend_record):
             'or in context of manual action it must be restarted manually'
         )
     except Exception as exc:
-        # simple salesforce exception does not devrive form common exception
+        # simple salesforce exception does not devrive from common exception
         if type(exc).__name__.startswith('Salesforce'):
             # TODO get quota excedded error here
             raise connector_exception.SalesforceRESTAPIError(exc)
