@@ -46,8 +46,8 @@
             <br/>
           </group>
         </page>
-        <page string="Import/Export Options" position="inside">
-          <separator string="Product options"/>
+        <page string="Import/Export Configuration" position="inside">
+          <separator string="Product Configuration"/>
           <div>Select the master for the products. <br/>
           Bidirectional/Conflicts are not managed so <span style="color:red">once set
           you should NOT modify the master</span>

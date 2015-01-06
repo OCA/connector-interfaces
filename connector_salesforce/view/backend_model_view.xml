@@ -94,7 +94,7 @@
                   </group>
                 </group>
               </page>
-              <page string="Import/Export Options">
+              <page string="Import/Export Configuration">
 
               </page>
             </notebook>
