@@ -66,7 +66,14 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
                            {'active': False})
 
     def _get_record(self):
-        return self.backend_adapter.read(self.salesforce_id)
+        rec = self.backend_adapter.read(self.salesforce_id)
+        if not rec:
+            raise IDMissingInBackend(
+                'id %s does not exists in Salesforce for %s' % (
+                    self.backend_adapter._sf_type
+                )
+            )
+        return rec
 
     def _map_data_for_update(self, mapper, **kwargs):
         """ Call the convert function of the Mapper
@@ -129,16 +136,16 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
 
     def run(self, salesforce_id, deactivate=False):
         self.salesforce_id = salesforce_id
-        if deactivate or self._to_deactivate():
+        # if we force deactivation there is no
+        # need to read record in Salesforces
+        # it save some REST calls
+        if deactivate:
             self._deactivate()
             return
         self.salesforce_record = self._get_record()
-        if not self.salesforce_record:
-            raise IDMissingInBackend(
-                'id %s does not exists in Salesforce for %s' % (
-                    self.backend_adapter._sf_type
-                )
-            )
+        if self._to_deactivate():
+            self._deactivate()
+            return
         self._before_import()
         binding_id = self.binder.to_openerp(self.salesforce_id)
         # calls _after_import
