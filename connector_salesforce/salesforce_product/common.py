@@ -37,7 +37,7 @@ class SalesforceProduct(orm.Model):
     }
 
     _sql_contraints = [
-        ('sf_id_uniq', 'unique(backend_id, sf_id)',
+        ('sf_id_uniq', 'unique(backend_id, salesforce_id)',
          'A parnter with same Salesforce id already exists')
     ]
 
