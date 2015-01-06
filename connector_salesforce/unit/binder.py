@@ -42,11 +42,13 @@ class SalesforeceBinder(Binder):
                  to the binding record
         :rtype: int
         """
-        binding_ids = self.session.search(
-            self.model._name,
-            [('salesforce_id', '=', salesforce_id),
-             ('backend_id', '=', self.backend_record.id)]
-        )
+        with self.session.change_context({'active_test': False}):
+            binding_ids = self.session.search(
+                self.model._name,
+                [('salesforce_id', '=', salesforce_id),
+                 ('backend_id', '=', self.backend_record.id)],
+
+            )
         if not binding_ids:
             return None
         assert len(binding_ids) == 1, "Several records found: %s" % binding_ids
