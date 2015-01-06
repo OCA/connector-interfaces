@@ -52,7 +52,7 @@ class SalesforceExportSynchronizer(ExportSynchronizer):
 
     def _deactivate(self):
         # external id not supported in delete
-        # In Ssalesforce nothing is deleted it is just a flag
+        # In Salesforce nothing is deleted it is just a flag
         # And deleted ind continue to exist into recycle bin.
         # Recycle bin lifespan is a Salesforce parameter
         # by default it is 15 days
