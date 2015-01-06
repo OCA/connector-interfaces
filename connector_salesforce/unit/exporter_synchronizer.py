@@ -93,6 +93,7 @@ class SalesforceExportSynchronizer(ExportSynchronizer):
 
     def _upsert(self, salesforce_id, data):
         sf_id = self.backend_adapter.upsert(salesforce_id, data)
+        return sf_id
 
     def _validate_data(self, data):
         """ Check if the values to export are correct
