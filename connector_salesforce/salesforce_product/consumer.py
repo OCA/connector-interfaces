@@ -25,7 +25,6 @@ from ..consumer import delay_export, delay_deactivate
 
 
 @on_record_create(model_names='connector.salesforce.product')
-@on_record_write(model_names='connector.salesforce.product')
 def export_sf_product(session, model_name, record_id, vals=None):
     record = session.browse(model_name, record_id)
     if record.backend_id.sf_product_master == 'erp':
