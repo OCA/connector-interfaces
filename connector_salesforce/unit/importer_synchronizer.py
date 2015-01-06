@@ -45,6 +45,11 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
     def _create(self, data):
         return self.session.create(self.model._name, data)
 
+
+    def _to_deactivate(self):
+        """Hook to check if record must be deactivated"""
+        return False
+
     def _deactivate(self):
         assert self.salesforce_id
         model = self.session.pool[self.model._name]
@@ -124,7 +129,7 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
 
     def run(self, salesforce_id, deactivate=False):
         self.salesforce_id = salesforce_id
-        if deactivate:
+        if deactivate or self._to_deactivate():
             self._deactivate()
             return
         self.salesforce_record = self._get_record()
