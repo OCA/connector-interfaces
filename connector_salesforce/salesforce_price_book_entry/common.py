@@ -18,12 +18,27 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from . import unit
-from . import connector
-from . import salesforce_backend
-from . import controllers
-from . import lib
-from . import salesforce_account
-from . import salesforce_contact
-from . import salesforce_product
-from . import salesforce_price_book_entry
+from openerp.osv import orm, fields
+from ..unit.binder import SalesforeceBinder
+
+
+class SalesforcePriceBookEntry(orm.Model):
+    _inherit = 'salesforce.binding'
+    _inherits = {'product.pricelist.item': 'openerp_id'}
+    _name = 'connector.salesforce.pricebook.entry'
+    _description = 'Import SF Contact into res.partner model'
+
+    _columns = {
+        'openerp_id': fields.many2one('res.partner',
+                                      string='Partner',
+                                      required=True,
+                                      select=True,
+                                      ondelete='restrict'),
+    }
+
+    _sql_contraints = [
+        ('sf_id_uniq', 'unique(backend_id, salesforce_id)',
+         'A parnter with same Salesforce id already exists')
+    ]
+
+SalesforeceBinder._model_name.append('connector.salesforce.pricebook.entry')

@@ -48,6 +48,7 @@ there is no default export provided at current time.
      'salesforce_contact/view/backend_view.xml',
      'salesforce_contact/view/res_partner_view.xml',
      'salesforce_product/view/backend_view.xml',
+     'salesforce_price_book_entry/view/backend_view.xml'
  ],
  'test': [],
  'installable': True,
