@@ -182,8 +182,8 @@ class SalesforceRestAdapter(BackendAdapter):
             if salesforce_id:
                 self.write(salesforce_id, data)
                 return salesforce_id
-
-            return self.create(data)
+            created_id = self.create(data)['id']
+            return created_id
 
     def read(self, salesforce_id):
         with error_handler(self.backend_record):
