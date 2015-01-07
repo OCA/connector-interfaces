@@ -19,6 +19,7 @@
 #
 ##############################################################################
 import logging
+from collections import namedtuple
 from openerp.addons.connector.queue.job import job
 from openerp.addons.connector.unit.synchronizer import ImportSynchronizer
 from openerp.addons.connector.exception import IDMissingInBackend
@@ -26,6 +27,7 @@ from ..unit.rest_api_adapter import with_retry_on_expiration
 
 _logger = logging.getLogger('salesforce_import_synchronizer')
 
+ImportSkipReason = namedtuple('SkipReason', ['should_skip', 'reason'])
 
 class SalesforceImportSynchronizer(ImportSynchronizer):
 
@@ -103,6 +105,9 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
         self._validate_data(data)
         return data
 
+    def _must_skip(self):
+        return ImportSkipReason(False, None)
+
     def _update(self, binding_id, data):
         self.session.write(self.model._name, binding_id, data)
 
@@ -143,6 +148,9 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
             self._deactivate()
             return
         self.salesforce_record = self._get_record()
+        skip = self._must_skip()
+        if skip.should_skip:
+            return skip.reason
         if self._to_deactivate():
             self._deactivate()
             return
@@ -250,7 +258,8 @@ def import_record(session, model_name, backend_id, salesforce_id):
         SalesforceImportSynchronizer
     )
     importer.run(salesforce_id)
-
+    return "%s record with Salesforce id %s imported" % (model_name,
+                                                         salesforce_id)
 
 @job
 def deactivate_record(session, model_name, backend_id, salesforce_id):
@@ -263,3 +272,5 @@ def deactivate_record(session, model_name, backend_id, salesforce_id):
         SalesforceImportSynchronizer
     )
     importer.run(salesforce_id, deactivate=True)
+    return "%s record with Salesforce id %s deactivated" % (model_name,
+                                                            salesforce_id)
