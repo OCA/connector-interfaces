@@ -37,6 +37,8 @@ class SalesforceAccountImporter(SalesforceImportSynchronizer):
     _model_name = 'connector.salesforce.account'
 
     def _after_import(self, binding_id):
+        # Can be used in Mapper.finalize but
+        # managin nested syntax when updating would have been a mess
         record_mapper = self.mapper
         shipping_add_data = record_mapper.map_shipping_address(
             self.salesforce_record,
@@ -73,7 +75,7 @@ class SalesforceAccountMapper(AddressMapper):
         ('BillingCity', 'city'),
         ('Fax', 'fax'),
         ('Phone', 'phone'),
-        ('VATNumber__c', 'vat'),
+        ('VATNumber__c', 'vat'), # To support commonly installed VAT application
     ]
 
     def _prepare_shipp_addresse_data(self, record, partner_record):
