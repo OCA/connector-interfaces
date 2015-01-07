@@ -40,6 +40,11 @@ By default following action are supported:
 
 Parent relation of Account is not supported at that time
 
+Todo :
+ - Cleanup and refactor to dry common code between unit
+ - find a way not to reinvent the wheel with SO onchange management
+   without depending on connector ecommerce addons
+ - Fix simplesalesforce exception lookup on next release of library
 """,
  'data': [
      'salesforce_backend/view/backend_model_view.xml',
