@@ -191,3 +191,13 @@ class SalesforceRestAdapter(BackendAdapter):
     def delete(self, salesforce_id):
         with error_handler(self.backend_record):
             return self.sf_type.delete(salesforce_id)
+
+
+    def query(self, query, args):
+        with error_handler(self.backend_record):
+            # as specified in SOQL manual
+            # We must escape single quote for security
+            query = query % args
+#            query.replace("'", r"\'")
+            result = self.sf.query_all(query)
+        return result
