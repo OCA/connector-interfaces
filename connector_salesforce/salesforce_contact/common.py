@@ -38,7 +38,7 @@ class SalesforceContact(orm.Model):
 
     _sql_contraints = [
         ('sf_id_uniq', 'unique(backend_id, salesforce_id)',
-         'A parnter with same Salesforce id already exists')
+         'A partner with same Salesforce id already exists')
     ]
 
 SalesforeceBinder._model_name.append('connector.salesforce.contact')
