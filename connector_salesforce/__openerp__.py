@@ -32,14 +32,13 @@ Manage number of rest call limitation.
 By default following action are supported:
 
 - Import of Account and contact into OpenERP/Odoo Salesforce is the master
-- Import of Product and PriceBook entries into OpenERP/Odoo
+- Import or export of Product ERP or SF can be master. Master must be set
+  Bidirectional sync is not supported
+- Import PriceBook entries into OpenERP/Odoo
   Salesforce is the master
 - Import of chosen Opportunity into OpenERP/Odoo Salesforce is the master
 
 Parent relation of Account is not supported at that time
-
-Export to Salesforce are supported and implemented but
-there is no default export provided at current time.
 
 """,
  'data': [
