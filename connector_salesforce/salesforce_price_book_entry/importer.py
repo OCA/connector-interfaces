@@ -22,13 +22,13 @@ import logging
 from openerp.addons.connector.exception import MappingError
 from openerp.addons.connector.unit.mapper import mapping, only_create
 from ..backend import salesforce_backend
+from openerp.addons.connector.unit.mapper import ImportMapper
 from ..unit.importer_synchronizer import (SalesforceDelayedBatchSynchronizer,
                                           SalesforceDirectBatchSynchronizer,
                                           SalesforceImportSynchronizer,
                                           import_record)
 from ..unit.rest_api_adapter import SalesforceRestAdapter
-from ..unit.mapper import AddressMapper
-_logger = logging.getLogger('salesforce_connector_contact_import')
+_logger = logging.getLogger('salesforce_connector_entry_import')
 
 
 @salesforce_backend
@@ -85,7 +85,7 @@ class SalesforcePriceBookEntryAdapter(SalesforceRestAdapter):
 
 
 @salesforce_backend
-class SalesforcePriceBookEntryMapper(AddressMapper):
+class SalesforcePriceBookEntryMapper(ImportMapper):
     _model_name = 'connector.salesforce.pricebook.entry'
 
     direct = [
