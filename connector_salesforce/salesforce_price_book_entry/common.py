@@ -26,11 +26,11 @@ class SalesforcePriceBookEntry(orm.Model):
     _inherit = 'salesforce.binding'
     _inherits = {'product.pricelist.item': 'openerp_id'}
     _name = 'connector.salesforce.pricebook.entry'
-    _description = 'Import SF Contact into res.partner model'
+    _description = 'Import SF Price Book entry into product.pricelist.item'
 
     _columns = {
-        'openerp_id': fields.many2one('res.partner',
-                                      string='Partner',
+        'openerp_id': fields.many2one('product.pricelist.item',
+                                      string='Price Item',
                                       required=True,
                                       select=True,
                                       ondelete='restrict'),
