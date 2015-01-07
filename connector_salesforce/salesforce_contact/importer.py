@@ -37,10 +37,11 @@ class SalesforceContactImporter(SalesforceImportSynchronizer):
 
     def _before_import(self):
         assert self.salesforce_record
-        account_id = self.session.search(
-            'connector.salesforce.account',
-            [('salesforce_id', '=', self.salesforce_record['AccountId'])]
-        )
+        with self.session.change_context({'active_test': False}):
+            account_id = self.session.search(
+                'connector.salesforce.account',
+                [('salesforce_id', '=', self.salesforce_record['AccountId'])]
+            )
         if not account_id:
             import_record(
                 self.session,
