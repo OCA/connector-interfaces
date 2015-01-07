@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    Author: Nicolas Bessi
-#    Copyright 2014 Camptocamp SA
+#    Copyright 2015 Camptocamp SA
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -18,13 +18,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from . import unit
-from . import connector
-from . import salesforce_backend
-from . import controllers
-from . import lib
-from . import salesforce_account
-from . import salesforce_contact
-from . import salesforce_product
-from . import salesforce_price_book_entry
-from . import salesforce_opportunity
+from . import backend
+from . import common
+from . import importer
