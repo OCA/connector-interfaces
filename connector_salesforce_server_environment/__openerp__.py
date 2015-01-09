@@ -30,7 +30,7 @@ for connector Salesforce authentication.
 
  To use it you have to add a section named as:
 
-    connector_sales_force_auth_ + Name of the backend
+    salesforce_auth_ + Name of the backend
 
  Default svailable section options are:
 
