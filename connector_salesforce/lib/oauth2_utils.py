@@ -85,8 +85,7 @@ class SalesForceOauth2MAnager(object):
         data = {'refresh_token': self.backend.consumer_refresh_token,
                 'client_id': self.backend.consumer_key,
                 'client_secret': self.backend.consumer_secret,
-                'grant_type': 'refresh_token'
-        }
+                'grant_type': 'refresh_token'}
         data.update(kwargs)
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
         response = requests.post(url, data=data, headers=headers)
