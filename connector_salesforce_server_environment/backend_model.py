@@ -24,18 +24,17 @@ from openerp.osv import orm, fields
 
 AuthField = namedtuple('AuthField', ['name', 'is_mandatory'])
 
-class odbc_backend(orm.Model):
+class salesforce_backend(orm.Model):
     """Use server env. to manage auth parameters"""
 
     def _get_auth_columns(self):
         return [
             AuthField('authentication_method', True),
-            AuthField('callback_url', False),
             AuthField('url', True),
             AuthField('sandbox', True),
         ]
 
-    def _get_env_auth_data(self, cr, uid, ids, context=None):
+    def _get_env_auth_data(self, cr, uid, ids, fields, args, context=None):
         res = {}
         for backend in self.browse(cr, uid, ids, context=context):
             section_data = {}
@@ -46,12 +45,12 @@ class odbc_backend(orm.Model):
                 )
             for col in self._get_auth_columns():
                 if serv_config.has_option(section_name, col.name):
-                    section_data[col] = serv_config.get(section_name, col.name)
+                    section_data[col.name] = serv_config.get(section_name, col.name)
                 else:
-                    section_data[col] = False
-                if col.is_mandatory and not section_data[col]:
+                    section_data[col.name] = False
+                if col.is_mandatory and not section_data.get(col.name):
                     raise ValueError(
-                        'Key %s not set in config file for section' % (
+                        'Key %s not set in config file for section %s' % (
                             col.name,
                             section_name
                         )
@@ -67,13 +66,6 @@ class odbc_backend(orm.Model):
             _get_env_auth_data,
             string='Authentication Method',
             multi='authentication_method',
-            type='char'
-        ),
-
-        'callback_url': fields.function(
-            _get_env_auth_data,
-            string='Public secure URL of Odoo (HTTPS)',
-            multi='callback_url',
             type='char'
         ),
 
