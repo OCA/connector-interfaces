@@ -27,7 +27,7 @@ class odbc_backend(orm.Model):
 
     def _get_auth_columns(self):
         return [
-            'authentication_method'
+            'authentication_method',
             'callback_url',
             'consumer_code',
             'consumer_key',
@@ -37,6 +37,7 @@ class odbc_backend(orm.Model):
             'password',
             'sandbox',
             'security_token',
+            'url',
             'username'
         ]
 
@@ -123,6 +124,13 @@ class odbc_backend(orm.Model):
             _get_env_auth_data,
             string='OrganizationId',
             multi='organization_uuid',
+            type='char'
+        ),
+
+        'url': fields.function(
+            _get_env_auth_data,
+            string='URL',
+            multi='url',
             type='char'
         ),
 
