@@ -29,17 +29,17 @@ class odbc_backend(orm.Model):
 
     def _get_auth_columns(self):
         return [
-            AuthField('authentication_method', True)
-            AuthField('callback_url', False)
-            AuthField('url', True)
-            AuthField('sandbox', True)
+            AuthField('authentication_method', True),
+            AuthField('callback_url', False),
+            AuthField('url', True),
+            AuthField('sandbox', True),
         ]
 
     def _get_env_auth_data(self, cr, uid, ids, context=None):
         res = {}
         for backend in self.browse(cr, uid, ids, context=context):
             section_data = {}
-            section_name = "connector_sales_force_auth_%s" % backend.name
+            section_name = "salesforce_auth_%s" % backend.name
             if not serv_config.has_section(section_name):
                 raise ValueError(
                     'Section %s does not exists' % section_name
@@ -84,7 +84,7 @@ class odbc_backend(orm.Model):
             type='char'
         ),
 
-        'sandbox': fields.boolean(
+        'sandbox': fields.function(
             _get_env_auth_data,
             string='Connect on sandbox instance',
             multi='sandbox',
