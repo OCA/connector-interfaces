@@ -35,15 +35,16 @@ for connector Salesforce authentication.
  Available section options are:
 
  - authentication_method
- - callback_url'
- - consumer_code'
- - consumer_key'
- - consumer_refresh_token'
- - consumer_secret'
- - organization_uuid'
- - password'
- - sandbox'
- - security_token'
+ - callback_url
+ - consumer_code
+ - consumer_key
+ - consumer_refresh_token
+ - consumer_secret
+ - organization_uuid
+ - password
+ - sandbox
+ - security_token
+ - url
  - username
 
  """,
