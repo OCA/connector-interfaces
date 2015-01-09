@@ -144,7 +144,7 @@ class SalesforceBackend(orm.Model):
         ),
     }
 
-    _defaults = {'authentication_method': 'pwd_token'}
+    _defaults = {'authentication_method': 'oauth2'}
 
     def _enforce_param(self, cr, uid, backend_record, param_name,
                        context=None):
