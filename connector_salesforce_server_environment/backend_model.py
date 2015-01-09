@@ -18,19 +18,21 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+from collections import namedtuple
 from openerp.addons.server_environment import serv_config
 from openerp.osv import orm, fields
 
+AuthField = namedtuple('AuthField', ['name', 'is_mandatory'])
 
 class odbc_backend(orm.Model):
     """Use server env. to manage auth parameters"""
 
     def _get_auth_columns(self):
         return [
-            'authentication_method',
-            'callback_url',
-            'url',
-            'sandbox',
+            AuthField('authentication_method', True)
+            AuthField('callback_url', False)
+            AuthField('url', True)
+            AuthField('sandbox', True)
         ]
 
     def _get_env_auth_data(self, cr, uid, ids, context=None):
@@ -43,8 +45,17 @@ class odbc_backend(orm.Model):
                     'Section %s does not exists' % section_name
                 )
             for col in self._get_auth_columns():
-                if serv_config.has_option(section_name, col):
-                    section_data[col] = serv_config.get(section_name, col)
+                if serv_config.has_option(section_name, col.name):
+                    section_data[col] = serv_config.get(section_name, col.name)
+                else:
+                    section_data[col] = False
+                if col.is_mandatory and not section_data[col]:
+                    raise ValueError(
+                        'Key %s not set in config file for section' % (
+                            col.name,
+                            section_name
+                        )
+                    )
             res[backend.id] = section_data
         return res
 
@@ -79,5 +90,4 @@ class odbc_backend(orm.Model):
             multi='sandbox',
             type='boolean',
         ),
-
     }

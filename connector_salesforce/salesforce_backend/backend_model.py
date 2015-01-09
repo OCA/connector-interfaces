@@ -182,6 +182,9 @@ class SalesforceBackend(orm.Model):
             )
         return True
 
+    def _enforce_url(self):
+        return True
+
     def _validate_configuration(self, cr, uid, ids, context=None):
         """Ensure configuration on backend record is correct
 
@@ -189,8 +192,9 @@ class SalesforceBackend(orm.Model):
         support eventual server env based configuration
         """
         for config in self.browse(cr, uid, ids, context=context):
-            self._enforce_param(cr, uid, config, 'url',
-                                context=context)
+            if self._enforce_url():
+                self._enforce_param(cr, uid, config, 'url',
+                                    context=context)
             if config.authentication_method == 'ip_filtering':
                 self._enforce_param(cr, uid, config, 'organization_uuid',
                                     context=context)
