@@ -32,21 +32,15 @@ for connector Salesforce authentication.
 
     connector_sales_force_auth_ + Name of the backend
 
- Available section options are:
+ Default svailable section options are:
 
  - authentication_method
  - callback_url
- - consumer_code
- - consumer_key
- - consumer_refresh_token
- - consumer_secret
- - organization_uuid
- - password
  - sandbox
- - security_token
  - url
- - username
 
+Module can easily be extended to add any other fields.
+By default they are not provided in order not have security issues
  """,
  'website': 'http://www.camptocamp.com',
  'data': [],

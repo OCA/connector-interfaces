@@ -29,16 +29,8 @@ class odbc_backend(orm.Model):
         return [
             'authentication_method',
             'callback_url',
-            'consumer_code',
-            'consumer_key',
-            'consumer_refresh_token',
-            'consumer_secret',
-            'organization_uuid',
-            'password',
-            'sandbox',
-            'security_token',
             'url',
-            'username'
+            'sandbox',
         ]
 
     def _get_env_auth_data(self, cr, uid, ids, context=None):
@@ -51,7 +43,8 @@ class odbc_backend(orm.Model):
                     'Section %s does not exists' % section_name
                 )
             for col in self._get_auth_columns():
-                section_data[col] = serv_config.get(section_name, col)
+                if serv_config.has_option(section_name, col):
+                    section_data[col] = serv_config.get(section_name, col)
             res[backend.id] = section_data
         return res
 
@@ -66,64 +59,10 @@ class odbc_backend(orm.Model):
             type='char'
         ),
 
-        'username': fields.function(
-            _get_env_auth_data,
-            string='User Name',
-            multi='username',
-            type='char'
-        ),
-
-
-        'password': fields.function(
-            _get_env_auth_data,
-            string='Password',
-            multi='password',
-            type='char'
-        ),
-
-        'consumer_key': fields.function(
-            _get_env_auth_data,
-            string='OAuth2 Consumer Key',
-            multi='conusmer_key',
-            type='char'
-        ),
-
-        'consumer_secret': fields.function(
-            _get_env_auth_data,
-            string='OAuth2 secret',
-            multi='consumer_secret',
-            type='char'
-        ),
-
-        'consumer_code': fields.function(
-            _get_env_auth_data,
-            string='OAuth2 client authorization code',
-            multi='consumer_code',
-            type='char'
-        ),
-        'consumer_refresh_token': fields.function(
-            _get_env_auth_data,
-            string='OAuth2 Token',
-            multi='consumer_refresh_token',
-            type='char'
-        ),
         'callback_url': fields.function(
             _get_env_auth_data,
             string='Public secure URL of Odoo (HTTPS)',
             multi='callback_url',
-            type='char'
-        ),
-        'security_token': fields.function(
-            _get_env_auth_data,
-            string='Password flow Security API token',
-            multi='security_token',
-            type='char'
-        ),
-
-        'organization_uuid': fields.function(
-            _get_env_auth_data,
-            string='OrganizationId',
-            multi='organization_uuid',
             type='char'
         ),
 
