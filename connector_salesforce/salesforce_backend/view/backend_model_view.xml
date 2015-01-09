@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+    <record id="connector_salesforce_backend_form" model="ir.ui.view">
+      <field name="name">Salesforce backend form</field>
+      <field name="model">connector.salesforce.backend</field>
+      <field name="arch" type="xml">
+        <form version="7.0" string="Salesforce Backend">
+          <header>
+          </header>
+          <sheet>
+            <group col="4">
+              <field name="name"/>
+              <field name="version"/>
+            </group>
+            <notebook>
+              <page string="Actions">
+
+              </page>
+              <page string="Authentication Configuration">
+                <div class="buttons">
+                  <button name="redirect_to_validation_url"
+                          class="oe_highlight"
+                          string="Authorize Odoo in SalesForce"
+                          type="object"
+                          attrs="{'invisible': [('authentication_method', '!=', 'oauth2')]}"/>
+                  <button name="refresh_token"
+                          class="oe_highlight"
+                          string="Refresh token"
+                          type="object"
+                          attrs="{'invisible': [('authentication_method', '!=', 'oauth2')]}"/>
+                </div>
+                <div attrs="{'invisible': [('authentication_method', '!=', 'oauth2')]}">
+                  <separator string="Oauth2 Setup Instructions"/>
+                  <p>In order to use Oauth2 you have to add a remote application in Salesforce
+                  and enable Oauth login.</p>
+
+                  <p> The created remote access app must have following parameters:
+                  Permitted Users --> All users may self-authorize<br/>
+                  Callback URL --> public_Odoo_url/salesforce/oauth<br/>
+
+                  </p>
+                  <p>
+                    Once done you have to manage your app ensure the `Refresh token is valid until revoked` parameter is set
+                  </p>
+                </div>
+
+                <group>
+                  <group>
+                    <field name="url"/>
+                    <field name="authentication_method"/>
+                    <field name="username"
+                           attrs="{'invisible': [('authentication_method', '=', 'oauth2')], 'required': [('authentication_method','in', ('ip_filtering', 'pwd_token'))]}"
+                           />
+                    <field name="password"
+                           attrs="{'invisible': [('authentication_method','=', 'oauth2')], 'required': [('authentication_method', 'in', ('ip_filtering', 'pwd_token'))]}"
+                           />
+                    <field name="security_token"
+                           password="True"
+                           attrs="{'invisible': [('authentication_method', 'in', ('ip_filtering', 'oauth2'))], 'required': [('authentication_method', '=', 'pwd_token')]}"
+                           />
+                    <field name="sandbox"
+                           />
+                    <field name="organization_uuid"
+                           attrs="{'invisible': [('authentication_method', '!=', 'ip_filtering')], 'required': [('authentication_method', '=', 'ip_filtering')]}"
+                           />
+                    <field name="consumer_key"
+                           attrs="{'invisible': [('authentication_method', '!=', 'oauth2')], 'required': [('authentication_method', '=', 'oauth2')]}"
+                           />
+
+                    <field name="consumer_secret"
+                           password="True"
+                           attrs="{'invisible': [('authentication_method', '!=', 'oauth2')], 'required': [('authentication_method', '=', 'oauth2')]}"
+                           />
+                    <field name="callback_url"
+                           attrs="{'invisible': [('authentication_method', '!=', 'oauth2')], 'required': [('authentication_method', '=', 'oauth2')]}"
+                           />
+                    <field name="consumer_code"
+                           password="True"
+                           attrs="{'invisible': [('authentication_method', '!=', 'oauth2')]}"
+                           />
+                    <field name="consumer_token"
+                           password="True"
+                           attrs="{'invisible': [('authentication_method', '!=', 'oauth2')]}"
+                           />
+                    <field name="consumer_refresh_token"
+                           password="True"
+                           attrs="{'invisible': [('authentication_method', '!=', 'oauth2')]}"
+                           />
+                    <field name="consumer_code"
+                           password="True"
+                           attrs="{'invisible': [('authentication_method', '!=', 'oauth2')]}"
+                           />
+                  </group>
+                </group>
+              </page>
+              <page string="Import/Export Configuration">
+
+              </page>
+            </notebook>
+          </sheet>
+        </form>
+      </field>
+    </record>
+
+    <record id="connector_salesforce_list" model="ir.ui.view">
+      <field name="name">Connector Salesforce list view</field>
+      <field name="model">connector.salesforce.backend</field>
+      <field name="arch" type="xml">
+        <tree version="7.0" string="Salesforce Backend">
+          <field name="name"/>
+        </tree>
+      </field>
+    </record>
+
+    <menuitem
+        name="Salesforce"
+        parent="connector.menu_connector_root"
+        id="connector_salesforce_root"/>
+
+    <record model="ir.actions.act_window" id="connector_salesforces_backend_action">
+      <field name="name">Salesforce Backend</field>
+      <field name="type">ir.actions.act_window</field>
+      <field name="res_model">connector.salesforce.backend</field>
+      <field name="domain"></field>
+      <field name="view_type">form</field>
+      <field name="view_mode">tree,form</field>
+      <field name="view_id" ref="connector_salesforce_list"/>
+    </record>
+
+    <menuitem
+        name="Salesforce Backend"
+        parent="connector_salesforce_root"
+        id="connector_salesforce_backend_menu"
+        action="connector_salesforces_backend_action"/>
+
+  </data>
+</openerp>
