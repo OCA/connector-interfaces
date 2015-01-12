@@ -287,6 +287,7 @@ class SalesforceOpportunityLineItemMapper(ImportMapper):
     _model_name = 'connector.salesforce.opportunity.line.item'
 
     direct = [
+        ('Discount', 'discount')
     ]
 
     @only_create
