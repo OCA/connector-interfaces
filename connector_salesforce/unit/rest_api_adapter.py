@@ -27,7 +27,7 @@ try:
     from simple_salesforce import (SalesforceAuthenticationFailed,
                                    SalesforceExpiredSession)
 except ImportError:
-    logger = logging.getLogger('connector_salesforce_rest_adapter_import')
+    logger = logging.getLogger('connector_salesforce_rest_adapter')
     logger.warning('Library simple_salesforce is not available')
 
 from openerp.addons.connector.unit.backend_adapter import BackendAdapter
