@@ -132,7 +132,8 @@ class SalesforceRestAdapter(BackendAdapter):
             start = convert_to_utc_datetime(start_datetime_str)
             end = convert_to_utc_datetime(end_datetime_str)
             with error_handler(self.backend_record):
-                return self.sf_type.updated(start, end)['ids']
+                # we use generator to be coherent with other output
+                return (up_id for up_id in self.sf_type.updated(start, end)['ids'])
         else:
             # helper to manage long result does not correspond to SF queryAll
             with error_handler(self.backend_record):
