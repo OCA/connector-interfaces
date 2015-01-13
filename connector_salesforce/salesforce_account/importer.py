@@ -26,7 +26,7 @@ from ..unit.importer_synchronizer import (SalesforceDelayedBatchSynchronizer,
                                           SalesforceDirectBatchSynchronizer,
                                           SalesforceImportSynchronizer)
 from ..unit.rest_api_adapter import SalesforceRestAdapter
-from ..unit.mapper import AddressMapper
+from ..unit.mapper import AddressMapper, PriceMapper
 
 
 _logger = logging.getLogger('salesforce_connector_account_import')
@@ -65,7 +65,7 @@ class SalesforceAccountAdapter(SalesforceRestAdapter):
 
 
 @salesforce_backend
-class SalesforceAccountMapper(AddressMapper):
+class SalesforceAccountMapper(AddressMapper, PriceMapper):
     _model_name = 'connector.salesforce.account'
 
     direct = [
@@ -169,3 +169,25 @@ class SalesforceAccountMapper(AddressMapper):
     @mapping
     def active(self, record):
         return {'active': True}
+
+    @mapping
+    def property_product_pricelist(self, record):
+        currency_id = self.get_currency_id(record)
+        backend = self.options['backend_record']
+        mapping = {rec.currency_id.id: rec.pricelist_version_id.id
+                   for rec in backend.sf_entry_mapping_ids}
+        price_list_version_id = mapping.get(currency_id)
+        if not price_list_version_id:
+            raise MappingError(
+                'No pricelist version configuration done for '
+                'currency %s and backend %s' % (
+                    record.get('CurrencyIsoCode'),
+                    backend.name
+                )
+            )
+        price_list_version_record = self.session.browse(
+            'product.pricelist.version',
+            price_list_version_id
+        )
+        return {'property_product_pricelist':
+                price_list_version_record.pricelist_id.id}
