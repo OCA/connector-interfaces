@@ -118,7 +118,7 @@ class SalesforceOpportunityAdapter(SalesforceRestAdapter):
             if not sliced_ids:
                 break
             query = self._get_update_soql()
-            res = self.query(query, (', '.join(sliced_ids),))
+            res = self.query(query, ', '.join(sliced_ids))
             for record in res['records']:
                 yield record['Id']
 
@@ -128,7 +128,7 @@ class SalesforceOpportunityAdapter(SalesforceRestAdapter):
 
 
 @salesforce_backend
-class SalesforceOpportunityMapper(ImportMapper):
+class SalesforceOpportunityMapper(PriceMapper):
     _model_name = 'connector.salesforce.opportunity'
 
     direct = [
@@ -256,6 +256,17 @@ class SalesforceOpportunityLineItemAdapter(SalesforceRestAdapter):
     _model_name = 'connector.salesforce.opportunity.line.item'
     _sf_type = 'OpportunityLineItem'
 
+    def _get_product_soql(self):
+        return ("SELECT PricebookEntry.Product2Id "
+                "FROM OpportunityLineItem where Id = '%s'")
+
+    def _get_products(self, salesforce_line_uuid):
+        res = self.query(self._get_product_soql(), salesforce_line_uuid)
+        return [
+            record['PricebookEntry']['Product2Id'] for record in res['records']
+            if record.get('PricebookEntry',{}).get('Product2Id')
+        ]
+
 
 @salesforce_backend
 class SalesforceOpportunityLineItemMapper(PriceMapper):
@@ -275,19 +286,22 @@ class SalesforceOpportunityLineItemMapper(PriceMapper):
         # SF Sale description is limited to 255 char
         name = record.get('Description')
         if not name:
-            name = "/"
+            return {}
         return {'name': name}
 
     @mapping
     def product_id(self, record):
-        sf_product_uuid = record.get('Product2Id')
+        backend_adapter = self.environment.get_connector_unit(
+            SalesforceOpportunityLineItemAdapter)
+        sf_product_uuid = backend_adapter._get_products(record['Id'])
         if not sf_product_uuid:
             return {'product_id': False}
+
         backend = self.options['backend_record']
         with self.session.change_context({'active_test': False}):
             bind_product_id = self.session.search(
                 'connector.salesforce.product',
-                [('salesforce_id', '=', sf_product_uuid),
+                [('salesforce_id', '=', sf_product_uuid[0]),
                  ('backend_id', '=', backend.id)]
             )
         if not bind_product_id:
@@ -315,7 +329,6 @@ class SalesforceOpportunityLineItemMapper(PriceMapper):
             'product_uom_qty': quantity,
         }
 
-    @only_create
     @mapping
     def order_id(self, record):
         sf_opportunity_uuid = record.get('OpportunityId')
