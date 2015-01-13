@@ -87,3 +87,29 @@ class AddressMapper(ImportMapper):
             'res.partner.title',
             {'name': title}
         )
+
+class PriceMapper(ImportMapper):
+
+    def get_currency_id(self, record):
+        currency_iso_code = record.get('CurrencyIsoCode')
+        if not currency_iso_code:
+            raise MappingError(
+                'No currency Given for: %s' % record
+            )
+        currency_id = self.session.search(
+            'res.currency',
+            [('name', '=ilike', currency_iso_code)]
+        )
+        if not currency_id:
+            raise MappingError(
+                'No %s currency available. '
+                'Please create one manually' % currency_iso_code
+            )
+        if len(currency_id) > 1:
+            raise ValueError(
+                'Many Currencies found for %s. '
+                'Please ensure your multicompany rules are corrects '
+                'or check that the job is not runned by '
+                'the admin user' % currency_iso_code
+            )
+        return currency_id[0]
