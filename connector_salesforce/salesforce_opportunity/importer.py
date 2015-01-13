@@ -22,15 +22,16 @@ import logging
 from itertools import islice
 from openerp.osv import fields
 from openerp.addons.connector.exception import MappingError
+from openerp.addons.connector.unit.mapper import ImportMapper
 from openerp.addons.connector.unit.mapper import mapping, only_create
 from ..backend import salesforce_backend
-from openerp.addons.connector.unit.mapper import ImportMapper
 from ..unit.importer_synchronizer import (SalesforceDelayedBatchSynchronizer,
                                           SalesforceDirectBatchSynchronizer,
                                           SalesforceImportSynchronizer,
                                           ImportSkipReason,
                                           import_record)
 from ..unit.rest_api_adapter import SalesforceRestAdapter
+from ..unit.mapper import PriceMapper
 _logger = logging.getLogger('salesforce_connector_opportunity_import')
 
 MAX_QUERY_OPP = 5000
@@ -139,32 +140,6 @@ class SalesforceOpportunityMapper(ImportMapper):
     def backend_id(self, record):
         return {'backend_id': self.backend_record.id}
 
-    def get_currency_id(self, record):
-
-        # To dry with price book entry function
-        currency_iso_code = record.get('CurrencyIsoCode')
-        if not currency_iso_code:
-            raise MappingError(
-                'No currency Given for Opportunity entry: %s' % record
-            )
-        currency_id = self.session.search(
-            'res.currency',
-            [('name', '=ilike', currency_iso_code)]
-        )
-        if not currency_id:
-            raise MappingError(
-                'No %s currency available. '
-                'Please create one manually' % currency_iso_code
-            )
-        if len(currency_id) > 1:
-            raise ValueError(
-                'Many Currencies found for %s. '
-                'Please ensure your multicompany rules are corrects '
-                'or check that the job is not runned by '
-                'the admin user' % currency_iso_code
-            )
-        return currency_id[0]
-
     @mapping
     def pricelist_id(self, record):
         currency_id = self.get_currency_id(record)
@@ -174,7 +149,7 @@ class SalesforceOpportunityMapper(ImportMapper):
         price_list_version_id = mapping.get(currency_id)
         if not price_list_version_id:
             raise MappingError(
-                'No priceliste version configuration done for '
+                'No pricelist version configuration done for '
                 'currency %s and backend %s' % (
                     record.get('CurrencyIsoCode'),
                     backend.name
@@ -283,7 +258,7 @@ class SalesforceOpportunityLineItemAdapter(SalesforceRestAdapter):
 
 
 @salesforce_backend
-class SalesforceOpportunityLineItemMapper(ImportMapper):
+class SalesforceOpportunityLineItemMapper(PriceMapper):
     _model_name = 'connector.salesforce.opportunity.line.item'
 
     direct = [
@@ -337,7 +312,7 @@ class SalesforceOpportunityLineItemMapper(ImportMapper):
             quantity = 1.0
         return {
             'price_unit': sf_price,
-            'product_uom_qty': sf_price,
+            'product_uom_qty': quantity,
         }
 
     @only_create
