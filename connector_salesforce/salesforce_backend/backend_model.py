@@ -77,6 +77,17 @@ class SalesforceBackend(orm.Model):
         :return: list of tuple of available versions
         :rtype: list
         """
+        return self._select_versions_hook(cr, uid, context=context)
+
+
+    def _select_versions_hook(self, cr, uid, context=None):
+        """ Available versions
+
+        Can be inherited to add custom versions.
+
+        :return: list of tuple of available versions
+        :rtype: list
+        """
         return [('15', "Winter'15")]
 
     _columns = {
