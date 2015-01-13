@@ -198,6 +198,6 @@ class SalesforceRestAdapter(BackendAdapter):
             # as specified in SOQL manual
             # We must escape single quote for security
             query = query % args
-#            query.replace("'", r"\'")
+            query.replace("'", r"\'")
             result = self.sf.query_all(query)
         return result
