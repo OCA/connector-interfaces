@@ -21,4 +21,4 @@
 from openerp.addons.connector import backend
 
 salesforce_backend = backend.Backend('salesforce')
-salesforce_backend_v11 = backend.Backend(parent=salesforce_backend, version="15")
+salesforce_backend_v15 = backend.Backend(parent=salesforce_backend, version="15")
