@@ -57,7 +57,7 @@ class SalesforceExportSynchronizer(ExportSynchronizer):
         # Recycle bin lifespan is a Salesforce parameter
         # by default it is 15 days
         assert self.binding_record.salesforce_id
-        if self.backend_adapter.exists(salesforce_id):
+        if self.backend_adapter.exists(self.salesforce_id):
             self.backend_adapter.delete(self.binding_record.salesforce_id)
 
     def _to_deactivate(self):
