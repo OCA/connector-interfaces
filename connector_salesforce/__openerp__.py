@@ -45,6 +45,7 @@ Todo :
  - find a way not to reinvent the wheel with SO onchange management
    without depending on connector ecommerce addons
  - Fix simplesalesforce exception lookup on next release of library
+ - Import Quotation must copy address and store it in deactivate
 """,
  'data': [
      'salesforce_backend/view/backend_model_view.xml',
