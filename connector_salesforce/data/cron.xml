@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
-  <data>
+  <data noupdate="1">
        <record forcecreate="True" id="ir_cron_import_account" model="ir.cron">
            <field name="name">Import Salesforce accounts using connector Jobs</field>
            <field eval="False" name="active"/>
