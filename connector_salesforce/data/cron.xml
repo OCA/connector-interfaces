@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+       <record forcecreate="True" id="ir_cron_import_account" model="ir.cron">
+           <field name="name">Import Salesforce accounts using connector Jobs</field>
+           <field eval="False" name="active"/>
+           <field name="user_id" ref="base.user_root"/>
+           <field name="interval_number">1</field>
+           <field name="interval_type">days</field>
+           <field name="numbercall">-1</field>
+           <field eval="'connector.salesforce.account'" name="model"/>
+           <field eval="'import_sf_account_delay'" name="function"/>
+           <field eval="'()'" name="args"/>
+        </record>
+       <record forcecreate="True" id="ir_cron_import_contact" model="ir.cron">
+           <field name="name">Import Salesforce contacts using connector Jobs</field>
+           <field eval="False" name="active"/>
+           <field name="user_id" ref="base.user_root"/>
+           <field name="interval_number">1</field>
+           <field name="interval_type">days</field>
+           <field name="numbercall">-1</field>
+           <field eval="'connector.salesforce.contact'" name="model"/>
+           <field eval="'import_sf_contact_delay'" name="function"/>
+           <field eval="'()'" name="args"/>
+        </record>
+       <record forcecreate="True" id="ir_cron_import_product" model="ir.cron">
+           <field name="name">Import Salesforce products using connector Jobs</field>
+           <field eval="False" name="active"/>
+           <field name="user_id" ref="base.user_root"/>
+           <field name="interval_number">1</field>
+           <field name="interval_type">days</field>
+           <field name="numbercall">-1</field>
+           <field eval="'connector.salesforce.product'" name="model"/>
+           <field eval="'import_sf_product_delay'" name="function"/>
+           <field eval="'()'" name="args"/>
+        </record>
+       <record forcecreate="True" id="ir_cron_export_product" model="ir.cron">
+           <field name="name">Export Salesforce products using connector Jobs</field>
+           <field eval="False" name="active"/>
+           <field name="user_id" ref="base.user_root"/>
+           <field name="interval_number">1</field>
+           <field name="interval_type">days</field>
+           <field name="numbercall">-1</field>
+           <field eval="'connector.salesforce.product'" name="model"/>
+           <field eval="'export_sf_product_delay'" name="function"/>
+           <field eval="'()'" name="args"/>
+        </record>
+       <record forcecreate="True" id="ir_cron_import_price_book_entries" model="ir.cron">
+           <field name="name">Import Salesforce price book entries using connector Jobs</field>
+           <field eval="False" name="active"/>
+           <field name="user_id" ref="base.user_root"/>
+           <field name="interval_number">1</field>
+           <field name="interval_type">days</field>
+           <field name="numbercall">-1</field>
+           <field eval="'connector.salesforce.pricebook.entry'" name="model"/>
+           <field eval="'import_sf_entry_delay'" name="function"/>
+           <field eval="'()'" name="args"/>
+        </record>
+       <record forcecreate="True" id="ir_cron_import_opportunity" model="ir.cron">
+           <field name="name">Import Salesforce opportunities using connector Jobs</field>
+           <field eval="False" name="active"/>
+           <field name="user_id" ref="base.user_root"/>
+           <field name="interval_number">1</field>
+           <field name="interval_type">days</field>
+           <field name="numbercall">-1</field>
+           <field eval="'connector.salesforce.opportunity'" name="model"/>
+           <field eval="'import_sf_opportunity_delay'" name="function"/>
+           <field eval="'()'" name="args"/>
+        </record>
+  </data>
+</openerp>

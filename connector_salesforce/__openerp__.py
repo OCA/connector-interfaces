@@ -56,6 +56,7 @@ Todo :
      'salesforce_price_book_entry/view/backend_view.xml',
      'salesforce_opportunity/view/backend_view.xml',
      'security/ir.model.access.csv',
+     'data/cron.xml',
  ],
  'test': [],
  'installable': True,
