@@ -87,10 +87,6 @@
                            password="True"
                            attrs="{'invisible': [('authentication_method', '!=', 'oauth2')]}"
                            />
-                    <field name="consumer_code"
-                           password="True"
-                           attrs="{'invisible': [('authentication_method', '!=', 'oauth2')]}"
-                           />
                   </group>
                 </group>
               </page>
