@@ -74,11 +74,11 @@ def export_product(session, model_name, record_id, vals=None):
                     sf_prod_id[0],
                     vals=vals
                 )
-            else:
-                if vals.get('sale_ok') and record.active:
-                    create_product_binding(
-                        session,
-                        model_name,
-                        record_id,
-                        vals=vals
-                    )
+            # else:
+            #     if vals.get('sale_ok') and record.active:
+            #         create_product_binding(
+            #             session,
+            #             model_name,
+            #             record_id,
+            #             vals=vals
+            #         )
