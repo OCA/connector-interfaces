@@ -9,7 +9,7 @@
       <field name="arch" type="xml">
         <page string="Actions" position="inside">
           <br/>
-          <separator string="Opportunitys From Salesforce Towards ERP"/>
+          <separator string="Opportunities From Salesforce Towards ERP"/>
           <group>
             <div>
               <label for="sf_last_opportunity_import_sync_date"/>
