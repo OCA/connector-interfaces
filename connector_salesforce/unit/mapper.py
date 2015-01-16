@@ -79,7 +79,7 @@ class AddressMapper(ImportMapper):
         )
         if len(title_id) > 1:
             raise MappingError(
-                'Many countitle found to be linked with partner %s' % record
+                'Many titles found to be linked with partner %s' % record
             )
         if title_id:
             return title_id[0]
