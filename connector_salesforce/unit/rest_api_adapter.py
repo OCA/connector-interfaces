@@ -186,6 +186,8 @@ class SalesforceRestAdapter(BackendAdapter):
 
     def upsert(self, salesforce_id, data):
         if self._sf_lookup:
+            # if we use custom external id in Salesforce
+            assert salesforce_id
             with error_handler(self.backend_record):
                 resp = self.sf_type.upsert(
                     "%s/%s" % (self._sf_lookup, salesforce_id),
