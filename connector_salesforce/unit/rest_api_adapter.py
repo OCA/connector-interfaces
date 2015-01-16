@@ -178,7 +178,7 @@ class SalesforceRestAdapter(BackendAdapter):
                 "Select id from %s where Id = '%s'" % (self._sf_type,
                                                        salesforce_id)
             )
-        return result['records']
+        return bool(result['records'])
 
     def write(self, salesforce_id, data):
         with error_handler(self.backend_record):
