@@ -21,7 +21,6 @@
 import logging
 from openerp.addons.connector.queue.job import job
 from openerp.addons.connector.unit.synchronizer import ExportSynchronizer
-from openerp.addons.connector.exception import IDMissingInBackend
 from ..unit.rest_api_adapter import with_retry_on_expiration
 
 _logger = logging.getLogger('salesforce_export_synchronizer')
@@ -115,7 +114,6 @@ class SalesforceExportSynchronizer(ExportSynchronizer):
                                          backend_record=self.backend_record)
         sf_id = self._upsert(salesforce_id, data)
         self.binder.bind(sf_id, binding_id)
-
 
     def run(self, binding_id, force_deactivate=False):
         self.binding_id = binding_id

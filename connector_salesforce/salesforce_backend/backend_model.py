@@ -79,7 +79,6 @@ class SalesforceBackend(orm.Model):
         """
         return self._select_versions_hook(cr, uid, context=context)
 
-
     def _select_versions_hook(self, cr, uid, context=None):
         """ Available versions
 

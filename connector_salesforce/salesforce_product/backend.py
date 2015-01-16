@@ -20,6 +20,7 @@
 ##############################################################################
 from openerp.osv import orm, fields
 
+
 class SalesforceProductBackend(orm.Model):
 
     _inherit = 'connector.salesforce.backend'
@@ -89,6 +90,7 @@ class SalesforceProductBackend(orm.Model):
             'sf_last_product_export_sync_date',
         )
         return True
+
 
 class SalesforceProductTypeMApping(orm.Model):
 

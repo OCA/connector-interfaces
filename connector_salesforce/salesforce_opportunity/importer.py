@@ -22,7 +22,6 @@ import logging
 from itertools import islice
 from openerp.osv import fields
 from openerp.addons.connector.exception import MappingError
-from openerp.addons.connector.unit.mapper import ImportMapper
 from openerp.addons.connector.unit.mapper import mapping, only_create
 from ..backend import salesforce_backend
 from ..unit.importer_synchronizer import (SalesforceDelayedBatchSynchronizer,
@@ -81,6 +80,7 @@ class SalesforceOpportunityImporter(SalesforceImportSynchronizer):
             return ImportSkipReason(True, 'Already imported')
         return ImportSkipReason(False, None)
 
+
 @salesforce_backend
 class SalesforceDirectBatchOpportunityImporter(
         SalesforceDirectBatchSynchronizer):
@@ -106,7 +106,7 @@ class SalesforceOpportunityAdapter(SalesforceRestAdapter):
         return "SELECT Id FROM OpportunityLineItem WHERE OpportunityId = '%s'"
 
     def get_updated(self, start_datetime_str=None, end_datetime_str=None):
-        # we prefere to use standard SF getUpdated as it as a lot of
+        # we prefer to use standard SF getUpdated as it as a lot of
         # subtilites depending on model and redo a call
         full_result = super(SalesforceOpportunityAdapter, self).get_updated(
             start_datetime_str=start_datetime_str,
@@ -264,7 +264,7 @@ class SalesforceOpportunityLineItemAdapter(SalesforceRestAdapter):
         res = self.query(self._get_product_soql(), salesforce_line_uuid)
         return [
             record['PricebookEntry']['Product2Id'] for record in res['records']
-            if record.get('PricebookEntry',{}).get('Product2Id')
+            if record.get('PricebookEntry', {}).get('Product2Id')
         ]
 
 

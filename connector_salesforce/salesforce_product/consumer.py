@@ -37,6 +37,7 @@ def deactivate_product(session, model_name, record_id):
     if record.backend_id.sf_product_master == 'erp':
         delay_deactivate(session, model_name, record_id)
 
+
 @on_record_create(model_names='product.product')
 def create_product_binding(session, model_name, record_id, vals=None):
     record = session.browse(model_name, record_id)
@@ -51,12 +52,12 @@ def create_product_binding(session, model_name, record_id, vals=None):
                            {'backend_id': backend.id,
                             'openerp_id': record_id})
 
+
 @on_record_write(model_names='product.product')
 def export_product(session, model_name, record_id, vals=None):
     sf_product_model = 'connector.salesforce.product'
     backend_model = 'connector.salesforce.backend'
     backend_ids = session.search(backend_model, [])
-    record = session.browse(model_name, record_id)
     for backend in session.browse(backend_model, backend_ids):
         if backend.sf_product_master == 'erp':
             sf_prod_id = session.search(
@@ -74,11 +75,3 @@ def export_product(session, model_name, record_id, vals=None):
                     sf_prod_id[0],
                     vals=vals
                 )
-            # else:
-            #     if vals.get('sale_ok') and record.active:
-            #         create_product_binding(
-            #             session,
-            #             model_name,
-            #             record_id,
-            #             vals=vals
-            #         )

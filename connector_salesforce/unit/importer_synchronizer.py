@@ -29,6 +29,7 @@ _logger = logging.getLogger('salesforce_import_synchronizer')
 
 ImportSkipReason = namedtuple('SkipReason', ['should_skip', 'reason'])
 
+
 class SalesforceImportSynchronizer(ImportSynchronizer):
 
     def __init__(self, connector_env):
@@ -46,7 +47,6 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
 
     def _create(self, data):
         return self.session.create(self.model._name, data)
-
 
     def _to_deactivate(self):
         """Hook to check if record must be deactivated"""
@@ -127,14 +127,18 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
         record_mapper = self.mapper.map_record(self.salesforce_record)
         if binding_id:
             # optimisation trick to avoid lookup binding
-            data = self._map_data_for_update(record_mapper,
-                                             binding_id=binding_id,
-                                             backend_record=self.backend_record)
+            data = self._map_data_for_update(
+                record_mapper,
+                binding_id=binding_id,
+                backend_record=self.backend_record
+            )
             self._update(binding_id, data)
         else:
-            data = self._map_data_for_create(record_mapper,
-                                             binding_id=binding_id,
-                                             backend_record=self.backend_record)
+            data = self._map_data_for_create(
+                record_mapper,
+                binding_id=binding_id,
+                backend_record=self.backend_record
+            )
             binding_id = self._create(data)
         self.binder.bind(self.salesforce_id, binding_id)
         self._after_import(binding_id)
@@ -260,6 +264,7 @@ def import_record(session, model_name, backend_id, salesforce_id):
     importer.run(salesforce_id)
     return "%s record with Salesforce id %s imported" % (model_name,
                                                          salesforce_id)
+
 
 @job
 def deactivate_record(session, model_name, backend_id, salesforce_id):

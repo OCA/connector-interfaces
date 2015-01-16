@@ -22,7 +22,6 @@ import simplejson
 from openerp import SUPERUSER_ID
 from openerp.modules.registry import RegistryManager
 import openerp.addons.web.http as oeweb
-from openerp.addons.web.controllers.main import set_cookie_and_redirect
 
 
 class SalesforceOAuthController(oeweb.Controller):
