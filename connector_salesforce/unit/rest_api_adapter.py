@@ -195,7 +195,7 @@ class SalesforceRestAdapter(BackendAdapter):
                 )
                 return resp['id']
         else:
-            if salesforce_id:
+            if salesforce_id and self.exists(salesforce_id):
                 self.write(salesforce_id, data)
                 return salesforce_id
             return self.create(data)
@@ -207,7 +207,6 @@ class SalesforceRestAdapter(BackendAdapter):
     def delete(self, salesforce_id):
         with error_handler(self.backend_record):
             return self.sf_type.delete(salesforce_id)
-
 
     def query(self, query, *args):
         with error_handler(self.backend_record):
