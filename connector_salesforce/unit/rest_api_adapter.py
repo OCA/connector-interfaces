@@ -79,12 +79,16 @@ class SalesforceRestAdapter(BackendAdapter):
     _sf_type = None
     # lookup date must be use only if model is exported only
     _sf_lookup = None
+
     def __init__(self, connector_environment):
         super(SalesforceRestAdapter, self).__init__(connector_environment)
         self.sf = self.get_sf_connection()
         if not self._sf_type:
             raise ValueError('Salesforce model is not set (_sf_type property)')
-        self.sf_type = self.sf.__getattr__(self._sf_type)
+        self.sf_type = self.get_sf_type(self.sf, self._sf_type)
+
+    def get_sf_type(self, sf_connexion, sf_type):
+        return sf_connexion.__getattr__(sf_type)
 
     def _sf_from_login_password(self):
         with error_handler(self.backend_record):
