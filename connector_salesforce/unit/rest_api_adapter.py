@@ -165,7 +165,12 @@ class SalesforceRestAdapter(BackendAdapter):
 
     def create(self, data):
         with error_handler(self.backend_record):
-            return self.sf_type.create(data)['id']
+            response = self.sf_type.create(data)
+            if response.get('errors'):
+                raise connector_exception.SalesforceRESTAPIError(
+                    '\n'.join(response['errors'])
+                )
+            return response['id']
 
     def exists(self, salesforce_id):
         with error_handler(self.backend_record):
