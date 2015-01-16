@@ -75,7 +75,8 @@ class SalesforceAccountMapper(AddressMapper, PriceMapper):
         ('BillingCity', 'city'),
         ('Fax', 'fax'),
         ('Phone', 'phone'),
-        ('VATNumber__c', 'vat'), # To support commonly installed VAT application
+        # To support commonly installed VAT application
+        ('VATNumber__c', 'vat'),
     ]
 
     def _prepare_shipp_addresse_data(self, record, partner_record):

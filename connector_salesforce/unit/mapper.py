@@ -88,6 +88,7 @@ class AddressMapper(ImportMapper):
             {'name': title}
         )
 
+
 class PriceMapper(ImportMapper):
 
     def get_currency_id(self, record):

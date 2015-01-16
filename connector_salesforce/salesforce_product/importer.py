@@ -24,8 +24,7 @@ from openerp.addons.connector.unit.mapper import mapping, only_create
 from ..backend import salesforce_backend
 from ..unit.importer_synchronizer import (SalesforceDelayedBatchSynchronizer,
                                           SalesforceDirectBatchSynchronizer,
-                                          SalesforceImportSynchronizer,
-                                          import_record)
+                                          SalesforceImportSynchronizer)
 
 _logger = logging.getLogger('salesforce_connector_product_mapping')
 

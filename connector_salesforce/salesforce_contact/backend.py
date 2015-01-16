@@ -20,6 +20,7 @@
 ##############################################################################
 from openerp.osv import orm, fields
 
+
 class SalesforceContactBackend(orm.Model):
 
     _inherit = 'connector.salesforce.backend'

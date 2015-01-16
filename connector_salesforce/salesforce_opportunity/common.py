@@ -43,6 +43,7 @@ class SalesforceOpportunity(orm.Model):
 
 SalesforeceBinder._model_name.append('connector.salesforce.opportunity')
 
+
 class SalesforceOpportunityLineItem(orm.Model):
     _inherit = 'salesforce.binding'
     _inherits = {'sale.order.line': 'openerp_id'}
@@ -62,4 +63,5 @@ class SalesforceOpportunityLineItem(orm.Model):
          'A Sale Order Line with same Salesforce id already exists')
     ]
 
-SalesforeceBinder._model_name.append('connector.salesforce.opportunity.line.item')
+SalesforeceBinder._model_name.append(
+    'connector.salesforce.opportunity.line.item')

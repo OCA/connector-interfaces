@@ -20,11 +20,15 @@
 ##############################################################################
 from openerp.addons.connector.exception import (ConnectorException,
                                                 RetryableJobError)
+
+
 class SalesforceRESTAPIError(ConnectorException):
     """Rest API error"""
 
+
 class SalesforceSecurityError(SalesforceRESTAPIError):
     """Authentication error with Salesforce"""
+
 
 class SalesforceResponseError(SalesforceRESTAPIError):
     """Map simple_salesforce error to connector error"""
@@ -34,8 +38,10 @@ class SalesforceResponseError(SalesforceRESTAPIError):
     def __str__(self):
         return repr(self.sf_error)
 
+
 class SalesforceSessionExpiredError(RetryableJobError):
     """Authentication error with Salesforce"""
+
 
 class SalesforceQuotaError(RetryableJobError):
     """To be used when API call quota is consumed to postpone the job"""

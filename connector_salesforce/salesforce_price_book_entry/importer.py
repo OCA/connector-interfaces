@@ -68,7 +68,8 @@ class SalesforcePriceBookEntryImporter(SalesforceImportSynchronizer):
 
 
 @salesforce_backend
-class SalesforceDirectBatchPriceBookEntryImporter(SalesforceDirectBatchSynchronizer):
+class SalesforceDirectBatchPriceBookEntryImporter(
+        SalesforceDirectBatchSynchronizer):
     _model_name = 'connector.salesforce.pricebook.entry'
 
 
