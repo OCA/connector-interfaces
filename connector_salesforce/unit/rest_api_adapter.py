@@ -69,7 +69,7 @@ def error_handler(backend_record):
         # simple salesforce exception does not devrive from common exception
         if type(exc).__name__.startswith('Salesforce'):
             # TODO get quota excedded error here
-            raise connector_exception.SalesforceRESTAPIError(exc)
+            raise connector_exception.SalesforceResponseError(exc)
         else:
             raise
 
