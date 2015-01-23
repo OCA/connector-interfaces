@@ -25,10 +25,24 @@ import openerp.addons.web.http as oeweb
 
 
 class SalesforceOAuthController(oeweb.Controller):
+    """Controller that is used to authenticate
+    Salesforce using oauth2. This is used
+    as the callback URL and it will register tocken
+    into `connector.salesforce.backend`
+    """
     _cp_path = '/salesforce'
 
     @oeweb.httprequest
     def oauth(self, req, **kwargs):
+        """Write Salesforce authorization
+        Token in given backend.
+
+        Backend token and backend are GET parameters
+
+        :param req: WSGI request
+        :return: success message or raise an error
+        :rtype: str
+        """
         code = req.params.get('code')
         state = req.params.get('state')
         if not all([code, state]):

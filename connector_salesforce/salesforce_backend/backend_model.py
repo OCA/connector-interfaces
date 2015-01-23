@@ -193,6 +193,8 @@ class SalesforceBackend(orm.Model):
         return True
 
     def _enforce_url(self):
+        """Predicate hook to see if URL must be enforced
+        when validating configuration"""
         return True
 
     def _validate_configuration(self, cr, uid, ids, context=None):
@@ -263,6 +265,11 @@ class SalesforceBackend(orm.Model):
         return env
 
     def _get_oauth2_handler(self, cr, uid, ids, context=None):
+        """Initialize and return an instance of SalesForce OAuth2 Helper
+
+        :return: An OAuth2 helper instance
+        :rtype: :py:class:`..lib.oauth2_utils.SalesForceOauth2MAnager`
+        """
         backend_id = self._manage_ids(ids)
         current = self.browse(cr, uid, backend_id, context=context)
 
@@ -272,7 +279,7 @@ class SalesforceBackend(orm.Model):
         return oauth2_handler
 
     def redirect_to_validation_url(self, cr, uid, ids, context=None):
-        """Retrieve Oauth2 authorization URL WIP"""
+        """Retrieve Oauth2 authorization URL"""
         backend_id = self._manage_ids(ids)
         current = self.browse(cr, uid, backend_id, context=context)
         oauth2_handler = current._get_oauth2_handler()
