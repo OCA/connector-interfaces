@@ -21,7 +21,7 @@
                 <div class="buttons">
                   <button name="redirect_to_validation_url"
                           class="oe_highlight"
-                          string="Authorize Odoo in SalesForce"
+                          string="Authorize Odoo in Salesforce"
                           type="object"
                           attrs="{'invisible': [('authentication_method', '!=', 'oauth2')]}"/>
                   <button name="refresh_token"
