@@ -351,4 +351,4 @@ def deactivate_record(session, model_name, backend_id, binding_id):
     exporter = connector_env.get_connector_unit(
         SalesforceExportSynchronizer
     )
-    exporter.run(binding_id, deactivate=True)
+    exporter.run(binding_id, force_deactivate=True)
