@@ -45,11 +45,17 @@ class SalesforcePriceBookEntryImporter(SalesforceImportSynchronizer):
         return False
 
     def _deactivate(self):
+        """Implementation of deactivate action
+        In this case we unlink the existing pricelist item
+        """
         assert self.salesforce_id
         entry_id = self.binder.to_openerp(self.salesforce_id)
         self.session.unlink(self.model._name, [entry_id])
 
     def _before_import(self):
+        """Hook called before Salesforce entry import
+        To ensure coherence with porduct and import
+        it if required"""
         assert self.salesforce_record
         with self.session.change_context({'active_test': False}):
             product_id = self.session.search(
@@ -100,6 +106,8 @@ class SalesforcePriceBookEntryMapper(PriceMapper):
 
     @mapping
     def price_version_id(self, record):
+        """Retrieve the price version using
+        backend configuration"""
         currency_id = self.get_currency_id(record)
         backend = self.options['backend_record']
         mapping = {rec.currency_id.id: rec.pricelist_version_id.id

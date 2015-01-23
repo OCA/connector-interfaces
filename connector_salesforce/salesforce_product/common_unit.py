@@ -28,5 +28,10 @@ class SalesforceProductAdapter(SalesforceRestAdapter):
     _sf_type = 'Product2'
 
     def delete(self, salesforce_id):
+        """Override adapter to write on
+        the IsActive key of product instead of
+        doing a call to the delete API function
+        and send product to recycle bin
+        """
         # Product model as an `IsActive` key
         return self.write(salesforce_id, {'IsActive': False})

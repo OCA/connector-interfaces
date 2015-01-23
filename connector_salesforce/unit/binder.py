@@ -80,7 +80,7 @@ class SalesforeceBinder(Binder):
 
         :param external_id: Salesforce unique identifier
         :param binding_id: Binding record id
-        :type binding_id: int
+        :type binding_id: int or long
         """
         # avoid to trigger the export when we modify the `odbc code`
         context = self.session.context.copy()

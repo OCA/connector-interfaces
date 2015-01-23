@@ -38,6 +38,7 @@ class SalesforceOpportunityBackend(orm.Model):
     }
 
     def import_sf_opportunity(self, cr, uid, ids, context=None):
+        """Run the import of Salesforce opportunites for given backend"""
         backend_id = self._manage_ids(ids)
         current = self.browse(cr, uid, backend_id, context=context)
         current._import(
@@ -47,6 +48,9 @@ class SalesforceOpportunityBackend(orm.Model):
         )
 
     def import_sf_opportunity_delay(self, cr, uid, ids, context=None):
+        """Run the import of Salesforce opportunites for given backend
+        using jobs
+        """
         backend_id = self._manage_ids(ids)
         current = self.browse(cr, uid, backend_id, context=context)
         current._import(

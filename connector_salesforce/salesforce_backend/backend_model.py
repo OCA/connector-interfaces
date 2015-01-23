@@ -42,7 +42,7 @@ class SalesforceBackend(orm.Model):
     The The created remote access app must have following parameters:
 
     Permitted Users -->	All users may self-authorize
-    Callback URL --> public_Odoo_url/salesforce/oauth
+    Callback URL --> public_odoo_url/salesforce/oauth
 
 
     after that manage your app and:
@@ -297,7 +297,8 @@ class SalesforceBackend(orm.Model):
         }
 
     def refresh_token(self, cr, uid, ids, context=None):
-        """
+        """Refresh current backend Oauth2 token
+        using the Salesforce refresh token
         """
         backend_id = self._manage_ids(ids)
         current = self.browse(cr, uid, backend_id, context=context)
@@ -305,8 +306,7 @@ class SalesforceBackend(orm.Model):
         return {}
 
     def _get_token(self, cr, uid, ids, refresh=False, context=None):
-        """
-        """
+        """Obtain current backend Oauth2 token and or refresh Token"""
         backend_id = self._manage_ids(ids)
         current = self.browse(cr, uid, backend_id, context=context)
         oauth2_handler = current._get_oauth2_handler()
@@ -335,7 +335,21 @@ class SalesforceBackend(orm.Model):
 
     def _import(self, cr, uid, ids, model, mode, date_field,
                 full=False, context=None):
-        assert mode in ['direct', 'delay'], "Invalid mode"
+        """Run an import for given backend and model
+
+        :param model: The Odoo binding model name found in _name
+        :type model: str
+        :param mode: import mode must be in  `('direct', 'delay')`
+                     if mode is delay import will be done using jobs
+        :type mode: str
+
+        :param date_field: name of the current backend column that store
+                           the last import date for current import
+
+        :return: import start time
+        :rtype: str
+        """
+        assert mode in ('direct', 'delay'), "Invalid mode"
         import_start_time = fields.datetime.now()
         session = csession.ConnectorSession(
             cr,
@@ -363,6 +377,20 @@ class SalesforceBackend(orm.Model):
 
     def _export(self, cr, uid, ids, model, mode, date_field,
                 full=False, context=None):
+        """Run an export for given backend and model
+
+        :param model: The Odoo binding model name found in _name
+        :type model: str
+        :param mode: export mode must be in  `('direct', 'delay')`
+                     if mode is delay export will be done using jobs
+        :type mode: str
+
+        :param date_field: name of the current backend column that store
+                           the last export date for current export
+
+        :return: export start time
+        :rtype: str
+        """
         assert mode in ['direct', 'delay'], "Invalid mode"
         session = csession.ConnectorSession(
             cr,

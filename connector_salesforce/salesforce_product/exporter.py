@@ -36,6 +36,9 @@ class SalesforceProductExporter(SalesforceExportSynchronizer):
     _model_name = 'connector.salesforce.product'
 
     def _to_deactivate(self):
+        """Implement predicate that decide if product
+        must be deactivated in Odoo
+        """
         assert self.binding_record
         if not self.binding_record.active or not self.binding_record.sale_ok:
                 return True

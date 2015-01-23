@@ -27,7 +27,9 @@ _logger = logging.getLogger('salesforce_export_synchronizer')
 
 
 class SalesforceExportSynchronizer(ExportSynchronizer):
-    """Exproter to sales force external id is supported
+    """Exporter to export an Odoo record to Salesforce.
+
+    Exporting using a Salesforce external id field is supported and
     should  be use only if model is exported only.
     It is done by setting _sf_lookup in adapter to the name of external field.
     Switching from export to import direction is possible when using lookup
@@ -50,6 +52,9 @@ class SalesforceExportSynchronizer(ExportSynchronizer):
         return
 
     def _deactivate(self):
+        """Implementation of the deactivation
+        of an Odoo record on Salesforce
+        """
         # external id not supported in delete
         # In Salesforce nothing is deleted it is just a flag
         # And deleted ind continue to exist into recycle bin.
@@ -60,6 +65,9 @@ class SalesforceExportSynchronizer(ExportSynchronizer):
             self.backend_adapter.delete(self.binding_record.salesforce_id)
 
     def _to_deactivate(self):
+        """Predicate that decide if an Odoo record
+        must be deactivated on Salesforce
+        """
         assert self.binding_record
         model = self.session.pool[self.model._name]
         cols = set(model._columns.keys())
@@ -70,6 +78,12 @@ class SalesforceExportSynchronizer(ExportSynchronizer):
         return False
 
     def _get_record(self):
+        """Return current Odoo record
+
+        :return: an record of Odoo model base on
+                 `_model_name` key
+        :rtype: :py:class:`openerp.osv.orm.BrowseRecord`
+        """
         assert self.binding_id
         return self.session.browse(
             self._model_name,
@@ -91,6 +105,18 @@ class SalesforceExportSynchronizer(ExportSynchronizer):
         return data
 
     def _upsert(self, salesforce_id, data):
+        """Implementation of upserting a record on
+        Salesforce.
+
+        upsert means update or create
+
+        :param salesforce_id: the id of Odoo binding to export
+        :type salesforce_id: int or long
+
+        :param data: a dict with key and values to be updated created
+
+        :return: the Salesforce uuid of created or updated record
+        """
         sf_id = self.backend_adapter.upsert(salesforce_id, data)
         return sf_id
 
@@ -107,6 +133,14 @@ class SalesforceExportSynchronizer(ExportSynchronizer):
         return
 
     def _export(self, binding_id, salesforce_id):
+        """Export a binding record on Salesforce using REST API
+        :param binding_id: the current binding id in Odoo
+        :type binding_id: int or long
+
+        :param salesforce_id: Salesforce uuid if available else None/False
+        :type salesforce_id: str on None
+
+        """
         record_mapper = self.mapper.map_record(self.binding_record)
         # optimisation trick to avoid lookup binding
         data = self._map_data_for_upsert(record_mapper,
@@ -116,6 +150,17 @@ class SalesforceExportSynchronizer(ExportSynchronizer):
         self.binder.bind(sf_id, binding_id)
 
     def run(self, binding_id, force_deactivate=False):
+        """Try to export or deactivate a record on Salesforce using REST API
+        call required hooks and bind the record
+
+        :param binding_id: the current binding id in Odoo
+        :type binding_id: int or long
+
+        :param force_deactivate: If set to True it will force deactivate
+                                 without calling _to_deactivate
+                                 mostly use to save some REST calls
+
+        """
         self.binding_id = binding_id
         self.binding_record = self._get_record()
         if force_deactivate or self._to_deactivate():
@@ -134,12 +179,24 @@ class SalesforceExportSynchronizer(ExportSynchronizer):
 class SalesforceBatchExportSynchronizer(ExportSynchronizer):
 
     def before_batch_export(self):
+        """Hook called before a batch export"""
         pass
 
     def after_batch_export(self):
+        """Hook called after a batch export"""
         pass
 
     def get_binding_ids_to_export(self, date=False):
+        """Return the binding id to export
+        if date is set it will lookup on it to
+        determine records to exports
+
+        :param date: Odoo date string to do past lookup
+        :type date: str
+
+        :return: list of matching bindind id
+        :rtype: list
+        """
         if not date:
             return self.session.search(
                 self._model_name,
@@ -154,6 +211,14 @@ class SalesforceBatchExportSynchronizer(ExportSynchronizer):
             )
 
     def run(self, date=False):
+        """Try to export or deactivate multiple records on Salesforce
+        using REST API. If date is set it will lookup on it to
+        determine records to export_record
+        call required hooks and bind the record
+
+        :param date: Odoo date string to do past lookup
+        :type date: str
+        """
         for binding_id in self.get_binding_ids_to_export(date):
             self._export_record(binding_id)
 
@@ -167,6 +232,7 @@ class SalesforceBatchExportSynchronizer(ExportSynchronizer):
 class SalesforceDelayedBatchSynchronizer(SalesforceBatchExportSynchronizer):
 
     def _export_record(self, binding_id):
+        "Try to export an Odoo binding on Salesforce using jobs"
         export_record.delay(self.session,
                             self.model._name,
                             self.backend_record.id,
@@ -176,6 +242,7 @@ class SalesforceDelayedBatchSynchronizer(SalesforceBatchExportSynchronizer):
 class SalesforceDirectBatchSynchronizer(SalesforceBatchExportSynchronizer):
 
     def _export_record(self, binding_id):
+        "Try to export an Odoo binding on Salesforce directly"
         export_record(self.session,
                       self.model._name,
                       self.backend_record.id,
@@ -184,6 +251,20 @@ class SalesforceDirectBatchSynchronizer(SalesforceBatchExportSynchronizer):
 
 @with_retry_on_expiration
 def batch_export(session, model_name, backend_id, date=False):
+    """Export all candidate Odoo binding records On salesforce for a given
+    backend, model and date
+
+    :param model_name: name of the binding model.
+                       In our case `connector.salesforce.xxx`
+    :type model_name: str
+
+    :param backend_id: id of current backend
+    :type backend_id: id or long
+
+    :param date: Odoo date string to do past lookup
+    :type date: str
+    """
+
     backend = session.browse(
         'connector.salesforce.backend',
         backend_id
@@ -197,6 +278,19 @@ def batch_export(session, model_name, backend_id, date=False):
 
 @with_retry_on_expiration
 def delayed_batch_export(session, model_name, backend_id, date=False):
+    """Export all candidate Odoo binding records on Salesforce for a given
+    backend, model and date using jobs
+
+    :param model_name: name of the binding model.
+                       In our case `connector.salesforce.xxx`
+    :type model_name: str
+
+    :param backend_id: id of current backend
+    :type backend_id: id or long
+
+    :param date: Odoo date string to do past lookup
+    :type date: str
+    """
     backend = session.browse(
         'connector.salesforce.backend',
         backend_id
@@ -210,6 +304,19 @@ def delayed_batch_export(session, model_name, backend_id, date=False):
 
 @job
 def export_record(session, model_name, backend_id, binding_id):
+    """Export an Odoo binding record on salesforce for a given
+    backend, model
+
+    :param model_name: name of the binding model.
+                       In our case `connector.salesforce.xxx`
+    :type model_name: str
+
+    :param backend_id: id of current backend
+    :type backend_id: id or long
+
+    :param binding_id: the id of the Odoo record to export
+    :type binding_id: int or long
+    """
     backend = session.browse(
         'connector.salesforce.backend',
         backend_id
@@ -223,6 +330,19 @@ def export_record(session, model_name, backend_id, binding_id):
 
 @job
 def deactivate_record(session, model_name, backend_id, binding_id):
+    """deactivate an Odoo binding record on Salesforce for a given
+    backend, model
+
+    :param model_name: name of the binding model.
+                       In our case `connector.salesforce.xxx`
+    :type model_name: str
+
+    :param backend_id: id of current backend
+    :type backend_id: id or long
+
+    :param binding_id: the id of the Odoo record to export
+    :type binding_id: int or long
+    """
     backend = session.browse(
         'connector.salesforce.backend',
         backend_id

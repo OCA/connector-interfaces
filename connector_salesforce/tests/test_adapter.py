@@ -202,6 +202,7 @@ class SalesForceRestAdapterTest(CommonTest):
             self.assertEqual(result, '001g000000P7UBDA45')
 
     def test_error_management(self):
+        """Test that the error_handler context manager behave as expected"""
         with self.assertRaises(SalesforceSecurityError):
             with error_handler(MagicMock()):
                 raise SalesforceAuthenticationFailed('Login failed')

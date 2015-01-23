@@ -32,6 +32,7 @@ class SalesforceContactBackend(orm.Model):
     }
 
     def import_sf_contact(self, cr, uid, ids, context=None):
+        """Run the import of Salesforce contacts for given backend"""
         backend_id = self._manage_ids(ids)
         current = self.browse(cr, uid, backend_id, context=context)
         current._import(
@@ -41,6 +42,9 @@ class SalesforceContactBackend(orm.Model):
         )
 
     def import_sf_contact_delay(self, cr, uid, ids, context=None):
+        """Run the import of Salesforce contacts for given backend
+        using jobs
+        """
         backend_id = self._manage_ids(ids)
         current = self.browse(cr, uid, backend_id, context=context)
         current._import(

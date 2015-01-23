@@ -30,6 +30,7 @@ SF_SPECS = ['query_all', 'delete', 'get', 'updated',
 class CommonTest(test_common.TransactionCase):
 
     def _get_backend(self):
+        """Provide a fixture backend record for the test"""
         backend_model = self.registry('connector.salesforce.backend')
         b_ids = backend_model.search(
             self.cr, self.uid,
@@ -65,6 +66,15 @@ class CommonTest(test_common.TransactionCase):
 
 @contextmanager
 def mock_simple_salesforce(response_mock):
+    """Context manager that will mock the request object used
+    to talk with SalesForce
+
+    :param response_mock: A response mock that will be used as
+                          the result of a Salesforce interogation
+    :type response_mock: :py:class:`mock.MagicMock`
+
+    :yield: current execution stack
+    """
 
     def _get_response(*args, **kwargs):
         return response_mock

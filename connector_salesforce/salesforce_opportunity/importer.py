@@ -46,6 +46,9 @@ class SalesforceOpportunityImporter(SalesforceImportSynchronizer):
         )
 
     def _before_import(self):
+        """Hook called before Salesforce opportunity import
+        to ensure product and pricelist coherence
+        """
         assert self.salesforce_record
         # We systematiquely reimport contacts
         # before creating opportunity to ensure
@@ -59,6 +62,9 @@ class SalesforceOpportunityImporter(SalesforceImportSynchronizer):
         )
 
     def _after_import(self, binding_id):
+        """Hook called after Salesforce opportunity import
+        To automatically trigger opportunity items import
+        """
         record = self.session.browse(
             self._model_name,
             binding_id,
@@ -75,6 +81,9 @@ class SalesforceOpportunityImporter(SalesforceImportSynchronizer):
             )
 
     def _must_skip(self):
+        """Return an `ImportSkipReason` based on binding.
+        If a binding exists we skip the import
+        """
         assert self.salesforce_id
         if self.binder.to_openerp(self.salesforce_id):
             return ImportSkipReason(True, 'Already imported')
@@ -99,13 +108,19 @@ class SalesforceOpportunityAdapter(SalesforceRestAdapter):
     _sf_type = 'Opportunity'
 
     def _get_update_soql(self):
+        """"Return SOQL to be used to query Won opportunites"""
         return ("SELECT Id FROM Opportunity WHERE Id "
                 "IN (%s) AND IsWon = TRUE")
 
     def _get_query_item_soql(self):
+        """"Return SOQL to be used to query related opportunity items"""
         return "SELECT Id FROM OpportunityLineItem WHERE OpportunityId = '%s'"
 
     def get_updated(self, start_datetime_str=None, end_datetime_str=None):
+        """Override get updated to only fetch Won opportunites
+        For more details have a look at :
+        :py:class:`..unit.importer_synchronizer.SalesforceImportSynchronizer`
+        """
         # we prefer to use standard SF getUpdated as it as a lot of
         # subtilites depending on model and redo a call
         full_result = super(SalesforceOpportunityAdapter, self).get_updated(
@@ -113,6 +128,8 @@ class SalesforceOpportunityAdapter(SalesforceRestAdapter):
             end_datetime_str=end_datetime_str
         )
         while True:
+            # is sliced does not raise an StopIteration error
+            # but will instead provide an empty list
             sliced_ids = list(islice(full_result, 0, MAX_QUERY_OPP))
             sliced_ids = ["'%s'" % x for x in sliced_ids]
             if not sliced_ids:
@@ -123,6 +140,8 @@ class SalesforceOpportunityAdapter(SalesforceRestAdapter):
                 yield record['Id']
 
     def get_opportunity_items_ids(self, salesforce_opp_id):
+        """Return related opportunity items related to current
+        opportunity"""
         res = self.query(self._get_query_item_soql(), salesforce_opp_id)
         return (record['Id'] for record in res['records'])
 
@@ -142,6 +161,7 @@ class SalesforceOpportunityMapper(PriceMapper):
 
     @mapping
     def pricelist_id(self, record):
+        """Fetch pricelist using backend configuration"""
         currency_id = self.get_currency_id(record)
         backend = self.options['backend_record']
         mapping = {rec.currency_id.id: rec.pricelist_version_id.id
@@ -202,6 +222,7 @@ class SalesforceOpportunityMapper(PriceMapper):
         return {'shop_id': backend.sf_shop_id.id}
 
     def finalize(self, map_record, values):
+        """Apply required on change on generated SO"""
         # We do not want to depends on connector ecommerce
         # only to have access to existing SaleOrderMapper
         # So we run `onchange` on a simplified manner
@@ -232,6 +253,8 @@ class SalesforceOpportunityLineItemImporter(SalesforceImportSynchronizer):
         pass
 
     def _before_import(self):
+        """Hook called before importing a Salesforce opportunity line
+        to ensure product and pricelist are coherent"""
         assert self.salesforce_record
         with self.session.change_context({'active_test': False}):
             if not self.salesforce_record.get('Product2Id'):
@@ -354,6 +377,9 @@ class SalesforceOpportunityLineItemMapper(PriceMapper):
         return {'order_id': record.openerp_id.id}
 
     def finalize(self, map_record, values):
+        """Call afer item mapping to call the on change on
+        generated SO lines
+        """
         # We do not want to depends on connector ecommerce
         # only to have access to existing SaleOrderMapper
         # So we run `onchange` on a simplified manner
