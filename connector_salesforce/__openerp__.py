@@ -36,6 +36,7 @@
      'security/ir.model.access.csv',
      'data/cron.xml',
  ],
+ 'external_dependencies': {'python': ['simplesalesforce', 'requests']},
  'test': [],
  'installable': True,
  'auto_install': False,
