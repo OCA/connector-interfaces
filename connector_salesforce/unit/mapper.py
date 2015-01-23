@@ -25,6 +25,9 @@ from openerp.addons.connector.exception import MappingError
 class AddressMapper(ImportMapper):
 
     def _state_id(self, record, state_key, country_key):
+        """Map to Odoo state from Salesforce
+        state and country code
+        """
         state = record.get(state_key)
         if not state:
             return False
@@ -70,6 +73,9 @@ class AddressMapper(ImportMapper):
         return country_id[0] if country_id else False
 
     def _title_id(self, record, title_key):
+        """Map the Odoo title from Salesforce title code
+        If not available create it
+        """
         title = record.get(title_key)
         if not title:
             return False
@@ -92,6 +98,7 @@ class AddressMapper(ImportMapper):
 class PriceMapper(ImportMapper):
 
     def get_currency_id(self, record):
+        """Mapp the Odoo currency from the Salesforce currency code"""
         currency_iso_code = record.get('CurrencyIsoCode')
         if not currency_iso_code:
             raise MappingError(

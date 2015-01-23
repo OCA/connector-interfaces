@@ -36,6 +36,10 @@ class SalesforceContactImporter(SalesforceImportSynchronizer):
     _model_name = 'connector.salesforce.contact'
 
     def _before_import(self):
+        """Hook called before importing a contact
+        Ensure that related account is present
+        if not it is imported
+        """
         assert self.salesforce_record
         with self.session.change_context({'active_test': False}):
             account_id = self.session.search(

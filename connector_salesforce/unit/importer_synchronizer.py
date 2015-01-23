@@ -33,6 +33,7 @@ ImportSkipReason = namedtuple('SkipReason', ['should_skip', 'reason'])
 class SalesforceImportSynchronizer(ImportSynchronizer):
 
     def __init__(self, connector_env):
+        """Constructor"""
         super(SalesforceImportSynchronizer, self).__init__(connector_env)
         self.salesforce_id = None
         self.salesforce_record = None
@@ -46,6 +47,15 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
         return
 
     def _create(self, data):
+        """Implements the creation of record in Odoo
+
+        :param data: mapped dic of data to be used by
+                     :py:meth:``models.Model.create``
+        :type data: dict
+
+        :return: the create id of the Odoo binding
+        :rtype: int or long
+        """
         return self.session.create(self.model._name, data)
 
     def _to_deactivate(self):
@@ -53,6 +63,11 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
         return False
 
     def _deactivate(self):
+        """Implementation of an Odoo binding record deactivation
+        It By default it will lookup for an active column and
+        set it value to True. If no active column is available
+        it will raise a :py:class:`NotImplementedError`
+        """
         assert self.salesforce_id
         model = self.session.pool[self.model._name]
         cols = set(model._columns.keys())
@@ -68,6 +83,13 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
                            {'active': False})
 
     def _get_record(self):
+        """Return a dict representation of a currently
+        imported SalesForce record as provided by the REST adapter
+
+        :return: a dict representation of a currently
+                 imported SalesForce record as provided by the REST adapter
+        :rtype: dict
+        """
         rec = self.backend_adapter.read(self.salesforce_id)
         if not rec:
             raise IDMissingInBackend(
@@ -83,7 +105,7 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
         in order to get converted record by using
         mapper.data or mapper.data_for_create
 
-        :return: mapped dic of data to be used by
+        :return: mapped dict of data to be used by
                  :py:meth:``models.Model.create``
         :rtype: dict
         """
@@ -97,7 +119,7 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
         in order to get converted record by using
         mapper.data or mapper.data_for_create
 
-        :return: mapped dic of data to be used by
+        :return: mapped dict of data to be used by
                  :py:meth:``models.Model.create``
         :rtype: dict
         """
@@ -106,9 +128,25 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
         return data
 
     def _must_skip(self):
+        """Decide if the current record should
+        not be imported. By default it return
+        a False :py:class:`ImportSkipReason`
+
+        :return: a :py:class:`ImportSkipReason`
+        :rtype: :py:class:`ImportSkipReason`
+        """
         return ImportSkipReason(False, None)
 
     def _update(self, binding_id, data):
+        """Implement the update of a binding record
+        that is already existing in Odoo
+
+        :param binding_id: the id of the Odoo record to export
+        :type binding_id: int or long
+
+        :param data: mapped dict of data to be used by
+                     :py:meth:``models.Model.create``
+        """
         self.session.write(self.model._name, binding_id, data)
 
     def _validate_data(self, data):
@@ -124,6 +162,10 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
         return
 
     def _import(self, binding_id):
+        """Try Import or update a binding record from Salesforce using REST API
+        :param binding_id: the current binding id in Odoo
+        :type binding_id: int or long or None
+        """
         record_mapper = self.mapper.map_record(self.salesforce_record)
         if binding_id:
             # optimisation trick to avoid lookup binding
@@ -144,6 +186,16 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
         self._after_import(binding_id)
 
     def run(self, salesforce_id, deactivate=False):
+        """Try to import or update a record on Salesforce using REST API
+        call required hooks and bind the record
+
+        :param salesforce_id: the current Salesforce UUID to import
+        :type binding_id: str
+
+        :param deactivate: If set to True it will force deactivate
+                           without calling _to_deactivate
+                           mostly use to save some REST calls
+        """
         self.salesforce_id = salesforce_id
         # if we force deactivation there is no
         # need to read record in Salesforces
@@ -198,12 +250,14 @@ class SalesforceBatchSynchronizer(ImportSynchronizer):
 class SalesforceDelayedBatchSynchronizer(SalesforceBatchSynchronizer):
 
     def _import_record(self, salesforce_id):
+        "Try to import a Salesforce record in Odoo using Jobs"
         import_record.delay(self.session,
                             self.model._name,
                             self.backend_record.id,
                             salesforce_id)
 
     def _deactivate_record(self, salesforce_id):
+        "Try to deactivate a Salesforce deactivated record in Odoo using Jobs"
         deactivate_record.delay(self.session,
                                 self.model._name,
                                 self.backend_record.id,
@@ -213,12 +267,14 @@ class SalesforceDelayedBatchSynchronizer(SalesforceBatchSynchronizer):
 class SalesforceDirectBatchSynchronizer(SalesforceBatchSynchronizer):
 
     def _import_record(self, salesforce_id):
+        "Try to import a Salesforce record in Odoo directly"
         import_record(self.session,
                       self.model._name,
                       self.backend_record.id,
                       salesforce_id)
 
     def _deactivate_record(self, salesforce_id):
+        "Try to deactivate a Salesforce deactivated record directly"
         deactivate_record(self.session,
                           self.model._name,
                           self.backend_record.id,
@@ -227,6 +283,19 @@ class SalesforceDirectBatchSynchronizer(SalesforceBatchSynchronizer):
 
 @with_retry_on_expiration
 def batch_import(session, model_name, backend_id, date=False):
+    """import all candidate Salesforce records In Odoo for a given
+    backend, model and date
+
+    :param model_name: name of the binding model.
+                       In our case `connector.salesforce.xxx`
+    :type model_name: str
+
+    :param backend_id: id of current backend
+    :type backend_id: id or long
+
+    :param date: Odoo date string to do past lookup
+    :type date: str
+    """
     backend = session.browse(
         'connector.salesforce.backend',
         backend_id
@@ -240,6 +309,19 @@ def batch_import(session, model_name, backend_id, date=False):
 
 @with_retry_on_expiration
 def delayed_batch_import(session, model_name, backend_id, date=False):
+    """import all candidate Salesforce records In Odoo for a given
+    backend, model and date using jobs
+
+    :param model_name: name of the binding model.
+                       In our case `connector.salesforce.xxx`
+    :type model_name: str
+
+    :param backend_id: id of current backend
+    :type backend_id: id or long
+
+    :param date: Odoo date string to do past lookup
+    :type date: str
+    """
     backend = session.browse(
         'connector.salesforce.backend',
         backend_id
@@ -253,6 +335,19 @@ def delayed_batch_import(session, model_name, backend_id, date=False):
 
 @job
 def import_record(session, model_name, backend_id, salesforce_id):
+    """Import a Salesforce record in Odoo for a given
+    backend, model and Salesforce uuid
+
+    :param model_name: name of the binding model.
+                       In our case `connector.salesforce.xxx`
+    :type model_name: str
+
+    :param backend_id: id of current backend
+    :type backend_id: id or long
+
+    :param salesforce_id: the uuid of Salesforce record
+    :type binding_id: str
+    """
     backend = session.browse(
         'connector.salesforce.backend',
         backend_id
@@ -268,6 +363,19 @@ def import_record(session, model_name, backend_id, salesforce_id):
 
 @job
 def deactivate_record(session, model_name, backend_id, salesforce_id):
+    """deactivate a Salesforce record in Odoo for a given
+    backend, model and Salesforce uuid
+
+    :param model_name: name of the binding model.
+                       In our case `connector.salesforce.xxx`
+    :type model_name: str
+
+    :param backend_id: id of current backend
+    :type backend_id: id or long
+
+    :param salesforce_id: the uuid of Salesforce record
+    :type binding_id: str
+    """
     backend = session.browse(
         'connector.salesforce.backend',
         backend_id

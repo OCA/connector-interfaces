@@ -37,6 +37,9 @@ class SalesforceAccountImporter(SalesforceImportSynchronizer):
     _model_name = 'connector.salesforce.account'
 
     def _after_import(self, binding_id):
+        """Hook that is called after Salesforce account import
+        It maps Salesforce account data into child partner on Odoo
+        """
         # Can be used in Mapper.finalize but
         # managin nested syntax when updating would have been a mess
         record_mapper = self.mapper
@@ -173,6 +176,7 @@ class SalesforceAccountMapper(AddressMapper, PriceMapper):
 
     @mapping
     def property_product_pricelist(self, record):
+        """Map property pricelist using current backend setting"""
         currency_id = self.get_currency_id(record)
         backend = self.options['backend_record']
         mapping = {rec.currency_id.id: rec.pricelist_version_id.id

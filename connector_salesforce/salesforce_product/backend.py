@@ -52,6 +52,7 @@ class SalesforceProductBackend(orm.Model):
     _defaults = {'sf_product_master': 'sf'}
 
     def import_sf_product(self, cr, uid, ids, context=None):
+        """Run the import of Salesforce products for given backend"""
         backend_id = self._manage_ids(ids)
         current = self.browse(cr, uid, backend_id, context=context)
         current._import(
@@ -62,6 +63,8 @@ class SalesforceProductBackend(orm.Model):
         return True
 
     def import_sf_product_delay(self, cr, uid, ids, context=None):
+        """Run the import of Salesforce products for given backend
+        using jobs"""
         backend_id = self._manage_ids(ids)
         current = self.browse(cr, uid, backend_id, context=context)
         current._import(
@@ -72,6 +75,7 @@ class SalesforceProductBackend(orm.Model):
         return True
 
     def export_sf_product(self, cr, uid, ids, context=None):
+        """Run the export of Salesforce products for given backend"""
         backend_id = self._manage_ids(ids)
         current = self.browse(cr, uid, backend_id, context=context)
         current._export(
@@ -82,6 +86,8 @@ class SalesforceProductBackend(orm.Model):
         return True
 
     def export_sf_product_delay(self, cr, uid, ids, context=None):
+        """Run the import of Salesforce products for given backend
+        using jobs"""
         backend_id = self._manage_ids(ids)
         current = self.browse(cr, uid, backend_id, context=context)
         current._export(

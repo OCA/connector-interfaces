@@ -26,6 +26,19 @@ from ..consumer import delay_export, delay_deactivate
 
 @on_record_create(model_names='connector.salesforce.product')
 def export_sf_product(session, model_name, record_id, vals=None):
+    """ Delay a job which export a product binding record.
+    :param session: current session
+    :type session: :py:class:`openerp.addons.connector.
+                              session.ConnectorSession`
+
+    :param model_name: name of the binding model.
+                       In our case `connector.salesforce.xxx`
+    :type model_name: str
+
+    :record_id: The id of the binding model record
+    :type record_id: int or long
+    """
+
     record = session.browse(model_name, record_id)
     if record.backend_id.sf_product_master == 'erp':
         delay_export(session, model_name, record_id)
@@ -33,6 +46,21 @@ def export_sf_product(session, model_name, record_id, vals=None):
 
 @on_record_unlink(model_names='connector.salesforce.product')
 def deactivate_product(session, model_name, record_id):
+    """ Delay a job which deactivate a binding product record
+    on Salesforce
+
+    :param session: current session
+    :type session: :py:class:`openerp.addons.connector.
+                              session.ConnectorSession`
+
+    :param model_name: name of the binding model.
+                       In our case `connector.salesforce.xxx`
+    :type model_name: str
+
+    :record_id: The id of the binding model record
+    :type record_id: int or long
+    """
+
     record = session.browse(model_name, record_id)
     if record.backend_id.sf_product_master == 'erp':
         delay_deactivate(session, model_name, record_id)
@@ -40,6 +68,19 @@ def deactivate_product(session, model_name, record_id):
 
 @on_record_create(model_names='product.product')
 def create_product_binding(session, model_name, record_id, vals=None):
+    """Create a binding entry for newly created product
+    :param session: current session
+    :type session: :py:class:`openerp.addons.connector.
+                              session.ConnectorSession`
+
+    :param model_name: name of the binding model.
+                       In our case `connector.salesforce.xxx`
+    :type model_name: str
+
+    :record_id: The id of the binding model record
+    :type record_id: int or long
+    """
+
     record = session.browse(model_name, record_id)
     sf_product_model = 'connector.salesforce.product'
     backend_model = 'connector.salesforce.backend'
@@ -55,6 +96,19 @@ def create_product_binding(session, model_name, record_id, vals=None):
 
 @on_record_write(model_names='product.product')
 def export_product(session, model_name, record_id, vals=None):
+    """ Delay a job which export a binding record
+    when related product is edited
+    :param session: current session
+    :type session: :py:class:`openerp.addons.connector.
+                              session.ConnectorSession`
+
+    :param model_name: name of the binding model.
+                       In our case `connector.salesforce.xxx`
+    :type model_name: str
+
+    :record_id: The id of the binding model record
+    :type record_id: int or long
+    """
     sf_product_model = 'connector.salesforce.product'
     backend_model = 'connector.salesforce.backend'
     backend_ids = session.search(backend_model, [])

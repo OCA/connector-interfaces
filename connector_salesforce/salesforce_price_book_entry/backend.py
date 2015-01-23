@@ -37,6 +37,7 @@ class SalesforcePriceBookEntryBackend(orm.Model):
     }
 
     def import_sf_entry(self, cr, uid, ids, context=None):
+        """Run the import of Salesforce pricebook entries for given backend"""
         backend_id = self._manage_ids(ids)
         current = self.browse(cr, uid, backend_id, context=context)
         current._import(
@@ -46,6 +47,8 @@ class SalesforcePriceBookEntryBackend(orm.Model):
         )
 
     def import_sf_entry_delay(self, cr, uid, ids, context=None):
+        """Run the import of Salesforce pricebook entries for given backend
+        using jobs"""
         backend_id = self._manage_ids(ids)
         current = self.browse(cr, uid, backend_id, context=context)
         current._import(

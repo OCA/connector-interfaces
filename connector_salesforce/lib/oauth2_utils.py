@@ -26,7 +26,8 @@ import simplejson as json
 
 class SalesForceOauth2MAnager(object):
     """Utility class to manage Salesforce
-    Oauth2 connexion"""
+    Oauth2 connexion
+    """
     def __init__(self, backend_record):
         """Constructor taht set main url and
         properties.
