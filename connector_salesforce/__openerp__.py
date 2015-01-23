@@ -17,7 +17,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-{'name': 'Salesforce connector',
+{'name': 'Salesforce Connector',
  'version': '0.1',
  'author': 'Camptocamp',
  'maintainer': 'Camptocamp',
@@ -25,28 +25,6 @@
  'complexity': "normal",
  'depends': ['connector', 'sale', 'product'],
  'summary': """Provides core import export interfaces with Salesforce.""",
- 'description': """
-Provides core import export interfaces with Salesforce.
-Manage number of rest call limitation.
-
-By default following action are supported:
-
-- Import of Account and contact into OpenERP/Odoo Salesforce is the master
-- Import or export of Product ERP or SF can be master. Master must be set
-  Bidirectional sync is not supported
-- Import PriceBook entries into OpenERP/Odoo
-  Salesforce is the master
-- Import of chosen Opportunity into OpenERP/Odoo Salesforce is the master
-
-Parent relation of Account is not supported at that time
-
-Todo :
- - Cleanup and refactor to dry common code between unit
- - find a way not to reinvent the wheel with SO onchange management
-   without depending on connector ecommerce addons
- - Fix simplesalesforce exception lookup on next release of library
- - Import Quotation must copy address and store it in deactivate
-""",
  'data': [
      'salesforce_backend/view/backend_model_view.xml',
      'salesforce_account/view/backend_view.xml',
