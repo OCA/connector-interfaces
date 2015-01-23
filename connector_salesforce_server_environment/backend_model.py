@@ -24,6 +24,7 @@ from openerp.osv import orm, fields
 
 AuthField = namedtuple('AuthField', ['name', 'is_mandatory'])
 
+
 class salesforce_backend(orm.Model):
     """Use server env. to manage auth parameters"""
 
@@ -45,7 +46,8 @@ class salesforce_backend(orm.Model):
                 )
             for col in self._get_auth_columns():
                 if serv_config.has_option(section_name, col.name):
-                    section_data[col.name] = serv_config.get(section_name, col.name)
+                    section_data[col.name] = serv_config.get(section_name,
+                                                             col.name)
                 else:
                     section_data[col.name] = False
                 if col.is_mandatory and not section_data.get(col.name):

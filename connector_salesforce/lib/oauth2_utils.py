@@ -25,9 +25,11 @@ import simplejson as json
 
 
 class SalesForceOauth2MAnager(object):
-
+    """Utility class to manage Salesforce
+    Oauth2 connexion"""
     def __init__(self, backend_record):
-        """
+        """Constructor taht set main url and
+        properties.
         """
         self.backend = backend_record
         self.base_login_url = 'https://login.salesforce.com/'
@@ -41,6 +43,10 @@ class SalesForceOauth2MAnager(object):
     def authorize_url(self, scope='', **kwargs):
         """
         Returns the callback url to redirect the user after authorization
+        :param scope: Oauth2 scope see
+        https://help.salesforce.com/HTViewHelpDoc?id=remoteaccess_oauth_scopes.htm&language=en_US
+        :type scope: str
+        :return: authorize URL of Odoo must be HTTPS URL
         """
 
         oauth_params = {
@@ -57,7 +63,10 @@ class SalesForceOauth2MAnager(object):
 
     def get_token(self, **kwargs):
         """
-        Requests an access token
+        Requests an access token variatic keyword arguments
+        will be added to POST request data
+        :return: session token
+        :rtype: str
         """
         url = "%s%s" % (self.base_login_url, quote(self.token_url))
         data = {'code': self.backend.consumer_code,
@@ -79,7 +88,12 @@ class SalesForceOauth2MAnager(object):
 
     def refresh_token(self, **kwargs):
         """
-        Requests an access token
+        Requests an refresh acces token. It is used to obtain
+        new token when session expire.
+        Variatic keyword arguments will be added to POST request data
+
+        :return: session token
+        :rtype: str
         """
         url = "%s%s" % (self.base_login_url, quote(self.token_url))
         data = {'refresh_token': self.backend.consumer_refresh_token,
