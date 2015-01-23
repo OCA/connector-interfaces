@@ -39,25 +39,26 @@ class SalesforceBackend(orm.Model):
     In order to use it you have to add a remote application in Salesforce
     and enable Oauth login.
 
-    The The created remote access app must have following parameters:
+    The created remote access app must have following parameters:
 
     Permitted Users -->	All users may self-authorize
     Callback URL --> public_odoo_url/salesforce/oauth
 
 
-    after that manage your app and:
-
     Once done you have to manage your app ensure the
     `Refresh token is valid until revoked` parameter is set.
+
+    The following authentication method are still exprimental
 
     User Password flow
     ------------------
     This flow allows a user to connect to api using SOAP access
     in order to get a token. This approach is simpler but less secure
-    The first is to pass the domain of your Salesforce instance
-    and an access token straight to.
+    The first step is to pass the domain of your Salesforce instance
+    and an access token straight in Odoo backend.
 
-    If you have the full URL e.g (https://na1.salesforce.com) of your instance.
+    You must have the full URL e.g (https://na1.salesforce.com)
+    of your instance.
 
     There are also two means of authentication:
     - Using username, password and security token
