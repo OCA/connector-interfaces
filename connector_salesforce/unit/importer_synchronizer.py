@@ -185,14 +185,14 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
         self.binder.bind(self.salesforce_id, binding_id)
         self._after_import(binding_id)
 
-    def run(self, salesforce_id, deactivate=False):
+    def run(self, salesforce_id, force_deactivate=False):
         """Try to import or update a record on Salesforce using REST API
         call required hooks and bind the record
 
         :param salesforce_id: the current Salesforce UUID to import
         :type binding_id: str
 
-        :param deactivate: If set to True it will force deactivate
+        :param force_deactivate: If set to True it will force deactivate
                            without calling _to_deactivate
                            mostly use to save some REST calls
         """
@@ -200,7 +200,7 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
         # if we force deactivation there is no
         # need to read record in Salesforces
         # it save some REST calls
-        if deactivate:
+        if force_deactivate:
             self._deactivate()
             return
         self.salesforce_record = self._get_record()
@@ -384,6 +384,6 @@ def deactivate_record(session, model_name, backend_id, salesforce_id):
     importer = connector_env.get_connector_unit(
         SalesforceImportSynchronizer
     )
-    importer.run(salesforce_id, deactivate=True)
+    importer.run(salesforce_id, force_deactivate=True)
     return "%s record with Salesforce id %s deactivated" % (model_name,
                                                             salesforce_id)
