@@ -22,7 +22,7 @@ from . import test_adapter
 from . import test_account_import
 from . import test_contact_import
 fast_suite = [
-    test_adapter
-    test_account_import
-    test_contact_import
+    test_adapter,
+    test_account_import,
+    test_contact_import,
 ]
