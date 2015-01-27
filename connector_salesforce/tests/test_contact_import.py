@@ -20,7 +20,7 @@
 ##############################################################################
 from mock import MagicMock
 from .common import CommonTest, mock_simple_salesforce
-
+from . import fixture
 
 class ContactImportTest(CommonTest):
 
@@ -44,41 +44,9 @@ class ContactImportTest(CommonTest):
         )
         response = MagicMock(name='simple_contact_import')
         response.side_effect = [
-
             {'records': [{'Id': 'uuid_contact_01'}]},
-            {
-                'MailingStreet': 'Contact street',
-                'MailingPostalCode': 'Contact zip',
-                'MailingCity': 'Contact city',
-                'MailingState': 'Contact state',
-                'MailingCountryCode': 'CH',
-                'Fax': '+41 21 619 10 10',
-                'Phone': '+41 21 619 10 12',
-                'Title': 'Contact function',
-                'OtherPhone': '+41 21 619 10 13',
-                'MobilePhone': '+41 21 619 10 14',
-                'AssistantPhone': '+41 21 619 10 15',
-                'Email': 'contact@mail.ch',
-                'AccountId': 'uuid_account_01',
-                'LastName': 'Contact lastname',
-                'FirstName': 'Contact firstname',
-            },
-            {
-                'Name': 'Main name',
-                'BillingStreet': 'Main street',
-                'BillingPostalCode': 'Main zip',
-                'BillingCity': 'Main city',
-                'BillingState': 'Main state',
-                'BillingCountryCode': 'CH',
-                'Fax': '+41 21 619 10 10',
-                'Phone': '+41 21 619 10 12',
-                'ShippingStreet': 'Shipping street',
-                'ShippingPostalCode': 'Shipping zip',
-                'ShippingCity': 'Shipping city',
-                'ShippingState': 'Shipping state',
-                'ShippingCountryCode': 'CH',
-                'CurrencyIsoCode': 'EUR',
-            }
+            fixture.contact,
+            fixture.account,
         ]
         with mock_simple_salesforce(response):
             self.backend.import_sf_contact()
