@@ -19,4 +19,5 @@
 #
 ##############################################################################
 from . import test_adapter
-fast_suite = [test_adapter]
+from . import test_account_import
+fast_suite = [test_account_import]#[test_adapter]
