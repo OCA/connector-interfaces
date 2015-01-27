@@ -19,8 +19,6 @@
 #
 ##############################################################################
 from mock import MagicMock
-from ..salesforce_account.importer import (SalesforceAccountImporter,
-                                           SalesforceAccountMapper)
 from .common import CommonTest, mock_simple_salesforce
 
 
@@ -31,20 +29,6 @@ class AccountImportTest(CommonTest):
         self.account_model_name = 'connector.salesforce.account'
         self.imported_model = self.registry(self.account_model_name)
         self.conn_env = self.get_connector_env(self.account_model_name)
-
-    def get_euro_pricelist_version(self):
-        pl_version_id = self.registry('product.pricelist.version').search(
-            self.cr,
-            self.uid,
-            [('pricelist_id.currency_id.name', '=', 'EUR'),
-             ('pricelist_id.type', '=', 'sale')]
-        )
-        self.assertTrue(pl_version_id)
-        return self.registry('product.pricelist.version').browse(
-            self.cr,
-            self.uid,
-            pl_version_id[0]
-        )
 
     def test_simple_import(self):
         pl_version = self.get_euro_pricelist_version()
@@ -57,10 +41,10 @@ class AccountImportTest(CommonTest):
                 'pricelist_version_id': pl_version.id,
             }
         )
-        response = MagicMock(name='simple_import')
+        response = MagicMock(name='simple_account_import')
         response.side_effect = [
 
-            {'records': [{'Id': 'uuid_01'}]},
+            {'records': [{'Id': 'uuid_account_01'}]},
             {
                 'Name': 'Main name',
                 'BillingStreet': 'Main street',
@@ -86,7 +70,7 @@ class AccountImportTest(CommonTest):
         imported_id = self.imported_model.search(
             self.cr,
             self.uid,
-            [('salesforce_id', '=', 'uuid_01'),
+            [('salesforce_id', '=', 'uuid_account_01'),
              ('backend_id', '=', self.backend.id)]
         )
         self.assertTrue(imported_id)

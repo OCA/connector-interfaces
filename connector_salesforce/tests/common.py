@@ -63,6 +63,20 @@ class CommonTest(test_common.TransactionCase):
         super(CommonTest, self).setUp()
         self.backend = self._get_backend()
 
+    def get_euro_pricelist_version(self):
+        pl_version_id = self.registry('product.pricelist.version').search(
+            self.cr,
+            self.uid,
+            [('pricelist_id.currency_id.name', '=', 'EUR'),
+             ('pricelist_id.type', '=', 'sale')]
+        )
+        self.assertTrue(pl_version_id)
+        return self.registry('product.pricelist.version').browse(
+            self.cr,
+            self.uid,
+            pl_version_id[0]
+        )
+
 
 @contextmanager
 def mock_simple_salesforce(response_mock):
