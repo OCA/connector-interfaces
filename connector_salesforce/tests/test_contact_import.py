@@ -26,9 +26,9 @@ class ContactImportTest(CommonTest):
 
     def setUp(self):
         super(ContactImportTest, self).setUp()
-        self.account_model_name = 'connector.salesforce.contact'
-        self.imported_model = self.registry(self.account_model_name)
-        self.conn_env = self.get_connector_env(self.account_model_name)
+        self.model_name = 'connector.salesforce.contact'
+        self.imported_model = self.registry(self.model_name)
+        self.conn_env = self.get_connector_env(self.model_name)
 
 
     def test_simple_import(self):
