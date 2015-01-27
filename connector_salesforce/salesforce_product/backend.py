@@ -49,7 +49,7 @@ class SalesforceProductBackend(orm.Model):
         ),
     }
 
-    _defaults = {'sf_product_master': 'sf'}
+    _defaults = {'sf_product_master': 'erp'}
 
     def import_sf_product(self, cr, uid, ids, context=None):
         """Run the import of Salesforce products for given backend"""
