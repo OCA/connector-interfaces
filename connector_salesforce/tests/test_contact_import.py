@@ -22,6 +22,7 @@ from mock import MagicMock
 from .common import CommonTest, mock_simple_salesforce
 from . import fixture
 
+
 class ContactImportTest(CommonTest):
 
     def setUp(self):
@@ -29,7 +30,6 @@ class ContactImportTest(CommonTest):
         self.model_name = 'connector.salesforce.contact'
         self.imported_model = self.registry(self.model_name)
         self.conn_env = self.get_connector_env(self.model_name)
-
 
     def test_simple_import(self):
         pl_version = self.get_euro_pricelist_version()
