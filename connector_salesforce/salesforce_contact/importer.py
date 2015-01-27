@@ -82,7 +82,7 @@ class SalesforceContactMapper(AddressMapper):
         ('MailingCity', 'city'),
         ('Fax', 'fax'),
         ('Phone', 'phone'),
-        ('sf_assistant_phone', 'sf_assistant_phone'),
+        ('AssistantPhone', 'sf_assistant_phone'),
         ('OtherPhone', 'sf_other_phone'),
         ('MobilePhone', 'mobile'),
         ('Title', 'function'),
