@@ -18,6 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+"""Salesforce API fixture data"""
 contact = {
     'MailingStreet': 'Contact street',
     'MailingPostalCode': 'Contact zip',
@@ -52,4 +53,10 @@ account = {
     'ShippingState': 'Shipping state',
     'ShippingCountryCode': 'CH',
     'CurrencyIsoCode': 'EUR',
+}
+
+price_book_entry = {
+    'UnitPrice': 200.0,
+    'CurrencyIsoCode': 'EUR',
+    'Product2Id': 'uuid_product_01',
 }
