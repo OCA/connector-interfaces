@@ -41,7 +41,7 @@ class SalesforceAccountImporter(SalesforceImportSynchronizer):
         It maps Salesforce account data into child partner on Odoo
         """
         # Can be used in Mapper.finalize but
-        # managin nested syntax when updating would have been a mess
+        # manage nested syntax when updating would have been a mess
         record_mapper = self.mapper
         shipping_add_data = record_mapper.map_shipping_address(
             self.salesforce_record,
@@ -89,7 +89,6 @@ class SalesforceAccountMapper(AddressMapper, PriceMapper):
             'street': record['ShippingStreet'],
             'zip': record['ShippingPostalCode'],
             'city': record['ShippingCity'],
-            'state': record['ShippingState'],
             'phone': record['Phone'],
             'parent_id': partner_record.openerp_id.id,
             'type': 'delivery',
