@@ -64,7 +64,7 @@ class SalesforcePriceBookEntryImporter(SalesforceImportSynchronizer):
                  ('backend_id', '=', self.backend_record.id)]
             )
         if not product_id:
-            if self.backend_record.sf_product_master == 'erp':
+            if self.backend_record.sf_product_master == 'sf':
                 import_record(
                     self.session,
                     'connector.salesforce.product',
