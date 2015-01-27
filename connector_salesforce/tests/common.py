@@ -104,26 +104,3 @@ def mock_simple_salesforce(response_mock):
     with nested(patch(connection_to_patch, return_mock),
                 patch(type_to_patch, return_mock)):
         yield
-
-
-@contextmanager
-def mock_backend_adapter():
-    """Context manager that will mock the backend adapter
-
-    :param response_mock: A response mock that will be used as
-                          the result of a Salesforce interogation
-    :type response_mock: :py:class:`mock.MagicMock`
-
-    :yield: current execution stack
-    """
-
-    def _get_response(*args, **kwargs):
-        return response_mock
-
-    for fun in SF_SPECS:
-        setattr(response_mock, fun, response_mock)
-    klass = ('openerp.addons.connector_salesforce.unit'
-             '.rest_api_adapter.SalesforceRestAdapter')
-    response = MagicMock(name='REST Response')
-    with patch(klass, response):
-        yield response
