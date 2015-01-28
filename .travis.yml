@@ -13,11 +13,11 @@ virtualenv:
 
 install:
   - pip install simple-salesforce
+  - git clone https://github.com/OCA/server-tools ${HOME}/server-tools -b ${VERSION}
+  - git clone https://github.com/OCA/connector ${HOME}/connector -b ${VERSION}
   - git clone https://github.com/OCA/maintainer-quality-tools.git ${HOME}/maintainer-quality-tools
   - export PATH=${HOME}/maintainer-quality-tools/travis:${PATH}
   - travis_install_nightly
-# example: dependency
-# - git clone https://github.com/OCA/webkit-tools -b ${VERSION} $HOME/webkit-tools
 
 script:
   - travis_run_tests
