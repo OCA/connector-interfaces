@@ -265,7 +265,7 @@ class SalesforceOpportunityLineItemImporter(SalesforceImportSynchronizer):
                  ('backend_id', '=', self.backend_record.id)]
             )
         if not product_id:
-            if self.backend_record.sf_product_master == 'erp':
+            if self.backend_record.sf_product_master == 'sf':
                 import_record(
                     self.session,
                     'connector.salesforce.product',
@@ -319,7 +319,6 @@ class SalesforceOpportunityLineItemMapper(PriceMapper):
         sf_product_uuid = backend_adapter._get_products(record['Id'])
         if not sf_product_uuid:
             return {'product_id': False}
-
         backend = self.options['backend_record']
         with self.session.change_context({'active_test': False}):
             bind_product_id = self.session.search(
