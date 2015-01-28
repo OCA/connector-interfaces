@@ -22,12 +22,12 @@ from . import test_adapter
 from . import test_account_import
 from . import test_contact_import
 from . import test_price_book_entry_import
-from . import test_quotation_import
+from . import test_opportunity_import
 
 fast_suite = [
     test_adapter,
     test_account_import,
     test_contact_import,
     test_price_book_entry_import,
-    test_quotation_import
+    test_opportunity_import
 ]
