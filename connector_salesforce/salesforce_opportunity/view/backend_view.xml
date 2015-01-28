@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+    <record id="add_import_opportunity_button" model="ir.ui.view">
+      <field name="name">add import opportunity button</field>
+      <field name="model">connector.salesforce.backend</field>
+      <field name="inherit_id" ref="connector_salesforce_backend_form"/>
+      <field name="priority" eval="22"/>
+      <field name="arch" type="xml">
+        <page string="Actions" position="inside">
+          <br/>
+          <separator string="Opportunities From Salesforce Towards ERP"/>
+          <group>
+            <div>
+              <label for="sf_last_opportunity_import_sync_date"/>
+              <br/>
+              <field name="sf_last_opportunity_import_sync_date"/>
+              <button name="import_sf_opportunity"
+                      class="oe_highlight"
+                      type="object"
+                      string="Import Opportunities Directly"/>
+              <button name="import_sf_opportunity_delay"
+                      class="oe_highlight"
+                      type="object"
+                      string="Import Opportunities Using Jobs"/>
+            </div>
+          </group>
+          <br/>
+        </page>
+        <page string="Import/Export Configuration" position="inside">
+          <separator string="Opportunity configuration"/>
+          <div>Select in wich ERP saleshop must be used when importing a Quotation
+          into a salesOrder
+          </div>
+          <group colspan="4">
+            <field name="sf_shop_id"/>
+          </group>
+        </page>
+
+      </field>
+    </record>
+  </data>
+</openerp>

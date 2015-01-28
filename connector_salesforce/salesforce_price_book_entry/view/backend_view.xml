@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+    <record id="add_import_pricebookentry_button" model="ir.ui.view">
+      <field name="name">add import price book entry button</field>
+      <field name="model">connector.salesforce.backend</field>
+      <field name="inherit_id" ref="connector_salesforce_backend_form"/>
+      <field name="priority" eval="20"/>
+      <field name="arch" type="xml">
+        <page string="Actions" position="inside">
+          <br/>
+          <separator string="Price Book Entries From Salesforce Towards ERP"/>
+          <div>
+            Price book entries will be synchronized into ERP pricelist item
+          </div>
+          <group>
+            <div>
+              <label for="sf_last_entry_import_sync_date"/>
+              <br/>
+              <field name="sf_last_entry_import_sync_date"/>
+              <button name="import_sf_entry"
+                      class="oe_highlight"
+                      type="object"
+                      string="Import Price Book Entries Directly"/>
+              <button name="import_sf_entry_delay"
+                      class="oe_highlight"
+                      type="object"
+                      string="Import Price Book Entries Using Jobs"/>
+            </div>
+          </group>
+          <br/>
+        </page>
+        <page string="Import/Export Configuration" position="inside">
+          <separator string="Product Book Entry Configuration"/>
+          <div>Select in wich ERP pricelist version must the price book entries be stored. <br/>
+          You have to choose one price list version per SalesForce currency
+          </div>
+          <group colspan="4">
+            <field name="sf_entry_mapping_ids"
+                   colspan="4"
+                   nolabel="1">
+              <tree editable="top">
+                <field name="currency_id"/>
+                <field name="pricelist_version_id"/>
+              </tree>
+            </field>
+          </group>
+        </page>
+      </field>
+    </record>
+  </data>
+</openerp>
