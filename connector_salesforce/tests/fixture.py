@@ -20,6 +20,7 @@
 ##############################################################################
 """Salesforce API fixture data"""
 contact = {
+    'Id': 'uuid_contact_01',
     'MailingStreet': 'Contact street',
     'MailingPostalCode': 'Contact zip',
     'MailingCity': 'Contact city',
@@ -38,6 +39,7 @@ contact = {
 }
 
 account = {
+    'Id': 'uuid_account_01',
     'Name': 'Main name',
     'BillingStreet': 'Main street',
     'BillingPostalCode': 'Main zip',
@@ -56,7 +58,25 @@ account = {
 }
 
 price_book_entry = {
+    'Id': 'uuid_pricebookentry_01',
     'UnitPrice': 200.0,
     'CurrencyIsoCode': 'EUR',
     'Product2Id': 'uuid_product_01',
+}
+
+opportunity = {
+    'Id': 'uuid_opportunity_01',
+    'AccountId': 'uuid_account_01',
+    'CurrencyIsoCode': 'EUR',
+    'Name': 'A won opportunity',
+
+}
+
+opportunity_line = {
+    'Id': 'uuid_opportunityline_01',
+    'Discount': 20,
+    'Description': 'A sale',
+    'ListPrice': 100.0,
+    'Quantity': 2.0,
+    'OpportunityId': 'uuid_opportunity_01',
 }
