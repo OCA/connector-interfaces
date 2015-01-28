@@ -115,8 +115,8 @@ class SalesForceRestAdapterTest(CommonTest):
         """Test the query function of the adapter"""
         data = [
             {'records': [
-                {'Id': '001g000000P7UBDAA1',
-                 'Id': '001g000000P7UBDAA2'}]}
+                {'Id': '001g000000P7UBDAA1'},
+                {'Id': '001g000000P7UBDAA2'}]}
         ]
         response = MagicMock(name="query")
         response.side_effect = data
