@@ -220,6 +220,7 @@ Known issues / Roadmap
 ======================
 
  - Cleanup and refactor to dry common code between unit must be done
+ - Extend the test coverage to product and corner case
  - A way must be found in order not to reinvent the wheel with SO onchange management
    without depending on connector ecommerce addons
  - Fix simplesalesforce exception lookup on next release of library
