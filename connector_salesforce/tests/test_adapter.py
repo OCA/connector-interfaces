@@ -37,14 +37,14 @@ except ImportError:
     pass
 
 
-class SalesForceRestAdapterTest(CommonTest):
+class SalesforceRestAdapterTest(CommonTest):
 
     def get_adapter(self):
         conn_env = self.get_connector_env(self.model_name)
         return conn_env.get_connector_unit(SalesforceRestAdapter)
 
     def setUp(self):
-        super(SalesForceRestAdapterTest, self).setUp()
+        super(SalesforceRestAdapterTest, self).setUp()
         self.model_name = 'connector.salesforce.account'
 
     def test_datetime_converter(self):

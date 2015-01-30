@@ -84,10 +84,10 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
 
     def _get_record(self):
         """Return a dict representation of a currently
-        imported SalesForce record as provided by the REST adapter
+        imported Salesforce record as provided by the REST adapter
 
         :return: a dict representation of a currently
-                 imported SalesForce record as provided by the REST adapter
+                 imported Salesforce record as provided by the REST adapter
         :rtype: dict
         """
         rec = self.backend_adapter.read(self.salesforce_id)

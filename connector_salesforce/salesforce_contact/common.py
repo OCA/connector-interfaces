@@ -44,7 +44,7 @@ class SalesforceContact(orm.Model):
 SalesforeceBinder._model_name.append('connector.salesforce.contact')
 
 
-class SalesForceResPartner(orm.Model):
+class SalesforceResPartner(orm.Model):
     _inherit = 'res.partner'
 
     _columns = {

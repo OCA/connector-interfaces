@@ -24,7 +24,7 @@ from urlparse import parse_qs, urljoin
 import simplejson as json
 
 
-class SalesForceOauth2MAnager(object):
+class SalesforceOauth2MAnager(object):
     """Utility class to manage Salesforce
     Oauth2 connexion
     """

@@ -65,7 +65,7 @@ class SalesforceOAuthController(oeweb.Controller):
             if not backend:
                 raise ValueError('No backend with id %s' % backend_id)
             backend.write({'consumer_code': code})
-            # In SalesForce you have a limited time to ask first token
+            # In Salesforce you have a limited time to ask first token
             # after getting conusmer code, else code becomme invalid
             backend._get_token()
         return ("Backend successfuly authorized you should have a new "

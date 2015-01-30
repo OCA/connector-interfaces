@@ -81,7 +81,7 @@ class CommonTest(test_common.TransactionCase):
 @contextmanager
 def mock_simple_salesforce(response_mock):
     """Context manager that will mock the request object used
-    to talk with SalesForce
+    to talk with Salesforce
 
     :param response_mock: A response mock that will be used as
                           the result of a Salesforce interogation

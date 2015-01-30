@@ -20,7 +20,7 @@
 ##############################################################################
 from __future__ import absolute_import
 import simplejson
-from ..lib.oauth2_utils import SalesForceOauth2MAnager
+from ..lib.oauth2_utils import SalesforceOauth2MAnager
 from openerp.osv import orm, fields
 from openerp.tools.translate import _
 from openerp.addons.connector import session as csession, connector
@@ -266,15 +266,15 @@ class SalesforceBackend(orm.Model):
         return env
 
     def _get_oauth2_handler(self, cr, uid, ids, context=None):
-        """Initialize and return an instance of SalesForce OAuth2 Helper
+        """Initialize and return an instance of Salesforce OAuth2 Helper
 
         :return: An OAuth2 helper instance
-        :rtype: :py:class:`..lib.oauth2_utils.SalesForceOauth2MAnager`
+        :rtype: :py:class:`..lib.oauth2_utils.SalesforceOauth2MAnager`
         """
         backend_id = self._manage_ids(ids)
         current = self.browse(cr, uid, backend_id, context=context)
 
-        oauth2_handler = SalesForceOauth2MAnager(
+        oauth2_handler = SalesforceOauth2MAnager(
             current
         )
         return oauth2_handler
