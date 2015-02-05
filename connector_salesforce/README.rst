@@ -1,18 +1,18 @@
 Salesforce Connector
 ====================
 
-This module allow you to import and export various model between
-Odoo and Salesforce
+This module allows to import and export various models between
+Odoo and Salesforce.
 
-It provides the foundations to create or extend various synchronization
+It provides the foundations to create or extend various synchronizations.
 
-By default following synchronisation are supported out of the box:
+By default following synchronisations are supported out of the box:
 
  - Import of Account and contact into Odoo Partners. Salesforce is the master.
-   Parent relation of Sales force account is not supported at that time.
- - Import or export of Product. ERP or Salesforce can be master. Bidirectional synchronisation is not supported and a master must be set
+   Parent relation of Sales force account is not supported at this time.
+ - Import or export of Product. ERP or Salesforce can be master. Bidirectional synchronisation is not supported and a master must be set.
  - Import of Salesforce priceBook entries into Odoo pricelist version. Salesforce is the master.
- - Import of won opportunities into Odoo. Salesforce is the master
+ - Import of won opportunities into Odoo. Salesforce is the master.
 
 Installation
 ============
@@ -51,7 +51,7 @@ The created remote access app must have following parameters:
   Callback URL --> public_odoo_url/salesforce/oauth
 
 
-Once done you have to manage your app and ensure the
+Once done, you have to manage your app and ensure the
 `Refresh token is valid until revoked` parameter is set
 and configure the desired authorization of the app.
 
@@ -63,7 +63,7 @@ Go to the Authentication Pane of your backend and enter the following parameters
 
  - `Authentication Method`: Choose oauth2
  - `URL`: Enter the URL of your Salesforce instance
- - `Connect on sandbox instance`: Check it if your working on a sandox Salesforce instance
+ - `Connect on sandbox instance`: Check it if you are working on a sandox Salesforce instance
  - `OAuth2 Consumer Key`: Enter the consumer key provided by Salesforce app
  - `OAuth2 secret`: Enter the consumer secret provided by Salesforce app
  - `Public secure URL of Odoo (HTTPS)`: Enter the callback URL you have enterd by Salesforce
@@ -72,17 +72,17 @@ Go to the Authentication Pane of your backend and enter the following parameters
 Choose a default shop in `Import/Export Configuration` pane and save your backend.
 
 Then simply press `the Authorize Odoo in Salesforce` and follow the instruction provided
-in Salesforce once done your application must be authorized in Salesforce and tokens
+in Salesforce. Once done, your application must be authorized in Salesforce and tokens
 must be present in backend.
 
-!!!Only the OAuth flow is production proof. Other Authentication method are still exprimental!!!
+!!!Only the OAuth flow is production proof. Other Authentication methods are still exprimental!!!
 
 
 User Password flow
 ******************
 
 This flow allows a user to connect to api using SOAP access
-in order to get a token. This approach is simpler but less secure
+in order to get a token. This approach is simpler but less secure.
 The first step is to pass the domain of your Salesforce instance
 and an access token straight in Odoo backend.
 
@@ -99,7 +99,7 @@ set required fields.
 Configure Import Export with Salesforce
 ---------------------------------------
 
-Now you backend is set open the `Import/Export Configuration` pane
+Now your backend is set and open in the `Import/Export Configuration` pane
 
 Products Synchronisation
 ************************
@@ -112,7 +112,7 @@ Product Type Mapping
 ********************
 
 The product type of Salesforce can not be imported and mapped as is.
-You have to manually set the mapping under the `Product Configuration`  section.
+You have to manually set the mapping under the `Product Configuration` section.
 
 Simply choose the Odoo type and enter the corresponding name of the Salesforce type.
 
@@ -126,7 +126,7 @@ You have to manually set the mapping under the `Product Book Entry Configuration
 Simply choose an Odoo pricelist version and map it with a Currency ISO code available in
 Salesforce
 
-Once done it should like this:
+Once done, it should look like this:
 
 .. image:: doc/media/config_import.png
 
@@ -136,7 +136,7 @@ Once done it should like this:
 Usage
 =====
 
-There is two way to use the module go to the backend and click on the
+There are two ways to use the module: go to the backend and click on the
 Action buttons available under the `Actions` pane or activate the available
 cron.
 
@@ -212,9 +212,9 @@ Set the Quote/Opportunity as Won
 In Odoo
 -------
 
-Now the Opportunity can be synch with Odoo.
+Now the Opportunity can be sync with Odoo.
 
- * Import won opportunity from Odoo. The import of  Opportunity using will automatically trigger all other synchronization. Indeed, for instance, if you try to import an opportunity but the partner (= SF account) does not exist in Odoo then the connector will launch a direct (no job creation) import of this specific account. The same goes for the other missing assets like product, price etc.
+ * Import won opportunity from Odoo. The import of  Opportunity using will automatically trigger all other synchronization. Indeed, for instance, if you try to import an opportunity but the partner (= SF account) does not exist in Odoo then the connector will launch a direct (no job creation) import of this specific account. The same goes for the other missing assets like product, price, etc.
 
 Known issues / Roadmap
 ======================
@@ -224,7 +224,7 @@ Known issues / Roadmap
  - A way must be found in order not to reinvent the wheel with SO onchange management
    without depending on connector ecommerce addons
  - Fix simplesalesforce exception lookup on next release of library
- - Import Quotation must copy address and store it in deactivate state
+ - Import Quotation must copy the address and store it in deactivate state
  - Battle test password flow and fix it
 
 Credits
@@ -241,6 +241,6 @@ Maintainer
 
 This module is maintained by the OCA.
 
-OCA, or the Odoo Community Association, is a nonprofit organization whose mission is to support the collaborative development of Odoo features and promote its widespread use.
+OCA, the Odoo Community Association, is a nonprofit organization whose mission is to support the collaborative development of Odoo features and promote its widespread use.
 
 To contribute to this module, please visit http://odoo-community.org.
