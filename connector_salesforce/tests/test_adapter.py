@@ -205,10 +205,12 @@ class SalesforceRestAdapterTest(CommonTest):
         """Test that the error_handler context manager behave as expected"""
         with self.assertRaises(SalesforceSecurityError):
             with error_handler(MagicMock()):
-                raise SalesforceAuthenticationFailed('dummy code', 'Login failed')
+                raise SalesforceAuthenticationFailed('dummy code',
+                                                     'Login failed')
         with self.assertRaises(SalesforceSessionExpiredError):
             with error_handler(MagicMock()):
-                raise SalesforceExpiredSession('Token expired')
+                raise SalesforceExpiredSession('url', 'status',
+                                               'resource_name', 'content')
         with self.assertRaises(SalesforceResponseError):
             with error_handler(MagicMock()):
                 raise SalesforceGeneralError('Other error')
