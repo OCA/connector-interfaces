@@ -57,6 +57,10 @@ class salesforce_backend(orm.Model):
                             section_name
                         )
                     )
+                if section_data[col.name] in serv_config._boolean_states:
+                    section_data[col.name] = serv_config._boolean_states[
+                        section_data[col.name]
+                    ]
             res[backend.id] = section_data
         return res
 
