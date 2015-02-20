@@ -135,7 +135,7 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
         :return: a :py:class:`ImportSkipReason`
         :rtype: :py:class:`ImportSkipReason`
         """
-        return ImportSkipReason(False, None)
+        return ImportSkipReason(should_skip=False, reason=None)
 
     def _update(self, binding_id, data):
         """Implement the update of a binding record

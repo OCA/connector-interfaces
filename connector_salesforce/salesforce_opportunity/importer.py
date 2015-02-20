@@ -86,8 +86,9 @@ class SalesforceOpportunityImporter(SalesforceImportSynchronizer):
         """
         assert self.salesforce_id
         if self.binder.to_openerp(self.salesforce_id):
-            return ImportSkipReason(True, 'Already imported')
-        return ImportSkipReason(False, None)
+            return ImportSkipReason(should_skip=True,
+                                    reason='Already imported')
+        return ImportSkipReason(should_skip=False, reason=None)
 
 
 @salesforce_backend
