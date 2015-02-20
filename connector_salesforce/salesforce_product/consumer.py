@@ -22,6 +22,7 @@ from openerp.addons.connector.event import (on_record_write,
                                             on_record_create,
                                             on_record_unlink)
 from ..consumer import delay_export, delay_deactivate
+from ..unit.binder import SalesforceBinder
 
 
 @on_record_create(model_names='connector.salesforce.product')
@@ -38,7 +39,6 @@ def export_sf_product(session, model_name, record_id, vals=None):
     :record_id: The id of the binding model record
     :type record_id: int or long
     """
-
     record = session.browse(model_name, record_id)
     if record.backend_id.sf_product_master == 'erp':
         delay_export(session, model_name, record_id)
@@ -114,18 +114,19 @@ def export_product(session, model_name, record_id, vals=None):
     backend_ids = session.search(backend_model, [])
     for backend in session.browse(backend_model, backend_ids):
         if backend.sf_product_master == 'erp':
-            sf_prod_id = session.search(
-                sf_product_model,
-                [
-                    ('backend_id', '=', backend.id),
-                    ('openerp_id', '=', record_id)
-                ]
+            conn_env = backend.get_connector_environment(
+                sf_product_model
+            )
+            product_binder = conn_env.get_connector_unit(
+                SalesforceBinder
+            )
+            sf_prod_id = product_binder.to_binding(
+                record_id
             )
             if sf_prod_id:
-                assert len(sf_prod_id) == 1
                 export_sf_product(
                     session,
                     sf_product_model,
-                    sf_prod_id[0],
+                    sf_prod_id,
                     vals=vals
                 )
