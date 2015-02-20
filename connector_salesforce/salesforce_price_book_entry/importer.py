@@ -28,7 +28,7 @@ from ..unit.importer_synchronizer import (SalesforceDelayedBatchSynchronizer,
                                           import_record)
 from ..unit.rest_api_adapter import SalesforceRestAdapter
 from ..unit.mapper import PriceMapper
-_logger = logging.getLogger('salesforce_connector_entry_import')
+_logger = logging.getLogger(__name__)
 
 
 @salesforce_backend

@@ -28,7 +28,7 @@ try:
                                    SalesforceAuthenticationFailed,
                                    SalesforceExpiredSession)
 except ImportError:
-    logger = logging.getLogger('connector_salesforce_rest_adapter')
+    logger = logging.getLogger('ImportError')
     logger.warning('Library simple_salesforce is not available')
 
 from openerp.addons.connector.unit.backend_adapter import BackendAdapter
@@ -36,7 +36,7 @@ from . import exceptions as connector_exception
 from ..lib.date_convertion import convert_to_utc_datetime_with_tz
 from . exceptions import SalesforceSessionExpiredError
 
-_logger = logging.getLogger('connector_salesforce_rest_adapter')
+_logger = logging.getLogger(__name__)
 
 
 def with_retry_on_expiration(fun):

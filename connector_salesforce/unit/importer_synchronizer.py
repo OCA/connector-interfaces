@@ -25,7 +25,7 @@ from openerp.addons.connector.unit.synchronizer import ImportSynchronizer
 from openerp.addons.connector.exception import IDMissingInBackend
 from ..unit.rest_api_adapter import with_retry_on_expiration
 
-_logger = logging.getLogger('salesforce_import_synchronizer')
+_logger = logging.getLogger(__name__)
 
 ImportSkipReason = namedtuple('SkipReason', ['should_skip', 'reason'])
 

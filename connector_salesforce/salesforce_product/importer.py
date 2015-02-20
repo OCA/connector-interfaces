@@ -26,7 +26,7 @@ from ..unit.importer_synchronizer import (SalesforceDelayedBatchSynchronizer,
                                           SalesforceDirectBatchSynchronizer,
                                           SalesforceImportSynchronizer)
 
-_logger = logging.getLogger('salesforce_connector_product_mapping')
+_logger = logging.getLogger(__name__)
 
 TYPE_MAP_REGISTER = {'Service': 'service'}
 

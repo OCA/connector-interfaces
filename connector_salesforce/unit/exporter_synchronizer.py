@@ -23,7 +23,7 @@ from openerp.addons.connector.queue.job import job
 from openerp.addons.connector.unit.synchronizer import ExportSynchronizer
 from ..unit.rest_api_adapter import with_retry_on_expiration
 
-_logger = logging.getLogger('salesforce_export_synchronizer')
+_logger = logging.getLogger(__name__)
 
 
 class SalesforceExportSynchronizer(ExportSynchronizer):

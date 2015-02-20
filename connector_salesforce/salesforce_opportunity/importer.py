@@ -31,7 +31,7 @@ from ..unit.importer_synchronizer import (SalesforceDelayedBatchSynchronizer,
                                           import_record)
 from ..unit.rest_api_adapter import SalesforceRestAdapter
 from ..unit.mapper import PriceMapper
-_logger = logging.getLogger('salesforce_connector_opportunity_import')
+_logger = logging.getLogger(__name__)
 
 MAX_QUERY_OPP = 5000
 
