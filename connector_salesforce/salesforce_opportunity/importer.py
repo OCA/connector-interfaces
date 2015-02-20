@@ -173,7 +173,7 @@ class SalesforceOpportunityMapper(PriceMapper):
                 'No pricelist version configuration done for '
                 'currency %s and backend %s' % (
                     record.get('CurrencyIsoCode'),
-                    backend.name
+                    self.backend_record.name
                 )
             )
         price_list_version_record = self.session.browse(

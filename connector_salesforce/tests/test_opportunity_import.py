@@ -63,9 +63,12 @@ class OpportunityImportTest(CommonTest):
         response.side_effect = [
             {'records': [{'Id': 'uuid_opportunity_01'}]},
             {'records': [{'Id': 'uuid_opportunity_01'}]},
+            {'records': [{'dummy': 'dummy'}]},
             fixture.opportunity,
+            {'records': [{'dummy': 'dummy'}]},
             fixture.account,
             {'records': [{'Id': 'uuid_opportunityline_01'}]},
+            {'records': [{'dummy': 'dummy'}]},
             fixture.opportunity_line,
             {
                 'records': [

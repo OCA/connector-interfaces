@@ -151,8 +151,4 @@ class SalesforcePriceBookEntryMapper(PriceMapper):
             raise MappingError(
                 'Product is not available in ERP for record %s' % record
             )
-        bind_product = self.session.browse(
-            'connector.salesforce.product',
-            product_id
-        )
-        return {'product_id': bind_product.openerp_id.id}
+        return {'product_id': product_id}

@@ -62,6 +62,7 @@ class PriceBookImportTest(CommonTest):
         response = MagicMock(name='simple_pricebookentry_import')
         response.side_effect = [
             {'records': [{'Id': 'uuid_pricebookentry_01'}]},
+            {'records': [{'dummy': 'dummy'}]},
             fixture.price_book_entry,
         ]
         with mock_simple_salesforce(response):

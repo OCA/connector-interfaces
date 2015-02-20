@@ -44,8 +44,11 @@ class ContactImportTest(CommonTest):
         )
         response = MagicMock(name='simple_contact_import')
         response.side_effect = [
+
             {'records': [{'Id': 'uuid_contact_01'}]},
+            {'records': [{'dummy': 'dummy'}]},
             fixture.contact,
+            {'records': [{'dummy': 'dummy'}]},
             fixture.account,
         ]
         with mock_simple_salesforce(response):

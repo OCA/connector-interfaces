@@ -82,7 +82,7 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
                            [current_id],
                            {'active': False})
 
-    def _get_record(self):
+    def _get_record(self, raise_error=False):
         """Return a dict representation of a currently
         imported Salesforce record as provided by the REST adapter
 
@@ -90,8 +90,10 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
                  imported Salesforce record as provided by the REST adapter
         :rtype: dict
         """
-        rec = self.backend_adapter.read(self.salesforce_id)
-        if not rec:
+        rec = None
+        if self.backend_adapter.exists(self.salesforce_id):
+            rec = self.backend_adapter.read(self.salesforce_id)
+        elif raise_error:
             raise IDMissingInBackend(
                 'id %s does not exists in Salesforce for %s' % (
                     self.backend_adapter._sf_type
@@ -203,6 +205,9 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
             self._deactivate()
             return
         self.salesforce_record = self._get_record()
+        if not self.salesforce_record:
+            # Record deleted in backend so nothing to import
+            return
         skip = self._must_skip()
         if skip.should_skip:
             return skip.reason

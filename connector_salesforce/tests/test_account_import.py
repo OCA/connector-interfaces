@@ -45,8 +45,8 @@ class AccountImportTest(CommonTest):
         response = MagicMock(name='simple_account_import')
         response.side_effect = [
             {'records': [{'Id': 'uuid_account_01'}]},
-            fixture.account
-
+            {'records': [{'dummy': 'dummy'}]},
+            fixture.account,
         ]
         with mock_simple_salesforce(response):
             self.backend.import_sf_account()
