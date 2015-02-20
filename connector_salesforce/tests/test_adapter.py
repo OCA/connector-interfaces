@@ -214,4 +214,4 @@ class SalesforceRestAdapterTest(CommonTest):
         with self.assertRaises(SalesforceResponseError):
             with error_handler(MagicMock()):
                 raise SalesforceGeneralError('url', 'status',
-                                               'resource_name', 'content')
+                                             'resource_name', 'content')
