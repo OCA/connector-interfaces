@@ -20,6 +20,7 @@
 ##############################################################################
 from __future__ import absolute_import
 from openerp.osv import fields
+from openerp.addons.connector.exception import ManyIDSInBackend
 from openerp.addons.connector.connector import Binder
 from ..backend import salesforce_backend
 
@@ -74,6 +75,30 @@ class SalesforceBinder(Binder):
         if not sf_record:
             return None
         return sf_record['salesforce_id']
+
+    def to_binding(self, record_id):
+        """Return the binding id for a given openerp record and backend
+
+        :param record_id: id of a Odoo record
+        :type binding_id: int
+
+        :return: external binding id for `record_id` or None
+        """
+        sf_id = self.session.search(
+            self.model._name,
+            [
+                ('backend_id', '=', self.backend_record.id),
+                ('openerp_id', '=', record_id)
+            ]
+        )
+        if not sf_id:
+            return None
+        if len(sf_id) > 1:
+            raise ManyIDSInBackend(
+                'Many record found in backend %s for model %s record_id %s' %
+                (self.backend_record.name, self.model._name, record_id)
+            )
+        return sf_id
 
     def bind(self, salesforce_id, binding_id):
         """ Create the link between an external id and an Odoo row and
