@@ -130,7 +130,7 @@ class SalesforceOpportunityAdapter(SalesforceRestAdapter):
         while True:
             # is sliced does not raise an StopIteration error
             # but will instead provide an empty list
-            sliced_ids = list(islice(full_result, 0, MAX_QUERY_OPP))
+            sliced_ids = islice(full_result, 0, MAX_QUERY_OPP)
             sliced_ids = ["'%s'" % x for x in sliced_ids]
             if not sliced_ids:
                 break
