@@ -70,8 +70,8 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
         """
         assert self.salesforce_id
         model = self.session.pool[self.model._name]
-        cols = set(model._columns.keys())
-        cols.update(model._inherit_fields.keys())
+        cols = set(model._columns)
+        cols.update(model._inherit_fields)
         if 'active' not in cols:
             raise NotImplementedError(
                 'Model %s does not have an active field. '

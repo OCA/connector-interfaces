@@ -70,8 +70,8 @@ class SalesforceExportSynchronizer(ExportSynchronizer):
         """
         assert self.binding_record
         model = self.session.pool[self.model._name]
-        cols = set(model._columns.keys())
-        cols.update(model._inherit_fields.keys())
+        cols = set(model._columns)
+        cols.update(model._inherit_fields)
         if 'active' in cols:
             if not self.binding_record.active:
                 return True
