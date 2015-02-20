@@ -101,7 +101,6 @@ class SalesforceExportSynchronizer(ExportSynchronizer):
         :rtype: dict
         """
         data = mapper.values(**kwargs)
-        self._validate_data(data)
         return data
 
     def _upsert(self, salesforce_id, data):
@@ -146,6 +145,7 @@ class SalesforceExportSynchronizer(ExportSynchronizer):
         data = self._map_data_for_upsert(record_mapper,
                                          binding_id=binding_id,
                                          backend_record=self.backend_record)
+        self._validate_data(data)
         sf_id = self._upsert(salesforce_id, data)
         self.binder.bind(sf_id, binding_id)
 

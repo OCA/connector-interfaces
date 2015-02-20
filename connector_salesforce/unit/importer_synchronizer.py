@@ -110,7 +110,6 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
         :rtype: dict
         """
         data = mapper.values(**kwargs)
-        self._validate_data(data)
         return data
 
     def _map_data_for_create(self, mapper, **kwargs):
@@ -124,7 +123,6 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
         :rtype: dict
         """
         data = mapper.values(for_create=True, **kwargs)
-        self._validate_data(data)
         return data
 
     def _must_skip(self):
@@ -174,6 +172,7 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
                 binding_id=binding_id,
                 backend_record=self.backend_record
             )
+            self._validate_data(data)
             self._update(binding_id, data)
         else:
             data = self._map_data_for_create(
@@ -181,6 +180,7 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
                 binding_id=binding_id,
                 backend_record=self.backend_record
             )
+            self._validate_data(data)
             binding_id = self._create(data)
         self.binder.bind(self.salesforce_id, binding_id)
         self._after_import(binding_id)
