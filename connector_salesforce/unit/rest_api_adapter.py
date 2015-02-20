@@ -32,7 +32,7 @@ except ImportError:
 
 from openerp.addons.connector.unit.backend_adapter import BackendAdapter
 from . import exceptions as connector_exception
-from ..lib.date_convertion import convert_to_utc_datetime
+from ..lib.date_convertion import convert_to_utc_datetime_with_tz
 from . exceptions import SalesforceSessionExpiredError
 
 _logger = logging.getLogger('connector_salesforce_rest_adapter')
@@ -182,8 +182,8 @@ class SalesforceRestAdapter(BackendAdapter):
         if start_datetime_str:
             if not end_datetime_str:
                 end_datetime_str = '2100-01-01 00:00:00'
-            start = convert_to_utc_datetime(start_datetime_str)
-            end = convert_to_utc_datetime(end_datetime_str)
+            start = convert_to_utc_datetime_with_tz(start_datetime_str)
+            end = convert_to_utc_datetime_with_tz(end_datetime_str)
             with error_handler(self.backend_record):
                 # we use generator to be coherent with other output
                 return (up_id for up_id in
@@ -217,8 +217,8 @@ class SalesforceRestAdapter(BackendAdapter):
             return (x for x in [])
         if not end_datetime_str:
             end_datetime_str = '2100-01-01 00:00:00'
-        start = convert_to_utc_datetime(start_datetime_str)
-        end = convert_to_utc_datetime(end_datetime_str)
+        start = convert_to_utc_datetime_with_tz(start_datetime_str)
+        end = convert_to_utc_datetime_with_tz(end_datetime_str)
         with error_handler(self.backend_record):
             deleted = (rec['id'] for rec in
                        self.sf_type.deleted(start, end)['deletedRecords'])

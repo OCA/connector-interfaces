@@ -24,7 +24,7 @@ import pytz
 from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
 
 
-def convert_to_utc_datetime(datetime_str):
+def convert_to_utc_datetime_with_tz(datetime_str):
     """Convert a naive Odoo datetime string
     into a :py:class:`datetime.datetime` with utc time zone
 

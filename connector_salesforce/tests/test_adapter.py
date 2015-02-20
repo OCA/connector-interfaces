@@ -23,7 +23,7 @@ import datetime
 import pytz
 from mock import MagicMock
 from .common import CommonTest, mock_simple_salesforce
-from ..lib.date_convertion import convert_to_utc_datetime
+from ..lib.date_convertion import convert_to_utc_datetime_with_tz
 from ..unit.rest_api_adapter import SalesforceRestAdapter, error_handler
 from ..unit.exceptions import (SalesforceSessionExpiredError,
                                SalesforceRESTAPIError,
@@ -50,7 +50,7 @@ class SalesforceRestAdapterTest(CommonTest):
     def test_datetime_converter(self):
         """test date utils"""
         naive_date = '2015-12-31 00:00:00'
-        utc_date = convert_to_utc_datetime(naive_date)
+        utc_date = convert_to_utc_datetime_with_tz(naive_date)
         self.assertEqual(
             datetime.datetime(2015, 12, 31, 0, 0, tzinfo=pytz.utc),
             utc_date
