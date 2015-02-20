@@ -23,7 +23,7 @@ from .common import CommonTest, mock_simple_salesforce
 from . import fixture
 
 
-class opportunityImportTest(CommonTest):
+class OpportunityImportTest(CommonTest):
 
     def setUp(self):
         """Setup test using erp as product master"""
