@@ -33,7 +33,8 @@ class AddressMapper(ImportMapper):
             return False
         state_id = self.session.search(
             'res.country.state',
-            [('name', '=', state)]
+            [('name', '=', state)],
+            limit=1,
         )
         if state_id:
             return state_id[0]
