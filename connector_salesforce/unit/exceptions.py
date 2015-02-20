@@ -33,10 +33,9 @@ class SalesforceSecurityError(SalesforceRESTAPIError):
 class SalesforceResponseError(SalesforceRESTAPIError):
     """Map simple_salesforce error to connector error"""
     def __init__(self, sf_error):
+        """Override to store simple_salesforce error"""
         self.sf_error = sf_error
-
-    def __str__(self):
-        return repr(self.sf_error)
+        self.message = repr(sf_error)
 
 
 class SalesforceSessionExpiredError(RetryableJobError):
