@@ -98,7 +98,7 @@ class SalesforceBinder(Binder):
                 'Many record found in backend %s for model %s record_id %s' %
                 (self.backend_record.name, self.model._name, record_id)
             )
-        return sf_id
+        return sf_id[0]
 
     def bind(self, salesforce_id, binding_id):
         """ Create the link between an external id and an Odoo row and
