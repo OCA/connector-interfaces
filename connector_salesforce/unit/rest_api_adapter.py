@@ -212,7 +212,7 @@ class SalesforceRestAdapter(BackendAdapter):
         """
         if not start_datetime_str:
             # Salesforce API as past lookup limitation
-            # An SOQL query shoult be implemented in next release
+            # An SOQL query should be implemented in next release
             # So we return Empty generator
             return (x for x in [])
         if not end_datetime_str:
