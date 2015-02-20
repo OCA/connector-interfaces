@@ -36,7 +36,7 @@ class SalesforceProduct(orm.Model):
                                       ondelete='restrict'),
     }
 
-    _sql_contraints = [
+    _sql_constraints = [
         ('sf_id_uniq', 'unique(backend_id, salesforce_id)',
          'A Product with same Salesforce id already exists')
     ]

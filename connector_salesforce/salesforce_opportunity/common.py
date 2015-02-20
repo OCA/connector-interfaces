@@ -36,7 +36,7 @@ class SalesforceOpportunity(orm.Model):
                                       ondelete='restrict'),
     }
 
-    _sql_contraints = [
+    _sql_constraints = [
         ('sf_id_uniq', 'unique(backend_id, salesforce_id)',
          'A Sale Order with same Salesforce id already exists')
     ]
@@ -58,7 +58,7 @@ class SalesforceOpportunityLineItem(orm.Model):
                                       ondelete='restrict'),
     }
 
-    _sql_contraints = [
+    _sql_constraints = [
         ('sf_id_uniq', 'unique(backend_id, salesforce_id)',
          'A Sale Order Line with same Salesforce id already exists')
     ]
