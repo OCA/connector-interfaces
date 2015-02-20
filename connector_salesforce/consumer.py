@@ -39,7 +39,7 @@ def delay_export(session, model_name, record_id):
         session,
         model_name,
         record.backend_id.id,
-        record.id
+        record_id
     )
 
 
@@ -62,5 +62,5 @@ def delay_deactivate(session, model_name, record_id):
         session,
         model_name,
         record.backend_id.id,
-        record.id
+        record_id
     )
