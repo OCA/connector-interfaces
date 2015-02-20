@@ -27,7 +27,7 @@ class OpportunityImportTest(CommonTest):
 
     def setUp(self):
         """Setup test using erp as product master"""
-        super(opportunityImportTest, self).setUp()
+        super(OpportunityImportTest, self).setUp()
         self.model_name = 'connector.salesforce.opportunity'
         self.imported_model = self.registry(self.model_name)
         self.conn_env = self.get_connector_env(self.model_name)
