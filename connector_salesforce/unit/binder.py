@@ -66,12 +66,13 @@ class SalesforeceBinder(Binder):
         :param binding_id: id of a binding model
         :type binding_id: int
 
-        :return: external code of `binding_id`
+        :return: external code of `binding_id` or None
         """
         sf_record = self.session.read(self.model._name,
                                       binding_id,
                                       ['salesforce_id'])
-        assert sf_record, 'No corresponding binding found'
+        if not sf_record:
+            return None
         return sf_record['salesforce_id']
 
     def bind(self, salesforce_id, binding_id):
