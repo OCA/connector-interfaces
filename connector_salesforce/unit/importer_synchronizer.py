@@ -170,7 +170,6 @@ class SalesforceImportSynchronizer(ImportSynchronizer):
             data = self._map_data_for_update(
                 record_mapper,
                 binding_id=binding_id,
-                backend_record=self.backend_record
             )
             self._validate_data(data)
             self._update(binding_id, data)

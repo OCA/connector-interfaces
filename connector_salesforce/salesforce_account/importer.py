@@ -177,16 +177,15 @@ class SalesforceAccountMapper(AddressMapper, PriceMapper):
     def property_product_pricelist(self, record):
         """Map property pricelist using current backend setting"""
         currency_id = self.get_currency_id(record)
-        backend = self.options['backend_record']
         mapping = {rec.currency_id.id: rec.pricelist_version_id.id
-                   for rec in backend.sf_entry_mapping_ids}
+                   for rec in self.backend_record.sf_entry_mapping_ids}
         price_list_version_id = mapping.get(currency_id)
         if not price_list_version_id:
             raise MappingError(
                 'No pricelist version configuration done for '
                 'currency %s and backend %s' % (
                     record.get('CurrencyIsoCode'),
-                    backend.name
+                    self.backend_record.name
                 )
             )
         price_list_version_record = self.session.browse(

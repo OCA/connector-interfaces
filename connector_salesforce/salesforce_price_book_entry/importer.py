@@ -22,6 +22,7 @@ import logging
 from openerp.addons.connector.exception import MappingError
 from openerp.addons.connector.unit.mapper import mapping, only_create
 from ..backend import salesforce_backend
+from ..unit.binder import SalesforceBinder
 from ..unit.importer_synchronizer import (SalesforceDelayedBatchSynchronizer,
                                           SalesforceDirectBatchSynchronizer,
                                           SalesforceImportSynchronizer,
@@ -57,12 +58,13 @@ class SalesforcePriceBookEntryImporter(SalesforceImportSynchronizer):
         To ensure coherence with porduct and import
         it if required"""
         assert self.salesforce_record
-        with self.session.change_context({'active_test': False}):
-            product_id = self.session.search(
-                'connector.salesforce.product',
-                [('salesforce_id', '=', self.salesforce_record['Product2Id']),
-                 ('backend_id', '=', self.backend_record.id)]
-            )
+        product_binder = self.get_connector_unit_for_model(
+            SalesforceBinder,
+            model='connector.salesforce.product'
+        )
+        product_id = product_binder.to_openerp(
+            self.salesforce_record['Product2Id']
+        )
         if not product_id:
             if self.backend_record.sf_product_master == 'sf':
                 import_record(
@@ -109,16 +111,15 @@ class SalesforcePriceBookEntryMapper(PriceMapper):
         """Retrieve the price version using
         backend configuration"""
         currency_id = self.get_currency_id(record)
-        backend = self.options['backend_record']
         mapping = {rec.currency_id.id: rec.pricelist_version_id.id
-                   for rec in backend.sf_entry_mapping_ids}
+                   for rec in self.backend_record.sf_entry_mapping_ids}
         price_list_version_id = mapping.get(currency_id)
         if not price_list_version_id:
             raise MappingError(
                 'No priceliste version configuration done for '
                 'currency %s and backend %s' % (
                     record.get('CurrencyIsoCode'),
-                    backend.name
+                    self.backend_record.name
                 )
             )
         return {'price_version_id': price_list_version_id}
@@ -138,19 +139,20 @@ class SalesforcePriceBookEntryMapper(PriceMapper):
                 'No product available '
                 'for salesforce record %s ' % record
             )
-        backend = self.options['backend_record']
-        with self.session.change_context({'active_test': False}):
-            bind_product_id = self.session.search(
-                'connector.salesforce.product',
-                [('salesforce_id', '=', sf_product_uuid),
-                 ('backend_id', '=', backend.id)]
-            )
-        if not bind_product_id:
+        product_binder = self.get_connector_unit_for_model(
+            SalesforceBinder,
+            model='connector.salesforce.product',
+        )
+        product_id = product_binder.to_openerp(
+            sf_product_uuid,
+            unwrap=True
+        )
+        if not product_id:
             raise MappingError(
                 'Product is not available in ERP for record %s' % record
             )
         bind_product = self.session.browse(
             'connector.salesforce.product',
-            bind_product_id[0]
+            product_id
         )
         return {'product_id': bind_product.openerp_id.id}

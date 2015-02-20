@@ -69,10 +69,9 @@ class SalesforceProductMapper(ImportMapper):
 
     @mapping
     def product_type(self, record, **kwargs):
-        backend = self.options['backend_record']
         family = record.get('Family')
         mapping = {rec.sf_family: rec.product_type
-                   for rec in backend.sf_product_type_mapping_ids}
+                   for rec in self.backend_record.sf_product_type_mapping_ids}
         product_type = mapping.get(family)
         if not product_type:
             return {}

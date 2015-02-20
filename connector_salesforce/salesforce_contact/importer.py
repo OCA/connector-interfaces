@@ -22,6 +22,7 @@ import logging
 from openerp.addons.connector.exception import MappingError
 from openerp.addons.connector.unit.mapper import mapping, only_create
 from ..backend import salesforce_backend
+from ..unit.binder import SalesforceBinder
 from ..unit.importer_synchronizer import (SalesforceDelayedBatchSynchronizer,
                                           SalesforceDirectBatchSynchronizer,
                                           SalesforceImportSynchronizer,
@@ -41,11 +42,15 @@ class SalesforceContactImporter(SalesforceImportSynchronizer):
         if not it is imported
         """
         assert self.salesforce_record
-        with self.session.change_context({'active_test': False}):
-            account_id = self.session.search(
-                'connector.salesforce.account',
-                [('salesforce_id', '=', self.salesforce_record['AccountId'])]
-            )
+        if not self.salesforce_record['AccountId']:
+            return
+        account_binder = self.get_connector_unit_for_model(
+            SalesforceBinder,
+            model='connector.salesforce.account'
+        )
+        account_id = account_binder.to_openerp(
+            self.salesforce_record['AccountId']
+        )
         if not account_id:
             import_record(
                 self.session,
@@ -130,9 +135,14 @@ class SalesforceContactMapper(AddressMapper):
 
     @mapping
     def parent_id(self, record):
-        parent_id = self.session.search(
-            'connector.salesforce.account',
-            [('salesforce_id', '=', record['AccountId'])]
+        parent_binder = self.get_connector_unit_for_model(
+            SalesforceBinder,
+            model='connector.salesforce.account',
+        )
+        if not record['AccountId']:
+            return
+        parent_id = parent_binder.to_openerp(
+            record['AccountId']
         )
         if not parent_id:
             raise MappingError(
@@ -140,6 +150,6 @@ class SalesforceContactMapper(AddressMapper):
             )
         parent = self.session.browse(
             'connector.salesforce.account',
-            parent_id[0]
+            parent_id
         )
         return {'parent_id': parent.openerp_id.id}
