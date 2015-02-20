@@ -25,7 +25,7 @@ from ..backend import salesforce_backend
 
 
 @salesforce_backend
-class SalesforeceBinder(Binder):
+class SalesforceBinder(Binder):
     """ Manage bindings between Models identifier and Salesforce identifier"""
     _model_name = []
 

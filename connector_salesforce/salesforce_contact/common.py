@@ -19,7 +19,7 @@
 #
 ##############################################################################
 from openerp.osv import orm, fields
-from ..unit.binder import SalesforeceBinder
+from ..unit.binder import SalesforceBinder
 
 
 class SalesforceContact(orm.Model):
@@ -41,7 +41,7 @@ class SalesforceContact(orm.Model):
          'A partner with same Salesforce id already exists')
     ]
 
-SalesforeceBinder._model_name.append('connector.salesforce.contact')
+SalesforceBinder._model_name.append('connector.salesforce.contact')
 
 
 class SalesforceResPartner(orm.Model):

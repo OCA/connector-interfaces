@@ -19,7 +19,7 @@
 #
 ##############################################################################
 from openerp.osv import orm, fields
-from ..unit.binder import SalesforeceBinder
+from ..unit.binder import SalesforceBinder
 
 
 class SalesforceProduct(orm.Model):
@@ -41,4 +41,4 @@ class SalesforceProduct(orm.Model):
          'A Product with same Salesforce id already exists')
     ]
 
-SalesforeceBinder._model_name.append('connector.salesforce.product')
+SalesforceBinder._model_name.append('connector.salesforce.product')

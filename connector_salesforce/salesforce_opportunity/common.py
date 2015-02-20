@@ -19,7 +19,7 @@
 #
 ##############################################################################
 from openerp.osv import orm, fields
-from ..unit.binder import SalesforeceBinder
+from ..unit.binder import SalesforceBinder
 
 
 class SalesforceOpportunity(orm.Model):
@@ -41,7 +41,7 @@ class SalesforceOpportunity(orm.Model):
          'A Sale Order with same Salesforce id already exists')
     ]
 
-SalesforeceBinder._model_name.append('connector.salesforce.opportunity')
+SalesforceBinder._model_name.append('connector.salesforce.opportunity')
 
 
 class SalesforceOpportunityLineItem(orm.Model):
@@ -63,5 +63,5 @@ class SalesforceOpportunityLineItem(orm.Model):
          'A Sale Order Line with same Salesforce id already exists')
     ]
 
-SalesforeceBinder._model_name.append(
+SalesforceBinder._model_name.append(
     'connector.salesforce.opportunity.line.item')
