@@ -163,6 +163,10 @@ class SalesforceExportSynchronizer(ExportSynchronizer):
         """
         self.binding_id = binding_id
         self.binding_record = self._get_record()
+        if not self.binding_record:
+            raise NotImplementedError(
+                'Deactivation of deleted binding is not supported'
+            )
         if force_deactivate or self._to_deactivate():
             self._deactivate()
             return

@@ -225,6 +225,7 @@ Known issues / Roadmap
    without depending on connector ecommerce addons
  - Fix simplesalesforce exception lookup on next release of library
  - Import Quotation must copy the address and store it in deactivate state
+ - Support the usecase of deactivating a deleted binding
  - Battle test password flow and fix it
 
 Credits
