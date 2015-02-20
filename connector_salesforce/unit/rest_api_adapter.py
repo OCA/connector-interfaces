@@ -24,7 +24,8 @@ from functools import wraps
 import logging
 try:
     from simple_salesforce import Salesforce
-    from simple_salesforce import (SalesforceAuthenticationFailed,
+    from simple_salesforce import (SalesforceError,
+                                   SalesforceAuthenticationFailed,
                                    SalesforceExpiredSession)
 except ImportError:
     logger = logging.getLogger('connector_salesforce_rest_adapter')
@@ -73,13 +74,10 @@ def error_handler(backend_record):
             'Token expired and was refreshed job will be retried '
             'or in context of manual action it must be restarted manually'
         )
+    except SalesforceError as exc:
+        raise connector_exception.SalesforceResponseError(exc)
     except Exception as exc:
-        # simple salesforce exception does not derive from common exception
-        if type(exc).__name__.startswith('Salesforce'):
-            # TODO get quota excedded error here
-            raise connector_exception.SalesforceResponseError(exc)
-        else:
-            raise
+        raise
 
 
 class SalesforceRestAdapter(BackendAdapter):
