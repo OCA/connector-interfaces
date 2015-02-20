@@ -71,8 +71,8 @@ def error_handler(backend_record):
         if backend_record.authentication_method == 'oauth2':
             backend_record.refresh_token()
         raise SalesforceSessionExpiredError(
-            'Token expired and was refreshed job will be retried '
-            'or in context of manual action it must be restarted manually'
+            'Token expired and was refreshed job will be retried. '
+            'In case of direct action (no job) it must be restarted manually'
         )
     except SalesforceError as exc:
         raise connector_exception.SalesforceResponseError(exc)
