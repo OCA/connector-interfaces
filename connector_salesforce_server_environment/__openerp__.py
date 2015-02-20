@@ -32,7 +32,7 @@ for connector Salesforce authentication.
 
     salesforce_auth_ + Name of the backend
 
- Default svailable section options are:
+ Default available section options are:
 
  - authentication_method
  - callback_url
