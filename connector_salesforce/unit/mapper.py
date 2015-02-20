@@ -43,7 +43,7 @@ class AddressMapper(ImportMapper):
                 return self.session.create(
                     'res.country.state',
                     {'name': state,
-                     'code': state[0:2],
+                     'code': state[0:3],
                      'country_id': country_id}
                 )
         return False
