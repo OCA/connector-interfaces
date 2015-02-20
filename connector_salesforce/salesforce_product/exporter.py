@@ -41,7 +41,7 @@ class SalesforceProductExporter(SalesforceExportSynchronizer):
         """
         assert self.binding_record
         if not self.binding_record.active or not self.binding_record.sale_ok:
-                return True
+            return True
         return False
 
 
