@@ -43,6 +43,6 @@ class TestAddCheckPoint(common.TransactionCase):
 
     def test_get_environment(self):
         """test get_environment"""
-    	env = get_environment(self.session, self.model_name, self.backend_id)
-    	self.assertEqual(self.model_name, env.model_name)
+        env = get_environment(self.session, self.model_name, self.backend_id)
+        self.assertEqual(self.model_name, env.model_name)
         self.assertEqual(self.session, env.session)

@@ -22,5 +22,4 @@
 import openerp.addons.connector.backend as backend
 from openerp.addons.dns_connector.backend import dns
 
-""" DNSPod Backend """
 dnspod = backend.Backend(parent=dns, version='dnspod')

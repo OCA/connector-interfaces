@@ -21,5 +21,4 @@
 ##############################################################################
 import openerp.addons.connector.backend as backend
 
-""" Generic DNSPod Backend """
 dns = backend.Backend('dns')

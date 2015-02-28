@@ -63,9 +63,11 @@ class DNSBinding(orm.AbstractModel):
         # fields.char because 0 is a valid dnspod ID
         'dns_id': fields.char('ID on other software'),
         # state of the record synchronization with dnspod
-        'state': fields.selection([('draft', 'Draft'), ('done', 'Done'),
-                                   ('exception', 'Exception')], 'State', default="draft",
-                                  help='Confirmed when it succeed otherwise Exception'),
+        'state': fields.selection(
+            [('draft', 'Draft'), ('done', 'Done'),
+             ('exception', 'Exception')], 'State',
+            default="draft",
+            help='Done when succeed otherwise Exception'),
     }
 
 

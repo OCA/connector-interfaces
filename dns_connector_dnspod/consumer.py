@@ -47,7 +47,8 @@ def delete_domain_all_binding(session, model_name, record_id, fields=None):
     model = session.pool.get(model_name)
     record = model.browse(session.cr, session.uid,
                           record_id, context=session.context)
-    export_record(session, record._model._name, record.id, fields=fields, method='unlink')
+    export_record(session, record._model._name, record.id, fields=fields,
+                  method='unlink')
 
 
 @on_record_write(model_names=_MODEL_NAMES_RECORD)
@@ -58,4 +59,5 @@ def write_export_all_bindings(session, model_name, record_id, fields=None):
     model = session.pool.get(model_name)
     record = model.browse(session.cr, session.uid,
                           record_id, context=session.context)
-    export_record(session, record._model._name, record.id, fields=fields, method='write')
+    export_record(session, record._model._name, record.id, fields=fields,
+                  method='write')

@@ -56,7 +56,8 @@ class DNSPodAdapter(DNSAdapter):
         }
         try:
             conn = httplib.HTTPSConnection("dnsapi.cn")
-            conn.request('POST', '/%s' % action, urllib.urlencode(arguments), headers)
+            conn.request(
+                'POST', '/%s' % action, urllib.urlencode(arguments), headers)
         except:
             raise
         response = conn.getresponse()

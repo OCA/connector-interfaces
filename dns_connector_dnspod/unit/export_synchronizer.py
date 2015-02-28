@@ -19,7 +19,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from openerp.addons.dns_connector.unit.export_synchronizer import DNSBaseExporter
+from openerp.addons.dns_connector.unit.export_synchronizer \
+    import DNSBaseExporter
 from openerp.addons.dns_connector.connector import get_environment
 from openerp.addons.connector.queue.job import job
 from openerp.tools.translate import _
@@ -75,7 +76,8 @@ class DNSExporter(DNSBaseExporter):
 
 
 @job
-def export_record(session, model_name, binding_id, fields=None, method='create'):
+def export_record(
+        session, model_name, binding_id, fields=None, method='create'):
     """ Export a record on DNS """
     record = session.browse(model_name, binding_id)
     env = get_environment(session, model_name, record.backend_id.id)

@@ -45,7 +45,8 @@ class DNSPodBackend(models.Model):
 
     @property
     def params(self):
-        return {'format': 'json', 'login_email': self.login, 'login_password': self.password}
+        return {'format': 'json', 'login_email': self.login,
+                'login_password': self.password}
 
     def request(self, action, params, method='POST'):
         """send request to 'dnsapi.cn'"""
@@ -128,8 +129,10 @@ class DNSRecordExportMapper(ExportMapper):
             'login_password': record.domain_id.backend_id.password,
             'domain_id': record.domain_id.dns_id,
             'sub_domain': record.name,
-            'record_type': dict(record._fields['type'].selection(record)).get(record.type),
-            'record_line': dict(record._fields['line'].selection(record)).get(record.line),
+            'record_type':
+            dict(record._fields['type'].selection(record)).get(record.type),
+            'record_line':
+            dict(record._fields['line'].selection(record)).get(record.line),
             'value': record.value,
             'mx': record.mx_priority,
             'ttl': record.ttl,
