@@ -20,9 +20,11 @@
 #
 ##############################################################################
 from openerp import models, fields, api
-from backend import dnspod
-from unit.export_synchronizer import DNSExporter
-from unit.backend_adapter import DNSPodAdapter
+from connector-interfaces.dns_connector_dnspod.backend import dnspod
+from connector-interfaces.dns_connector_dnspod.unit.export_synchronizer \
+    import DNSExporter
+from connector-interfaces.dns_connector_dnspod.unit.backend_adapter \
+    import DNSPodAdapter
 from openerp.addons.connector.unit.mapper import (
     mapping, ExportMapper)
 import httplib
