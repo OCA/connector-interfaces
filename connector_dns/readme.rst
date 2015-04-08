@@ -4,10 +4,8 @@
 Connector Dns
 =====================
 
-This module aims to add more flexibility on product inventory.
-  * Allows to manage your DNSPod domain through Odoo.
+This module aims to allows to manage your DNS domain through Odoo.
 
-Please note that this module re-defines the create and write method of mrp.bom.
 
 Installation
 ============

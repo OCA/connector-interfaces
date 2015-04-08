@@ -51,7 +51,7 @@ class DNSBaseExporter(ExportSynchronizer):
         """
         super(DNSBaseExporter, self).__init__(environment)
         self.binding_id = None
-        self.coswin_id = None
+        self.external_id = None
 
     def _get_openerp_data(self):
         """ Return the raw OpenERP data for ``self.binding_id`` """
@@ -65,10 +65,10 @@ class DNSBaseExporter(ExportSynchronizer):
         self.binding_id = binding_id
         self.binding_record = self._get_openerp_data()
 
-        self.coswin_id = self.binder.to_backend(self.binding_id)
+        self.external_id = self.binder.to_backend(self.binding_id)
         result = self._run(*args, **kwargs)
 
-        self.binder.bind(self.coswin_id, self.binding_id)
+        self.binder.bind(self.external_id, self.binding_id)
         return result
 
     def _run(self):

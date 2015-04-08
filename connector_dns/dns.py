@@ -30,8 +30,8 @@ class DNSBackend(models.Model):
     def _select_version(self):
         return []
 
-    login = fields.Char('Login', help='Provider\'s login.', required=True)
-    password = fields.Char('Password', help='Provider\'s password.',
+    login = fields.Char('Login', help="Provider's login.", required=True)
+    password = fields.Char('Password', help="Provider's password.",
                            required=True)
     state = fields.Selection(
         [('draft', 'Draft'), ('done', 'Done'),
@@ -74,9 +74,9 @@ class DNSRecord(models.Model):
                        required=True)
     domain_id = fields.Many2one(
         'dns.domain', string="Domain", domain="[('state','=','done')]",
-        help="Domain which has already confirmed")
-    type = fields.Selection('type_select_version', string='Record Type')
-    line = fields.Selection('line_select_version', string='Record Line')
+        ondelete='cascade', help="Domain which has already confirmed")
+    type = fields.Selection('_type_select_version', string='Record Type')
+    line = fields.Selection('_line_select_version', string='Record Line')
     value = fields.Text('Value', help="such as IP:200.200.200.200",
                         required=True)
     mx_priority = fields.Integer(string='MX priority', help="scope:1-20",

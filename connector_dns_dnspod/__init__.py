@@ -19,7 +19,6 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-import openerp.addons.connector_dns
 from . import backend
 from . import dnspod
 from . import unit

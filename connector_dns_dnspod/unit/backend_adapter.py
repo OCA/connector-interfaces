@@ -68,7 +68,5 @@ class DNSPodAdapter(DNSAdapter):
             data_json['id'] = data_json['domain']['id']
         elif 'record' in data_json:
             data_json['id'] = data_json['record']['id']
-        if response.status == 200 and int(data_json['status']['code']) == 1:
+        if response.status == 200:
             return data_json
-        else:
-            return None

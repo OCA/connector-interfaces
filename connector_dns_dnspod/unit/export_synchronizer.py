@@ -22,8 +22,8 @@
 from openerp.addons.connector_dns.unit.export_synchronizer \
     import DNSBaseExporter
 from openerp.addons.connector_dns.connector import get_environment
-from openerp.addons.connector.queue.job import job
 from openerp.tools.translate import _
+from openerp.addons.connector.queue.job import job
 
 
 class DNSExporter(DNSBaseExporter):
@@ -47,20 +47,20 @@ class DNSExporter(DNSBaseExporter):
             return _('Nothing to export.')
         if method == 'create':
             result = self._create(record)
-            if result:
-                self.coswin_id = result['id']
+            if int(result['status']['code']) == 1:
+                self.external_id = result['id']
+            else:
+                return result['status']['message']
         elif method == 'unlink':
-            if 'dns.record' in self._model_name:
-                record['record_id'] = self.binding_record.dns_id
-            elif 'dns.domain' in self._model_name:
-                result = self.binding_record.record_ids.unlink()
-            self.coswin_id = self._unlink(record)
+            self.external_id = self._unlink(record)
         elif method == 'write':
             record['record_id'] = self.binding_record.dns_id
             result = self._update(record)
-            if result:
-                self.coswin_id = result['id']
-        return _('Record exported in the CSV on DNS.')
+            if int(result['status']['code']) == 1:
+                self.external_id = result['id']
+            else:
+                return result['status']['message']
+        return _('Record successfully exported in DNSPod.')
 
     def _create(self, data):
         """ Create the DNS record """

@@ -19,21 +19,12 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from openerp.osv import models, orm, fields
+from openerp import models, fields
 from openerp.addons.connector.connector import (Environment,
                                                 install_in_connector)
 from openerp.addons.connector.checkpoint import checkpoint
 
 install_in_connector()
-
-
-class DNSConnectorInstalled(orm.AbstractModel):
-    """Empty model used to know if the module is installed on the
-    database.
-
-    If the model is in the registry, the module is installed.
-    """
-    _name = 'connector_dns.installed'
 
 
 def get_environment(session, model_name, backend_id):
@@ -53,20 +44,19 @@ class DNSBinding(models.Model):
     _inherit = 'external.binding'
     _description = 'dns Binding (abstract)'
 
-    # 'openerp_id': openerp-side id must be declared in concrete model
     backend_id = fields.Many2one(
         'dns.backend',
         String='DNS Backend',
         required=True,
-        ondelete='restrict'),
+        ondelete='restrict')
     # fields.char because 0 is a valid dnspod ID
-    dns_id = fields.Char('ID on other software'),
+    dns_id = fields.Char('ID on other software')
     # state of the record synchronization with dnspod
     state = fields.Selection(
         [('draft', 'Draft'), ('done', 'Done'),
          ('exception', 'Exception')], 'State',
         default="draft",
-        help='Done when succeed otherwise Exception'),
+        help='Done when succeed otherwise Exception')
 
 
 def add_checkpoint(session, model_name, record_id, backend_id):

@@ -25,8 +25,6 @@ from openerp.addons.connector.session import ConnectorSession
 from ..connector import get_environment
 
 
-@common.at_install(False)
-@common.post_install(True)
 class TestAddCheckPoint(common.TransactionCase):
     """
     test generic Backend

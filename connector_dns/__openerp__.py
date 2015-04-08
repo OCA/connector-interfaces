@@ -26,9 +26,6 @@
  'author': 'Elico Corp,Odoo Community Association (OCA)',
  'license': 'AGPL-3',
  'website': 'https://www.elico-corp.com',
- 'description': """
-Allows to manage your DNSPod domain through Odoo.
-""",
  'images': [],
  'demo': [],
  'data': ['dns_view.xml', 'dns_menu.xml'],

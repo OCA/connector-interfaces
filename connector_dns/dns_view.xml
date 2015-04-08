@@ -20,7 +20,6 @@
             </field>
         </record>
 
-
         <record id="dns_backend_form" model="ir.ui.view">
             <field name="name">DNS Backend form</field>
             <field name="model">dns.backend</field>
@@ -65,7 +64,6 @@
                 </tree>
             </field>
         </record>
-
 
         <record id="dns_domain_form" model="ir.ui.view">
             <field name="name">DNS domain form</field>
@@ -126,7 +124,6 @@
                 </tree>
             </field>
         </record>
-
 
         <record id="dns_record_form" model="ir.ui.view">
             <field name="name">DNS Record form</field>

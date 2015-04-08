@@ -23,8 +23,6 @@ import openerp.tests.common as common
 from openerp.addons.connector.backend import Backend
 
 
-@common.at_install(False)
-@common.post_install(True)
 class TestBackend(common.TransactionCase):
     """
     test generic Backend

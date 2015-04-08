@@ -19,12 +19,10 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from openerp import models, fields, api
+from openerp import models, api
 from .backend import dnspod
-from .unit.export_synchronizer \
-    import DNSExporter
-from .unit.backend_adapter \
-    import DNSPodAdapter
+from .unit.export_synchronizer import DNSExporter
+from .unit.backend_adapter import DNSPodAdapter
 from openerp.addons.connector.unit.mapper import (
     mapping, ExportMapper)
 import httplib
@@ -41,7 +39,7 @@ class DNSPodBackend(models.Model):
         res.append(('dnspod', 'dnspod'))
         return res
 
-    @property
+    @api.multi
     def params(self):
         return {'format': 'json', 'login_email': self.login,
                 'login_password': self.password}
@@ -98,10 +96,6 @@ class DNSPodRecord(models.Model):
                ('Invisible URL', '隐现URL')]
         return res
 
-    # type = fields.Selection(line_select_version, default='A')
-
-    # line = fields.Selection(type_select_version, default='A')
-
 
 @dnspod
 class DNSRecordExport(DNSExporter):
@@ -121,20 +115,23 @@ class DNSRecordExportMapper(ExportMapper):
 
     @mapping
     def default(self, record):
-        return {
+        result = {
             'format': 'json',
             'login_email': record.domain_id.backend_id.login,
             'login_password': record.domain_id.backend_id.password,
             'domain_id': record.domain_id.dns_id,
             'sub_domain': record.name,
             'record_type':
-            dict(record._fields['type'].selection(record)).get(record.type),
+            dict(record._fields['type']._column_selection(
+                record)).get(record.type),
             'record_line':
-            dict(record._fields['line'].selection(record)).get(record.line),
+            dict(record._fields['line']._column_selection(
+                 record)).get(record.line),
             'value': record.value,
             'mx': record.mx_priority,
             'ttl': record.ttl,
         }
+        return result
 
 
 @dnspod
