@@ -19,17 +19,18 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from openerp.addons.connector.connector import install_in_connector
-from openerp.addons.dns_connector.connector import DNSConnectorInstalled
-
-
-install_in_connector()
-
-
-class DNSConnectorDnspodInstalled(DNSConnectorInstalled):
-    """Empty model used to know if the module is installed on the
-    database.
-
-    If the model is in the registry, the module is installed.
-    """
-    _name = 'dns_connector_dnspod.installed'
+{'name': 'DNSpod connector',
+ 'version': '0.1',
+ 'category': 'Connector',
+ 'depends': ['connector_dns'],
+ 'author': 'Elico Corp,Odoo Community Association (OCA)',
+ 'license': 'AGPL-3',
+ 'website': 'https://www.elico-corp.com',
+ 'description': """
+Allows to manage your DNSPod domain through Odoo.
+""",
+ 'images': [],
+ 'demo': [],
+ 'data': [],
+ 'installable': True,
+ 'application': False}

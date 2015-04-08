@@ -19,18 +19,9 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-{'name': 'DNS connector',
- 'version': '0.1',
- 'category': '',
- 'depends': ['connector'],
- 'author': 'Elico Corp',
- 'license': 'AGPL-3',
- 'website': 'https://www.elico-corp.com',
- 'description': """
-Allows to manage your DNSPod domain through Odoo.
-""",
- 'images': [],
- 'demo': [],
- 'data': ['dns_view.xml', 'dns_menu.xml'],
- 'installable': True,
- 'application': False}
+import openerp.addons.connector_dns
+from . import backend
+from . import dnspod
+from . import unit
+from . import consumer
+from . import connector

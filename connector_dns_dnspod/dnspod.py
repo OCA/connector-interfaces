@@ -35,15 +35,11 @@ import json
 class DNSPodBackend(models.Model):
     _inherit = 'dns.backend'
 
-    def select_version(self):
+    def _select_version(self):
         """return version selection"""
         res = []
         res.append(('dnspod', 'dnspod'))
         return res
-
-    version = fields.Selection(select_version, string='Service Provider',
-                               help='the service provider such as dnspod',
-                               required=True)
 
     @property
     def params(self):
@@ -90,21 +86,21 @@ class DNSPodDomain(models.Model):
 class DNSPodRecord(models.Model):
     _inherit = 'dns.record'
 
-    def type_select_version(self):
+    def _type_select_version(self):
         res = [('A', '默认'), ('B', '电信'), ('C', '联通'),
                ('D', '教育网'), ('E', '百度'), ('F', '搜索引擎')]
         return res
 
-    def line_select_version(self):
+    def _line_select_version(self):
         res = [('A', 'A'), ('CNAME', 'CNAME'), ('MX', 'MX'),
                ('TXT', 'TXT'), ('NS', 'NS'), ('AAAA', 'AAAA'),
                ('SRV', 'SRV'), ('Visibile URL', '显性URL'),
                ('Invisible URL', '隐现URL')]
         return res
 
-    type = fields.Selection(line_select_version, default='A')
+    # type = fields.Selection(line_select_version, default='A')
 
-    line = fields.Selection(type_select_version, default='A')
+    # line = fields.Selection(type_select_version, default='A')
 
 
 @dnspod

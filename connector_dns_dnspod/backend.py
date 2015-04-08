@@ -19,9 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-import openerp.addons.dns_connector
-from . import backend
-from . import dnspod
-from . import unit
-from . import consumer
-from . import connector
+import openerp.addons.connector.backend as backend
+from openerp.addons.connector_dns.backend import dns
+
+dnspod = backend.Backend(parent=dns, version='dnspod')

@@ -19,11 +19,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-{'name': 'DNSpod connector',
+{'name': 'DNS connector',
  'version': '0.1',
- 'category': '',
- 'depends': ['dns_connector'],
- 'author': 'Elico Corp',
+ 'category': 'Connector',
+ 'depends': ['connector'],
+ 'author': 'Elico Corp,Odoo Community Association (OCA)',
  'license': 'AGPL-3',
  'website': 'https://www.elico-corp.com',
  'description': """
@@ -31,6 +31,6 @@ Allows to manage your DNSPod domain through Odoo.
 """,
  'images': [],
  'demo': [],
- 'data': [],
+ 'data': ['dns_view.xml', 'dns_menu.xml'],
  'installable': True,
  'application': False}

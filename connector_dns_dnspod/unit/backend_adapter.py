@@ -20,7 +20,7 @@
 #
 ##############################################################################
 
-from openerp.addons.dns_connector.unit.backend_adapter import DNSAdapter
+from openerp.addons.connector_dns.unit.backend_adapter import DNSAdapter
 import urllib
 import httplib
 import json

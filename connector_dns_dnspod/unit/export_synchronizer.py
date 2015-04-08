@@ -19,9 +19,9 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from openerp.addons.dns_connector.unit.export_synchronizer \
+from openerp.addons.connector_dns.unit.export_synchronizer \
     import DNSBaseExporter
-from openerp.addons.dns_connector.connector import get_environment
+from openerp.addons.connector_dns.connector import get_environment
 from openerp.addons.connector.queue.job import job
 from openerp.tools.translate import _
 

@@ -19,7 +19,17 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-import openerp.addons.connector.backend as backend
-from openerp.addons.dns_connector.backend import dns
+from openerp.addons.connector.connector import install_in_connector
+from openerp.addons.connector_dns.connector import DNSConnectorInstalled
 
-dnspod = backend.Backend(parent=dns, version='dnspod')
+
+install_in_connector()
+
+
+class DNSConnectorDnspodInstalled(DNSConnectorInstalled):
+    """Empty model used to know if the module is installed on the
+    database.
+
+    If the model is in the registry, the module is installed.
+    """
+    _name = 'connector_dns_dnspod.installed'
