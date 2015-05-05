@@ -18,7 +18,7 @@
 #
 ##############################################################################
 
-from openerp.osv import orm, fields
+from openerp import models, api
 from .abstract_task import abstract_task
 
 from base64 import b64decode
@@ -40,10 +40,10 @@ class table_row_import(abstract_task):
 
         includes_header = config.get('includes_header', False)
 
-        f = self.session.browse('impexp.file', file_id)
         lineno = 0
         header = None
-        rows = self._row_generator(b64decode(f.attachment_id.datas),
+        file = self.session.env['impexp.file'].browse(file_id)
+        rows = self._row_generator(b64decode(file.attachment_id.datas),
                                    config=config)
         for row in rows:
             lineno += 1
@@ -59,12 +59,12 @@ class table_row_import(abstract_task):
             chunk_id = self.session.create('impexp.chunk',
                                            {'name': name,
                                             'data': simplejson.dumps(data),
-                                            'file_id': f.id})
+                                            'file_id': file.id})
             self.run_successor_tasks(chunk_id=chunk_id, async=async, **kwargs)
             if lineno % 1000 == 0:
                 _logger.info('Created %d chunks', lineno)
 
-        self.session.write('impexp.file', f.id, {'state': 'done'})
+        file.write({'state': 'done'})
 
 
 class csv_import(table_row_import):
@@ -78,18 +78,13 @@ class csv_import(table_row_import):
         return csv.reader(data)
 
 
-class csv_import_task(orm.Model):
+class csv_import_task(models.Model):
     _inherit = 'impexp.task'
 
-    def _get_available_tasks(self, cr, uid, context=None):
-        return super(csv_import_task, self) \
-            ._get_available_tasks(cr, uid, context=context) \
-            + [('csv_import', 'CSV Import')]
-
-    _columns = {
-        'task': fields.selection(_get_available_tasks, string='Task',
-                                 required=True),
-    }
+    @api.model
+    def _get_available_tasks(self):
+        return super(csv_import_task, self)._get_available_tasks() \
+               + [('csv_import', 'CSV Import')]
 
     def csv_import_class(self):
         return csv_import

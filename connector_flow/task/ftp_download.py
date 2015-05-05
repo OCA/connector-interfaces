@@ -18,7 +18,8 @@
 #
 ##############################################################################
 
-from openerp.osv import orm, fields
+from openerp import models, api
+
 from .abstract_task import abstract_task
 import ftputil
 import ftputil.session
@@ -98,18 +99,13 @@ class ftp_download(abstract_task):
                         self._source_name(move_directory, ftpfile))
 
 
-class ftp_download_task(orm.Model):
+class ftp_download_task(models.Model):
     _inherit = 'impexp.task'
 
-    def _get_available_tasks(self, cr, uid, context=None):
-        return super(ftp_download_task, self) \
-            ._get_available_tasks(cr, uid, context=context) \
-            + [('ftp_download', 'FTP Download')]
-
-    _columns = {
-        'task': fields.selection(_get_available_tasks, string='Task',
-                                 required=True),
-    }
+    @api.model
+    def _get_available_tasks(self):
+        return super(ftp_download_task, self)._get_available_tasks() \
+               + [('ftp_download', 'FTP Download')]
 
     def ftp_download_class(self):
         return ftp_download

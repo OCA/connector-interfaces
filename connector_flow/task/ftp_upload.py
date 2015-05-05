@@ -18,7 +18,7 @@
 #
 ##############################################################################
 
-from openerp.osv import orm, fields
+from openerp import models, api
 from .abstract_task import abstract_task
 from base64 import b64decode
 import ftputil
@@ -63,24 +63,18 @@ class ftp_upload(abstract_task):
                 self._handle_new_target(ftp_conn, target_name, filedata)
 
     def run(self, config=None, file_id=None, async=True):
-        f = self.session.pool.get('impexp.file') \
-                .browse(self.session.cr, self.session.uid, file_id)
+        f = self.session.env['impexp.file'].browse(file_id)
         self._upload_file(config, f.attachment_id.datas_fname,
                           b64decode(f.attachment_id.datas))
 
 
-class ftp_upload_task(orm.Model):
+class ftp_upload_task(models.Model):
     _inherit = 'impexp.task'
 
-    def _get_available_tasks(self, cr, uid, context=None):
-        return super(ftp_upload_task, self) \
-            ._get_available_tasks(cr, uid, context=context) \
-            + [('ftp_upload', 'FTP Upload')]
-
-    _columns = {
-        'task': fields.selection(_get_available_tasks, string='Task',
-                                 required=True),
-    }
+    @api.model
+    def _get_available_tasks(self):
+        return super(ftp_upload_task, self)._get_available_tasks() \
+               + [('ftp_upload', 'FTP Upload')]
 
     def ftp_upload_class(self):
         return ftp_upload
