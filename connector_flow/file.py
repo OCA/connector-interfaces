@@ -18,24 +18,21 @@
 #
 ##############################################################################
 
-from openerp.osv import orm, fields
+from openerp import models, fields, api
 
 
-class impexp_file(orm.Model):
+class impexp_file(models.Model):
     _name = 'impexp.file'
     _description = 'Wrapper for a file to be imported/exported'
 
-    _columns = {
-        'attachment_id': fields.many2one('ir.attachment', 'Attachment',
-                                         required=True),
-        'task_id': fields.many2one('impexp.task', 'Task', required=True),
-        'state': fields.selection([('new', 'New'),
-                                   ('failed', 'Failed'),
-                                   ('done', 'Done')],
-                                  'State',
-                                  required=True),
-    }
+    @api.model
+    def _states(self):
+        return [('new', 'New'),
+                ('failed', 'Failed'),
+                ('done', 'Done')]
 
-    _defaults = {
-        'state': 'new',
-    }
+    attachment_id = fields.Many2one('ir.attachment', string='Attachment',
+                                    required=True)
+    task_id = fields.Many2one('impexp.task', string='Task', required=True)
+    state = fields.Selection(string='State', selection='_states',
+                             default='new', required=True)

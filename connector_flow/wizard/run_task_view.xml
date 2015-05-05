@@ -10,7 +10,7 @@
                 <form string="Task Form" version="7.0">
                     <field name="state" invisible="1"/>
                     <group states="input">
-                        <field name="flow_id" on_change="onchange_flow(flow_id)"/>
+                        <field name="flow_id"/>
                         <field name="task_id"/>
                         <field name="datas" filename="datas_fname" />
                         <field name="datas_fname" invisible="1"/>

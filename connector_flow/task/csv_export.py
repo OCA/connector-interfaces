@@ -18,7 +18,7 @@
 #
 ##############################################################################
 
-from openerp.osv import orm, fields
+from openerp import models, api
 from .abstract_task import abstract_chunk_read_task
 from cStringIO import StringIO
 
@@ -52,18 +52,13 @@ class csv_export(abstract_chunk_read_task):
         return file_id
 
 
-class csv_export_task(orm.Model):
+class csv_export_task(models.Model):
     _inherit = 'impexp.task'
 
-    def _get_available_tasks(self, cr, uid, context=None):
-        return super(csv_export_task, self) \
-            ._get_available_tasks(cr, uid, context=context) \
-            + [('csv_export', 'CSV Export')]
-
-    _columns = {
-        'task': fields.selection(_get_available_tasks, string='Task',
-                                 required=True),
-    }
+    @api.model
+    def _get_available_tasks(self):
+        return super(csv_export_task, self)._get_available_tasks() \
+               + [('csv_export', 'CSV Export')]
 
     def csv_export_class(self):
         return csv_export

@@ -18,26 +18,23 @@
 #
 ##############################################################################
 
-from openerp.osv import orm, fields
+from openerp import models, fields, api
 
 
-class imp_exp_chunk(orm.Model):
+class imp_exp_chunk(models.Model):
     _name = 'impexp.chunk'
     _description = 'Structured (parsed) data from a file' +\
                    ' to be imported/exported'
 
-    _columns = {
-        'file_id': fields.many2one('impexp.file', 'File'),
-        'name': fields.char('Name', required=True),
-        'data': fields.text('Data', required=True),
-        'task_id': fields.related('file_id', 'task_id', 'Related Task'),
-        'state': fields.selection([('new', 'New'),
-                                   ('failed', 'Failed'),
-                                   ('done', 'Done')],
-                                  'State',
-                                  required=True),
-    }
+    @api.model
+    def _states(self):
+        return [('new', 'New'),
+                ('failed', 'Failed'),
+                ('done', 'Done')]
 
-    _defaults = {
-        'state': 'new',
-    }
+    file_id = fields.Many2one('impexp.file', string='File')
+    name = fields.Char(string='Name', required=True)
+    data = fields.Text(string='Data', required=True)
+    task_id = fields.Many2one(string='Related Task', related='file_id.task_id')
+    state = fields.Selection(string='State', selection='_states', default='new')
+

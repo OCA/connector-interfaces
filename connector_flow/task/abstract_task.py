@@ -19,7 +19,7 @@
 ##############################################################################
 
 from openerp.addons.connector.session import ConnectorSession
-from openerp.tools.translate import _
+from openerp import _
 import simplejson
 from base64 import b64encode, b64decode
 
@@ -31,8 +31,7 @@ class abstract_task(object):
         self._id = ids[0]
 
     def run_task(self, task_id, **kwargs):
-        return self.session.pool.get('impexp.task') \
-            .do_run(self.session.cr, self.session.uid, [task_id], **kwargs)
+        return self.session.env['impexp.task'].browse(task_id).do_run(**kwargs)
 
     def related_action(self, job=None, **kwargs):
         """Overwrite this method to add a related action function
@@ -44,35 +43,29 @@ class abstract_task(object):
         raise Exception("Not Implemented")
 
     def run_successor_tasks(self, **kwargs):
-        transition_ids = self.session.search('impexp.task.transition',
-                                             [('task_from_id', '=',
-                                               self._id)])
-        successor_ids = self.session.read('impexp.task.transition',
-                                          transition_ids,
-                                          ['task_to_id'])
+        successors = self.session.env['impexp.task.transition'].\
+            search_read([('task_from_id', '=', self._id)], ['task_to_id'])
         retval = None
-        for trans in successor_ids:
-            retval = self.run_task(trans['task_to_id'][0], **kwargs)
+        for succ in successors:
+            retval = self.run_task(succ['task_to_id'][0], **kwargs)
         return retval
 
     def create_file(self, filename, data):
-        ir_attachment_id = self.session.create(
-            'ir.attachment',
-            {'name': filename,
-             'datas': b64encode(data),
-             'datas_fname': filename})
-        file_id = self.session.create(
-            'impexp.file',
-            {'attachment_id': ir_attachment_id,
-             'task_id': self._id,
-             'state': 'done'})
-        return file_id
+        ir_attachment_id = self.session.env['ir.attachment'].\
+            create({'name': filename,
+                    'datas': b64encode(data),
+                    'datas_fname': filename})
+        file_id = self.session.env['impexp.file'].\
+            create({'attachment_id': ir_attachment_id.id,
+                    'task_id': self._id,
+                    'state': 'done'})
+        return file_id.id
 
     def load_file(self, file_id):
-        f = self.session.browse('impexp.file', file_id)
-        if not f.attachment_id.datas:
-            return None
-        return b64decode(f.attachment_id.datas)
+        f = self.session.env['impexp.file'].browse(file_id)
+        if f.attachment_id.datas:
+            return b64decode(f.attachment_id.datas)
+        return None
 
 
 def action_open_chunk(chunk_id):
@@ -91,10 +84,9 @@ class abstract_chunk_read_task(abstract_task):
     """Task that reads (and processes) an existing chunk of data"""
 
     def run(self, chunk_id=None, **kwargs):
-        chunk = self.session.read('impexp.chunk',
-                                  chunk_id,
-                                  ['data'])['data']
-        kwargs['chunk_data'] = simplejson.loads(chunk)
+        chunk = self.session.env['impexp.chunk'].browse(chunk_id)
+        chunk_data = chunk.data
+        kwargs['chunk_data'] = simplejson.loads(chunk_data)
         new_state = 'failed'
         result = None
         try:
@@ -103,7 +95,7 @@ class abstract_chunk_read_task(abstract_task):
         except:
             raise
         finally:
-            self.session.write('impexp.chunk', chunk_id, {'state': new_state})
+            chunk.write({'state': new_state})
         return result
 
     def read_chunk(self, **kwargs):
@@ -121,9 +113,9 @@ class abstract_chunk_write_task(abstract_task):
     """Task that writes (and feeds) data as a chunk"""
     def write_and_run_chunk(self, chunk_data, chunk_name,
                             async=True, **kwargs):
-        chunk_id = self.session.create('impexp.chunk',
-                                       {'name': chunk_name,
-                                        'data': simplejson.dumps(chunk_data)})
-        return self.run_successor_tasks(chunk_id=chunk_id,
+        chunk_id = self.session.env['impexp.chunk'].\
+            create({'name': chunk_name,
+                    'data': simplejson.dumps(chunk_data)})
+        return self.run_successor_tasks(chunk_id=chunk_id.id,
                                         async=async,
                                         **kwargs)

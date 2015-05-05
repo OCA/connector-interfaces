@@ -18,7 +18,8 @@
 #
 ##############################################################################
 
-from openerp.osv import orm, fields
+from openerp import models, fields, api, exceptions
+
 from openerp.addons.connector.queue.job import job, related_action
 from openerp.addons.connector.session import ConnectorSession
 from ast import literal_eval
@@ -38,132 +39,123 @@ def run_task(session, model_name, ids, **kwargs):
         .run_task(session.cr, session.uid, ids, **kwargs)
 
 
-class impexp_task_transition(orm.Model):
+class impexp_task_transition(models.Model):
     _name = 'impexp.task.transition'
     _description = 'Transition between tasks'
 
-    def _get_available_tasks(self, cr, uid, context=None):
+    @api.model
+    def _get_available_tasks(self):
         return []
 
-    _columns = {
-        'task_from_id': fields.many2one('impexp.task',
-                                        'Output-producing Task'),
-        'task_to_id': fields.many2one('impexp.task',
-                                      'Input-consuming Task'),
-    }
+    task_from_id = fields.Many2one('impexp.task', string='Output-producing Task')
+    task_to_id = fields.Many2one('impexp.task', string='Input-consuming Task')
 
 
-class impexp_task_flow(orm.Model):
+class impexp_task_flow(models.Model):
     _name = 'impexp.task.flow'
     _description = 'A flow of tasks that are connected by transitions'
 
-    _columns = {
-        'name': fields.char('Name', required=True),
-        'task_ids': fields.one2many('impexp.task', 'flow_id',
-                                    'Tasks in Flow')
-    }
+    name = fields.Char(string='Name', required=True)
+    task_ids = fields.One2many('impexp.task', 'flow_id', string='Tasks in Flow')
 
 
-class impexp_task(orm.Model):
+class impexp_task(models.Model):
     _name = 'impexp.task'
     _description = 'A wrapper class for an import/export task'
 
-    def _get_available_tasks(self, cr, uid, context=None):
+    @api.model
+    def _get_available_tasks(self):
         return []
 
-    def _get_available_types(self, cr, uid, context=None):
-        return [('file', 'File'), ('chunk', 'Chunk')]
+    @api.model
+    def _get_available_types(self):
+        return [('file', 'File'),
+                ('chunk', 'Chunk')]
 
-    _columns = {
-        'name': fields.char('Name', required=True),
-        'task': fields.selection(_get_available_tasks, string='Task'),
-        'config': fields.text('Configuration'),
-        'last_start': fields.datetime('Starting Time of the Last Run'),
-        'last_finish': fields.datetime('Finishing Time of'
-                                       'the Last Successful Run'),
-        'max_retries': fields.integer('Maximal Number of Re-tries'
-                                      ' If Run Asynchronously',
-                                      required=True),
-        'flow_id': fields.many2one('impexp.task.flow', 'Task Flow'),
-        'transitions_out_ids': fields.one2many('impexp.task.transition',
-                                               'task_from_id',
-                                               'Outgoing Transitions'),
-        'transitions_in_ids': fields.one2many('impexp.task.transition',
-                                              'task_to_id',
-                                              'Incoming Transitions'),
-        'flow_start': fields.boolean('Start of a Task Flow'),
-    }
+    name = fields.Char(string='Name', required=True)
+    task = fields.Selection(selection='_get_available_tasks', string='Task')
+    config = fields.Text(string='Configuration')
+    last_start = fields.Datetime(string='Starting Time of the Last Run')
+    last_finish = fields.Datetime(string='Finishing Time of the '
+                                        'Last Successful Run')
+    max_retries = fields.Integer(string='Maximal Number of Re-tries'
+                                        ' If Run Asynchronously',
+                                 required=True, default=1)
+    flow_id = fields.Many2one('impexp.task.flow', string='Task Flow')
+    transitions_out_ids = fields.One2many('impexp.task.transition',
+                                          'task_from_id',
+                                          string='Outgoing Transitions')
+    transitions_in_ids = fields.One2many('impexp.task.transition',
+                                         'task_to_id',
+                                         string='Incoming Transitions')
+    flow_start = fields.Boolean(string='Start of a Task Flow')
 
-    _defaults = {
-        'max_retries': 1,
-    }
-
-    def _check_unique_flow_start(self, cr, uid, ids, context=None):
+    @api.one
+    @api.constrains('flow_start', 'flow_id')
+    def _check_unique_flow_start(self):
         """Check that there is at most one task that starts the
            flow in a task flow"""
-        for task in self.browse(cr, uid, ids, context=context):
-            domain = [('flow_id', '=', task.flow_id.id),
-                      ('flow_start', '=', True)]
-            flow_start_ids = self.search(cr, uid, domain)
-            if len(flow_start_ids) > 1:
-                return False
-        return True
+        if self.flow_start:
+            flow_start_count = self.search_count([('flow_id', '=', self.flow_id.id),
+                                                  ('flow_start', '=', True)])
+            if 1 < flow_start_count:
+                raise exceptions.\
+                    ValidationError('The start of a task flow has to be unique')
 
-    _constraints = [
-        (_check_unique_flow_start, 'The start of a task flow has to be unique',
-         ['flow_id', 'flow_start'])
-    ]
-
-    def _config(self, cr, uid, ids, context=None):
+    @api.multi
+    def _config(self):
         """Parse task configuration"""
-        config = self.read(cr, uid, ids, ['config'])[0]['config']
+        self.ensure_one()
+        config = self.config
         if config:
             return literal_eval(config)
         return {}
 
-    def do_run(self, cr, uid, task_ids, context=None, async=True, **kwargs):
+    @api.multi
+    def do_run(self, async=True, **kwargs):
+        self.ensure_one()
         if async:
             method = run_task.delay
-            assert len(task_ids) == 1
-            task_data = self.read(cr, uid, task_ids[0],
-                                  ['name', 'max_retries'])
-            kwargs.update({'description': task_data['name'],
-                           'max_retries': task_data['max_retries']})
+            kwargs.update({'description': self.name,
+                           'max_retries': self.max_retries})
         else:
             method = run_task
-        result = method(ConnectorSession(cr, uid, context=context),
-                        self._name, task_ids, async=async, **kwargs)
+        result = method(ConnectorSession(self.env.cr,
+                                         self.env.uid,
+                                         context=self.env.context),
+                        self._name, self.ids, async=async, **kwargs)
         # If we run asynchronously, we ignore the result
         #  (which is the UUID of the job in the queue).
         if not async:
             return result
 
-    def do_run_flow(self, cr, uid, flow_id,
-                    context=None, async=True, **kwargs):
-        flow_obj = self.pool.get('impexp.task.flow')
-        flow = flow_obj.browse(cr, uid, flow_id)
-        task_id = False
+    @api.model
+    def do_run_flow(self, flow_id, **kwargs):
+        flow = self.env['impexp.task.flow'].browse(flow_id)
+        flow.ensure_one()
+        start_task = False
         for task in flow.task_ids:
             if task.flow_start:
-                task_id = task.id
-        if not task_id:
+                start_task = task
+        if not start_task:
             raise Exception('Flow %d has no start' % flow_id)
-        return self.do_run(cr, uid, [task_id],
-                           context=context, async=True, **kwargs)
+        return start_task.do_run(**kwargs)
 
-    def get_task_instance(self, cr, uid, ids):
-        task_list = self.browse(cr, uid, ids)
-        assert len(task_list) == 1
-
-        task_method = task_list[0].task
+    @api.multi
+    def get_task_instance(self):
+        self.ensure_one()
+        task_method = self.task
         task_class = getattr(self, task_method + '_class')()
-        return task_class(cr, uid, ids)
+        return task_class(self.env.cr, self.env.uid, self.ids)
 
-    def run_task(self, cr, uid, ids, **kwargs):
-        task_instance = self.get_task_instance(cr, uid, ids)
-        config = self._config(cr, uid, ids)
+    @api.multi
+    def run_task(self, **kwargs):
+        self.ensure_one()
+        task_instance = self.get_task_instance()
+        config = self._config()
         return task_instance.run(config=config, **kwargs)
 
-    def related_action(self, cr, uid, job=None, **kwargs):
-        task_instance = self.get_task_instance(cr, uid, job.args[1])
+    @api.model
+    def related_action(self, job=None, **kwargs):
+        task_instance = self.browse(job.args[1]).get_task_instance()
         return task_instance.related_action(job=job, **kwargs)
