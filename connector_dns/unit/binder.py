@@ -98,11 +98,8 @@ class DNSPodModelBinder(DNSPodBinder):
             state = 'done'
         else:
             state = 'exception'
-        self.environment.model.write(
-            self.session.cr,
-            self.session.uid,
-            binding_id,
+        binding = self.model.browse(binding_id)
+        binding.write(
             {'dns_id': str(external_id),
              'state': state,
-             'sync_date': now_fmt},
-            context=context)
+             'sync_date': now_fmt})

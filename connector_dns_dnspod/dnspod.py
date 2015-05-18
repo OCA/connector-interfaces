@@ -50,10 +50,8 @@ class DNSPodBackend(models.Model):
             "Content-type": "application/x-www-form-urlencoded",
             "Accept": "text/json"
         }
-
         conn = httplib.HTTPSConnection("dnsapi.cn")
         conn.request(method, '/' + action, urllib.urlencode(params), headers)
-
         response = conn.getresponse()
         data = response.read()
         conn.close()
@@ -64,7 +62,7 @@ class DNSPodBackend(models.Model):
 
     @api.one
     def button_connect(self):
-        params = self.params
+        params = self.params()
         data = self.request('Domain.List', params)
         data = json.loads(data)
         if int(data['status']['code']) != -1:
