@@ -49,7 +49,6 @@ A very brief tutorial can be found at http://blog.initos.com/?p=1220
     'website': 'http://www.initos.com',
     'depends': [
         'connector',
-        'fix_bug_1316948',
     ],
     'external_dependencies': {
         'python': ['ftputil'],
