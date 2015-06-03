@@ -43,10 +43,6 @@ class impexp_task_transition(models.Model):
     _name = 'impexp.task.transition'
     _description = 'Transition between tasks'
 
-    @api.model
-    def _get_available_tasks(self):
-        return []
-
     task_from_id = fields.Many2one('impexp.task', string='Output-producing Task')
     task_to_id = fields.Many2one('impexp.task', string='Input-consuming Task')
 
