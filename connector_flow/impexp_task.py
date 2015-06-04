@@ -43,7 +43,8 @@ class impexp_task_transition(models.Model):
     _name = 'impexp.task.transition'
     _description = 'Transition between tasks'
 
-    task_from_id = fields.Many2one('impexp.task', string='Output-producing Task')
+    task_from_id = fields.Many2one('impexp.task',
+                                   string='Output-producing Task')
     task_to_id = fields.Many2one('impexp.task', string='Input-consuming Task')
 
 
@@ -52,7 +53,8 @@ class impexp_task_flow(models.Model):
     _description = 'A flow of tasks that are connected by transitions'
 
     name = fields.Char(string='Name', required=True)
-    task_ids = fields.One2many('impexp.task', 'flow_id', string='Tasks in Flow')
+    task_ids = fields.One2many('impexp.task', 'flow_id',
+                               string='Tasks in Flow')
 
 
 class impexp_task(models.Model):
@@ -73,7 +75,7 @@ class impexp_task(models.Model):
     config = fields.Text(string='Configuration')
     last_start = fields.Datetime(string='Starting Time of the Last Run')
     last_finish = fields.Datetime(string='Finishing Time of the '
-                                        'Last Successful Run')
+                                         'Last Successful Run')
     max_retries = fields.Integer(string='Maximal Number of Re-tries'
                                         ' If Run Asynchronously',
                                  required=True, default=1)
@@ -92,11 +94,13 @@ class impexp_task(models.Model):
         """Check that there is at most one task that starts the
            flow in a task flow"""
         if self.flow_start:
-            flow_start_count = self.search_count([('flow_id', '=', self.flow_id.id),
-                                                  ('flow_start', '=', True)])
+            flow_start_count = self.search_count(
+                [('flow_id', '=', self.flow_id.id),
+                 ('flow_start', '=', True)])
             if 1 < flow_start_count:
-                raise exceptions.\
-                    ValidationError('The start of a task flow has to be unique')
+                raise exceptions. \
+                    ValidationError('The start of a task flow '
+                                    'has to be unique')
 
     @api.multi
     def _config(self):
