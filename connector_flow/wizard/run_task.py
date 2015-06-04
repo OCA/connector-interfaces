@@ -18,7 +18,7 @@
 #
 ##############################################################################
 
-from openerp import models, fields, api, _
+from openerp import models, fields, api
 
 
 class run_task_wizard(models.TransientModel):

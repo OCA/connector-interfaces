@@ -57,8 +57,8 @@ class csv_export_task(models.Model):
 
     @api.model
     def _get_available_tasks(self):
-        return super(csv_export_task, self)._get_available_tasks() \
-               + [('csv_export', 'CSV Export')]
+        return super(csv_export_task, self)._get_available_tasks() + [
+            ('csv_export', 'CSV Export')]
 
     def csv_export_class(self):
         return csv_export

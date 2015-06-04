@@ -52,7 +52,7 @@ class table_row_import(abstract_task):
                 continue
             if not row:
                 continue
-            name = '%s, line %d' % (f.attachment_id.datas_fname, lineno)
+            name = '%s, line %d' % (file.attachment_id.datas_fname, lineno)
             data = row
             if header:
                 data = dict(zip(header, data))
@@ -83,8 +83,8 @@ class csv_import_task(models.Model):
 
     @api.model
     def _get_available_tasks(self):
-        return super(csv_import_task, self)._get_available_tasks() \
-               + [('csv_import', 'CSV Import')]
+        return super(csv_import_task, self)._get_available_tasks() + [
+            ('csv_import', 'CSV Import')]
 
     def csv_import_class(self):
         return csv_import

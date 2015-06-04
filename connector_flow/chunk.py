@@ -36,5 +36,5 @@ class imp_exp_chunk(models.Model):
     name = fields.Char(string='Name', required=True)
     data = fields.Text(string='Data', required=True)
     task_id = fields.Many2one(string='Related Task', related='file_id.task_id')
-    state = fields.Selection(string='State', selection='_states', default='new')
-
+    state = fields.Selection(string='State', selection='_states',
+                             default='new')

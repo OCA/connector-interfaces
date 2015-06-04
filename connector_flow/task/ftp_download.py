@@ -104,8 +104,8 @@ class ftp_download_task(models.Model):
 
     @api.model
     def _get_available_tasks(self):
-        return super(ftp_download_task, self)._get_available_tasks() \
-               + [('ftp_download', 'FTP Download')]
+        return super(ftp_download_task, self)._get_available_tasks() + [
+            ('ftp_download', 'FTP Download')]
 
     def ftp_download_class(self):
         return ftp_download
