@@ -28,6 +28,7 @@ class AbstractTask(object):
 
     def __init__(self, cr, uid, ids):
         self.session = ConnectorSession(cr, uid)
+        assert len(ids) == 1, "Single instance id expected"
         self._id = ids[0]
 
     def run_task(self, task_id, **kwargs):
