@@ -27,16 +27,13 @@ from ast import literal_eval
 
 def impexp_related_action(session, job):
     # Redirect the call to OpenERP model
-    return session.pool.get('impexp.task') \
-        .related_action(session.cr, session.uid,
-                        job=job, context=session.context)
+    return session.env['impexp.task'].related_action(job=job)
 
 
 @job
 @related_action(action=impexp_related_action)
 def run_task(session, model_name, ids, **kwargs):
-    return session.pool.get('impexp.task') \
-        .run_task(session.cr, session.uid, ids, **kwargs)
+    return session.env['impexp.task'].browse(ids).run_task(**kwargs)
 
 
 class ImpExpTaskTransition(models.Model):
@@ -120,9 +117,7 @@ class ImpExpTask(models.Model):
                            'max_retries': self.max_retries})
         else:
             method = run_task
-        result = method(ConnectorSession(self.env.cr,
-                                         self.env.uid,
-                                         context=self.env.context),
+        result = method(ConnectorSession.from_env(self.env),
                         self._name, self.ids, async=async, **kwargs)
         # If we run asynchronously, we ignore the result
         #  (which is the UUID of the job in the queue).
