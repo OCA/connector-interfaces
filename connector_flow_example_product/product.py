@@ -45,7 +45,7 @@ class product_catalog_import_task(orm.Model):
     def _get_available_tasks(self, cr, uid, context=None):
         return super(product_catalog_import_task, self) \
             ._get_available_tasks(cr, uid, context=context) \
-            + [('product_catalog_import', 'Produkt Catalog Import')]
+            + [('product_catalog_import', 'Product Catalog Import')]
 
     _columns = {
         'task': fields.selection(_get_available_tasks, string='Task',
