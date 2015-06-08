@@ -51,15 +51,15 @@ class AbstractTask(object):
         return retval
 
     def create_file(self, filename, data):
-        ir_attachment_id = self.session.env['ir.attachment'].\
+        ir_attachment = self.session.env['ir.attachment'].\
             create({'name': filename,
                     'datas': b64encode(data),
                     'datas_fname': filename})
-        file_id = self.session.env['impexp.file'].\
-            create({'attachment_id': ir_attachment_id.id,
+        impexp_file = self.session.env['impexp.file'].\
+            create({'attachment_id': ir_attachment.id,
                     'task_id': self._id,
                     'state': 'done'})
-        return file_id.id
+        return impexp_file.id
 
     def load_file(self, file_id):
         f = self.session.env['impexp.file'].browse(file_id)
@@ -113,9 +113,9 @@ class AbstractChunkWriteTask(AbstractTask):
     """Task that writes (and feeds) data as a chunk"""
     def write_and_run_chunk(self, chunk_data, chunk_name,
                             async=True, **kwargs):
-        chunk_id = self.session.env['impexp.chunk'].\
+        chunk = self.session.env['impexp.chunk'].\
             create({'name': chunk_name,
                     'data': simplejson.dumps(chunk_data)})
-        return self.run_successor_tasks(chunk_id=chunk_id.id,
+        return self.run_successor_tasks(chunk_id=chunk.id,
                                         async=async,
                                         **kwargs)
