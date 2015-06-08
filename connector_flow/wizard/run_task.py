@@ -39,6 +39,7 @@ class RunTaskWizard(models.TransientModel):
         for task in self.flow_id.task_ids:
             if task.flow_start:
                 task_id = task.id
+                break
         self.task_id = task_id
 
     @api.multi

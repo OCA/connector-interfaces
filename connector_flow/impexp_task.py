@@ -18,7 +18,7 @@
 #
 ##############################################################################
 
-from openerp import models, fields, api, exceptions
+from openerp import models, fields, api, exceptions, _
 
 from openerp.addons.connector.queue.job import job, related_action
 from openerp.addons.connector.session import ConnectorSession
@@ -96,8 +96,8 @@ class ImpExpTask(models.Model):
                  ('flow_start', '=', True)])
             if 1 < flow_start_count:
                 raise exceptions. \
-                    ValidationError('The start of a task flow '
-                                    'has to be unique')
+                    ValidationError(_('The start of a task flow '
+                                      'has to be unique'))
 
     @api.multi
     def _config(self):
@@ -132,8 +132,9 @@ class ImpExpTask(models.Model):
         for task in flow.task_ids:
             if task.flow_start:
                 start_task = task
+                break
         if not start_task:
-            raise Exception('Flow %d has no start' % flow_id)
+            raise Exception(_('Flow %d has no start') % flow_id)
         return start_task.do_run(**kwargs)
 
     @api.multi
