@@ -22,29 +22,8 @@
 {
     'name': 'Connector-based task flow for import/export',
     'version': '0.1',
-    'description': """This module provides a minimal framework for common
-data import/export tasks based on the OpenERP Connector. Tasks like parsing
-and writing a CSV file or uploading a file to an FTP server can be chained
-into task flows.
-
-At the moment every flow must a have a unique start. One task can trigger
-several tasks.
-
-The module adds a new menu item "Import/Export" under the Connector top-level
-menu where tasks and task flows can be configured. Tasks can be run from
-the "Run Task" wizard. If a task needs a file as input, a file can be uploaded
-in the wizard.
-
-The *connector_flow_example_{ftp,product}* modules provide pre-configured
-demo flows.
-
-This module was definitely inspired by the works of Akretion (file_repository)
-and Camptocamp (connector_file).
-
-A very brief tutorial can be found at http://blog.initos.com/?p=1220
-""",
     'category': 'Connector',
-    'author': 'initOS GmbH & Co. KG',
+    'author': 'initOS GmbH & Co. KG,Odoo Community Association (OCA)',
     'license': 'AGPL-3',
     'website': 'http://www.initos.com',
     'depends': [
