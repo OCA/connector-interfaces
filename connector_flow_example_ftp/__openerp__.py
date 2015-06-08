@@ -22,13 +22,9 @@
 {
     'name': 'Example (Partner Export via FTP) for connector_flow',
     'version': '0.1',
-    'description': """This module provides a demo task flow for the
-*connector_flow* module. It implements a very simple export and
-upload of all res.partner to an FTP server in a two-column CSV file
-(name,zip code).""",
     'category': 'Connector',
     'license': 'AGPL-3',
-    'author': 'initOS GmbH & Co. KG',
+    'author': 'initOS GmbH & Co. KG,Odoo Community Association (OCA)',
     'website': 'http://www.initos.com',
     'depends': [
         'connector_flow',

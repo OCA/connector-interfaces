@@ -22,10 +22,8 @@
 {
     'name': 'XLS Import for connector_flow',
     'version': '0.1',
-    'description': """This module provides an XLS import task for the
- connector_flow module""",
     'category': 'Connector',
-    'author': 'initOS GmbH & Co. KG',
+    'author': 'initOS GmbH & Co. KG,Odoo Community Association (OCA)',
     'license': 'AGPL-3',
     'website': 'http://www.initos.com',
     'depends': [
