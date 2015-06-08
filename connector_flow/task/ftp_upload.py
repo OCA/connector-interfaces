@@ -19,7 +19,7 @@
 ##############################################################################
 
 from openerp import models, api
-from .abstract_task import abstract_task
+from .abstract_task import AbstractTask
 from base64 import b64decode
 import ftputil
 import ftputil.session
@@ -27,7 +27,7 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-class ftp_upload(abstract_task):
+class FtpUpload(AbstractTask):
     """FTP Configuration options:
      - host, user, password, port
      - upload_directory:  directory on the FTP server where files are
@@ -68,13 +68,13 @@ class ftp_upload(abstract_task):
                           b64decode(f.attachment_id.datas))
 
 
-class ftp_upload_task(models.Model):
+class FtpUploadTask(models.Model):
     _inherit = 'impexp.task'
 
     @api.model
     def _get_available_tasks(self):
-        return super(ftp_upload_task, self)._get_available_tasks() + [
+        return super(FtpUploadTask, self)._get_available_tasks() + [
             ('ftp_upload', 'FTP Upload')]
 
     def ftp_upload_class(self):
-        return ftp_upload
+        return FtpUpload

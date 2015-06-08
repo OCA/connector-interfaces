@@ -19,13 +19,13 @@
 ##############################################################################
 
 from openerp import models, api
-from .abstract_task import abstract_chunk_read_task
+from .abstract_task import AbstractChunkReadTask
 from cStringIO import StringIO
 
 import csv
 
 
-class csv_export(abstract_chunk_read_task):
+class CsvExport(AbstractChunkReadTask):
     "Reads a chunk and writes it into a CSV file"
 
     def read_chunk(self, config=None, chunk_data=None, async=True):
@@ -52,13 +52,13 @@ class csv_export(abstract_chunk_read_task):
         return file_id
 
 
-class csv_export_task(models.Model):
+class CsvExportTask(models.Model):
     _inherit = 'impexp.task'
 
     @api.model
     def _get_available_tasks(self):
-        return super(csv_export_task, self)._get_available_tasks() + [
+        return super(CsvExportTask, self)._get_available_tasks() + [
             ('csv_export', 'CSV Export')]
 
     def csv_export_class(self):
-        return csv_export
+        return CsvExport

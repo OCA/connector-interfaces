@@ -21,7 +21,7 @@
 from openerp import models, fields, api
 
 
-class impexp_file(models.Model):
+class ImpExpFile(models.Model):
     _name = 'impexp.file'
     _description = 'Wrapper for a file to be imported/exported'
 

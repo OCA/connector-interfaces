@@ -24,7 +24,7 @@ import simplejson
 from base64 import b64encode, b64decode
 
 
-class abstract_task(object):
+class AbstractTask(object):
 
     def __init__(self, cr, uid, ids):
         self.session = ConnectorSession(cr, uid)
@@ -80,7 +80,7 @@ def action_open_chunk(chunk_id):
     }
 
 
-class abstract_chunk_read_task(abstract_task):
+class AbstractChunkReadTask(AbstractTask):
     """Task that reads (and processes) an existing chunk of data"""
 
     def run(self, chunk_id=None, **kwargs):
@@ -109,7 +109,7 @@ class abstract_chunk_read_task(abstract_task):
             return action_open_chunk(chunk_id)
 
 
-class abstract_chunk_write_task(abstract_task):
+class AbstractChunkWriteTask(AbstractTask):
     """Task that writes (and feeds) data as a chunk"""
     def write_and_run_chunk(self, chunk_data, chunk_name,
                             async=True, **kwargs):

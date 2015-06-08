@@ -21,10 +21,10 @@
 from openerp import models, fields, api
 
 
-class imp_exp_chunk(models.Model):
+class ImpExpChunk(models.Model):
     _name = 'impexp.chunk'
-    _description = 'Structured (parsed) data from a file' +\
-                   ' to be imported/exported'
+    _description = ('Structured (parsed) data from a file'
+                    ' to be imported/exported')
 
     @api.model
     def _states(self):
