@@ -153,5 +153,6 @@ class ImpExpTask(models.Model):
 
     @api.model
     def related_action(self, job=None, **kwargs):
+        assert job, "Job argument missing"
         task_instance = self.browse(job.args[1]).get_task_instance()
         return task_instance.related_action(job=job, **kwargs)
