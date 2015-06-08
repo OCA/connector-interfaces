@@ -19,7 +19,7 @@
 ##############################################################################
 
 from openerp import models, api
-from .abstract_task import abstract_task
+from .abstract_task import AbstractTask
 
 from base64 import b64decode
 import csv
@@ -28,7 +28,7 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-class table_row_import(abstract_task):
+class TableRowImport(AbstractTask):
     def _row_generator(self, file_data, config=None):
         """Parses a given blob into rows; returns an iterator to rows.
            Has to be implemented in derived classes."""
@@ -67,7 +67,7 @@ class table_row_import(abstract_task):
         file.write({'state': 'done'})
 
 
-class csv_import(table_row_import):
+class CsvImport(TableRowImport):
     """Parses a CSV file and stores the lines as chunks"""
 
     def _row_generator(self, file_data, config=None):
@@ -78,13 +78,13 @@ class csv_import(table_row_import):
         return csv.reader(data)
 
 
-class csv_import_task(models.Model):
+class CsvImportTask(models.Model):
     _inherit = 'impexp.task'
 
     @api.model
     def _get_available_tasks(self):
-        return super(csv_import_task, self)._get_available_tasks() + [
+        return super(CsvImportTask, self)._get_available_tasks() + [
             ('csv_import', 'CSV Import')]
 
     def csv_import_class(self):
-        return csv_import
+        return CsvImport

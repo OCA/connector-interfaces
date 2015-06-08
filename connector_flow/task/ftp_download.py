@@ -20,14 +20,14 @@
 
 from openerp import models, api
 
-from .abstract_task import abstract_task
+from .abstract_task import AbstractTask
 import ftputil
 import ftputil.session
 import logging
 _logger = logging.getLogger(__name__)
 
 
-class ftp_download(abstract_task):
+class FtpDownload(AbstractTask):
     """FTP Configuration options:
      - host, user, password, port
      - download_directory:  directory on the FTP server where files are
@@ -99,13 +99,13 @@ class ftp_download(abstract_task):
                         self._source_name(move_directory, ftpfile))
 
 
-class ftp_download_task(models.Model):
+class FtpDownloadTask(models.Model):
     _inherit = 'impexp.task'
 
     @api.model
     def _get_available_tasks(self):
-        return super(ftp_download_task, self)._get_available_tasks() + [
+        return super(FtpDownloadTask, self)._get_available_tasks() + [
             ('ftp_download', 'FTP Download')]
 
     def ftp_download_class(self):
-        return ftp_download
+        return FtpDownload

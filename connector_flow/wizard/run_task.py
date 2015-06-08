@@ -21,7 +21,7 @@
 from openerp import models, fields, api
 
 
-class run_task_wizard(models.TransientModel):
+class RunTaskWizard(models.TransientModel):
     _name = 'impexp.wizard.runtask'
 
     flow_id = fields.Many2one('impexp.task.flow', string='Task Flow')

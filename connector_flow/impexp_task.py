@@ -39,7 +39,7 @@ def run_task(session, model_name, ids, **kwargs):
         .run_task(session.cr, session.uid, ids, **kwargs)
 
 
-class impexp_task_transition(models.Model):
+class ImpExpTaskTransition(models.Model):
     _name = 'impexp.task.transition'
     _description = 'Transition between tasks'
 
@@ -48,7 +48,7 @@ class impexp_task_transition(models.Model):
     task_to_id = fields.Many2one('impexp.task', string='Input-consuming Task')
 
 
-class impexp_task_flow(models.Model):
+class ImpExpTaskFlow(models.Model):
     _name = 'impexp.task.flow'
     _description = 'A flow of tasks that are connected by transitions'
 
@@ -57,7 +57,7 @@ class impexp_task_flow(models.Model):
                                string='Tasks in Flow')
 
 
-class impexp_task(models.Model):
+class ImpExpTask(models.Model):
     _name = 'impexp.task'
     _description = 'A wrapper class for an import/export task'
 
