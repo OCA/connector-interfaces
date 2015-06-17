@@ -62,11 +62,6 @@ class ImpExpTask(models.Model):
     def _get_available_tasks(self):
         return []
 
-    @api.model
-    def _get_available_types(self):
-        return [('file', 'File'),
-                ('chunk', 'Chunk')]
-
     name = fields.Char(string='Name', required=True)
     task = fields.Selection(selection='_get_available_tasks', string='Task')
     config = fields.Text(string='Configuration')
