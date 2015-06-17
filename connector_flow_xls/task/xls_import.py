@@ -18,15 +18,16 @@
 #
 ##############################################################################
 
-from openerp.osv import orm, fields
-from openerp.addons.connector_flow.task.csv_import import table_row_import
-
 from xlrd import open_workbook
 import logging
+
+from openerp import models, api
+from openerp.addons.connector_flow.task.csv_import import TableRowImport
+
 _logger = logging.getLogger(__name__)
 
 
-class xls_import(table_row_import):
+class XlsImport(TableRowImport):
     """Parses an XLS file and stores the lines as chunks"""
 
     def _row_generator(self, file_data, config=None):
@@ -37,18 +38,13 @@ class xls_import(table_row_import):
             yield [sheet.cell(row, col).value for col in range(sheet.ncols)]
 
 
-class xls_import_task(orm.Model):
+class XlsImportTask(models.Model):
     _inherit = 'impexp.task'
 
-    def _get_available_tasks(self, cr, uid, context=None):
-        return super(xls_import_task, self) \
-            ._get_available_tasks(cr, uid, context=context) \
-            + [('xls_import', 'XLS Import')]
-
-    _columns = {
-        'task': fields.selection(_get_available_tasks, string='Task',
-                                 required=True),
-    }
+    @api.model
+    def _get_available_tasks(self):
+        return super(XlsImportTask, self)._get_available_tasks() \
+               + [('xls_import', 'XLS Import')]
 
     def xls_import_class(self):
-        return xls_import
+        return XlsImport
