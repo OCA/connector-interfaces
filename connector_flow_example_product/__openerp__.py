@@ -31,19 +31,9 @@
         'sale',
     ],
     'data': [
-    ],
-    'demo': [
-        'demo/task_demo.xml',
+        'data/task_flow.xml',
     ],
     'installable': True,
     'auto_install': False,
     'application': False,
-    'images': [
-    ],
-    'css': [
-    ],
-    'js': [
-    ],
-    'qweb': [
-    ],
 }
