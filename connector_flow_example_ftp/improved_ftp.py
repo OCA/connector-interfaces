@@ -19,13 +19,13 @@
 ##############################################################################
 
 from openerp.osv import orm, fields
-from openerp.addons.connector_flow.task.ftp_upload import ftp_upload
+from openerp.addons.connector_flow.task.ftp_upload import FtpUpload
 import time
 import logging
 _logger = logging.getLogger(__name__)
 
 
-class improved_ftp_upload(ftp_upload):
+class improved_ftp_upload(FtpUpload):
     def _handle_existing_target(self, ftp_conn, target_name, filedata):
         _logger.info('Skip existing target %s' % target_name)
 
