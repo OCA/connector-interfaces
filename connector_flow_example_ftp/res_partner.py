@@ -20,10 +20,10 @@
 
 from openerp.osv import orm, fields
 from openerp.addons.connector_flow.task.abstract_task \
-    import abstract_chunk_write_task
+    import AbstractChunkWriteTask
 
 
-class csv_partner_export(abstract_chunk_write_task):
+class csv_partner_export(AbstractChunkWriteTask):
     def run(self, config=None, async=True):
         # We will store the data that we want to export
         #  as list of lists, corresponding to the structured rows
