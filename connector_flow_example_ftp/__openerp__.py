@@ -32,17 +32,7 @@
     'data': [
         'data/task_flow.xml',
     ],
-    'demo': [
-    ],
     'installable': True,
     'auto_install': False,
     'application': False,
-    'images': [
-    ],
-    'css': [
-    ],
-    'js': [
-    ],
-    'qweb': [
-    ],
 }
