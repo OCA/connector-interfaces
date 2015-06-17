@@ -18,14 +18,15 @@
 #
 ##############################################################################
 
-from openerp.osv import orm, fields
-from openerp.addons.connector_flow.task.abstract_task \
-    import abstract_chunk_read_task
 import urllib2
 from base64 import b64encode
 
+from openerp import models, api
+from openerp.addons.connector_flow.task.abstract_task \
+    import AbstractChunkReadTask
 
-class product_catalog_import(abstract_chunk_read_task):
+
+class ProductCatalogImport(AbstractChunkReadTask):
     def read_chunk(self, config=None, chunk_data=None, async=True):
         product_data = {
             'name': chunk_data.get('Name'),
@@ -36,21 +37,16 @@ class product_catalog_import(abstract_chunk_read_task):
         if product_image_url:
             url_obj = urllib2.urlopen(product_image_url)
             product_data['image'] = b64encode(url_obj.read())
-        self.session.create('product.product', product_data)
+        self.session.env['product.product'].create(product_data)
 
 
-class product_catalog_import_task(orm.Model):
+class ProductCatalogImportTask(models.Model):
     _inherit = 'impexp.task'
 
-    def _get_available_tasks(self, cr, uid, context=None):
-        return super(product_catalog_import_task, self) \
-            ._get_available_tasks(cr, uid, context=context) \
-            + [('product_catalog_import', 'Product Catalog Import')]
-
-    _columns = {
-        'task': fields.selection(_get_available_tasks, string='Task',
-                                 required=True),
-    }
+    @api.model
+    def _get_available_tasks(self):
+        return super(ProductCatalogImportTask, self)._get_available_tasks() \
+               + [('product_catalog_import', 'Product Catalog Import')]
 
     def product_catalog_import_class(self):
-        return product_catalog_import
+        return ProductCatalogImport
