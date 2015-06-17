@@ -18,14 +18,16 @@
 #
 ##############################################################################
 
-from openerp.osv import orm, fields
-from openerp.addons.connector_flow.task.ftp_upload import FtpUpload
 import time
 import logging
+
+from openerp import models, api
+from openerp.addons.connector_flow.task.ftp_upload import FtpUpload
+
 _logger = logging.getLogger(__name__)
 
 
-class improved_ftp_upload(FtpUpload):
+class ImprovedFtpUpload(FtpUpload):
     def _handle_existing_target(self, ftp_conn, target_name, filedata):
         _logger.info('Skip existing target %s' % target_name)
 
@@ -35,18 +37,13 @@ class improved_ftp_upload(FtpUpload):
                              filename)
 
 
-class improved_ftp_upload_task(orm.Model):
+class ImprovedFtpUploadTask(models.Model):
     _inherit = 'impexp.task'
 
-    def _get_available_tasks(self, cr, uid, context=None):
-        return super(improved_ftp_upload_task, self) \
-            ._get_available_tasks(cr, uid, context=context) \
+    @api.model
+    def _get_available_tasks(self):
+        return super(ImprovedFtpUploadTask, self)._get_available_tasks() \
             + [('improved_ftp_upload', 'Improved FTP Upload')]
 
-    _columns = {
-        'task': fields.selection(_get_available_tasks, string='Task',
-                                 required=True),
-    }
-
     def improved_ftp_upload_class(self):
-        return improved_ftp_upload
+        return ImprovedFtpUpload

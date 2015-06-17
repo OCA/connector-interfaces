@@ -18,39 +18,32 @@
 #
 ##############################################################################
 
-from openerp.osv import orm, fields
+from openerp import models, api
 from openerp.addons.connector_flow.task.abstract_task \
     import AbstractChunkWriteTask
 
 
-class csv_partner_export(AbstractChunkWriteTask):
+class CsvPartnerExport(AbstractChunkWriteTask):
+
     def run(self, config=None, async=True):
         # We will store the data that we want to export
         #  as list of lists, corresponding to the structured rows
         #  in the export file
         result_list = [['Name', 'ZIP Code']]
-        partner_obj = self.session.pool.get('res.partner')
-        partner_ids = partner_obj.search(self.session.cr, self.session.uid, [])
-        for p in partner_obj.browse(self.session.cr, self.session.uid,
-                                    partner_ids):
+        for p in self.session.env['res.partner'].search([]):
             result_list.append([p.name, p.zip])
 
         return self.write_and_run_chunk(result_list, 'List of all res.partner',
                                         async=async)
 
 
-class csv_partner_export_task(orm.Model):
+class CsvPartnerExportTask(models.Model):
     _inherit = 'impexp.task'
 
-    def _get_available_tasks(self, cr, uid, context=None):
-        return super(csv_partner_export_task, self) \
-            ._get_available_tasks(cr, uid, context=context) \
+    @api.model
+    def _get_available_tasks(self):
+        return super(CsvPartnerExportTask, self)._get_available_tasks() \
             + [('csv_partner_export', 'CSV Partner Export')]
 
-    _columns = {
-        'task': fields.selection(_get_available_tasks, string='Task',
-                                 required=True),
-    }
-
     def csv_partner_export_class(self):
-        return csv_partner_export
+        return CsvPartnerExport
