@@ -30,8 +30,6 @@ class RunTaskWizard(models.TransientModel):
     datas_fname = fields.Char(string='File Name', size=256)
     async = fields.Boolean(string='Run Asynchronously', default=True)
     attachment_id = fields.Many2one('ir.attachment', string='Result File')
-    state = fields.Selection([('input', 'Input'), ('output', 'Output')],
-                             string='State', default='input')
 
     @api.onchange('flow_id')
     def onchange_flow(self):
@@ -60,23 +58,3 @@ class RunTaskWizard(models.TransientModel):
 
         self.task_id.do_run(**kwargs)
 
-        # fixme (phahn): I think this is deprecated or at least needs review
-        #   There is no convention or clear specification that the return of
-        #   do_run() always is an impexp.file id. In fact I know no real
-        #   example there this is the case
-        #
-        #     result_id = self.task_id.do_run(**kwargs)
-        # if result_id:
-        #     res = file_obj.read(cr, uid, result_id, ['attachment_id'])
-        #     attachment_id = res['attachment_id'][0]
-        #     self.write(cr, uid, ids,
-        #                {'attachment_id': attachment_id, 'state': 'output'})
-        #     return {
-        #         'type': 'ir.actions.act_window',
-        #         'res_model': self._name,
-        #         'view_mode': 'form',
-        #         'view_type': 'form',
-        #         'res_id': ids[0],
-        #         'views': [(False, 'form')],
-        #         'target': 'new',
-        #     }
