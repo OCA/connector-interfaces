@@ -39,17 +39,7 @@
         'wizard/run_task_view.xml',
         'security/ir.model.access.csv',
     ],
-    'demo': [
-    ],
     'installable': True,
     'auto_install': False,
     'application': False,
-    'images': [
-    ],
-    'css': [
-    ],
-    'js': [
-    ],
-    'qweb': [
-    ],
 }
