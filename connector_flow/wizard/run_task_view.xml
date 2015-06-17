@@ -8,24 +8,17 @@
             <field name="type">form</field>
             <field name="arch" type="xml">
                 <form string="Task Form" version="7.0">
-                    <field name="state" invisible="1"/>
-                    <group states="input">
+                    <group>
                         <field name="flow_id"/>
                         <field name="task_id"/>
                         <field name="datas" filename="datas_fname" />
                         <field name="datas_fname" invisible="1"/>
                         <field name="async"/>
                     </group>
-                    <div states="output">
-                        The task returned <field name="attachment_id" readonly="1" />
-                    </div>
-                    <footer states="input">
+                    <footer>
                         <button name="run_task" string="Run Task" type="object" class="oe_highlight"/>
                         or
                         <button string="Cancel" class="oe_link" special="cancel"/>
-                    </footer>
-                    <footer states="output">
-                        <button special="cancel" string="Close" type="object"/>
                     </footer>
                 </form>
             </field>
