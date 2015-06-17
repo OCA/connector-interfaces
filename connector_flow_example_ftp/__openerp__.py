@@ -30,9 +30,9 @@
         'connector_flow',
     ],
     'data': [
+        'data/task_flow.xml',
     ],
     'demo': [
-        'demo/task_demo.xml',
     ],
     'installable': True,
     'auto_install': False,
