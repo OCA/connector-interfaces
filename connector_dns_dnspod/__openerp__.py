@@ -28,6 +28,7 @@
  'website': 'https://www.elico-corp.com',
  'images': [],
  'demo': [],
- 'data': [],
+ 'data': ['security/ir.model.access.csv',
+          'security/connector_group.xml'],
  'installable': True,
  'application': False}

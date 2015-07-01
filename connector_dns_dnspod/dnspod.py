@@ -119,10 +119,10 @@ class DNSRecordExportMapper(ExportMapper):
             'login_password': record.domain_id.backend_id.password,
             'domain_id': record.domain_id.dns_id,
             'sub_domain': record.name,
-            'record_type':
+            'record_line':
             dict(record._fields['type']._column_selection(
                 record)).get(record.type),
-            'record_line':
+            'record_type':
             dict(record._fields['line']._column_selection(
                  record)).get(record.line),
             'value': record.value,
