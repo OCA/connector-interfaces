@@ -98,8 +98,6 @@ class DNSPodModelBinder(DNSPodBinder):
             state = 'done'
         else:
             state = 'exception'
-        import pdb
-        pdb.set_trace()
         binding = self.model.browse(binding_id)
         binding.write(
             {'dns_id': str(external_id),
