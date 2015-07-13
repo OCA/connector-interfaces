@@ -11,7 +11,7 @@
       <field name="help">help</field>
     </record>
 
-    <record id="master_data_connector_backend_form" model="ir.ui.view">
+    <record id="odbc_connector_backend_form" model="ir.ui.view">
       <field name="name">master data connector backend form</field>
       <field name="model">connector.odbc.data.server.backend</field>
       <field name="arch" type="xml">
@@ -72,7 +72,7 @@
       </field>
     </record>
 
-    <record id="master_data_connector_backend_list" model="ir.ui.view">
+    <record id="odbc_connector_backend_list" model="ir.ui.view">
       <field name="name">master data connector backend form</field>
       <field name="model">connector.odbc.data.server.backend</field>
       <field name="arch" type="xml">
@@ -85,24 +85,24 @@
     <menuitem
         name="ODBC data backend"
         parent="connector.menu_connector_root"
-        id="root_master_data_sql_backend_menu"/>
+        id="root_connector_odbc_backend_menu"/>
 
-    <record model="ir.actions.act_window" id="master_data_sql_backend">
+    <record model="ir.actions.act_window" id="connector_odbc_backend">
       <field name="name">ODBC Backend</field>
       <field name="type">ir.actions.act_window</field>
       <field name="res_model">connector.odbc.data.server.backend</field>
       <field name="domain"></field>
       <field name="view_type">form</field>
       <field name="view_mode">tree,form</field>
-      <field name="view_id" ref="master_data_connector_backend_list"/>
+      <field name="view_id" ref="odbc_connector_backend_list"/>
     </record>
 
 
     <menuitem
         name="ODBC server Backend"
-        parent="root_master_data_sql_backend_menu"
-        action="master_data_sql_backend"
-        id="master_data_sql_backend_menu"/>
+        parent="root_connector_odbc_backend_menu"
+        action="connector_odbc_backend"
+        id="connector_odbc_backend_menu"/>
 
 
     <record id="add_connector_odbc_importer_config" model="ir.ui.view">
