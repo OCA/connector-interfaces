@@ -82,12 +82,14 @@ class DNSPodDomain(models.Model):
 class DNSPodRecord(models.Model):
     _inherit = 'dns.record'
 
-    def _type_select_version(self):
+    def _line_select_version(self):
+        """return record line selection"""
         res = [('A', '默认'), ('B', '电信'), ('C', '联通'),
                ('D', '教育网'), ('E', '百度'), ('F', '搜索引擎')]
         return res
 
-    def _line_select_version(self):
+    def _type_select_version(self):
+        """return record type selection"""
         res = [('A', 'A'), ('CNAME', 'CNAME'), ('MX', 'MX'),
                ('TXT', 'TXT'), ('NS', 'NS'), ('AAAA', 'AAAA'),
                ('SRV', 'SRV'), ('Visibile URL', '显性URL'),
@@ -119,10 +121,10 @@ class DNSRecordExportMapper(ExportMapper):
             'login_password': record.domain_id.backend_id.password,
             'domain_id': record.domain_id.dns_id,
             'sub_domain': record.name,
-            'record_line':
+            'record_type':
             dict(record._fields['type']._column_selection(
                 record)).get(record.type),
-            'record_type':
+            'record_line':
             dict(record._fields['line']._column_selection(
                  record)).get(record.line),
             'value': record.value,
