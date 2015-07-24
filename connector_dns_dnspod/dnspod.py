@@ -92,7 +92,7 @@ class DNSPodRecord(models.Model):
         """return record type selection"""
         res = [('A', 'A'), ('CNAME', 'CNAME'), ('MX', 'MX'),
                ('TXT', 'TXT'), ('NS', 'NS'), ('AAAA', 'AAAA'),
-               ('SRV', 'SRV'), ('Visibile URL', '显性URL'),
+               ('SRV', 'SRV'), ('Visible URL', '显性URL'),
                ('Invisible URL', '隐现URL')]
         return res
 
