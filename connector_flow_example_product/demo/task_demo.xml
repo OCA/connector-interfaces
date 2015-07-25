@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <!-- Task flow -->
+
+        <record model="impexp.task.flow" id="task_flow_product_catalog_import">
+            <field name="name">Product Catalog Import</field>
+        </record>
+
+        <!-- Task and task transition -->
+
+        <record model="impexp.task" id="task_product_catalog_import_1">
+            <field name="name">Product catalog CSV to chunks</field>
+            <field name="task">csv_import</field>
+            <field name="flow_id" ref="task_flow_product_catalog_import"/>
+            <field name="flow_start" eval="True"/>
+            <field name="config"><![CDATA[{'includes_header': True}]]></field>
+        </record>
+
+        <record model="impexp.task" id="task_product_catalog_import_2">
+            <field name="name">Product catalog chunks to products</field>
+            <field name="task">product_catalog_import</field>
+            <field name="flow_id" ref="task_flow_product_catalog_import"/>
+        </record>
+
+        <record model="impexp.task.transition" id="task_transition_product_catalog_import_1">
+            <field name="task_from_id" ref="task_product_catalog_import_1"/>
+            <field name="task_to_id" ref="task_product_catalog_import_2"/>
+        </record>
+    </data>
+</openerp>

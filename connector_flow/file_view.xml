@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+
+        <record model="ir.ui.view" id="file_tree">
+            <field name="name">impexp.file.tree</field>
+            <field name="model">impexp.file</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Task Tree">
+                    <field name="attachment_id"/>
+                    <field name="task_id"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="file_view_action">
+            <field name="name">Files</field>
+            <field name="res_model">impexp.file</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="file_tree"/>
+            <field name="target">current</field>
+        </record>
+
+        <menuitem id="menu_impexp_file"
+                  name="Files"
+                  parent="menu_impexp_root"
+                  action="file_view_action"/>
+
+    </data>
+</openerp>
