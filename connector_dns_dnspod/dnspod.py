@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
@@ -28,6 +28,9 @@ from openerp.addons.connector.unit.mapper import (
 import httplib
 import urllib
 import json
+import sys
+reload(sys)
+sys.setdefaultencoding('utf8')
 
 
 class DNSPodBackend(models.Model):
@@ -52,6 +55,7 @@ class DNSPodBackend(models.Model):
         }
         conn = httplib.HTTPSConnection("dnsapi.cn")
         conn.request(method, '/' + action, urllib.urlencode(params), headers)
+
         response = conn.getresponse()
         data = response.read()
         conn.close()
@@ -83,16 +87,14 @@ class DNSPodRecord(models.Model):
     _inherit = 'dns.record'
 
     def _line_select_version(self):
-        """return record line selection"""
         res = [('A', '默认'), ('B', '电信'), ('C', '联通'),
                ('D', '教育网'), ('E', '百度'), ('F', '搜索引擎')]
         return res
 
     def _type_select_version(self):
-        """return record type selection"""
         res = [('A', 'A'), ('CNAME', 'CNAME'), ('MX', 'MX'),
                ('TXT', 'TXT'), ('NS', 'NS'), ('AAAA', 'AAAA'),
-               ('SRV', 'SRV'), ('Visible URL', '显性URL'),
+               ('SRV', 'SRV'), ('Visibile URL', '显性URL'),
                ('Invisible URL', '隐现URL')]
         return res
 
@@ -121,12 +123,11 @@ class DNSRecordExportMapper(ExportMapper):
             'login_password': record.domain_id.backend_id.password,
             'domain_id': record.domain_id.dns_id,
             'sub_domain': record.name,
-            'record_type':
-            dict(record._fields['type']._column_selection(
-                record)).get(record.type),
+            'record_type': dict(record._fields['type']._column_selection(
+                                record)).get(record.type),
             'record_line':
             dict(record._fields['line']._column_selection(
-                 record)).get(record.line),
+                record)).get(record.line),
             'value': record.value,
             'mx': record.mx_priority,
             'ttl': record.ttl,

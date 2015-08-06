@@ -24,6 +24,9 @@ from openerp.addons.connector_dns.unit.backend_adapter import DNSAdapter
 import urllib
 import httplib
 import json
+import sys
+reload(sys)
+sys.setdefaultencoding('utf8')
 
 
 class DNSPodAdapter(DNSAdapter):

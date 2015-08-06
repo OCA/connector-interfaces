@@ -11,7 +11,7 @@
         </record>
 
         <record id="dns_backend_tree" model="ir.ui.view">
-            <field name="name">DNS Backend form</field>
+            <field name="name">DNS Backend tree</field>
             <field name="model">dns.backend</field>
             <field name="arch" type="xml" >
                 <tree>

@@ -55,7 +55,7 @@ class DNSDomain(models.Model):
     _inherit = 'dns.binding'
 
     name = fields.Char('Name', required=True,
-                       help='Domain name without "www", such as"dnspod.cn"')
+                       help='Domain name without "www",such as"dnspod.cn"')
     record_ids = fields.One2many('dns.record', 'domain_id',
                                  String='Subdomains')
 
@@ -70,10 +70,10 @@ class DNSRecord(models.Model):
     def _line_select_version(self):
         return []
 
-    name = fields.Char(string='Sub domain', help="host record, such as 'www'",
+    name = fields.Char('Sub domain', help="host record,such as 'www'",
                        required=True)
     domain_id = fields.Many2one(
-        'dns.domain', string="Domain", domain="[('state', '=', 'done')]",
+        'dns.domain', string="Domain", domain="[('state','=','done')]",
         ondelete='cascade', help="Domain which has already confirmed")
     type = fields.Selection('_type_select_version', string='Record Type')
     line = fields.Selection('_line_select_version', string='Record Line')
@@ -83,6 +83,5 @@ class DNSRecord(models.Model):
                                  default=1)
     ttl = fields.Integer(string='TTL', default=600, help="scope:1-604800",
                          required=True)
-    backend_id = fields.Many2one(string='dns.backend',
-                                 related='domain_id.backend_id',
+    backend_id = fields.Many2one('dns.backend', related='domain_id.backend_id',
                                  store=True)

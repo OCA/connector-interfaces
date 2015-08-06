@@ -29,7 +29,6 @@
  'images': [],
  'demo': [],
  'data': ['security/connector_group.xml',
-          'security/ir.model.access.csv'
-          ],
+          'security/ir.model.access.csv'],
  'installable': True,
  'application': False}

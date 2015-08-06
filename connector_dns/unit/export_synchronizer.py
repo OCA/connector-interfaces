@@ -55,7 +55,7 @@ class DNSBaseExporter(ExportSynchronizer):
 
     def _get_openerp_data(self):
         """ Return the raw OpenERP data for ``self.binding_id`` """
-        return self.session.browse(self.model._name, self.binding_id)
+        return self.model.browse(self.binding_id)
 
     def run(self, binding_id, *args, **kwargs):
         """ Run the synchronization

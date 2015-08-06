@@ -29,12 +29,12 @@ install_in_connector()
 
 def get_environment(session, model_name, backend_id):
     """ Create an environment to work with.  """
-    backend_record = session.browse('dns.backend', backend_id)
+    backend_record = session.env['dns.backend'].browse(backend_id)
     env = Environment(backend_record, session, model_name)
     return env
 
 
-class DNSBinding(models.Model):
+class DNSBinding(models.AbstractModel):
     """ Abstract Model for the Bindigs.
     All the models used as bindings between dnspod and OpenERP
     (``dnspod.res.partner``, ``dnspod.product.product``, ...) should

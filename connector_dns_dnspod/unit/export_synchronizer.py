@@ -79,7 +79,7 @@ class DNSExporter(DNSBaseExporter):
 def export_record(
         session, model_name, binding_id, fields=None, method='create'):
     """ Export a record on DNS """
-    record = session.browse(model_name, binding_id)
+    record = session.env[model_name].browse(binding_id)
     env = get_environment(session, model_name, record.backend_id.id)
     exporter = env.get_connector_unit(DNSExporter)
     result = exporter.run(binding_id, fields=fields, method=method)

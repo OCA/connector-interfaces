@@ -34,9 +34,8 @@ def create_domain_all_bindings(session, model_name, record_id, fields=None):
     """ Create a job which export all the bindings of a record."""
     if session.context.get('connector_no_export'):
         return
-    model = session.pool.get(model_name)
-    record = model.browse(session.cr, session.uid,
-                          record_id, context=session.context)
+    model = session.env[model_name]
+    record = model.browse(record_id)
     export_record.delay(session, record._model._name, record.id, fields=fields)
 
 

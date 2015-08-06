@@ -4,7 +4,7 @@
 Connector Dns
 =====================
 
-This module allows to manage your DNS domain through Odoo.
+This module aims to allows to manage your DNS domain through Odoo.
 
 
 Installation

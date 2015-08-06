@@ -56,8 +56,7 @@ class DNSPodModelBinder(DNSPodBinder):
                  or None if the external_id is not mapped
         :rtype: int
         """
-        binding_ids = self.session.search(
-            self.model._name,
+        binding_ids = self.model.search(
             [('dns_id', '=', str(external_id)),
              ('backend_id', '=', self.backend_record.id)])
         if not binding_ids:
@@ -65,9 +64,8 @@ class DNSPodModelBinder(DNSPodBinder):
         assert len(binding_ids) == 1, "Several records found: %s" % binding_ids
         binding_id = binding_ids[0]
         if unwrap:
-            return self.session.read(self.model._name,
-                                     binding_id,
-                                     ['openerp_id'])['openerp_id'][0]
+            return self.model.read(binding_id,
+                                   ['openerp_id'])['openerp_id'][0]
         else:
             return binding_id
 
@@ -77,10 +75,9 @@ class DNSPodModelBinder(DNSPodBinder):
         :param binding_id: OpenERP ID for which we want the external id
         :return: backend identifier of the record
         """
-        dns_record = self.session.read(
-            self.model._name, binding_id, ['dns_id'])
+        dns_record = self.model.browse(binding_id)
         assert dns_record
-        return dns_record['dns_id']
+        return dns_record.dns_id
 
     def bind(self, external_id, binding_id):
         """ Create the link between an external ID and an OpenERP ID and
@@ -91,15 +88,13 @@ class DNSPodModelBinder(DNSPodBinder):
         :type binding_id: int
         """
         # avoid to trigger the export when we modify the `dns_id`
-        context = self.session.context.copy()
-        context['connector_no_export'] = True
+        model = self.model.with_context(connector_no_export=True)
+        binding = model.browse(binding_id)
         now_fmt = datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT)
         if external_id:
             state = 'done'
         else:
             state = 'exception'
-        binding = self.model.browse(binding_id)
-        binding.write(
-            {'dns_id': str(external_id),
-             'state': state,
-             'sync_date': now_fmt})
+        binding.write({'dns_id': str(external_id),
+                       'state': state,
+                       'sync_date': now_fmt})
