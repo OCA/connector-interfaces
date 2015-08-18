@@ -44,7 +44,7 @@ class XlsImportTask(models.Model):
     @api.model
     def _get_available_tasks(self):
         return super(XlsImportTask, self)._get_available_tasks() \
-               + [('xls_import', 'XLS Import')]
+            + [('xls_import', 'XLS Import')]
 
     def xls_import_class(self):
         return XlsImport
