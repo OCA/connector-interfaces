@@ -46,7 +46,7 @@ class ProductCatalogImportTask(models.Model):
     @api.model
     def _get_available_tasks(self):
         return super(ProductCatalogImportTask, self)._get_available_tasks() \
-               + [('product_catalog_import', 'Product Catalog Import')]
+            + [('product_catalog_import', 'Product Catalog Import')]
 
     def product_catalog_import_class(self):
         return ProductCatalogImport

@@ -57,4 +57,3 @@ class RunTaskWizard(models.TransientModel):
             kwargs['file_id'] = file.id
 
         self.task_id.do_run(**kwargs)
-
