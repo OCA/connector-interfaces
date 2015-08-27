@@ -24,6 +24,7 @@ from openerp.addons.connector.event import (on_record_write,
                                             on_record_unlink
                                             )
 from .unit.export_synchronizer import export_record
+from .unit.delete_synchronizer import export_delete_record
 
 _MODEL_NAMES = ('dns.domain', 'dns.record')
 _MODEL_NAMES_RECORD = ('dns.record')
@@ -40,13 +41,22 @@ def create_domain_all_bindings(session, model_name, record_id, fields=None):
 
 
 @on_record_unlink(model_names=_MODEL_NAMES)
-def delete_domain_all_binding(session, model_name, record_id, fields=None):
+def delete_record(session, model_name, record_id, fields=None):
     """ Create a job which delete all the bindings of a record. """
     model = session.pool.get(model_name)
     record = model.browse(session.cr, session.uid,
                           record_id, context=session.context)
-    export_record.delay(session, record._model._name, record.id,
-                        fields=fields, method='unlink')
+    data = {}
+    data['format'] = 'json'
+    data['login_email'] = record.backend_id.login
+    data['login_password'] = record.backend_id.password
+    if model_name == 'dns.record':
+        data['domain_id'] = record.domain_id.dns_id
+        data['record_id'] = record.dns_id
+    elif model_name == 'dns.domain':
+        data['domain_id'] = record.dns_id
+    export_delete_record.delay(session, record._model._name,
+                               record.backend_id.id, record.id, data)
 
 
 @on_record_write(model_names=_MODEL_NAMES_RECORD)

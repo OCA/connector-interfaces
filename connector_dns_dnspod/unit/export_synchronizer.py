@@ -51,8 +51,6 @@ class DNSExporter(DNSBaseExporter):
                 self.external_id = result['id']
             else:
                 return result['status']['message']
-        elif method == 'unlink':
-            self.external_id = self._unlink(record)
         elif method == 'write':
             record['record_id'] = self.binding_record.dns_id
             result = self._update(record)
