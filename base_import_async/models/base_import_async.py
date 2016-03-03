@@ -61,8 +61,8 @@ def _create_csv_attachment(session, fields, data, options, file_name):
     # write csv
     f = StringIO()
     writer = csv.writer(f,
-                        delimiter=options.get(OPT_SEPARATOR),
-                        quotechar=options.get(OPT_QUOTING))
+                        delimiter=str(options.get(OPT_SEPARATOR)),
+                        quotechar=str(options.get(OPT_QUOTING)))
     encoding = options.get(OPT_ENCODING, 'utf-8')
     writer.writerow(_encode(fields, encoding))
     for row in data:
@@ -79,8 +79,8 @@ def _read_csv_attachment(session, att_id, options):
     att = session.env['ir.attachment'].browse(att_id)
     f = StringIO(att.datas.decode('base64'))
     reader = csv.reader(f,
-                        delimiter=options.get(OPT_SEPARATOR),
-                        quotechar=options.get(OPT_QUOTING))
+                        delimiter=str(options.get(OPT_SEPARATOR)),
+                        quotechar=str(options.get(OPT_QUOTING)))
     encoding = options.get(OPT_ENCODING, 'utf-8')
     fields = _decode(reader.next(), encoding)
     data = [_decode(row, encoding) for row in reader]
@@ -189,14 +189,15 @@ def split_file(session, model_name, translated_model_name,
 class BaseImportConnector(TransientModel):
     _inherit = 'base_import.import'
 
-    def do(self, cr, uid, id_, fields, options, dryrun=False, context=None):
+    def do(self, cr, uid, res_id, fields, options, dryrun=False, context=None):
         if dryrun or not options.get(OPT_USE_CONNECTOR):
             # normal import
             return super(BaseImportConnector, self).do(
-                cr, uid, id_, fields, options, dryrun=dryrun, context=context)
+                cr, uid, res_id, fields, options, dryrun=dryrun,
+                context=context)
 
         # asynchronous import
-        (record,) = self.browse(cr, uid, [id_], context=context)
+        (record,) = self.browse(cr, uid, [res_id], context=context)
         try:
             data, import_fields = self._convert_import_data(
                 record, fields, options, context=context)
