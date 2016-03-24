@@ -6,12 +6,12 @@
 This repository provides various projects using the ![Odoo Connector Framework](https://github.com/OCA/connector) for generic purposes, such as importing from data files or from external databases. 
 
 [//]: # (addons)
-Unported addons
----------------
+Available addons
+----------------
 addon | version | summary
 --- | --- | ---
-[base_import_async](base_import_async/) | 8.0.1.0.0 (unported) | Asynchronous Import
-[test_base_import_async](test_base_import_async/) | 8.0.1.0.0 (unported) | Test suite for base_import_async
+[base_import_async](base_import_async/) | 9.0.1.0.0 | Asynchronous Import
+[test_base_import_async](test_base_import_async/) | 9.0.1.0.0 | Test suite for base_import_async
 
 [//]: # (end addons)
 
