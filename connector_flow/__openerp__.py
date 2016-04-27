@@ -21,7 +21,7 @@
 
 {
     'name': 'Connector-based task flow for import/export',
-    'version': '0.1',
+    'version': '8.0.1.0.0',
     'category': 'Connector',
     'author': 'initOS GmbH & Co. KG,Odoo Community Association (OCA)',
     'license': 'AGPL-3',

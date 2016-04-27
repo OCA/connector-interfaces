@@ -2,7 +2,7 @@
     :alt: License: AGPL-3
 
 Connector-Flow
-===========
+==============
 
 This module provides a minimal framework for common
 data import/export tasks based on the OpenERP Connector. Tasks like parsing

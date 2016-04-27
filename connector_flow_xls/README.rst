@@ -2,7 +2,7 @@
     :alt: License: AGPL-3
 
 XLS Import for connector_flow
-===========
+=============================
 
 This module provides an XLS import task for the connector_flow module.
 

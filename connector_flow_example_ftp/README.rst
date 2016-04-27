@@ -2,7 +2,7 @@
     :alt: License: AGPL-3
 
 Example (Partner Export via FTP) for connector_flow
-===========
+===================================================
 
 This module provides a demo task flow for the *connector_flow* module.
 It implements a very simple export and upload of all res.partner to an FTP
