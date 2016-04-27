@@ -42,6 +42,8 @@ OPT_ENCODING = 'encoding'
 # options defined in base_import_async/import.js
 OPT_USE_CONNECTOR = 'use_connector'
 OPT_CHUNK_SIZE = 'chunk_size'
+# option not available in UI, but usable from scripts
+OPT_PRIORITY = 'priority'
 
 INIT_PRIORITY = 100
 DEFAULT_CHUNK_SIZE = 100
@@ -59,26 +61,26 @@ def _create_csv_attachment(session, fields, data, options, file_name):
     # write csv
     f = StringIO()
     writer = csv.writer(f,
-                        delimiter=options.get(OPT_SEPARATOR),
-                        quotechar=options.get(OPT_QUOTING))
+                        delimiter=str(options.get(OPT_SEPARATOR)),
+                        quotechar=str(options.get(OPT_QUOTING)))
     encoding = options.get(OPT_ENCODING, 'utf-8')
     writer.writerow(_encode(fields, encoding))
     for row in data:
         writer.writerow(_encode(row, encoding))
     # create attachment
-    att_id = session.create('ir.attachment', {
+    attachment = session.env['ir.attachment'].create({
         'name': file_name,
         'datas': f.getvalue().encode('base64')
     })
-    return att_id
+    return attachment.id
 
 
 def _read_csv_attachment(session, att_id, options):
-    att = session.browse('ir.attachment', att_id)
+    att = session.env['ir.attachment'].browse(att_id)
     f = StringIO(att.datas.decode('base64'))
     reader = csv.reader(f,
-                        delimiter=options.get(OPT_SEPARATOR),
-                        quotechar=options.get(OPT_QUOTING))
+                        delimiter=str(options.get(OPT_SEPARATOR)),
+                        quotechar=str(options.get(OPT_QUOTING)))
     encoding = options.get(OPT_ENCODING, 'utf-8')
     fields = _decode(reader.next(), encoding)
     data = [_decode(row, encoding) for row in reader]
@@ -86,10 +88,10 @@ def _read_csv_attachment(session, att_id, options):
 
 
 def _link_attachment_to_job(session, job_uuid, att_id):
-    job_ids = session.search('queue.job', [('uuid', '=', job_uuid)])
-    session.write('ir.attachment', att_id, {
+    job = session.env['queue.job'].search([('uuid', '=', job_uuid)], limit=1)
+    session.env['ir.attachment'].browse(att_id).write({
         'res_model': 'queue.job',
-        'res_id': job_ids[0],
+        'res_id': job.id,
     })
 
 
@@ -149,7 +151,7 @@ def split_file(session, model_name, translated_model_name,
     model_obj = session.pool[model_name]
     fields, data = _read_csv_attachment(session, att_id, options)
     padding = len(str(len(data)))
-    priority = INIT_PRIORITY
+    priority = options.get(OPT_PRIORITY, INIT_PRIORITY)
     if options.get(OPT_HAS_HEADER):
         header_offset = 1
     else:
@@ -187,14 +189,15 @@ def split_file(session, model_name, translated_model_name,
 class BaseImportConnector(TransientModel):
     _inherit = 'base_import.import'
 
-    def do(self, cr, uid, id_, fields, options, dryrun=False, context=None):
+    def do(self, cr, uid, res_id, fields, options, dryrun=False, context=None):
         if dryrun or not options.get(OPT_USE_CONNECTOR):
             # normal import
             return super(BaseImportConnector, self).do(
-                cr, uid, id_, fields, options, dryrun=dryrun, context=context)
+                cr, uid, res_id, fields, options, dryrun=dryrun,
+                context=context)
 
         # asynchronous import
-        (record,) = self.browse(cr, uid, [id_], context=context)
+        (record,) = self.browse(cr, uid, [res_id], context=context)
         try:
             data, import_fields = self._convert_import_data(
                 record, fields, options, context=context)
