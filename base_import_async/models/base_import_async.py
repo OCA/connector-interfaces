@@ -131,12 +131,15 @@ def related_attachment(session, thejob):
 @related_action(action=related_attachment)
 def import_one_chunk(session, res_model, att_id, options):
     model_obj = session.pool[res_model]
+    context = session.context.copy()
+    if not session.context.get('lang', False):
+        context.update({'lang': session.env.user.lang})
     fields, data = _read_csv_attachment(session, att_id, options)
     result = model_obj.load(session.cr,
                             session.uid,
                             fields,
                             data,
-                            context=session.context)
+                            context=context)
     error_message = [message['message'] for message in result['messages']
                      if message['type'] == 'error']
     if error_message:
