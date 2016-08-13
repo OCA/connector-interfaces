@@ -20,7 +20,7 @@
             <field name="model">impexp.task</field>
             <field name="type">form</field>
             <field name="arch" type="xml">
-                <form string="Task Form" version="7.0">
+                <form string="Task Form">
                     <sheet>
                         <group>
                             <field name="name"/>
@@ -54,7 +54,7 @@
             <field name="model">impexp.task.flow</field>
             <field name="type">form</field>
             <field name="arch" type="xml">
-                <form string="Task Flow Form" version="7.0">
+                <form string="Task Flow Form">
                     <sheet>
                         <h2><field name="name"/></h2>
                         <field name="task_ids"/>

@@ -7,7 +7,7 @@
             <field name="model">impexp.chunk</field>
             <field name="type">form</field>
             <field name="arch" type="xml">
-                <form string="Task Form" version="7.0" create='false'>
+                <form string="Task Form" create='false'>
                     <sheet>
                         <group>
                             <group>
