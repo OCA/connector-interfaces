@@ -4,11 +4,11 @@
 
 {
     'name': 'Connector-based task flow for import/export in local directories',
-    'version': '0.1',
+    'version': '8.0.1.0.0',
     'category': 'Connector',
-    'author': 'Acsone S.A.,Odoo Community Association (OCA)',
+    'author': 'ACSONE SA/NV, Odoo Community Association (OCA)',
     'license': 'AGPL-3',
-    'website': 'http://www.acsone.sa',
+    'website': 'http://www.acsone.eu',
     'depends': [
         'connector', 'connector_flow'
     ],
