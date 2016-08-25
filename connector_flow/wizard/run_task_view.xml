@@ -7,7 +7,7 @@
             <field name="model">impexp.wizard.runtask</field>
             <field name="type">form</field>
             <field name="arch" type="xml">
-                <form string="Task Form" version="7.0">
+                <form string="Task Form">
                     <group>
                         <field name="flow_id"/>
                         <field name="task_id"/>
