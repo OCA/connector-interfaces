@@ -4,7 +4,7 @@
 import os
 from base64 import b64decode
 
-from openerp import models, api
+from openerp import _, api, models
 
 from openerp.addons.connector_flow.task.abstract_task import AbstractTask
 import logging
