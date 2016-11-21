@@ -192,6 +192,9 @@ class BaseImportConnector(TransientModel):
     _inherit = 'base_import.import'
 
     def do(self, cr, uid, res_id, fields, options, dryrun=False, context=None):
+        if context is None:
+            context = {}
+
         if dryrun or not options.get(OPT_USE_CONNECTOR):
             # normal import
             return super(BaseImportConnector, self).do(
