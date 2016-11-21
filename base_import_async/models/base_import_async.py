@@ -70,7 +70,9 @@ def _create_csv_attachment(session, fields, data, options, file_name):
     # create attachment
     attachment = session.env['ir.attachment'].create({
         'name': file_name,
-        'datas': f.getvalue().encode('base64')
+        'datas': f.getvalue().encode('base64'),
+        'datas_fname': file_name,
+        'type': 'binary',
     })
     return attachment.id
 
