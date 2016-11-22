@@ -70,7 +70,9 @@ def _create_csv_attachment(session, fields, data, options, file_name):
     # create attachment
     attachment = session.env['ir.attachment'].create({
         'name': file_name,
-        'datas': f.getvalue().encode('base64')
+        'datas': f.getvalue().encode('base64'),
+        'datas_fname': file_name,
+        'type': 'binary',
     })
     return attachment.id
 
@@ -190,6 +192,9 @@ class BaseImportConnector(TransientModel):
     _inherit = 'base_import.import'
 
     def do(self, cr, uid, res_id, fields, options, dryrun=False, context=None):
+        if context is None:
+            context = {}
+
         if dryrun or not options.get(OPT_USE_CONNECTOR):
             # normal import
             return super(BaseImportConnector, self).do(
