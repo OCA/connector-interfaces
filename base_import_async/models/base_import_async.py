@@ -30,7 +30,9 @@ from openerp.models import TransientModel
 from openerp.models import fix_import_export_id_paths
 from openerp.tools.translate import _
 
-from openerp.addons.connector.queue.job import job, related_action
+from openerp.addons.connector.queue.job import (
+    job, related_action, DEFAULT_PRIORITY
+)
 from openerp.addons.connector.session import ConnectorSession
 from openerp.addons.connector.exception import FailedJobError
 
@@ -45,7 +47,6 @@ OPT_CHUNK_SIZE = 'chunk_size'
 # option not available in UI, but usable from scripts
 OPT_PRIORITY = 'priority'
 
-DEFAULT_PRIORITY = 100
 DEFAULT_CHUNK_SIZE = 100
 
 
