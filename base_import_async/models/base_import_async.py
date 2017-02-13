@@ -30,7 +30,9 @@ from openerp.models import TransientModel
 from openerp.models import fix_import_export_id_paths
 from openerp.tools.translate import _
 
-from openerp.addons.connector.queue.job import job, related_action
+from openerp.addons.connector.queue.job import (
+    job, related_action, DEFAULT_PRIORITY
+)
 from openerp.addons.connector.session import ConnectorSession
 from openerp.addons.connector.exception import FailedJobError
 
@@ -45,7 +47,6 @@ OPT_CHUNK_SIZE = 'chunk_size'
 # option not available in UI, but usable from scripts
 OPT_PRIORITY = 'priority'
 
-INIT_PRIORITY = 100
 DEFAULT_CHUNK_SIZE = 100
 
 
@@ -153,7 +154,8 @@ def split_file(session, model_name, translated_model_name,
     model_obj = session.pool[model_name]
     fields, data = _read_csv_attachment(session, att_id, options)
     padding = len(str(len(data)))
-    priority = options.get(OPT_PRIORITY, INIT_PRIORITY)
+    priority = options.get(OPT_PRIORITY, DEFAULT_PRIORITY)
+    sequence = 0
     if options.get(OPT_HAS_HEADER):
         header_offset = 1
     else:
@@ -164,7 +166,7 @@ def split_file(session, model_name, translated_model_name,
                                              fields,
                                              data,
                                              chunk_size):
-        chunk = str(priority - INIT_PRIORITY).zfill(padding)
+        chunk = str(sequence).zfill(padding)
         description = _("Import %s from file %s - #%s - lines %s to %s") % \
             (translated_model_name,
              file_name,
@@ -185,7 +187,7 @@ def split_file(session, model_name, translated_model_name,
                                           description=description,
                                           priority=priority)
         _link_attachment_to_job(session, job_uuid, att_id)
-        priority += 1
+        sequence += 1
 
 
 class BaseImportConnector(TransientModel):
