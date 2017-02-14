@@ -10,7 +10,7 @@ Available addons
 ----------------
 addon | version | summary
 --- | --- | ---
-[base_import_async](base_import_async/) | 9.0.1.0.0 | Asynchronous Import
+[base_import_async](base_import_async/) | 9.0.1.1.0 | Asynchronous Import
 [test_base_import_async](test_base_import_async/) | 9.0.1.0.0 | Test suite for base_import_async
 
 [//]: # (end addons)
