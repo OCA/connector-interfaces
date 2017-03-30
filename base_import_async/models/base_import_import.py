@@ -43,6 +43,7 @@ OPT_USE_QUEUE = 'use_queue'
 OPT_CHUNK_SIZE = 'chunk_size'
 # option not available in UI, but usable from scripts
 OPT_PRIORITY = 'priority'
+OPT_CHANNEL = 'channel'
 
 INIT_PRIORITY = 100
 DEFAULT_CHUNK_SIZE = 100
@@ -90,7 +91,10 @@ class BaseImportImport(TransientModel):
             (translated_model_name, self.file_name)
         att_id = self._create_csv_attachment(
             import_fields, data, options, self.file_name)
-        delayed_job = self.with_delay(description=description)._split_file(
+        channel = options.get(OPT_CHANNEL)
+        delayed_job = self.with_delay(
+            description=description, channel=channel
+        )._split_file(
             model_name=self.res_model,
             translated_model_name=translated_model_name,
             att_id=att_id,
@@ -165,6 +169,7 @@ class BaseImportImport(TransientModel):
         fields, data = self._read_csv_attachment(att_id, options)
         padding = len(str(len(data)))
         priority = options.get(OPT_PRIORITY, INIT_PRIORITY)
+        channel = options.get(OPT_CHANNEL)
         if options.get(OPT_HAS_HEADER):
             header_offset = 1
         else:
@@ -185,10 +190,11 @@ class BaseImportImport(TransientModel):
                 fields, data[row_from:row_to + 1], options,
                 file_name=root + '-' + chunk + ext)
             delayed_job = self.with_delay(
-                description=description, priority=priority)._import_one_chunk(
-                    model_name=model_name,
-                    att_id=att_id,
-                    options=options)
+                description=description, priority=priority, channel=channel
+            )._import_one_chunk(
+                model_name=model_name,
+                att_id=att_id,
+                options=options)
             self._link_attachment_to_job(delayed_job, att_id)
             priority += 1
 
