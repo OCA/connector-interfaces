@@ -1,0 +1,10 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+
+access_dns_backend,access_dns_backend,connector_dns.model_dns_backend,connector_dns_dnspod.connector_group,1,1,1,1
+
+access_dns_domain,access_dns_domain,connector_dns.model_dns_domain,connector_dns_dnspod.connector_group,1,1,1,1
+
+access_dns_record,access_dns_record,connector_dns.model_dns_record,connector_dns_dnspod.connector_group,1,1,1,1
+
+access_dns_binding,access_dns_binding,connector_dns.model_dns_binding,connector_dns_dnspod.connector_group,1,1,1,1
+
