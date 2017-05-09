@@ -5,6 +5,7 @@
 
 import json
 import os
+from collections import OrderedDict
 
 from odoo import models, fields, api
 from odoo.addons.connector.unit.synchronizer import Importer
@@ -13,8 +14,8 @@ from odoo.addons.queue_job.job import (
 
 from .job_mixin import JobRelatedMixin
 from ..log import logger
-from ..utils.report_html import Reporter
 from ..utils.misc import import_klass_from_dotted_path
+from ..utils.importer_utils import guess_csv_metadata
 
 
 def get_record_importer(env, importer_dotted_path=None):
@@ -87,6 +88,19 @@ class ImportRecordSet(models.Model, JobRelatedMixin):
         ),
         readonly=True
     )
+    report_file = fields.Binary('Report file')
+    report_filename = fields.Char('Report filename')
+    docs_html = fields.Html(
+        'Docs', compute='_compute_docs_html')
+    notes = fields.Html('Notes', help="Useful info for your users")
+
+    @api.onchange('csv_file')
+    def _onchance_csv_file(self):
+        if self.csv_file:
+            meta = guess_csv_metadata(self.csv_file.decode('base64'))
+            if meta:
+                self.csv_delimiter = meta['delimiter']
+                self.csv_quotechar = meta['quotechar']
 
     @api.multi
     def unlink(self):
@@ -118,11 +132,26 @@ class ImportRecordSet(models.Model, JobRelatedMixin):
 
     @api.depends('jsondata')
     def _compute_report_html(self):
+        template = self.env.ref('connector_importer.recordset_report')
         for item in self:
             if not item.jsondata:
                 continue
-            reporter = Reporter(item.jsondata, full_url=item.full_report_url)
-            item.report_html = reporter.html()
+            report = item.get_report()
+            data = {
+                'recordset': item,
+                'last_start': report.pop('_last_start'),
+                'report_by_model': OrderedDict(),
+            }
+            # count keys by model
+            for _model, __ in item.available_models():
+                model = self.env['ir.model'].search(
+                    [('model', '=', _model)], limit=1)
+                data['report_by_model'][model] = {}
+                # be defensive here. At some point
+                # we could decide to skip models on demand.
+                for k, v in report.get(_model, {}).iteritems():
+                    data['report_by_model'][model][k] = len(v)
+            item.report_html = template.render(data)
 
     @api.multi
     def _compute_full_report_url(self):
@@ -141,6 +170,8 @@ class ImportRecordSet(models.Model, JobRelatedMixin):
 
     @api.model
     def _get_global_state(self):
+        if not self.job_id:
+            return DONE
         done = True
         for item in self.record_ids:
             if item.job_state not in (DONE, FAILED):
@@ -151,6 +182,9 @@ class ImportRecordSet(models.Model, JobRelatedMixin):
             # or failed we stay PENDING
             return PENDING
         return DONE
+
+    def available_models(self):
+        return self.import_type_id.available_models()
 
     @api.multi
     @job
@@ -190,6 +224,51 @@ class ImportRecordSet(models.Model, JobRelatedMixin):
             #     )
             pass
 
+    @api.multi
+    def generate_report(self):
+        # TODO: schedule a job for this?
+        # if we do so: we must really do it after ALL jobs have been DONE
+        # but how do we state this?
+        # we can have jobs running in parallel
+        # we can run w/out jobs (debug mode)
+        self.ensure_one()
+        # TODO: make this configurable
+        reporter = self.env['reporter.csv']
+        metadata, content = reporter.report_get(self)
+        self.write({
+            'report_file': content.encode('base64'),
+            'report_filename': metadata['complete_filename']
+        })
+        logger.info((
+            'Report file updated on recordset={}. '
+            'Filename: {}'
+        ).format(self.id, metadata['complete_filename']))
+
+    def _get_importers(self):
+        importers = OrderedDict()
+
+        for _model, importer_dotted_path in self.available_models():
+            model = self.env['ir.model'].search(
+                [('model', '=', _model)], limit=1)
+            with self.backend_id.get_environment(self._name) as env:
+                importers[model] = get_record_importer(
+                    env, importer_dotted_path=importer_dotted_path)
+        return importers
+
+    # @tools.ormcache('self') TODO
+    @api.depends('import_type_id')
+    def _compute_docs_html(self):
+        template = self.env.ref('connector_importer.recordset_docs')
+        for item in self:
+            if isinstance(item.id, models.NewId):
+                continue
+            importers = item._get_importers()
+            data = {
+                'recordset': item,
+                'importers': importers,
+            }
+            item.docs_html = template.render(data)
+
 
 # TODO
 # @job
@@ -205,86 +284,3 @@ class ImportRecordSet(models.Model, JobRelatedMixin):
 #     #     recordset = record.recordset_id
 #     importer = get_record_importer(env)
 #     return importer.after_all()
-
-
-class ImportRecord(models.Model, JobRelatedMixin):
-    _name = 'import.record'
-    _description = 'Import record'
-    _order = 'date DESC'
-    _backend_type = 'import_backend'
-
-    date = fields.Datetime(
-        'Import date',
-        default=fields.Date.context_today,
-    )
-    jsondata = fields.Text('JSON Data')
-    recordset_id = fields.Many2one(
-        'import.recordset',
-        string='Recordset'
-    )
-    backend_id = fields.Many2one(
-        'import.backend',
-        string='Backend',
-        related='recordset_id.backend_id',
-        readonly=True,
-    )
-
-    @api.multi
-    def unlink(self):
-        # inheritance of non-model mixin does not work w/out this
-        return super(ImportRecord, self).unlink()
-
-    @api.multi
-    @api.depends('date')
-    def _compute_name(self):
-        for item in self:
-            names = [
-                item.date,
-            ]
-            item.name = ' / '.join(filter(None, names))
-
-    @api.multi
-    def set_data(self, adict):
-        self.ensure_one()
-        self.jsondata = json.dumps(adict)
-
-    @api.multi
-    def get_data(self):
-        self.ensure_one()
-        return json.loads(self.jsondata or '{}')
-
-    @api.multi
-    def debug_mode(self):
-        self.ensure_one()
-        return self.backend_id.debug_mode or \
-            os.environ.get('IMPORTER_DEBUG_MODE')
-
-    @job
-    def import_record(self, dest_model_name, importer_dotted_path=None, **kw):
-        """This job will import a record."""
-
-        with self.backend_id.get_environment(dest_model_name) as env:
-            importer = get_record_importer(
-                env, importer_dotted_path=importer_dotted_path)
-            return importer.run(self)
-
-    @api.multi
-    def run_import(self):
-        """ queue a job for importing data stored in to self
-        """
-        job_method = self.with_delay().import_record
-        if self.debug_mode():
-            logger.warn('### DEBUG MODE ACTIVE: WILL NOT USE QUEUE ###')
-            job_method = self.import_record
-        for item in self:
-            import_type = item.recordset_id.import_type_id
-            # we create a record and a job for each model name
-            # that needs to be imported
-            for model, importer in import_type.available_models():
-                job = job_method(model, importer_dotted_path=importer)
-                if job:
-                    # link the job
-                    item.write({'job_id': job.id})
-                if self.debug_mode():
-                    # debug mode, no job here: reset it!
-                    item.write({'job_id': False})

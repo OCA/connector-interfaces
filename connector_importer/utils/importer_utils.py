@@ -58,6 +58,20 @@ def csv_content_to_file(data):
     return StringIO(data_str)
 
 
+def guess_csv_metadata(filecontent):
+    f = StringIO(filecontent)
+    try:
+        dialect = csv.Sniffer().sniff(f.readline(), "\t,;")
+        f.seek(0)
+        meta = {
+            'delimiter': dialect.delimiter,
+            'quotechar': dialect.quotechar,
+        }
+    except:
+        meta = {}
+    return meta
+
+
 def read_path(path):
     with file(path, 'r') as thefile:
         return thefile.read()

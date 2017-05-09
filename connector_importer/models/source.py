@@ -31,6 +31,32 @@ class ImportSource(models.AbstractModel):
         default=500,
         string='Chunks Size'
     )
+    # handy field to make the example attachment
+    # downloadable within recordset view
+    example_file_url = fields.Char(
+        string='Download example file',
+        compute='_compute_example_file_url',
+        readonly=True,
+    )
+
+    def _get_example_attachment(self):
+        # You can define example file by creating attachments
+        # with an xmlid matching the import type/key
+        # `connector_importer.example_file_$version_key`
+        if not self.backend_id.version or not self.import_type_id:
+            return
+        xmlid = u'connector_importer.examplefile_{}_{}'.format(
+            self.backend_id.version.replace('.', '_'),
+            self.import_type_id.key)
+        return self.env.ref(xmlid, raise_if_not_found=0)
+
+    # TODO: any good way to define this only in inheriting models?
+    @api.depends('backend_id.version', 'import_type_id')
+    def _compute_example_file_url(self):
+        att = self._get_example_attachment()
+        if att:
+            self.example_file_url = u'/web/content/{}/{}'.format(
+                att.id, att.name)
 
     @api.multi
     def get_lines(self):
@@ -67,6 +93,10 @@ class CSVSource(models.AbstractModel):
     csv_delimiter = fields.Char(
         string='CSV delimiter',
         default=';',
+    )
+    csv_quotechar = fields.Char(
+        string='CSV quotechar',
+        default='"',
     )
 
     def _get_lines(self):

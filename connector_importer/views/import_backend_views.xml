@@ -23,11 +23,13 @@
             </group>
 
             <group col="4" name="actions">
-              <group col="2" name="run" string="Run">
+              <group col="2" name="run" string="Run"
+                     attrs="{'invisible': [('debug_mode','=',False)]}">
                 <button name="run_all"
                         type="object"
                         class="oe_highlight"
                         string="Import all"
+                        confirm="You are about to run ALL configured recordsets. Are you sure?"
                         attrs="{'invisible': [('job_running','=',True)]}"
                         />
               </group>

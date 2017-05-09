@@ -13,6 +13,7 @@
             </group>
             <group col="4" string="Source (CSV)">
               <field name="chunk_size" />
+              <field name="example_file_url" widget="url" />
               <field name="csv_file" filename="csv_filename"
                      attrs="{'required':[('csv_path','=',False)]}" />
               <field name="csv_filename" />
@@ -34,6 +35,14 @@
             <notebook>
               <page string="Report">
                 <field name="report_html" readonly="1" nolabel="1" />
+                <group name="file" string="Report file">
+                  <field name="report_file" readonly="1" nolabel="1" filename="report_filename"/>
+                  <field name="report_filename" readonly="1" invisible="1" />
+                  <button name="generate_report"
+                      type="object"
+                      class="oe_highlight"
+                      string="Generate report"/>
+                </group>
               </page>
               <page string="Raw Status">
                 <field name="jsondata" readonly="1" nolabel="1" />
@@ -46,6 +55,11 @@
                     <field name="job_state" />
                   </tree>
                 </field>
+              </page>
+              <page string="Docs">
+                <field name="docs_html" readonly="1" nolabel="1" colspan="4"/>
+                <separator string="Additional notes"  colspan="4"/>
+                <field name="notes" nolabel="1"  colspan="4"/>
               </page>
             </notebook>
         </form>

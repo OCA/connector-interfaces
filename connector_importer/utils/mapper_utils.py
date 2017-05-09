@@ -204,11 +204,40 @@ def backend_to_rel(field,
         if not search_value:
             return None
 
+        search_operator = '='
+        if column.type.endswith('2many'):
+            # we need multiple values
+            search_operator = 'in'
+            if not isinstance(search_value, (list, tuple)):
+                search_value = [search_value]
+
+        if modifier.search_operator:
+            # override by param
+            search_operator = modifier.search_operator
+
         # finally search it
         search_args = [(modifier.search_field,
                         modifier.search_operator,
                         search_value)]
-        value = rel_model.with_context(active_test=False).search(search_args)
+
+        value = None
+
+        with self.session.change_context(active_test=False):
+            value = rel_model.search(search_args)
+
+        if (column.type.endswith('2many') and
+                isinstance(search_value, (list, tuple)) and
+                not len(search_value) == len(value or [])):
+            # make sure we consider all the values and related records
+            # that we pass here.
+            # If one of them is missing we have to create them all before.
+            # If `create_missing_handler` is given, it must make sure
+            # to create all the missing records and return existing ones too.
+            # Typical use case is: product categories.
+            # If we pass ['Categ1', 'Categ2', 'Categ3'] we want them all,
+            # and if any of them is missing we might want to create them
+            # using a `create_missing_handler`.
+            value = None
 
         # create if missing
         if not value and create_missing and create_missing_handler:
