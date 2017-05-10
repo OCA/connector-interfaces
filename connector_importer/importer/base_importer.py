@@ -277,11 +277,6 @@ class RecordImporter(BaseImporter, OdooRecordMixin, TrackingMixin):
     # do not make the whole import fail
     _break_on_error = False
 
-    def get_record(self, record_id):
-        """Get persistent import record."""
-        record = self.env['import.record'].browse(record_id)
-        return record
-
     def required_keys(self, create=False):
         """Keys that are mandatory to import a line."""
         req = self.mapper.required_keys()
@@ -363,7 +358,7 @@ class RecordImporter(BaseImporter, OdooRecordMixin, TrackingMixin):
     def _init(self, recordset):
         self.recordset = recordset
         self.backend = self.recordset.backend_id
-        self._log_prefix = self.recordset.key + ' '
+        self._log_prefix = self.recordset.import_type_id.key + ' '
         self._logger = logger
 
     def _do_report(self):
@@ -372,29 +367,29 @@ class RecordImporter(BaseImporter, OdooRecordMixin, TrackingMixin):
         self.recordset.set_report({self._model_name: report})
 
     def _record_lines(self):
-        # FIXME: make get_data return a singleton
-        return self.record.get_data()[0]
+        return self.record.get_data()
 
     def _load_mapper_options(self):
         return {
             'override_existing': self.recordset.override_existing
         }
 
-    def run(self, record_id, **kw):
+    def run(self, record, **kw):
         """Run the import machinery!"""
 
-        self.record = self.get_record(record_id)
+        self.record = record
         if not self.record:
             # maybe deleted???
             msg = 'NO RECORD FOUND, maybe deleted? Check your jobs!'
             logger.error(msg)
             return
+
         self._init(self.record.recordset_id)
 
         mapper_options = self._load_mapper_options()
 
         for line in self._record_lines():
-            self.cleanup_line(line)
+            line = self.cleanup_line(line)
             self.prepare_line(line)
 
             values = self.mapper.map_record(line).values(**mapper_options)
@@ -448,7 +443,7 @@ class RecordImporter(BaseImporter, OdooRecordMixin, TrackingMixin):
         self._log(msg)
 
         chunk_finished_event.fire(
-            self.session, self.model._name, record_id)
+            self.env, self.model._name, self.record)
 
     def after_all(self, recordset):
         """Get something done after all the children jobs have completed.

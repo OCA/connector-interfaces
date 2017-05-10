@@ -24,7 +24,6 @@
         'views/docs_template.xml',
         # TODO
         # 'views/import_user_views.xml',
-        'views/web_report_template.xml',
         # TODO
         # 'wizards/base.xml',
         # 'wizards/products/wizard_import_products.xml',

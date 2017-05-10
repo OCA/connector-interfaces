@@ -135,7 +135,10 @@ def concat(field, separator=' ', handler=None):
     # Check if we can get rid of it.
 
     def modifier(self, record, to_attr):
-        value = [record[_field] for _field in field if record[_field].strip()]
+        value = [
+            record.get(field, '')
+            for _field in field if record.get(field, '').strip()
+        ]
         return separator.join(value)
 
     return modifier
@@ -217,13 +220,10 @@ def backend_to_rel(field,
 
         # finally search it
         search_args = [(modifier.search_field,
-                        modifier.search_operator,
+                        search_operator,
                         search_value)]
 
-        value = None
-
-        with self.session.change_context(active_test=False):
-            value = rel_model.search(search_args)
+        value = rel_model.with_context(active_test=False).search(search_args)
 
         if (column.type.endswith('2many') and
                 isinstance(search_value, (list, tuple)) and

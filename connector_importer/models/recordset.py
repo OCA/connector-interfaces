@@ -250,7 +250,7 @@ class ImportRecordSet(models.Model, JobRelatedMixin):
         for _model, importer_dotted_path in self.available_models():
             model = self.env['ir.model'].search(
                 [('model', '=', _model)], limit=1)
-            with self.backend_id.get_environment(self._name) as env:
+            with self.backend_id.get_environment(_model) as env:
                 importers[model] = get_record_importer(
                     env, importer_dotted_path=importer_dotted_path)
         return importers
