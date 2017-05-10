@@ -8,6 +8,8 @@ from datetime import datetime
 
 from odoo import fields
 
+from ..log import logger
+
 FMTS = (
     '%d/%m/%Y',
 )
@@ -104,6 +106,11 @@ def convert(field, conv_type,
         conv_type = CONV_MAPPING[conv_type]
 
     def modifier(self, record, to_attr):
+        if field not in record:
+            # be gentle
+            logger.warn(
+                'Field `%s` missing in line `%s`', field, record['_line_nr'])
+            return None
         value = record[field]
         if not value and fallback_field:
             value = record[fallback_field]

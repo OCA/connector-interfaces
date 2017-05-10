@@ -138,7 +138,6 @@ class OdooRecordMixin(object):
                     if lang not in translatable:
                         translatable[lang] = {}
                     # we keep only translation for existing values
-                    # TODO: use the mapper to convert the value?
                     translatable[lang][key] = orig_values.get(tkey)
         return translatable
 
@@ -255,11 +254,10 @@ class TrackingMixin(object):
     def _prepare_report(self, previous):
         # init a new report
         report = ChunkReport()
+        # merge previous and current
         for k, v in report.iteritems():
             prev = previous.get(self._model_name, {}).get(k, [])
             report[k] = prev + self.chunk_report[k]
-        # merge previous and current
-        # update last global report
         return report
 
 
