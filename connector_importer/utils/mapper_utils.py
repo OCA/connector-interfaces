@@ -10,9 +10,6 @@ from odoo import fields
 
 FMTS = (
     '%d/%m/%Y',
-    '%d%m%Y',
-    '%m/%d/%Y',
-    '%Y-%m-%d',
 )
 
 FMTS_DT = (
@@ -21,9 +18,10 @@ FMTS_DT = (
 )
 
 
-def to_date(value):
+def to_date(value, formats=FMTS):
     """Convert date strings to odoo format."""
-    for fmt in FMTS:
+
+    for fmt in formats:
         try:
             value = datetime.strptime(value, fmt).date()
             break
@@ -86,6 +84,7 @@ def to_safe_int(value):
 
 CONV_MAPPING = {
     'date': to_date,
+    'utc_date': to_utc_datetime,
     'safe_float': to_safe_float,
     'safe_int': to_safe_int,
 }
@@ -93,7 +92,8 @@ CONV_MAPPING = {
 
 def convert(field, conv_type,
             fallback_field=None,
-            pre_value_handler=None):
+            pre_value_handler=None,
+            **kw):
     """ Convert the source field to a defined ``conv_type``
         (ex. str) before returning it.
         You can also use predefined converters like 'date'.
@@ -111,7 +111,7 @@ def convert(field, conv_type,
             value = pre_value_handler(value)
         if not value:
             return None
-        return conv_type(value)
+        return conv_type(value, **kw)
 
     return modifier
 
@@ -130,14 +130,15 @@ def from_mapping(field, mapping, default_value=None):
 def concat(field, separator=' ', handler=None):
     """Concatenate values from different fields."""
 
-    # TODO: `field` attributes is required ATM by the base mapper.
+    # TODO: `field` is actually a list of fields.
+    # `field` attribute is required ATM by the base connector mapper and
     # `_direct_source_field_name` raises and error if you don't specify it.
     # Check if we can get rid of it.
 
     def modifier(self, record, to_attr):
         value = [
-            record.get(field, '')
-            for _field in field if record.get(field, '').strip()
+            record.get(_field, '')
+            for _field in field if record.get(_field, '').strip()
         ]
         return separator.join(value)
 
@@ -195,7 +196,8 @@ def backend_to_rel(field,
 
         # get the real column and the model
         column = self.model._fields[to_attr]
-        rel_model = self.env[column.comodel_name]
+        rel_model = \
+            self.env[column.comodel_name].with_context(active_test=False)
 
         if allowed_length and len(search_value) != allowed_length:
             return None
@@ -223,7 +225,7 @@ def backend_to_rel(field,
                         search_operator,
                         search_value)]
 
-        value = rel_model.with_context(active_test=False).search(search_args)
+        value = rel_model.search(search_args)
 
         if (column.type.endswith('2many') and
                 isinstance(search_value, (list, tuple)) and
@@ -240,8 +242,11 @@ def backend_to_rel(field,
             value = None
 
         # create if missing
-        if not value and create_missing and create_missing_handler:
-            value = create_missing_handler(self, rel_model, record)
+        if not value and create_missing:
+            if create_missing_handler:
+                value = create_missing_handler(self, rel_model, record)
+            else:
+                value = rel_model.create({'name': record[field]})
 
         # handle the final value based on col type
         if value:

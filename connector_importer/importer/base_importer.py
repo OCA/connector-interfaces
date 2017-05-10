@@ -297,7 +297,7 @@ class RecordImporter(BaseImporter, OdooRecordMixin, TrackingMixin):
         required = self.required_keys()
         for source_key, dest_key in required.iteritems():
             missing = (not source_key.startswith('__') and
-                       not orig_values.get(source_key))
+                       orig_values.get(source_key) is None)
             if missing:
                 msg = 'MISSING REQUIRED SOURCE KEY={}'.format(source_key)
                 if self.unique_key and values.get(self.unique_key):
@@ -307,7 +307,7 @@ class RecordImporter(BaseImporter, OdooRecordMixin, TrackingMixin):
                     'message': msg,
                 }
             missing = (not dest_key.startswith('__') and
-                       not values.get(dest_key))
+                       values.get(dest_key) is None)
             if missing:
                 msg = 'MISSING REQUIRED DESTINATION KEY={}'.format(dest_key)
                 if self.unique_key and values.get(self.unique_key):
