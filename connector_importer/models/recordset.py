@@ -118,11 +118,14 @@ class ImportRecordSet(models.Model, JobRelatedMixin):
         self.name = ' '.join(filter(None, names))
 
     @api.multi
-    def set_report(self, values):
+    def set_report(self, values, reset=False):
         """ update import report values
         """
         self.ensure_one()
-        _values = self.get_report()
+        if reset:
+            _values = {}
+        else:
+            _values = self.get_report()
         _values.update(values)
         self.jsondata = json.dumps(_values)
 

@@ -26,7 +26,7 @@ class RecordSetImporter(BaseImporter):
         # update recordset report
         recordset.set_report({
             '_last_start': fields.Datetime.now(),
-        })
+        }, reset=True)
         msg = 'START RECORDSET {0}({1})'.format(recordset.name,
                                                 recordset.id)
         logger.info(msg)
@@ -200,8 +200,6 @@ class TrackingMixin(object):
 
     _model_name = ''
     _chunk_report = None
-    # flush existing report on each run for the same recordset and model
-    _report_flush_model = True
 
     @property
     def chunk_report(self):
@@ -257,11 +255,9 @@ class TrackingMixin(object):
     def _prepare_report(self, previous):
         # init a new report
         report = ChunkReport()
-        # keep previous if requested
-        if not self._report_flush_model:
-            report.update(previous.get(self._model_name, {}))
-
-        report.update(self.chunk_report)
+        for k, v in report.iteritems():
+            prev = previous.get(self._model_name, {}).get(k, [])
+            report[k] = prev + self.chunk_report[k]
         # merge previous and current
         # update last global report
         return report
