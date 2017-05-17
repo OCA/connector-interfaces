@@ -111,7 +111,7 @@ def convert(field, conv_type,
             logger.warn(
                 'Field `%s` missing in line `%s`', field, record['_line_nr'])
             return None
-        value = record[field]
+        value = record.get(field)
         if not value and fallback_field:
             value = record[fallback_field]
         if pre_value_handler:
@@ -129,7 +129,7 @@ def from_mapping(field, mapping, default_value=None):
     """
 
     def modifier(self, record, to_attr):
-        value = record[field]
+        value = record.get(field)
         return mapping.get(value, default_value)
 
     return modifier
@@ -191,7 +191,8 @@ def backend_to_rel(field,
     """
 
     def modifier(self, record, to_attr):
-        search_value = record[field]
+        search_value = record.get(field)
+
         if search_value and value_handler:
             search_value = value_handler(self, record, search_value)
 
