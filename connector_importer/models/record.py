@@ -90,7 +90,7 @@ class ImportRecord(models.Model, JobRelatedMixin):
                 job = job_method(model, importer_dotted_path=importer)
                 if job:
                     # link the job
-                    item.write({'job_id': job.id})
+                    item.write({'job_id': job.db_record().id})
                 if self.debug_mode():
                     # debug mode, no job here: reset it!
                     item.write({'job_id': False})

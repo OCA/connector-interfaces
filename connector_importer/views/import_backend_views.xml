@@ -22,8 +22,8 @@
                 <field name="cron_id" />
             </group>
 
-            <group col="4" name="actions">
-              <group col="2" name="run" string="Run"
+            <group col="6" name="actions">
+              <group colspan="6" name="run" string="Run"
                      attrs="{'invisible': [('debug_mode','=',False)]}">
                 <button name="run_all"
                         type="object"
@@ -33,7 +33,7 @@
                         attrs="{'invisible': [('job_running','=',True)]}"
                         />
               </group>
-              <group col="2" name="debug" string="Debug">
+              <group colsoan="6" name="debug" string="Debug">
                 <field name="debug_mode" />
                 <field name="job_running" invisible="1"/>
                 <div attrs="{'invisible': [('job_running','=',False)]}">
@@ -44,7 +44,8 @@
                     until you complete the jobs.
                   </p>
                 </div>
-                <button name="complete_jobs"
+                <br />
+                <button name="button_complete_jobs"
                       type="object"
                       class="oe_highlight"
                       string="Make all related jobs completed"

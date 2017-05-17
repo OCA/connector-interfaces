@@ -167,6 +167,7 @@ class ImportRecordSet(models.Model, JobRelatedMixin):
             os.environ.get('IMPORTER_DEBUG_MODE')
 
     @api.multi
+    @api.depends('job_id.state', 'record_ids.job_id.state')
     def _compute_jobs_global_state(self):
         for item in self:
             item.jobs_global_state = item._get_global_state()
@@ -175,16 +176,16 @@ class ImportRecordSet(models.Model, JobRelatedMixin):
     def _get_global_state(self):
         if not self.job_id:
             return DONE
-        done = True
+        res = DONE
         for item in self.record_ids:
-            if item.job_state not in (DONE, FAILED):
-                done = False
+            if not item.job_id:
+                # TODO: investigate how this is possible
+                continue
+            # TODO: check why `item.job_state` does not reflect the job state
+            if item.job_id.state != DONE:
+                res = item.job_id.state
                 break
-        if not done:
-            # we assume that if not all the jobs are done
-            # or failed we stay PENDING
-            return PENDING
-        return DONE
+        return res
 
     def available_models(self):
         return self.import_type_id.available_models()
@@ -210,15 +211,15 @@ class ImportRecordSet(models.Model, JobRelatedMixin):
             job = job_method()
             if job:
                 # link the job
-                item.write({'job_id': job.id})
+                item.write({'job_id': job.db_record().id})
             if self.debug_mode():
                 # debug mode, no job here: reset it!
                 item.write({'job_id': False})
         if self.debug_mode():
             # TODO: port this
-            # # the "after_all" job needs to be fired manually when in debug mode
-            # # since the event handler in .events.chunk_finished_subscriber
-            # # cannot estimate when all the chunks have been processed.
+            # the "after_all" job needs to be fired manually when in debug mode
+            # since the event handler in .events.chunk_finished_subscriber
+            # cannot estimate when all the chunks have been processed.
             # for model, importer in self.import_type_id.available_models():
             #     import_record_after_all(
             #         session,

@@ -152,6 +152,9 @@ def concat(field, separator=' ', handler=None):
 
     return modifier
 
+# TODO: consider to move this to mapper base klass
+# to ease maintanability and override
+
 
 def backend_to_rel(field,
                    search_field=None,
@@ -251,10 +254,21 @@ def backend_to_rel(field,
 
         # create if missing
         if not value and create_missing:
-            if create_missing_handler:
-                value = create_missing_handler(self, rel_model, record)
-            else:
-                value = rel_model.create({'name': record[field]})
+            try:
+                if create_missing_handler:
+                    value = create_missing_handler(self, rel_model, record)
+                else:
+                    value = rel_model.create({'name': record[field]})
+            except Exception, e:
+                msg = (
+                    '`backend_to_rel` failed creation. '
+                    '[model: %s] [line: %s] [to_attr: %s] '
+                    'Error: %s'
+                )
+                logger.error(
+                    msg, rel_model._name, record['_line_nr'], to_attr, str(e)
+                )
+                return None
 
         # handle the final value based on col type
         if value:
