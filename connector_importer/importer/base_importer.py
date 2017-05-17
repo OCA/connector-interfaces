@@ -274,12 +274,42 @@ class RecordImporter(BaseImporter, OdooRecordMixin, TrackingMixin):
     def required_keys(self, create=False):
         """Keys that are mandatory to import a line."""
         req = self.mapper.required_keys()
+        all_values = []
+        for k, v in req.iteritems():
+            # make sure values are always tuples
+            # as we support multiple dest keys
+            if not isinstance(v, (tuple, list)):
+                req[k] = (v, )
+            all_values.extend(req[k])
         if (self.unique_key and
                 self.unique_key not in req.keys() and
-                self.unique_key not in req.values()):
+                self.unique_key not in all_values):
             # this one is REALLY required :)
-            req[self.unique_key] = self.unique_key
+            req[self.unique_key] = (self.unique_key, )
         return req
+
+    def _check_missing(self, source_key, dest_key, values, orig_values):
+        missing = (not source_key.startswith('__') and
+                   orig_values.get(source_key) is None)
+        if missing:
+            msg = 'MISSING REQUIRED SOURCE KEY={}'.format(source_key)
+            if self.unique_key and values.get(self.unique_key):
+                msg += ': {}={}'.format(
+                    self.unique_key, values[self.unique_key])
+            return {
+                'message': msg,
+            }
+        missing = (not dest_key.startswith('__') and
+                   values.get(dest_key) is None)
+        if missing:
+            msg = 'MISSING REQUIRED DESTINATION KEY={}'.format(dest_key)
+            if self.unique_key and values.get(self.unique_key):
+                msg += ': {}={}'.format(
+                    self.unique_key, values[self.unique_key])
+            return {
+                'message': msg,
+            }
+        return False
 
     def skip_it(self, values, orig_values):
         """Skip item import conditionally... if you want ;).
@@ -290,26 +320,13 @@ class RecordImporter(BaseImporter, OdooRecordMixin, TrackingMixin):
         msg = ''
         required = self.required_keys()
         for source_key, dest_key in required.iteritems():
-            missing = (not source_key.startswith('__') and
-                       orig_values.get(source_key) is None)
-            if missing:
-                msg = 'MISSING REQUIRED SOURCE KEY={}'.format(source_key)
-                if self.unique_key and values.get(self.unique_key):
-                    msg += ': {}={}'.format(
-                        self.unique_key, values[self.unique_key])
-                return {
-                    'message': msg,
-                }
-            missing = (not dest_key.startswith('__') and
-                       values.get(dest_key) is None)
-            if missing:
-                msg = 'MISSING REQUIRED DESTINATION KEY={}'.format(dest_key)
-                if self.unique_key and values.get(self.unique_key):
-                    msg += ': {}={}'.format(
-                        self.unique_key, values[self.unique_key])
-                return {
-                    'message': msg,
-                }
+            # we support multiple destination keys
+            for _dest_key in dest_key:
+                missing = self._check_missing(
+                    source_key, _dest_key, values, orig_values)
+                if missing:
+                    return missing
+
         if self.exists(values, orig_values) \
                 and not self.recordset.override_existing:
             msg = 'ALREADY EXISTS'

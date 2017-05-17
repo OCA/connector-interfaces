@@ -31,19 +31,17 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <t t-foreach="required.iteritems()" t-as="line">
+                      <t t-foreach="required.iterkeys()" t-as="source_key">
+                        <t t-set="dest_keys" t-value="required[source_key]" />
                         <tr>
                           <td class="text-left">
-                              <t t-if="line[0].startswith('__')"> - </t>
-                              <t t-if="not line[0].startswith('__')">
-                                  <t t-esc="line[0]"/>
+                              <t t-if="source_key.startswith('__')"> - </t>
+                              <t t-if="not source_key.startswith('__')">
+                                  <t t-esc="source_key"/>
                               </t>
                           </td>
                           <td class="text-left">
-                              <t t-if="line[1].startswith('__')"> - </t>
-                              <t t-if="not line[1].startswith('__')">
-                                  <t t-esc="line[1]"/>
-                              </t>
+                            <t t-esc="', '.join([key for key in dest_keys if not key.startswith('__')])" />
                           </td>
                         </tr>
                       </t>

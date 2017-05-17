@@ -18,25 +18,27 @@ class BaseImportMapper(ImportMapper):
         # `dest key` is the destination the for the source one.
 
         # Eg: in your mapper you could have a mapping like
-        #     direct = [('title', 'name'), ]
-        # and a dynamic @mapping that concatenates 2 columns
-        # namely c1, c2 into the field `surname`.
+        #     direct = [
+        #         ('title', 'name'),
+        #         (concat(('title', 'foo', ), separator=' - '), 'baz'),
+        #     ]
         # You want the record to be skipped if:
-        # 1. title or c1 or c2 are not valued in the source
-        # 2. title is valued but the conversion gives an empty value
-        # 3. `surname` is not valued because the mapping produced an empty val.
+        # 1. title or name are not valued in the source
+        # 2. title is valued but the conversion gives an empty value for name
+        # 3. title or foo are not valued in the source
+        # 4. title and foo are valued but the conversion
+        #    gives an empty value for baz
 
         # You can achieve this like:
         # required = {
-        #     'title': 'name',
-        #     'c1': 'surname',
-        #     'c2': 'surname'
+        #     'title': ('name', 'baz'),
+        #     'foo': 'baz',
         # }
 
         # If you want to check only the source or the destination key
         # use the same and prefix in w/ double underscore, like:
 
-        # {'__foo': 'foo', 'baz': '__baz'}
+        # {'__foo': 'baz', 'foo': '__baz'}
     }
 
     def required_keys(self, create=False):

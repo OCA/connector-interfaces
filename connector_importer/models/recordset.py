@@ -258,7 +258,6 @@ class ImportRecordSet(models.Model, JobRelatedMixin):
                     env, importer_dotted_path=importer_dotted_path)
         return importers
 
-    # @tools.ormcache('self') TODO
     @api.depends('import_type_id')
     def _compute_docs_html(self):
         template = self.env.ref('connector_importer.recordset_docs')
