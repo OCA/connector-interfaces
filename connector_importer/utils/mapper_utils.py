@@ -116,7 +116,8 @@ def convert(field, conv_type,
             value = record[fallback_field]
         if pre_value_handler:
             value = pre_value_handler(value)
-        if not value:
+        # do not use `if not value` otherwise you override all zero values
+        if value is None:
             return None
         return conv_type(value, **kw)
 
@@ -191,7 +192,6 @@ def backend_to_rel(field,
 
     def modifier(self, record, to_attr):
         search_value = record[field]
-
         if search_value and value_handler:
             search_value = value_handler(self, record, search_value)
 
@@ -271,6 +271,6 @@ def backend_to_rel(field,
     # you get UnboundLocalError, as the variable was never defined.
     # Trick tnx to http://stackoverflow.com/a/27910553/647924
     modifier.search_field = search_field or 'name'
-    modifier.search_operator = search_operator or '='
+    modifier.search_operator = search_operator or None
 
     return modifier
