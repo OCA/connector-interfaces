@@ -10,7 +10,7 @@ from collections import OrderedDict
 from odoo import models, fields, api
 from odoo.addons.connector.unit.synchronizer import Importer
 from odoo.addons.queue_job.job import (
-    DONE, PENDING, FAILED, STATES, job)
+    DONE, STATES, job)
 
 from .job_mixin import JobRelatedMixin
 from ..log import logger
