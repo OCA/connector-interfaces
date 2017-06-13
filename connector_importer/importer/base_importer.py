@@ -418,6 +418,10 @@ class RecordImporter(BaseImporter, OdooRecordMixin, TrackingMixin):
                     odoo_record = self.write(values, line)
                     err = ''
                 except Exception as err:
+                    if hasattr(err, 'name'):
+                        err = err.name
+                    else:
+                        err = str(err)
                     # TODO: catch more specific ORM exceptions
                     # TODO: track reason (log + checkpoint)
                     if self._break_on_error:
@@ -431,6 +435,10 @@ class RecordImporter(BaseImporter, OdooRecordMixin, TrackingMixin):
                     odoo_record = self.create(values, line)
                     err = ''
                 except Exception as err:
+                    if hasattr(err, 'name'):
+                        err = err.name
+                    else:
+                        err = str(err)
                     # TODO: catch more specific ORM exceptions
                     # TODO: track reason (log + checkpoint)
                     if self._break_on_error:
