@@ -24,7 +24,7 @@ class JobRelatedMixin(object):
         STATES,
         string='Job State',
         readonly=True,
-        select=True,
+        index=True,
         related='job_id.state'
     )
 
