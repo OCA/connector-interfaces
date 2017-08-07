@@ -164,7 +164,7 @@ class OdooRecordMixin(object):
         self.pre_create(values, orig_values)
         # TODO: remove keys that are not model's fields
         odoo_record = self.model.with_context(
-            self.create_context()).create(values)
+            **self.create_context()).create(values)
         self.post_create(odoo_record, values, orig_values)
         translatable = self.collect_translatable(values, orig_values)
         self.update_translations(odoo_record, translatable)
@@ -188,7 +188,7 @@ class OdooRecordMixin(object):
         odoo_record = self.find(values, orig_values)
         self.pre_write(odoo_record, values, orig_values)
         # TODO: remove keys that are not model's fields
-        odoo_record.with_context(self.write_context()).write(values)
+        odoo_record.with_context(**self.write_context()).write(values)
         self.post_write(odoo_record, values, orig_values)
         translatable = self.collect_translatable(values, orig_values)
         self.update_translations(odoo_record, translatable)
