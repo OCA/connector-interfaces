@@ -405,50 +405,38 @@ class RecordImporter(BaseImporter, OdooRecordMixin, TrackingMixin):
             line = self.cleanup_line(line)
             self.prepare_line(line)
 
-            values = self.mapper.map_record(line).values(**mapper_options)
+            odoo_record = None
+
+            try:
+                with self.env.cr.savepoint():
+                    values = self.mapper.map_record(line).values(
+                        **mapper_options)
+            except Exception, err:
+                values = {}
+                self._log_error(values, line, odoo_record, message=err)
+                if self._break_on_error:
+                    raise
+                continue
+
             # handle forced skipping
             skip_info = self.skip_it(values, line)
             if skip_info:
                 self._log_skipped(values, line, skip_info)
                 continue
 
-            odoo_record = None
-
-            if self.exists(values, line):
-                # update
-                try:
-                    odoo_record = self.write(values, line)
-                    err = ''
-                except Exception as err:
-                    if hasattr(err, 'name'):
-                        err = err.name
+            try:
+                with self.env.cr.savepoint():
+                    if self.exists(values, line):
+                        odoo_record = self.write(values, line)
+                        self._log_updated(values, line, odoo_record)
                     else:
-                        err = str(err)
-                    # TODO: catch more specific ORM exceptions
-                    # TODO: track reason (log + checkpoint)
-                    if self._break_on_error:
-                        raise
-                if odoo_record:
-                    self._log_updated(values, line, odoo_record)
-                else:
-                    self._log_error(values, line, odoo_record, message=err)
-            else:
-                try:
-                    odoo_record = self.create(values, line)
-                    err = ''
-                except Exception as err:
-                    if hasattr(err, 'name'):
-                        err = err.name
-                    else:
-                        err = str(err)
-                    # TODO: catch more specific ORM exceptions
-                    # TODO: track reason (log + checkpoint)
-                    if self._break_on_error:
-                        raise
-                if odoo_record:
-                    self._log_created(values, line, odoo_record)
-                else:
-                    self._log_error(values, line, odoo_record, message=err)
+                        odoo_record = self.create(values, line)
+                        self._log_created(values, line, odoo_record)
+            except Exception, err:
+                self._log_error(values, line, odoo_record, message=err)
+                if self._break_on_error:
+                    raise
+                continue
 
         # update report
         self._do_report()
