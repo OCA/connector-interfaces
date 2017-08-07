@@ -216,7 +216,7 @@ class TrackingMixin(object):
 
     def _log(self, msg, line=None, level='info'):
         handler = getattr(self._logger, level)
-        msg = '{prefix}{line}[model: {model}] {msg}'.format(
+        msg = u'{prefix}{line}[model: {model}] {msg}'.format(
             prefix=self._log_prefix,
             line='[line: {}]'.format(line['_line_nr']) if line else '',
             model=self._model_name,
@@ -231,6 +231,8 @@ class TrackingMixin(object):
         ))
 
     def _log_error(self, values, line, odoo_record, message=''):
+        if isinstance(message, Exception):
+            message = str(message)
         self._log(message, line=line, level='error')
         self.chunk_report.track_error(self.chunk_report_item(
             line, odoo_record=odoo_record, message=message
