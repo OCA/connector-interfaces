@@ -23,13 +23,13 @@
 ###############################################################################
 {
     'name': 'Asynchronous Import',
-    'version': '9.0.1.0.0',
+    'version': '10.0.1.0.0',
     'author': 'Akretion, ACSONE SA/NV, Odoo Community Association (OCA)',
     'license': 'AGPL-3',
     'category': 'Generic Modules',
     'depends': [
         'base_import',
-        'connector',
+        'queue_job',
     ],
     'data': [
         'views/base_import_async.xml',
@@ -37,6 +37,5 @@
     'qweb': [
         'static/src/xml/import.xml',
     ],
-    'installable': False,
-    'application': False,
+    'installable': True,
 }
