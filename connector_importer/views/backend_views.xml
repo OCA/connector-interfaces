@@ -12,7 +12,6 @@
                 <field name="name" />
                 <field name="version" />
                 <field name="cron_mode" />
-                <field name="enable_user_mode" />
             </group>
             <group col="4" string="Cron"
                    attrs="{'invisible':[('cron_mode','=',False)]}">

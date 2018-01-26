@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
 # Author: Simone Orsi
-# Copyright 2017 Camptocamp SA
+# Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import pytz
@@ -29,7 +28,7 @@ def to_date(value, formats=FMTS):
             break
         except ValueError:
             pass
-    if not isinstance(value, basestring):
+    if not isinstance(value, str):
         try:
             return fields.Date.to_string(value)
         except ValueError:
@@ -52,7 +51,7 @@ def to_utc_datetime(orig_value, tz='Europe/Rome'):
             break
         except ValueError:
             pass
-    if not isinstance(value, basestring):
+    if not isinstance(value, str):
         return fields.Datetime.to_string(value)
     # the value has not been converted,
     # maybe because is like 00/00/0000
@@ -166,7 +165,7 @@ def backend_to_rel(field,
                    allowed_length=None,
                    create_missing=False,
                    create_missing_handler=None,):
-    """ A modifier intended to be used on the ``direct`` mappings.
+    """A modifier intended to be used on the ``direct`` mappings.
 
     Example::
 
@@ -179,18 +178,18 @@ def backend_to_rel(field,
     :param search_field: name of the field to be used for searching
     :param search_operator: operator to be used for searching
     :param value_handler: a function to manipulate the raw value
-    before using it. You can use it to strip out none values
-    that are not none, like '0' instead of an empty string.
+        before using it. You can use it to strip out none values
+        that are not none, like '0' instead of an empty string.
     :param default_search_value: if the value is none you can provide
-    a default value to look up
+        a default value to look up
     :param default_search_field: if the value is none you can provide
-    a different field to look up for the default value
+        a different field to look up for the default value
     :param search_value_handler: a callable to use
-    to manipulate value before searching
+        to manipulate value before searching
     :param allowed_length: enforce a check on the search_value length
     :param create_missing: create a new record if not found
     :param create_missing_handler: provide an handler
-    for getting new values for a new record to be created.
+        for getting new values for a new record to be created.
     """
 
     def modifier(self, record, to_attr):
@@ -259,7 +258,7 @@ def backend_to_rel(field,
                     value = create_missing_handler(self, rel_model, record)
                 else:
                     value = rel_model.create({'name': record[field]})
-            except Exception, e:
+            except Exception as e:
                 msg = (
                     '`backend_to_rel` failed creation. '
                     '[model: %s] [line: %s] [to_attr: %s] '
@@ -268,7 +267,8 @@ def backend_to_rel(field,
                 logger.error(
                     msg, rel_model._name, record['_line_nr'], to_attr, str(e)
                 )
-                return None
+                # raise error to make importer's savepoint ctx manager catch it
+                raise
 
         # handle the final value based on col type
         if value:

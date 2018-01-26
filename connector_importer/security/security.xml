@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
 <data noupdate="0">
 
     <record id="connector_importer_user" model="res.groups">
@@ -8,4 +8,4 @@
     </record>
 
 </data>
-</openerp>
+</odoo>

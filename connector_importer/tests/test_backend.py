@@ -1,18 +1,55 @@
-# -*- coding: utf-8 -*-
 # Author: Simone Orsi
-# Copyright 2017 Camptocamp SA
+# Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 
 import odoo.tests.common as common
 
 
-class TestAll(common.TransactionCase):
+class TestBackend(common.SavepointCase):
 
-    def setUp(self):
-        super(TestAll, self).setUp()
-        self.backend_model = self.env['importer.backend']
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.backend_model = cls.env['import.backend']
+        cls.recordset_model = cls.env['import.recordset']
+        cls.type_model = cls.env['import.type']
 
     def test_backend_create(self):
-        b1 = self.backend_model.create({})
-        self.assertTrue(b1)
+        bknd = self.backend_model.create({
+            'name': 'Foo',
+            'version': '1.0',
+        })
+        self.assertTrue(bknd)
+
+    def test_backend_cron_cleanup_recordsets(self):
+        # create a backend
+        bknd = self.backend_model.create({
+            'name': 'Foo',
+            'version': '1.0',
+            'cron_cleanup_keep': 3,
+        })
+        itype = self.type_model.create({
+            'name': 'Fake',
+            'key': 'fake',
+            'settings': '# nothing to do'
+        })
+        # and 5 recorsets
+        for x in range(5):
+            rec = self.recordset_model.create({
+                'backend_id': bknd.id,
+                'import_type_id': itype.id,
+            })
+            # make sure create date is increased
+            rec.create_date = '2018-01-01 00:00:0' + str(x)
+        self.assertEqual(len(bknd.recordset_ids), 5)
+        # clean them up
+        bknd.cron_cleanup_recordsets()
+        recsets = bknd.recordset_ids.mapped('name')
+        # we should find only 3 records and #1 and #2 gone
+        self.assertEqual(len(recsets), 3)
+        self.assertNotIn('Foo #1', recsets)
+        self.assertNotIn('Foo #2', recsets)
+
+    # TODO
+    # def test_job_running_unlink_lock(self):
