@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
 # Author: Simone Orsi
-# Copyright 2017 Camptocamp SA
+# Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import json
@@ -9,12 +8,28 @@ import os
 from odoo import models, fields, api
 from odoo.addons.queue_job.job import job
 
-from .recordset import get_record_importer
 from .job_mixin import JobRelatedMixin
 from ..log import logger
 
 
 class ImportRecord(models.Model, JobRelatedMixin):
+    """Data to be imported.
+
+    An import record contains what you are actually importing.
+
+    Depending on backend settings you gonna have one or more source records
+    stored as JSON data into `jsondata` field.
+
+    No matter where you are importing from (CSV, SQL, etc)
+    the importer machinery will:
+
+    * retrieve the models to import and their importer
+    * process all records and import them
+    * update recordset info
+
+    When the importer will run, it will read all the records,
+    convert them using connector mappers and do the import.
+    """
     _name = 'import.record'
     _description = 'Import record'
     _order = 'date DESC'
@@ -48,7 +63,7 @@ class ImportRecord(models.Model, JobRelatedMixin):
             names = [
                 item.date,
             ]
-            item.name = ' / '.join(filter(None, names))
+            item.name = ' / '.join([_f for _f in names if _f])
 
     @api.multi
     def set_data(self, adict):
@@ -66,13 +81,13 @@ class ImportRecord(models.Model, JobRelatedMixin):
         return self.backend_id.debug_mode or \
             os.environ.get('IMPORTER_DEBUG_MODE')
 
+    @api.one
     @job
-    def import_record(self, dest_model_name, importer_dotted_path=None, **kw):
+    def import_record(self, component_name, model_name):
         """This job will import a record."""
-
-        with self.backend_id.get_environment(dest_model_name) as env:
-            importer = get_record_importer(
-                env, importer_dotted_path=importer_dotted_path)
+        with self.backend_id.work_on(self._name) as work:
+            importer = work.component_by_name(
+                component_name, model_name=model_name)
             return importer.run(self)
 
     @api.multi
@@ -87,10 +102,10 @@ class ImportRecord(models.Model, JobRelatedMixin):
             # we create a record and a job for each model name
             # that needs to be imported
             for model, importer in item.recordset_id.available_models():
-                job = job_method(model, importer_dotted_path=importer)
-                if job:
-                    # link the job
-                    item.write({'job_id': job.db_record().id})
+                # TODO: grab component from config
+                result = job_method(importer, model)
                 if self.debug_mode():
                     # debug mode, no job here: reset it!
                     item.write({'job_id': False})
+                else:
+                    item.write({'job_id': result.db_record().id})
