@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
 # Author: Simone Orsi
-# Copyright 2017 Camptocamp SA
+# Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import json
@@ -8,25 +7,37 @@ import os
 from collections import OrderedDict
 
 from odoo import models, fields, api
-from odoo.addons.connector.unit.synchronizer import Importer
 from odoo.addons.queue_job.job import (
     DONE, STATES, job)
 
 from .job_mixin import JobRelatedMixin
 from ..log import logger
-from ..utils.misc import import_klass_from_dotted_path
-
-
-def get_record_importer(env, importer_dotted_path=None):
-    if importer_dotted_path is None:
-        return env.get_connector_unit(Importer)
-    if not importer_dotted_path.startswith('odoo.addons.'):
-        importer_dotted_path = 'odoo.addons.' + importer_dotted_path
-    return env.get_connector_unit(
-        import_klass_from_dotted_path(importer_dotted_path))
 
 
 class ImportRecordSet(models.Model, JobRelatedMixin):
+    """Set of records, together with their configuration.
+
+    A recordset can be considered as an "import session".
+    Here you declare:
+
+    * what you want to import (via "Import type")
+    * where you get records from (via "Source" configuration)
+
+    A recordset is also responsible to hold and display some meaningful
+    information about imports:
+
+    * required fields, translatable fields, defaults
+    * import stats (created|updated|skipped|errored counters, latest run)
+    * fully customizable HTML report to provide more details
+    * downloadable report file (via reporters)
+    * global states of running jobs
+
+    When you run the import of a recordset this is what happens:
+
+    * asks the source to provide all the records (chunked)
+    * creates and import record for each chunk
+    * schedule the import job for each record
+    """
     _name = 'import.recordset'
     _inherit = 'import.source.consumer.mixin'
     _description = 'Import recordset'
@@ -49,15 +60,15 @@ class ImportRecordSet(models.Model, JobRelatedMixin):
     )
     override_existing = fields.Boolean(
         string='Override existing items',
+        help='Enable to update existing items w/ new values. '
+             'If disabled, matching records will be skipped.',
         default=True,
     )
     name = fields.Char(
         string='Name',
         compute='_compute_name',
     )
-    create_date = fields.Datetime(
-        'Create date',
-    )
+    create_date = fields.Datetime('Create date')
     record_ids = fields.One2many(
         'import.record',
         'recordset_id',
@@ -83,7 +94,9 @@ class ImportRecordSet(models.Model, JobRelatedMixin):
     report_file = fields.Binary('Report file')
     report_filename = fields.Char('Report filename')
     docs_html = fields.Html(
-        'Docs', compute='_compute_docs_html')
+        string='Docs',
+        compute='_compute_docs_html'
+    )
     notes = fields.Html('Notes', help="Useful info for your users")
 
     @api.multi
@@ -99,12 +112,11 @@ class ImportRecordSet(models.Model, JobRelatedMixin):
             self.backend_id.name,
             '#' + str(self.id),
         ]
-        self.name = ' '.join(filter(None, names))
+        self.name = ' '.join([_f for _f in names if _f])
 
     @api.multi
     def set_report(self, values, reset=False):
-        """ update import report values
-        """
+        """Update import report values."""
         self.ensure_one()
         if reset:
             _values = {}
@@ -131,12 +143,11 @@ class ImportRecordSet(models.Model, JobRelatedMixin):
             }
             # count keys by model
             for _model, __ in item.available_models():
-                model = self.env['ir.model'].search(
-                    [('model', '=', _model)], limit=1)
+                model = self.env['ir.model']._get(_model)
                 data['report_by_model'][model] = {}
                 # be defensive here. At some point
                 # we could decide to skip models on demand.
-                for k, v in report.get(_model, {}).iteritems():
+                for k, v in report.get(_model, {}).items():
                     data['report_by_model'][model][k] = len(v)
             item.report_html = template.render(data)
 
@@ -148,7 +159,7 @@ class ImportRecordSet(models.Model, JobRelatedMixin):
 
     def debug_mode(self):
         return self.backend_id.debug_mode or \
-            os.environ.get('IMPORTER_DEBUG_MODE')
+            os.getenv('IMPORTER_DEBUG_MODE')
 
     @api.multi
     @api.depends('job_id.state', 'record_ids.job_id.state')
@@ -178,8 +189,8 @@ class ImportRecordSet(models.Model, JobRelatedMixin):
     @job
     def import_recordset(self):
         """This job will import a recordset."""
-        with self.backend_id.get_environment(self._name) as env:
-            importer = env.get_connector_unit(Importer)
+        with self.backend_id.work_on(self._name) as work:
+            importer = work.component(usage='recordset.importer')
             return importer.run(self)
 
     @api.multi
@@ -192,13 +203,13 @@ class ImportRecordSet(models.Model, JobRelatedMixin):
             job_method = self.import_recordset
 
         for item in self:
-            job = job_method()
-            if job:
-                # link the job
-                item.write({'job_id': job.db_record().id})
+            result = job_method()
             if self.debug_mode():
                 # debug mode, no job here: reset it!
                 item.write({'job_id': False})
+            else:
+                # link the job
+                item.write({'job_id': result.db_record().id})
         if self.debug_mode():
             # TODO: port this
             # the "after_all" job needs to be fired manually when in debug mode
@@ -231,13 +242,11 @@ class ImportRecordSet(models.Model, JobRelatedMixin):
 
     def _get_importers(self):
         importers = OrderedDict()
-
-        for _model, importer_dotted_path in self.available_models():
-            model = self.env['ir.model'].search(
-                [('model', '=', _model)], limit=1)
-            with self.backend_id.get_environment(_model) as env:
-                importers[model] = get_record_importer(
-                    env, importer_dotted_path=importer_dotted_path)
+        for model_name, importer in self.available_models():
+            model = self.env['ir.model']._get(model_name)
+            with self.backend_id.work_on(self._name) as work:
+                importers[model] = work.component_by_name(
+                    importer, model_name=model_name)
         return importers
 
     @api.depends('import_type_id')
