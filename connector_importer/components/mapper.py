@@ -1,13 +1,15 @@
-# -*- coding: utf-8 -*-
 # Author: Simone Orsi
-# Copyright 2017 Camptocamp SA
+# Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
+from odoo.addons.component.core import AbstractComponent
+from odoo.addons.connector.components.mapper import mapping
 
-from openerp.addons.connector.unit.mapper import ImportMapper, mapping
 
-
-class BaseImportMapper(ImportMapper):
+class ImportMapper(AbstractComponent):
+    _name = 'importer.base.mapper'
+    _inherit = ['importer.base.component', 'base.import.mapper']
+    _usage = 'importer.mapper'
 
     required = {
         # source key: dest key
@@ -22,7 +24,9 @@ class BaseImportMapper(ImportMapper):
         #         ('title', 'name'),
         #         (concat(('title', 'foo', ), separator=' - '), 'baz'),
         #     ]
+
         # You want the record to be skipped if:
+
         # 1. title or name are not valued in the source
         # 2. title is valued but the conversion gives an empty value for name
         # 3. title or foo are not valued in the source
@@ -36,7 +40,7 @@ class BaseImportMapper(ImportMapper):
         # }
 
         # If you want to check only the source or the destination key
-        # use the same and prefix in w/ double underscore, like:
+        # use the same name and prefix it w/ double underscore, like:
 
         # {'__foo': 'baz', 'foo': '__baz'}
     }
@@ -46,6 +50,8 @@ class BaseImportMapper(ImportMapper):
 
         The importer can use this to determine if a line
         has to be skipped.
+
+        The recordset will use this to show required fields to users.
         """
         return self.required
 
@@ -56,14 +62,33 @@ class BaseImportMapper(ImportMapper):
 
         The importer can use this to translate specific fields
         if the are found in the csv in the form `field_name:lang_code`.
+
+        The recordset will use this to show translatable fields to users.
         """
         return self.translatable
 
     defaults = [
         # odoo field, value
         # ('sale_ok', True),
+
+        # defaults can be also retrieved via xmlid to other records.
+        # The format is: `_xmlid::$record_xmlid::$record_field_value`
+        # whereas `$record_xmlid` is the xmlid to retrieve
+        # and ``$record_field_value` is the field to be used as value.
+        # Example:
+        # ('company_id', '_xmlid:base.main_company:id'),
     ]
 
     @mapping
     def default_values(self, record=None):
-        return dict(self.defaults)
+        """Return default values for this mapper.
+
+        The recordset will use this to show default values to users.
+        """
+        values = {}
+        for k, v in self.defaults:
+            if isinstance(v, str) and v.startswith('_xmlid::'):
+                xmlid, field_value = v.split('::')[1:]
+                v = self.env.ref(xmlid)[field_value]
+            values[k] = v
+        return values
