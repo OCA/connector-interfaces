@@ -1,35 +1,32 @@
-# -*- coding: utf-8 -*-
 # Author: Simone Orsi
-# Copyright 2017 Camptocamp SA
+# Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-import pytz
 from datetime import datetime
 
+import pytz
+
 from odoo import fields
+from odoo.tools.misc import str2bool
 
 from ..log import logger
+from ..utils.misc import sanitize_external_id
 
-FMTS = (
-    '%d/%m/%Y',
-)
+FMTS = ("%d/%m/%Y",)
 
-FMTS_DT = (
-    '%Y-%m-%d %H:%M:%S',
-    '%Y-%m-%d %H:%M:%S.000'
-)
+FMTS_DT = ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M:%S.000")
 
 
 def to_date(value, formats=FMTS):
     """Convert date strings to odoo format."""
-
+    # pylint: disable=except-pass
     for fmt in formats:
         try:
             value = datetime.strptime(value, fmt).date()
             break
         except ValueError:
             pass
-    if not isinstance(value, basestring):
+    if not isinstance(value, str):
         try:
             return fields.Date.to_string(value)
         except ValueError:
@@ -40,11 +37,12 @@ def to_date(value, formats=FMTS):
     return None
 
 
-def to_utc_datetime(orig_value, tz='Europe/Rome'):
+def to_utc_datetime(orig_value, tz="Europe/Rome", formats=FMTS_DT):
     """Convert date strings to odoo format respecting TZ."""
+    # pylint: disable=except-pass
     value = orig_value
-    local_tz = pytz.timezone('Europe/Rome')
-    for fmt in FMTS_DT:
+    local_tz = pytz.timezone(tz)
+    for fmt in formats:
         try:
             naive = datetime.strptime(orig_value, fmt)
             local_dt = local_tz.localize(naive, is_dst=None)
@@ -52,7 +50,7 @@ def to_utc_datetime(orig_value, tz='Europe/Rome'):
             break
         except ValueError:
             pass
-    if not isinstance(value, basestring):
+    if not isinstance(value, str):
         return fields.Datetime.to_string(value)
     # the value has not been converted,
     # maybe because is like 00/00/0000
@@ -67,7 +65,7 @@ def to_safe_float(value):
     if not value:
         return 0.0
     try:
-        return float(value.replace(',', '.'))
+        return float(value.replace(",", "."))
     except ValueError:
         return 0.0
 
@@ -79,37 +77,35 @@ def to_safe_int(value):
     if not value:
         return 0
     try:
-        return int(value.replace(',', '').replace('.', ''))
+        return int(value.replace(",", "").replace(".", ""))
     except ValueError:
         return 0
 
 
 CONV_MAPPING = {
-    'date': to_date,
-    'utc_date': to_utc_datetime,
-    'safe_float': to_safe_float,
-    'safe_int': to_safe_int,
+    "date": to_date,
+    "utc_date": to_utc_datetime,
+    "safe_float": to_safe_float,
+    "safe_int": to_safe_int,
+    "bool": lambda x: str2bool(x, default=False),
 }
 
 
-def convert(field, conv_type,
-            fallback_field=None,
-            pre_value_handler=None,
-            **kw):
-    """ Convert the source field to a defined ``conv_type``
-        (ex. str) before returning it.
-        You can also use predefined converters like 'date'.
-        Use ``fallback_field`` to provide a field of the same type
-        to be used in case the base field has no value.
+def convert(field, conv_type, fallback_field=None, pre_value_handler=None, **kw):
+    """Convert the source field to a defined ``conv_type``
+    (ex. str) before returning it.
+    You can also use predefined converters like 'date'.
+    Use ``fallback_field`` to provide a field of the same type
+    to be used in case the base field has no value.
     """
+
     if conv_type in CONV_MAPPING:
         conv_type = CONV_MAPPING[conv_type]
 
     def modifier(self, record, to_attr):
         if field not in record:
             # be gentle
-            logger.warn(
-                'Field `%s` missing in line `%s`', field, record['_line_nr'])
+            logger.warn("Field `%s` missing in line `%s`", field, record["_line_nr"])
             return None
         value = record.get(field)
         if not value and fallback_field:
@@ -121,21 +117,22 @@ def convert(field, conv_type,
             return None
         return conv_type(value, **kw)
 
+    modifier._from_key = field
     return modifier
 
 
-def from_mapping(field, mapping, default_value=None):
-    """ Convert the source value using a ``mapping`` of values.
-    """
+def from_mapping(field, mapping, default_value=None, **kw):
+    """Convert the source value using a ``mapping`` of values."""
 
     def modifier(self, record, to_attr):
         value = record.get(field)
         return mapping.get(value, default_value)
 
+    modifier._from_key = field
     return modifier
 
 
-def concat(field, separator=' ', handler=None):
+def concat(field, separator=" ", handler=None, **kw):
     """Concatenate values from different fields."""
 
     # TODO: `field` is actually a list of fields.
@@ -145,28 +142,75 @@ def concat(field, separator=' ', handler=None):
 
     def modifier(self, record, to_attr):
         value = [
-            record.get(_field, '')
-            for _field in field if record.get(_field, '').strip()
+            record.get(_field, "") for _field in field if record.get(_field, "").strip()
         ]
         return separator.join(value)
 
+    modifier._from_key = field
     return modifier
+
+
+def xmlid_to_rel(field, sanitize=True, sanitize_default_mod_name=None, **kw):
+    """Convert xmlids source values to ids."""
+    xmlid_to_rel._sanitize = sanitize
+    xmlid_to_rel._sanitize_default_mod_name = sanitize_default_mod_name
+
+    def _xid_to_record(env, xid):
+        xid = (
+            sanitize_external_id(
+                xid, default_mod_name=xmlid_to_rel._sanitize_default_mod_name
+            )
+            if xmlid_to_rel._sanitize
+            else xid
+        )
+        return env.ref(xid, raise_if_not_found=False)
+
+    def modifier(self, record, to_attr):
+        value = record.get(field)
+        if value is None:
+            return None
+        column = self.model._fields[to_attr]
+        if column.type.endswith("2many"):
+            _values = [x.strip() for x in value.split(",") if x.strip()]
+            values = []
+            rec_ids = []
+            for xid in _values:
+                rec = _xid_to_record(self.env, xid)
+                if rec:
+                    rec_ids.append(rec.id)
+            values.append((6, 0, rec_ids))
+            return values
+        elif column.type.endswith("many2one"):
+            # m2o
+            rec = _xid_to_record(self.env, value)
+            if rec:
+                return rec.id
+            return None
+        else:
+            raise ValueError("Destination is not a related field.")
+
+    modifier._from_key = field
+    return modifier
+
 
 # TODO: consider to move this to mapper base klass
 # to ease maintanability and override
 
 
-def backend_to_rel(field,
-                   search_field=None,
-                   search_operator=None,
-                   value_handler=None,
-                   default_search_value=None,
-                   default_search_field=None,
-                   search_value_handler=None,
-                   allowed_length=None,
-                   create_missing=False,
-                   create_missing_handler=None,):
-    """ A modifier intended to be used on the ``direct`` mappings.
+def backend_to_rel(  # noqa: C901
+    field,
+    search_field=None,
+    search_operator=None,
+    value_handler=None,
+    default_search_value=None,
+    default_search_field=None,
+    search_value_handler=None,
+    allowed_length=None,
+    create_missing=False,
+    create_missing_handler=None,
+    **kw,
+):
+    """A modifier intended to be used on the ``direct`` mappings.
 
     Example::
 
@@ -179,36 +223,37 @@ def backend_to_rel(field,
     :param search_field: name of the field to be used for searching
     :param search_operator: operator to be used for searching
     :param value_handler: a function to manipulate the raw value
-    before using it. You can use it to strip out none values
-    that are not none, like '0' instead of an empty string.
+        before using it. You can use it to strip out none values
+        that are not none, like '0' instead of an empty string.
     :param default_search_value: if the value is none you can provide
-    a default value to look up
+        a default value to look up
     :param default_search_field: if the value is none you can provide
-    a different field to look up for the default value
+        a different field to look up for the default value
     :param search_value_handler: a callable to use
-    to manipulate value before searching
+        to manipulate value before searching
     :param allowed_length: enforce a check on the search_value length
     :param create_missing: create a new record if not found
     :param create_missing_handler: provide an handler
-    for getting new values for a new record to be created.
+        for getting new values for a new record to be created.
     """
 
     def modifier(self, record, to_attr):
-        search_value = record.get(field)
-
-        if search_value and value_handler:
-            search_value = value_handler(self, record, search_value)
+        search_value = _get_search_value(self, record, value_handler, field)
+        column, rel_model = _get_column_and_model(self, to_attr)
 
         # handle defaults if no search value here
-        if not search_value and default_search_value:
-            search_value = default_search_value
-            if default_search_field:
-                modifier.search_field = default_search_field
+        if not search_value:
+            search_value = _handle_default_search_value()
 
-        # get the real column and the model
-        column = self.model._fields[to_attr]
-        rel_model = \
-            self.env[column.comodel_name].with_context(active_test=False)
+        # Support Odoo studio fields dynamically.
+        # When a model is created automatically from Odoo studio
+        # it gets an `x_name` field which cannot be modified :/
+        if (
+            not default_search_field
+            and modifier.search_field not in rel_model._fields
+            and "x_name" in rel_model._fields
+        ):
+            modifier.search_field = "x_name"
 
         if allowed_length and len(search_value) != allowed_length:
             return None
@@ -220,27 +265,53 @@ def backend_to_rel(field,
         if not search_value:
             return None
 
-        search_operator = '='
-        if column.type.endswith('2many'):
+        search_operator = "="
+        if column.type.endswith("2many"):
             # we need multiple values
-            search_operator = 'in'
-            if not isinstance(search_value, (list, tuple)):
+            search_operator = "in"
+            if not isinstance(search_value, (list | tuple)):
                 search_value = [search_value]
 
         if modifier.search_operator:
             # override by param
             search_operator = modifier.search_operator
 
-        # finally search it
-        search_args = [(modifier.search_field,
-                        search_operator,
-                        search_value)]
-
+        search_args = [(modifier.search_field, search_operator, search_value)]
         value = rel_model.search(search_args)
 
-        if (column.type.endswith('2many') and
-                isinstance(search_value, (list, tuple)) and
-                not len(search_value) == len(value or [])):
+        value = _handle_missing_values(
+            self, column, value, search_value, rel_model, record, to_attr
+        )
+
+        # handle the final value based on col type
+        return _handle_final_value(column, value)
+
+    def _get_search_value(self, record, value_handler, field):
+        search_value = record.get(field)
+        if search_value and value_handler:
+            search_value = value_handler(self, record, search_value)
+        return search_value
+
+    def _get_column_and_model(self, to_attr):
+        column = self.model._fields[to_attr]
+        rel_model = self.env[column.comodel_name].with_context(active_test=False)
+        return column, rel_model
+
+    def _handle_default_search_value():
+        if default_search_value:
+            search_value = default_search_value
+            if default_search_field:
+                modifier.search_field = default_search_field
+            return search_value
+
+    def _handle_missing_values(
+        self, column, value, search_value, rel_model, record, to_attr
+    ):
+        if (
+            column.type.endswith("2many")
+            and isinstance(search_value, (list | tuple))
+            and not len(search_value) == len(value or [])
+        ):
             # make sure we consider all the values and related records
             # that we pass here.
             # If one of them is missing we have to create them all before.
@@ -252,40 +323,37 @@ def backend_to_rel(field,
             # using a `create_missing_handler`.
             value = None
 
-        # create if missing
         if not value and create_missing:
             try:
                 if create_missing_handler:
                     value = create_missing_handler(self, rel_model, record)
                 else:
-                    value = rel_model.create({'name': record[field]})
-            except Exception, e:
+                    value = rel_model.create({"name": record[field]})
+            except Exception as e:
                 msg = (
-                    '`backend_to_rel` failed creation. '
-                    '[model: %s] [line: %s] [to_attr: %s] '
-                    'Error: %s'
+                    "`backend_to_rel` failed creation. "
+                    "[model: %s] [line: %s] [to_attr: %s] "
+                    "Error: %s"
                 )
-                logger.error(
-                    msg, rel_model._name, record['_line_nr'], to_attr, str(e)
-                )
-                return None
+                logger.error(msg, rel_model._name, record["_line_nr"], to_attr, str(e))
+                raise
+        return value
 
-        # handle the final value based on col type
+    def _handle_final_value(column, value):
         if value:
-            if column.type == 'many2one':
+            if column.type == "many2one":
                 value = value[0].id
-            if column.type in ('one2many', 'many2many'):
+            if column.type in ("one2many", "many2many"):
                 value = [(6, 0, [x.id for x in value])]
         else:
             return None
-
         return value
 
     # use method attributes to not mess up the variables' scope.
     # If we change the var inside modifier, without this trick
     # you get UnboundLocalError, as the variable was never defined.
     # Trick tnx to http://stackoverflow.com/a/27910553/647924
-    modifier.search_field = search_field or 'name'
+    modifier.search_field = search_field or "name"
     modifier.search_operator = search_operator or None
-
+    modifier._from_key = field
     return modifier

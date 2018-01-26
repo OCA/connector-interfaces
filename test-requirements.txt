@@ -1,0 +1,2 @@
+odoo_test_helper
+odoo-addon-connector_importer @ git+https://github.com/OCA/connector-interfaces.git@refs/pull/156/head#subdirectory=connector_importer

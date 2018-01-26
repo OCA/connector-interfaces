@@ -1,36 +1,32 @@
-# -*- coding: utf-8 -*-
-##############################################################################
-#
-# Copyright (C) 2017 Camptocamp
-#
-##############################################################################
+# Author: Simone Orsi
+# Copyright 2018 Camptocamp SA
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
+
 {
-    'name': 'Connector Importer',
-    'description': """This module takes care of import sessions.""",
-    'version': '10.0.1.0.0',
-    'depends': [
-        'connector',
+    "name": "Connector Importer",
+    "summary": """This module takes care of import sessions.""",
+    "version": "17.0.1.0.0",
+    "depends": ["connector", "queue_job"],
+    "author": "Camptocamp, Odoo Community Association (OCA)",
+    "license": "AGPL-3",
+    "category": "Connector",
+    "website": "https://github.com/OCA/connector-interfaces",
+    "maintainers": ["base", "simahawk"],
+    "data": [
+        "data/ir_cron.xml",
+        "data/queue_job_function_data.xml",
+        "security/security.xml",
+        "security/ir.model.access.csv",
+        "views/backend_views.xml",
+        "views/recordset_views.xml",
+        "views/import_type_views.xml",
+        "views/source_views.xml",
+        "views/report_template.xml",
+        "views/docs_template.xml",
+        "views/source_config_template.xml",
+        "views/source_api_value.xml",
+        "views/source_api.xml",
+        "menuitems.xml",
     ],
-    'author': 'Camptocamp',
-    'license': 'AGPL-3',
-    'category': 'Uncategorized',
-    'website': 'http://www.camptocamp.com',
-    'data': [
-        'data/ir_cron.xml',
-        'security/security.xml',
-        'security/ir.model.access.csv',
-        'views/import_backend_views.xml',
-        'views/import_recordset_views.xml',
-        'views/import_source_views.xml',
-        'views/report_template.xml',
-        'views/docs_template.xml',
-        'views/source_config_template.xml',
-        # TODO
-        # 'views/import_user_views.xml',
-        # TODO
-        # 'wizards/base.xml',
-        # 'wizards/products/wizard_import_products.xml',
-        'menuitems.xml',
-    ],
-    'external_dependencies': {'python': ['chardet']},
+    "external_dependencies": {"python": ["chardet", "pytz", "pyyaml"]},
 }
