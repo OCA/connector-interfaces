@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
   <data noupdate="1">
 
     <!-- we set file content from scenario.
     This record is a placeholder that we need to keep the record in odoo
     as we are using `connector_importer` prefix.
     -->
-    <--
+    <!--
     <record id="examplefile_1_0_import_key" model="ir.attachment">
       <field name="datas">Y29udGVudCBmcm9tIHNldHVwIHNvbmc=\n</field>
       <field name="datas_fname">foo.csv</field>
@@ -14,4 +14,4 @@
     </record>
     -->
   </data>
-</openerp>
+</odoo>
