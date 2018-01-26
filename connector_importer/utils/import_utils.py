@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
 # Author: Simone Orsi
-# Copyright 2017 Camptocamp SA
+# Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import csv
@@ -8,15 +7,15 @@ import base64
 import time
 from chardet.universaldetector import UniversalDetector
 
-from cStringIO import StringIO
+from io import StringIO
 
 from ..log import logger
 
 
 def get_encoding(data):
-    """ try to get encoding incrementally
-    see http://chardet.readthedocs.org/en/latest/usage.html
-    #example-detecting-encoding-incrementally
+    """Try to get encoding incrementally.
+
+    See http://chardet.readthedocs.org/en/latest/usage.html#example-detecting-encoding-incrementally  # noqa
     """
     start = time.time()
     msg = 'detecting file encoding...'
@@ -35,8 +34,7 @@ def get_encoding(data):
 
 
 def csv_content_to_file(data):
-    """ odoo binary fields spit out b64 data
-    """
+    """Odoo binary fields spit out b64 data."""
     # guess encoding via chardet (LOVE IT! :))
     encoding_info = get_encoding(data)
     encoding = encoding_info['encoding']
@@ -78,6 +76,7 @@ def read_path(path):
 
 
 class CSVReader(object):
+    """Advanced CSV reader."""
 
     def __init__(self,
                  filepath=None,
@@ -98,9 +97,7 @@ class CSVReader(object):
         self.fieldnames = fieldnames
 
     def read_lines(self):
-        """ return iterator that yields lines
-        and add info to them (like line nr).
-        """
+        """Yields lines and add info to them (like line nr)."""
         self.data.seek(0)
         reader = csv.DictReader(
             self.data,
