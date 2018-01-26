@@ -1,14 +1,20 @@
-# -*- coding: utf-8 -*-
 # Author: Simone Orsi
-# Copyright 2017 Camptocamp SA
+# Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 from odoo import models, fields, api, tools
 
-from ..utils.importer_utils import gen_chunks, CSVReader, guess_csv_metadata
+from ...utils.import_utils import gen_chunks
 
 
 class ImportSourceConsumerdMixin(models.AbstractModel):
+    """Source consumer mixin.
+
+    Inheriting models can setup, configure and use import sources.
+
+    Relation towards source records is generic to grant maximum freedom
+    on which source type to use.
+    """
     _name = 'import.source.consumer.mixin'
     _description = 'Import source consumer'
 
@@ -70,10 +76,21 @@ class ImportSourceConsumerdMixin(models.AbstractModel):
         return action
 
     def get_source(self):
+        """Return the source to the consumer."""
         return self.source_ref_id
 
 
 class ImportSource(models.AbstractModel):
+    """Define a source for an import.
+
+    A source model is responsible for:
+
+    * storing specific settings (chunk size, source params, etc)
+    * retrieve source lines (connect to an external service, or db or read CSV)
+    * yield lines in chunks
+    * display configuration summary on the recordset (via config summary)
+    * optionally, provide a reporter to create an extensive report for users.
+    """
     _name = 'import.source'
     _description = 'Import source'
     _source_type = 'none'
@@ -93,16 +110,40 @@ class ImportSource(models.AbstractModel):
         readonly=True,
     )
 
+    # tmpl that renders configuration summary
     _config_summary_template = 'connector_importer.source_config_summary'
-    _config_summary_fields = ('chunk_size', )
+
+    @property
+    def _config_summary_fields(self):
+        """Fields automatically included in the summary.
+
+        Override it to add your custom fields automatically to the summary.
+        """
+        return ['chunk_size', ]
 
     @api.depends()
     def _compute_config_summary(self):
+        """Generate configuration summary HTML.
+
+        Configurations parameters can vary depending on the kind of source.
+        To display meaningful information on the recordset
+        w/out hacking the recordset view each time
+        we generate a short HTML summary.
+
+        For instance, if you are connecting to an external db
+        you might want to show DSN, if you are loading a CSV
+        you might want to show delimiter, quotechar and so on.
+
+        To add your fields automatically to the summary,
+        just override `_config_summary_fields`.
+        They'll be automatically included in the summary.
+        """
         template = self.env.ref(self._config_summary_template)
         for item in self:
             item.config_summary = template.render(item._config_summary_data())
 
     def _config_summary_data(self):
+        """Collect data for summary."""
         info = []
         for fname in self._config_summary_fields:
             info.append((fname, self[fname]))
@@ -114,6 +155,7 @@ class ImportSource(models.AbstractModel):
 
     @api.model
     def create(self, vals):
+        """Override to update reference to source on the consumer."""
         res = super(ImportSource, self).create(vals)
         if self.env.context.get('active_model'):
             # update reference on consumer
@@ -123,6 +165,7 @@ class ImportSource(models.AbstractModel):
 
     @api.multi
     def get_lines(self):
+        """Retrieve lines to import."""
         self.ensure_one()
         # retrieve lines
         lines = self._get_lines()
@@ -136,110 +179,23 @@ class ImportSource(models.AbstractModel):
             yield list(chunk)
 
     def _get_lines(self):
+        """Your duty here..."""
         raise NotImplementedError()
 
     def _sort_lines(self, lines):
+        """Override to customize sorting."""
         return lines
 
     def get_config_view_id(self):
+        """Retrieve configuration view."""
         return self.env['ir.ui.view'].search([
             ('model', '=', self._name),
             ('type', '=', 'form')], limit=1).id
 
     def get_reporter(self):
+        """Retrieve a specific reporter for this source.
+
+        A report can be used to produce and extensive report for the end user.
+        See `reporter` models.
+        """
         return self.env.get(self._reporter_model)
-
-
-class CSVSource(models.Model):
-    _name = 'import.source.csv'
-    _inherit = 'import.source'
-    _description = 'CSV import source'
-    _source_type = 'csv'
-    _reporter_model = 'reporter.csv'
-
-    csv_file = fields.Binary('CSV file')
-    # use these to load file from an FS path
-    csv_filename = fields.Char('CSV filename')
-    csv_filesize = fields.Char(
-        string='CSV filesize',
-        compute='_compute_csv_filesize',
-        readonly=True,
-    )
-    csv_path = fields.Char('CSV path')
-    csv_delimiter = fields.Char(
-        string='CSV delimiter',
-        default=';',
-    )
-    csv_quotechar = fields.Char(
-        string='CSV quotechar',
-        default='"',
-    )
-    _config_summary_fields = ImportSource._config_summary_fields + (
-        'csv_filename', 'csv_filesize', 'csv_delimiter', 'csv_quotechar',
-    )
-
-    @api.onchange('csv_file')
-    def _onchance_csv_file(self):
-        if self.csv_file:
-            meta = guess_csv_metadata(self.csv_file.decode('base64'))
-            if meta:
-                self.csv_delimiter = meta['delimiter']
-                self.csv_quotechar = meta['quotechar']
-
-    def _filesize_human(self, size, suffix='B'):
-        for unit in ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z']:
-            if abs(size) < 1024.0:
-                return "%3.1f%s%s" % (size, unit, suffix)
-            size /= 1024.0
-        return "%.1f%s%s" % (size, 'Y', suffix)
-
-    @api.depends('csv_file')
-    def _compute_csv_filesize(self):
-        for item in self:
-            if item.csv_file:
-                item.csv_filesize = self._filesize_human(
-                    len(item.csv_file.decode('base64')))
-
-    def _get_lines(self):
-        # read CSV
-        reader_args = {
-            'delimiter': self.csv_delimiter,
-        }
-        if self.csv_path:
-            # TODO: join w/ filename
-            reader_args['filepath'] = self.csv_path
-        else:
-            reader_args['filedata'] = self.csv_file
-
-        reader = CSVReader(**reader_args)
-        return reader.read_lines()
-
-    # TODO: this stuff is now unrelated from backend version must be refactored
-    # # handy fields to make the example attachment
-    # # downloadable within recordset view
-    # example_file_xmlid = fields.Char()
-    # example_file_url = fields.Char(
-    #     string='Download example file',
-    #     compute='_compute_example_file_url',
-    #     readonly=True,
-    # )
-    #
-    # def _get_example_attachment(self):
-    #     # You can define example file by creating attachments
-    #     # with an xmlid matching the import type/key
-    #     # `connector_importer.example_file_$version_key`
-    #     if not self.backend_id.version or not self.import_type_id:
-    #         return
-    #     xmlid = self.example_file_xmlid
-    #     if not xmlid:
-    #         xmlid = u'connector_importer.examplefile_{}_{}'.format(
-    #             self.backend_id.version.replace('.', '_'),
-    #             self.import_type_id.key)
-    #     return self.env.ref(xmlid, raise_if_not_found=0)
-    #
-    # @api.depends('backend_id.version', 'import_type_id', 'example_file_xmlid')
-    # def _compute_example_file_url(self):
-    #     att = self._get_example_attachment()
-    #     if att:
-    #         self.example_file_url = u'/web/content/{}/{}'.format(
-    #             att.id, att.name)

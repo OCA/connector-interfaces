@@ -1,6 +1,5 @@
-# -*- coding: utf-8 -*-
 # Author: Simone Orsi
-# Copyright 2017 Camptocamp SA
+# Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import json
@@ -10,7 +9,7 @@ EXAMPLEDATA = {
         "updated": 0, "skipped": 584, "errors": 0, "created": 414
     },
     "errors": [],
-    "last_start": "08/03/2017 13:46",
+    "last_start": "08/03/2018 13:46",
     "skipped": [
         {"model": "product.template",
          "line": 3,
@@ -137,4 +136,4 @@ class Reporter(object):
 
 if __name__ == '__main__':
     reporter = Reporter(JSONDATA, detailed=1)
-    print reporter.html()
+    print(reporter.html())
