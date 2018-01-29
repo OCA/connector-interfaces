@@ -14,7 +14,7 @@ from .job_mixin import JobRelatedMixin
 from ..log import logger
 
 
-class ImportRecordSet(models.Model, JobRelatedMixin):
+class ImportRecordset(models.Model, JobRelatedMixin):
     """Set of records, together with their configuration.
 
     A recordset can be considered as an "import session".
@@ -32,11 +32,11 @@ class ImportRecordSet(models.Model, JobRelatedMixin):
     * downloadable report file (via reporters)
     * global states of running jobs
 
-    When you run the import of a recordset this is what happens:
+    When you run the import of a recordset this is what it does:
 
-    * asks the source to provide all the records (chunked)
-    * creates and import record for each chunk
-    * schedule the import job for each record
+    * ask the source to provide all the records (chunked)
+    * create an import record for each chunk
+    * schedule the import job for each import record
     """
     _name = 'import.recordset'
     _inherit = 'import.source.consumer.mixin'
@@ -75,6 +75,7 @@ class ImportRecordSet(models.Model, JobRelatedMixin):
         string='Records',
     )
     # store info about imports report
+    # TODO: use Serialized field
     jsondata = fields.Text('JSON Data')
     report_html = fields.Html(
         'Report summary', compute='_compute_report_html')
@@ -103,16 +104,22 @@ class ImportRecordSet(models.Model, JobRelatedMixin):
     def unlink(self):
         # inheritance of non-model mixin - like JobRelatedMixin -
         # does not work w/out this
-        return super(ImportRecordSet, self).unlink()
+        return super().unlink()
 
-    @api.one
+    @api.multi
     @api.depends('backend_id.name')
     def _compute_name(self):
-        names = [
-            self.backend_id.name,
-            '#' + str(self.id),
-        ]
-        self.name = ' '.join([_f for _f in names if _f])
+        for item in self:
+            names = [
+                item.backend_id.name.strip(),
+                '#' + str(item.id),
+            ]
+            item.name = ' '.join(names)
+
+    def get_records(self):
+        """Retrieve importable records and keep ordering."""
+        return self.env['import.record'].search([
+            ('recordset_id', '=', self.id)])
 
     @api.multi
     def set_report(self, values, reset=False):
@@ -129,26 +136,47 @@ class ImportRecordSet(models.Model, JobRelatedMixin):
     def get_report(self):
         return json.loads(self.jsondata or '{}')
 
+    def _get_report_html_data(self):
+        """Prepare data for HTML report.
+
+        :return dict: containing data for HTML report.
+
+        Keys:
+            ``recordset``: current recordset
+            ``last_start``: last time import ran
+            ``report_by_model``: report data grouped by model. Like:
+                data['report_by_model'] = {
+                    ir.model(res.parner): {
+                        'errored': 1,
+                        'skipped': 4,
+                        'created': 10,
+                        'updated': 8,
+                    }
+                }
+        """
+        report = self.get_report()
+        data = {
+            'recordset': self,
+            'last_start': report.pop('_last_start'),
+            'report_by_model': OrderedDict(),
+        }
+        # count keys by model
+        for _model, __ in self.available_models():
+            model = self.env['ir.model']._get(_model)
+            data['report_by_model'][model] = {}
+            # be defensive here. At some point
+            # we could decide to skip models on demand.
+            for k, v in report.get(_model, {}).items():
+                data['report_by_model'][model][k] = len(v)
+        return data
+
     @api.depends('jsondata')
     def _compute_report_html(self):
         template = self.env.ref('connector_importer.recordset_report')
         for item in self:
             if not item.jsondata:
                 continue
-            report = item.get_report()
-            data = {
-                'recordset': item,
-                'last_start': report.pop('_last_start'),
-                'report_by_model': OrderedDict(),
-            }
-            # count keys by model
-            for _model, __ in item.available_models():
-                model = self.env['ir.model']._get(_model)
-                data['report_by_model'][model] = {}
-                # be defensive here. At some point
-                # we could decide to skip models on demand.
-                for k, v in report.get(_model, {}).items():
-                    data['report_by_model'][model][k] = len(v)
+            data = item._get_report_html_data()
             item.report_html = template.render(data)
 
     @api.multi

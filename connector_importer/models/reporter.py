@@ -99,13 +99,14 @@ class CSVReporter(models.AbstractModel):
         writer.writerow(item)
 
     def report_get_columns(self, recordset, orig_content,
-                           extra_keys=[], delimiter=';'):
+                           extra_keys=None, delimiter=';'):
         """Retrieve columns by recordset.
 
         :param recordset: instance of recordset.
         :param orig_content: original csv content list of line.
         :param extra_keys: report-related extra columns.
         """
+        extra_keys = extra_keys or []
         # read only the 1st line of the original file
         if orig_content:
             line1 = orig_content[0].split(delimiter)
