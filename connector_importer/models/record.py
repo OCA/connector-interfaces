@@ -32,13 +32,14 @@ class ImportRecord(models.Model, JobRelatedMixin):
     """
     _name = 'import.record'
     _description = 'Import record'
-    _order = 'date DESC'
+    _order = 'id'
     _backend_type = 'import_backend'
 
     date = fields.Datetime(
         'Import date',
         default=fields.Date.context_today,
     )
+    # TODO: use Serialize field?
     jsondata = fields.Text('JSON Data')
     recordset_id = fields.Many2one(
         'import.recordset',
@@ -81,7 +82,7 @@ class ImportRecord(models.Model, JobRelatedMixin):
         return self.backend_id.debug_mode or \
             os.environ.get('IMPORTER_DEBUG_MODE')
 
-    @api.one
+    @api.multi
     @job
     def import_record(self, component_name, model_name):
         """This job will import a record."""
@@ -98,14 +99,17 @@ class ImportRecord(models.Model, JobRelatedMixin):
         if self.debug_mode():
             logger.warn('### DEBUG MODE ACTIVE: WILL NOT USE QUEUE ###')
             job_method = self.import_record
+        _result = {}
         for item in self:
             # we create a record and a job for each model name
             # that needs to be imported
             for model, importer in item.recordset_id.available_models():
                 # TODO: grab component from config
                 result = job_method(importer, model)
+                _result[model] = result
                 if self.debug_mode():
                     # debug mode, no job here: reset it!
                     item.write({'job_id': False})
                 else:
                     item.write({'job_id': result.db_record().id})
+        return _result
