@@ -7,7 +7,7 @@ from odoo import models, fields, api, tools
 from ...utils.import_utils import gen_chunks
 
 
-class ImportSourceConsumerdMixin(models.AbstractModel):
+class ImportSourceConsumerMixin(models.AbstractModel):
     """Source consumer mixin.
 
     Inheriting models can setup, configure and use import sources.
@@ -49,10 +49,9 @@ class ImportSourceConsumerdMixin(models.AbstractModel):
     @api.model
     @tools.ormcache('self')
     def _selection_source_ref_id(self):
-        domain = [('model', '=like', 'import.source.%')]
-        return [(r.model, r.name)
-                for r in self.env['ir.model'].search(domain)
-                if not r.model.endswith('mixin')]
+        return [
+            ('import.source.csv', 'CSV'),
+        ]
 
     @api.multi
     @api.depends('source_ref_id', )
@@ -97,7 +96,7 @@ class ImportSource(models.AbstractModel):
     _reporter_model = ''
 
     name = fields.Char(
-        compute=lambda self: self._source_type,
+        compute='_compute_name',
         readony=True,
     )
     chunk_size = fields.Integer(
@@ -112,6 +111,10 @@ class ImportSource(models.AbstractModel):
 
     # tmpl that renders configuration summary
     _config_summary_template = 'connector_importer.source_config_summary'
+
+    @api.multi
+    def _compute_name(self):
+        self.name = self._source_type
 
     @property
     def _config_summary_fields(self):
