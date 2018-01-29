@@ -58,14 +58,14 @@ class ImporterBackend(models.Model):
     notes = fields.Text('Notes')
     debug_mode = fields.Boolean(
         'Debug mode?',
-        help=_("Enabling debug mode causes the import to run "
-               "in real time, without using any job queue. "
-               "Make sure you don't do this in production!")
+        help=("Enabling debug mode causes the import to run "
+              "in real time, without using any job queue. "
+              "Make sure you don't do this in production!")
     )
     job_running = fields.Boolean(
         'Job running',
         compute='_compute_job_running',
-        help=_("Tells you if a job is running for this backend."),
+        help="Tells you if a job is running for this backend.",
         readonly=True
     )
 

@@ -3,8 +3,8 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 from odoo import models, fields, api
-
 from ...utils.import_utils import CSVReader, guess_csv_metadata
+import base64
 
 
 class CSVSource(models.Model):
@@ -33,6 +33,8 @@ class CSVSource(models.Model):
         default='"',
     )
 
+    _csv_reader_klass = CSVReader
+
     @property
     def _config_summary_fields(self):
         _fields = super()._config_summary_fields
@@ -41,11 +43,14 @@ class CSVSource(models.Model):
             'csv_delimiter', 'csv_quotechar',
         ]
 
+    def _binary_csv_content(self):
+        return base64.decodestring(self.csv_file)
+
     @api.onchange('csv_file')
     def _onchance_csv_file(self):
         if self.csv_file:
             # auto-guess CSV details
-            meta = guess_csv_metadata(self.csv_file.decode('base64'))
+            meta = guess_csv_metadata(self._binary_csv_content())
             if meta:
                 self.csv_delimiter = meta['delimiter']
                 self.csv_quotechar = meta['quotechar']
@@ -63,7 +68,7 @@ class CSVSource(models.Model):
         for item in self:
             if item.csv_file:
                 item.csv_filesize = self._filesize_human(
-                    len(item.csv_file.decode('base64')))
+                    len(item._binary_csv_content()))
 
     def _get_lines(self):
         # read CSV
@@ -74,9 +79,9 @@ class CSVSource(models.Model):
             # TODO: join w/ filename
             reader_args['filepath'] = self.csv_path
         else:
-            reader_args['filedata'] = self.csv_file
+            reader_args['filedata'] = base64.decodestring(self.csv_file)
 
-        reader = CSVReader(**reader_args)
+        reader = self._csv_reader_klass(**reader_args)
         return reader.read_lines()
 
     # TODO: this stuff is now unrelated from backend version must be refactored

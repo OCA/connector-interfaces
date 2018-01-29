@@ -2,14 +2,16 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-import csv
-import base64
-import time
-from chardet.universaldetector import UniversalDetector
-
-from io import StringIO
-
 from ..log import logger
+import csv
+import time
+import io
+try:
+    from chardet.universaldetector import UniversalDetector
+except:
+    import logging
+    _logger = logging.getLogger(__name__)
+    _logger.debug('`chardet` lib is missing')
 
 
 def get_encoding(data):
@@ -20,7 +22,7 @@ def get_encoding(data):
     start = time.time()
     msg = 'detecting file encoding...'
     logger.info(msg)
-    file_like = StringIO(data)
+    file_like = io.BytesIO(data)
     detector = UniversalDetector()
     for i, line in enumerate(file_like):
         detector.feed(line)
@@ -53,25 +55,25 @@ def csv_content_to_file(data):
         data_str = data_str.encode('utf-8')
     else:
         data_str = data
-    return StringIO(data_str)
+    return data_str
 
 
 def guess_csv_metadata(filecontent):
-    f = StringIO(filecontent)
-    try:
-        dialect = csv.Sniffer().sniff(f.readline(), "\t,;")
-        f.seek(0)
-        meta = {
-            'delimiter': dialect.delimiter,
-            'quotechar': dialect.quotechar,
-        }
-    except:
-        meta = {}
-    return meta
+    with io.StringIO(str(filecontent, 'utf-8')) as ff:
+        try:
+            dialect = csv.Sniffer().sniff(ff.readline(), "\t,;")
+            ff.seek(0)
+            meta = {
+                'delimiter': dialect.delimiter,
+                'quotechar': dialect.quotechar,
+            }
+        except:
+            meta = {}
+        return meta
 
 
 def read_path(path):
-    with file(path, 'r') as thefile:
+    with open(path, 'r') as thefile:
         return thefile.read()
 
 
@@ -87,20 +89,16 @@ class CSVReader(object):
         assert filedata or filepath, 'Provide a file path or some file data!'
         if filepath:
             filedata = read_path(filepath)
-        else:
-            filedata = base64.decodestring(filedata)
-        # remove NULL byte
-        filedata = filedata.replace('\x00', '')
-        self.data = csv_content_to_file(filedata)
+        self.bdata = csv_content_to_file(filedata)
+        self.data = str(self.bdata, 'utf-8')
         self.delimiter = delimiter
         self.quotechar = quotechar
         self.fieldnames = fieldnames
 
     def read_lines(self):
         """Yields lines and add info to them (like line nr)."""
-        self.data.seek(0)
         reader = csv.DictReader(
-            self.data,
+            self.data.splitlines(),
             delimiter=str(self.delimiter),
             quotechar=str(self.quotechar),
             fieldnames=self.fieldnames,
