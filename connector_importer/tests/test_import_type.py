@@ -4,6 +4,8 @@
 
 
 import odoo.tests.common as common
+from odoo.tools import mute_logger
+
 from psycopg2 import IntegrityError
 
 
@@ -14,6 +16,7 @@ class TestImportType(common.SavepointCase):
         super().setUpClass()
         cls.type_model = cls.env['import.type']
 
+    @mute_logger('odoo.sql_db')
     def test_unique_constrain(self):
         self.type_model.create({
             'name': 'Ok',
