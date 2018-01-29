@@ -4,15 +4,15 @@
 
 {
     'name': 'Connector Importer',
-    'description': """This module takes care of import sessions.""",
+    'summary': """This module takes care of import sessions.""",
     'version': '11.0.1.0.0',
     'depends': [
         'connector',
         'queue_job',
     ],
-    'author': 'Camptocamp',
+    'author': 'Camptocamp, Odoo Community Association (OCA)',
     'license': 'AGPL-3',
-    'category': 'Uncategorized',
+    'category': 'Connector',
     'website': 'https://github.com/OCA/connector-interfaces',
     'data': [
         'data/ir_cron.xml',
