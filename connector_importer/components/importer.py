@@ -1,8 +1,9 @@
+# Author: Simone Orsi
 # Copyright 2018 Camptocamp SA
-# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 from odoo import fields
-from odoo.addons.component.core import Component, AbstractComponent
+from odoo.addons.component.core import Component
 from ..log import logger
 from ..log import LOGGER_NAME
 
@@ -34,18 +35,17 @@ class RecordSetImporter(Component):
                                                 recordset.id)
         logger.info(msg)
 
-        record_model = recordset.record_ids
-
         source = recordset.get_source()
         for chunk in source.get_lines():
             # create chuncked records and run their imports
-            record = record_model.create({'recordset_id': recordset.id})
+            record = self.env['import.record'].create(
+                {'recordset_id': recordset.id})
             # store data
             record.set_data(chunk)
             record.run_import()
 
 
-class RecordImporter(AbstractComponent):
+class RecordImporter(Component):
     """Importer for records.
 
     This importer is actually the one that does the real import work.
@@ -159,9 +159,9 @@ class RecordImporter(AbstractComponent):
         """Check for required keys missing."""
         missing = (not source_key.startswith('__') and
                    orig_values.get(source_key) is None)
+        unique_key = self.odoo_unique_key
         if missing:
             msg = 'MISSING REQUIRED SOURCE KEY={}'.format(source_key)
-            unique_key = self.odoo_unique_key
             if unique_key and values.get(unique_key):
                 msg += ': {}={}'.format(
                     unique_key, values[unique_key])
