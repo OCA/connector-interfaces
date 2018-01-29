@@ -2,7 +2,6 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-
 import odoo.tests.common as common
 
 
@@ -12,8 +11,6 @@ class TestBackend(common.SavepointCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.backend_model = cls.env['import.backend']
-        cls.recordset_model = cls.env['import.recordset']
-        cls.type_model = cls.env['import.type']
 
     def test_backend_create(self):
         bknd = self.backend_model.create({
@@ -29,14 +26,14 @@ class TestBackend(common.SavepointCase):
             'version': '1.0',
             'cron_cleanup_keep': 3,
         })
-        itype = self.type_model.create({
+        itype = self.env['import.type'].create({
             'name': 'Fake',
             'key': 'fake',
             'settings': '# nothing to do'
         })
         # and 5 recorsets
         for x in range(5):
-            rec = self.recordset_model.create({
+            rec = self.env['import.recordset'].create({
                 'backend_id': bknd.id,
                 'import_type_id': itype.id,
             })
