@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+  <record id="import_odoorpc_config_form" model="ir.ui.view">
+    <field name="name">import.odoorpc.config form</field>
+    <field name="model">import.odoorpc.config</field>
+    <field name="arch" type="xml">
+      <form>
+        <group>
+          <field name="odoo_host" />
+          <field name="odoo_port" />
+          <field name="odoo_protocol" />
+          <field name="odoo_db" />
+          <field name="odoo_user" />
+          <field name="odoo_pwd" />
+          <button name="action_test_connection" type="object" string="Test connection" />
+        </group>
+      </form>
+    </field>
+  </record>
+
+  <record id="import_odoorpc_config_tree" model="ir.ui.view">
+    <field name="name">import.odoorpc.config tree</field>
+    <field name="model">import.odoorpc.config</field>
+    <field name="arch" type="xml">
+      <tree>
+        <field name="odoo_host" />
+        <field name="odoo_port" />
+        <field name="odoo_db" />
+        <field name="odoo_user" />
+      </tree>
+    </field>
+  </record>
+
+  <record id="action_odoorpc_config" model="ir.actions.act_window">
+    <field name="name">OdooRPC config</field>
+    <field name="res_model">import.odoorpc.config</field>
+    <field name="view_type">form</field>
+    <field name="view_mode">tree,form</field>
+  </record>
+
+  <menuitem
+    id="menu_odoorpc_config"
+    name="OdooRPC config"
+    parent="connector_importer.menu_importer_root"
+    action="action_odoorpc_config"
+    />
+
+
+</odoo>

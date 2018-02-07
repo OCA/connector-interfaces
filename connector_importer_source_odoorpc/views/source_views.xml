@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+  <record id="odoorpc_source_orm" model="ir.ui.view">
+    <field name="name">import.source.odoorpc form</field>
+    <field name="model">import.source.odoorpc</field>
+    <field name="priority" eval="99"/>
+    <field name="inherit_id" ref="connector_importer.view_import_source_form"/>
+    <field name="arch" type="xml">
+      <group name="common" position="after">
+        <group name="info">
+          <field name="odoo_rpc_config_id" />
+          <field name="odoo_source_model" />
+          <field name="odoo_source_domain" />
+          <field name="odoo_source_fields" />
+        </group>
+      </group>
+    </field>
+  </record>
+
+</odoo>
