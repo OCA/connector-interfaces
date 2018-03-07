@@ -1,0 +1,3 @@
+queue
+connector
+connector-interfaces https://github.com/simahawk/connector-interfaces 11-add-connector_importer
