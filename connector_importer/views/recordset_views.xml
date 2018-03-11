@@ -46,7 +46,7 @@
                 </group>
               </page>
               <page string="Raw Status">
-                <field name="jsondata" readonly="1" nolabel="1" />
+                <field name="report_data" readonly="1" nolabel="1" />
               </page>
               <page string="Records">
                 <field name="record_ids" nolabel="1">

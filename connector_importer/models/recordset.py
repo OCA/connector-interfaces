@@ -9,7 +9,7 @@ from collections import OrderedDict
 from odoo import models, fields, api
 from odoo.addons.queue_job.job import (
     DONE, STATES, job)
-
+from odoo.addons.base_sparse_field.models.fields import Serialized
 from .job_mixin import JobRelatedMixin
 from ..log import logger
 
@@ -75,8 +75,8 @@ class ImportRecordset(models.Model, JobRelatedMixin):
         string='Records',
     )
     # store info about imports report
-    # TODO: use Serialized field
-    jsondata = fields.Text('JSON Data')
+    report_data = Serialized(oldname='jsondata')
+    shared_data = Serialized()
     report_html = fields.Html(
         'Report summary', compute='_compute_report_html')
     full_report_url = fields.Char(
@@ -121,20 +121,35 @@ class ImportRecordset(models.Model, JobRelatedMixin):
         return self.env['import.record'].search([
             ('recordset_id', '=', self.id)])
 
+    def _set_serialized(self, fname, values, reset=False):
+        """Update seriazed data."""
+        _values = {}
+        if not reset:
+            _values = self[fname]
+        _values.update(values)
+        self[fname] = _values
+
     @api.multi
     def set_report(self, values, reset=False):
         """Update import report values."""
         self.ensure_one()
-        if reset:
-            _values = {}
-        else:
-            _values = self.get_report()
-        _values.update(values)
-        self.jsondata = json.dumps(_values)
+        self._set_serialized('report_data', values, reset=reset)
 
-    @api.model
+    @api.multi
     def get_report(self):
-        return json.loads(self.jsondata or '{}')
+        self.ensure_one()
+        return self.report_data or {}
+
+    @api.multi
+    def set_shared(self, values, reset=False):
+        """Update import report values."""
+        self.ensure_one()
+        self._set_serialized('shared_data', values, reset=reset)
+
+    @api.multi
+    def get_shared(self):
+        self.ensure_one()
+        return self.shared_data or {}
 
     def _get_report_html_data(self):
         """Prepare data for HTML report.
@@ -170,11 +185,11 @@ class ImportRecordset(models.Model, JobRelatedMixin):
                 data['report_by_model'][model][k] = len(v)
         return data
 
-    @api.depends('jsondata')
+    @api.depends('report_data')
     def _compute_report_html(self):
         template = self.env.ref('connector_importer.recordset_report')
         for item in self:
-            if not item.jsondata:
+            if not item.report_data:
                 continue
             data = item._get_report_html_data()
             item.report_html = template.render(data)
