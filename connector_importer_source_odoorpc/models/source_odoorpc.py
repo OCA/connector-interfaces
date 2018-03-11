@@ -50,12 +50,14 @@ class OdooRPCSource(models.Model):
         The result will be:
 
             [{
+                'id': 20,
                 'name': 'John Doe',
                 'supplier': False,
                 'customer': True,
                 'category_id': 4,
                 '_model': 'res.partner',
             }, {
+                'id': 4,
                 'name': 'Good boy',
                 '_model': 'res.partner.category',
             }, ]
@@ -65,28 +67,18 @@ class OdooRPCSource(models.Model):
         """
         conn = self._rpc_connect_and_login()
         remote_model = conn.env[self.odoo_source_model]
-        to_read, to_follow = self._rpc_fields_to_read(remote_model)
+        to_read, to_follow, to_xmlids = self._rpc_fields_to_read(remote_model)
         # get main records
         records = remote_model.search_read(
             self.eval_domain(), to_read, limit=self.odoo_source_limit or None)
         # get what we should read on followed records
         to_follow_read = self._rpc_followed_to_read(records, to_follow)
         # read and yield followed
-        for follow_rel in to_follow_read.keys():
-            follow_ids = list(set(to_follow_read[follow_rel]['ids']))
-            follow_fields = list(to_follow_read[follow_rel]['fields'])
-            follow_model = conn.env[follow_rel]
-            # trick: use browse+read as in tests we are mocking the env
-            # w/ the test one so that calling read on an empty recordset
-            # won't produce any result.
-            followed_records = follow_model.browse(
-                follow_ids).read(follow_fields)
-            for followed in followed_records:
-                followed['_model'] = follow_rel
-                followed['_line_nr'] = followed['id']
-                yield followed
+        for followed_rec in self._followed_records(conn, to_follow_read):
+            yield followed_rec
         # yield main records
         for rec in records:
+            self._convert_xmlids(conn, rec, to_xmlids)
             rec['_model'] = self.odoo_source_model
             rec['_line_nr'] = rec['id']
             yield rec
@@ -108,37 +100,50 @@ class OdooRPCSource(models.Model):
         return data
 
     def _rpc_fields_to_read(self, remote_model):
-        """"Collect fields to read and to follow.
+        """Collect fields to read and to follow.
 
         :param `remote_model`: browse remote model
-        :return: tuple w (to_read, to_follow)
+        :return: tuple w (to_read, to_follow, to_xmlids)
             `to_read` is a simple list of fields to read on the main model
             `to_follow` is a mapping `field name` -> list of fields to read
             on the related record.
+            `to_xmlids` is a simple list of fields to be converted to xmlids
         """
 
         to_read = []
         to_follow = defaultdict(dict)
+        to_xmlids = defaultdict(dict)
         for fname in self.odoo_source_fields.strip().split(';'):
             fname, _, _to_follow = fname.partition(':')
             fname = fname.strip()
             to_read.append(fname)
-            if _to_follow.strip():
-                if _to_follow.strip() == '*':
+            _to_follow = _to_follow.strip()
+            if _to_follow:
+                use_xmlid = False
+                if _to_follow == '*':
                     # all fields
                     _fields = []
+                elif _to_follow.endswith('#xmlid'):
+                    # we'll follow via xmlids
+                    _fields = []
+                    to_xmlids[fname] = {}
+                    use_xmlid = True
                 else:
+                    # build fields' list
                     _fields = [
                         x.strip() for x in _to_follow.split(',') if x.strip()
                     ]
                 to_follow[fname]['fields'] = _fields
-        if to_follow:
+                to_follow[fname]['use_xmlid'] = use_xmlid
+        if to_follow or to_xmlids:
+            all_fields = list(to_follow.keys()) + list(to_xmlids.keys())
             fields_info = remote_model.fields_get(
-                allfields=list(to_follow.keys()),
-                attributes=['relation', 'type'])
+                allfields=all_fields, attributes=['relation', 'type'])
             for fname in to_follow.keys():
                 to_follow[fname].update(fields_info[fname])
-        return to_read, to_follow
+            for fname in to_xmlids.keys():
+                to_xmlids[fname].update(fields_info[fname])
+        return to_read, to_follow, to_xmlids
 
     def _rpc_followed_to_read(self, records, to_follow):
         """Retrieve info on followed fields.
@@ -158,10 +163,13 @@ class OdooRPCSource(models.Model):
         to_follow_read = {}
         for rec in records:
             for fname, info in to_follow.items():
+                if info['use_xmlid']:
+                    continue
                 if info['relation'] not in to_follow_read:
                     to_follow_read[info['relation']] = {
                         'ids': [],
-                        'fields': [],
+                        'followed_from': fname,
+                        'fields': info['fields'],
                     }
                 ids = rec[fname]
                 # unfortunately we cannot use `load='_classic_write'`
@@ -170,5 +178,33 @@ class OdooRPCSource(models.Model):
                     # handle them as x2m, we are just collecting ids to read
                     ids = [ids[0]]
                 to_follow_read[info['relation']]['ids'].extend(ids)
-                to_follow_read[info['relation']]['fields'].append(fname)
         return to_follow_read
+
+    def _followed_records(self, conn, to_follow_read):
+        """Read followed records.
+
+        `to_follow_read` contains ids and fields to read grouped by model.
+        """
+        for rel_model, info in to_follow_read.items():
+            ids = list(set(info['ids']))
+            _fields = list(info['fields'])
+            model = conn.env[rel_model]
+            # trick: use browse+read as in tests we are mocking the env
+            # w/ the test one so that calling read on an empty recordset
+            # won't produce any result.
+            for followed in model.browse(ids).read(_fields):
+                followed['_model'] = rel_model
+                followed['_line_nr'] = followed['id']
+                followed['_followed_from'] = info['followed_from']
+                yield followed
+
+    def _convert_xmlids(self, conn, rec, to_xmlids):
+        for fname, info in to_xmlids.items():
+            model = conn.env[info['relation']]
+            ids = rec[fname]
+            if isinstance(ids, int):
+                ids = [ids, ]
+            # replace values w/ xmlids
+            xmlids = tuple(model.browse(ids).get_external_id().values())
+            rec[fname] = \
+                xmlids[0] if info['type'] == 'many2one' else xmlids
