@@ -151,6 +151,29 @@ def concat(field, separator=' ', handler=None):
 
     return modifier
 
+
+def xmlid_to_rel(field):
+    """ Convert xmlids source values to ids.
+    """
+
+    def modifier(self, record, to_attr):
+        value = record.get(field)
+        if value is None:
+            return None
+        if isinstance(value, str):
+            # m2o
+            rec = self.env.ref(value, raise_if_not_found=False)
+            if rec:
+                return rec.id
+            return None
+        # x2m
+        return [
+            (6, 0, self.env.ref(x).ids) for x in value
+            if self.env.ref(x, raise_if_not_found=False)
+        ]
+
+    return modifier
+
 # TODO: consider to move this to mapper base klass
 # to ease maintanability and override
 
