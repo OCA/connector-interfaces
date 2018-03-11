@@ -279,18 +279,16 @@ class RecordImporter(Component):
             return
 
         self._init_importer(self.record.recordset_id)
-
-        mapper_options = self._load_mapper_options()
-
         for line in self._record_lines():
             line = self.prepare_line(line)
+            options = self._load_mapper_options()
 
             odoo_record = None
 
             try:
                 with self.env.cr.savepoint():
-                    values = self.mapper.map_record(line).values(
-                        **mapper_options)
+                    values = self.mapper.map_record(line).values(**options)
+                logger.debug(values)
             except Exception as err:
                 values = {}
                 self.tracker.log_error(values, line, odoo_record, message=err)
