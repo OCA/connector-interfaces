@@ -2,7 +2,7 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from odoo.addons.component.core import AbstractComponent
+from odoo.addons.component.core import Component
 import logging
 
 
@@ -40,7 +40,7 @@ class ChunkReport(dict):
         return res
 
 
-class Tracker(AbstractComponent):
+class Tracker(Component):
     """Track what happens during importer jobs."""
 
     _name = 'importer.tracking.handler'
