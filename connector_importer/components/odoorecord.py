@@ -2,10 +2,10 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from odoo.addons.component.core import AbstractComponent
+from odoo.addons.component.core import Component
 
 
-class OdooRecordHandler(AbstractComponent):
+class OdooRecordHandler(Component):
     """Interact w/ odoo importable records."""
 
     _name = 'importer.odoorecord.handler'
