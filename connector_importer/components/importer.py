@@ -67,19 +67,13 @@ class RecordImporter(Component):
     def _init_importer(self, recordset):
         self.recordset = recordset
         # record handler is responsible for create/write on odoo records
-        self.record_handler = self.component_by_name(
-            'importer.odoorecord.handler',
-            model_name=self.model._name,
-        )
+        self.record_handler = self.component(usage='odoorecord.handler')
         self.record_handler._init_handler(
             importer=self,
             unique_key=self.odoo_unique_key
         )
         # tracking handler is responsible for logging and chunk reports
-        self.tracker = self.component_by_name(
-            'importer.tracking.handler',
-            model_name=self.model._name,
-        )
+        self.tracker = self.component(usage='tracking.handler')
         self.tracker._init_handler(
             model_name=self.model._name,
             logger_name=LOGGER_NAME,
