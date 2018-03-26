@@ -32,7 +32,7 @@ class TestRecordImporter(TestImporterBase):
         self.record.set_data(lines)
         res = self.record.run_import()
         # in any case we'll get this per each model if the import is not broken
-        self.assertEqual(res, {'res.partner': ['ok']})
+        self.assertEqual(res, {'res.partner': 'ok'})
         report = self.recordset.get_report()
         self.assertEqual(len(report['res.partner']['created']), 10)
         self.assertEqual(len(report['res.partner']['errored']), 0)
@@ -54,7 +54,7 @@ class TestRecordImporter(TestImporterBase):
         self.record.set_data(lines)
         res = self.record.run_import()
         # in any case we'll get this per each model if the import is not broken
-        self.assertEqual(res, {'res.partner': ['ok']})
+        self.assertEqual(res, {'res.partner': 'ok'})
         report = self.recordset.get_report()
         self.assertEqual(len(report['res.partner']['created']), 8)
         self.assertEqual(len(report['res.partner']['errored']), 0)
@@ -82,7 +82,7 @@ class TestRecordImporter(TestImporterBase):
         self.record.set_data(lines)
         res = self.record.run_import()
         # in any case we'll get this per each model if the import is not broken
-        self.assertEqual(res, {'res.partner': ['ok']})
+        self.assertEqual(res, {'res.partner': 'ok'})
         report = self.recordset.get_report()
         self.assertEqual(len(report['res.partner']['created']), 10)
         self.assertEqual(len(report['res.partner']['updated']), 0)
