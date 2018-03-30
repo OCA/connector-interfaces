@@ -175,8 +175,14 @@ class OdooRPCSource(models.Model):
                 # unfortunately we cannot use `load='_classic_write'`
                 # with `search_read` so we cleanup values like (1, 'Foo')
                 if info['type'] == 'many2one':
-                    # handle them as x2m, we are just collecting ids to read
-                    ids = [ids[0]]
+                    if not ids:
+                        # empty m2o will produce false here and that's not what
+                        # we expect further
+                        ids = []
+                    else:
+                        # handle them as x2m, we are just
+                        # collecting ids to read
+                        ids = [ids[0]]
                 to_follow_read[info['relation']]['ids'].extend(ids)
         return to_follow_read
 

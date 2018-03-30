@@ -18,6 +18,15 @@ class OdooRPCBaseMapper(Component):
         # ('res.users', 'user_ids', 'login', 'user_ids', ),
     ]
 
+    def _merge_relations(self, old_vals, new_vals):
+        """Merges old and new values.
+
+        If we have several source fields pointing to the same destination field
+        we want to merge them. From backend_to_rel we will get [(6, 0, ids)]
+        format, so this only merges ids together from old and new values."""
+        new_vals[0][2].extend(old_vals[0][2])
+        return new_vals
+
     @mapping
     def resolve_relations(self, record):
         values = {}
@@ -38,5 +47,12 @@ class OdooRPCBaseMapper(Component):
                     source_field,
                     search_field=search_field,
                 )
-                values[dest_field] = converter(self, record, dest_field)
+                converted_vals = converter(self, record, dest_field)
+                if (dest_field in values and
+                        self.model._fields[dest_field].type.endswith('2many')):
+                    converted_vals = self._merge_relations(
+                        values.get(dest_field),
+                        converted_vals
+                    )
+                values[dest_field] = converted_vals
         return values
