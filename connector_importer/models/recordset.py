@@ -128,6 +128,16 @@ class ImportRecordset(models.Model, JobRelatedMixin):
             _values = self[fname]
         _values.update(values)
         self[fname] = _values
+        # Without invalidating cache we will have a bug because of Serialized
+        # field in odoo. It uses json.loads on convert_to_cache, which leads
+        # to all of our int dict keys converted to strings. Except for the
+        # first value get, where we get not from cache yet.
+        # SO if you plan on using integers as your dict keys for a serialized
+        # field beware that they will be converted to strings.
+        # In order to streamline this I invalidate cache right away so the
+        # values are converted right away
+        # TL/DR integer dict keys will always be converted to strings, beware
+        self.invalidate_cache((fname,))
 
     @api.multi
     def set_report(self, values, reset=False):
