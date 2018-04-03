@@ -38,9 +38,19 @@ class OdooRPCBaseMapper(Component):
                 # [{'id': 215, '_followed_from': 'user_ids',
                 #   'login': 'john.doe@foo.com',
                 #   '_line_nr': 215, '_model': 'res.users'}
-                search_value = [model_mapping[x][search_field]
-                                for x in search_value
-                                if model_mapping.get(x)]
+
+                # convert value to string here as dict keys in model_mapping
+                # are strings. Because of the serialized field and json.loads
+                ftype = self.model._fields[dest_field].type
+                if ftype == 'many2one':
+                    # man2one comes in the standard odoo format `(1, name)`
+                    search_value = model_mapping[
+                        str(search_value[0])
+                    ][search_field]
+                else:
+                    search_value = [model_mapping[str(x)][search_field]
+                                    for x in search_value
+                                    if model_mapping.get(str(x))]
             if search_value:
                 record[source_field] = search_value
                 converter = backend_to_rel(
