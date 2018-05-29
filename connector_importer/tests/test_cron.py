@@ -27,7 +27,7 @@ class TestBackendCron(common.SavepointCase):
         self.assertEqual(cron.nextcall, '2018-01-01 00:00:00')
         self.assertEqual(cron.interval_type, 'days')
         self.assertEqual(cron.interval_number, 2)
-        self.assertEqual(cron.code, 'model.cron_run(%d)' % self.bknd.id)
+        self.assertEqual(cron.code, 'model.run_cron(%d)' % self.bknd.id)
 
     def test_backend_cron_update(self):
         self.bknd.write({
