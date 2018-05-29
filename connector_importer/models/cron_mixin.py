@@ -51,7 +51,7 @@ class CronMixin(models.AbstractModel):
             'name': 'Cron for import backend %s' % self.name,
             'model_id': model_id,
             'state': 'code',
-            'code': 'model.cron_run(%d)' % self.id,
+            'code': 'model.run_cron(%d)' % self.id,
             'interval_number': self.cron_interval_number,
             'interval_type': self.cron_interval_type,
             'nextcall': self.cron_start_date,
