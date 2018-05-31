@@ -124,7 +124,8 @@ class BaseImportImport(TransientModel):
         attachment = self.env['ir.attachment'].create({
             'name': file_name,
             'datas': f.getvalue().encode('base64'),
-            'datas_fname': file_name
+            'datas_fname': file_name,
+            'type': 'binary'
         })
         return attachment.id
 
