@@ -39,7 +39,7 @@ class OdooRecordHandler(Component):
         ctx = ctx or {}
         for lang, values in translatable.items():
             odoo_record.with_context(
-                lang=lang, **self.write_context()).write(values)
+                lang=lang, **self.write_context()).write(values.copy())
 
     def odoo_pre_create(self, values, orig_values):
         """Do some extra stuff before creating a missing record."""
@@ -58,7 +58,7 @@ class OdooRecordHandler(Component):
         self.odoo_pre_create(values, orig_values)
         # TODO: remove keys that are not model's fields
         odoo_record = self.model.with_context(
-            **self.create_context()).create(values)
+            **self.create_context()).create(values.copy())
         self.odoo_post_create(odoo_record, values, orig_values)
         translatable = self.importer.collect_translatable(values, orig_values)
         self.update_translations(odoo_record, translatable)
@@ -82,7 +82,7 @@ class OdooRecordHandler(Component):
         odoo_record = self.odoo_find(values, orig_values)
         self.odoo_pre_write(odoo_record, values, orig_values)
         # TODO: remove keys that are not model's fields
-        odoo_record.with_context(**self.write_context()).write(values)
+        odoo_record.with_context(**self.write_context()).write(values.copy())
         self.odoo_post_write(odoo_record, values, orig_values)
         translatable = self.importer.collect_translatable(values, orig_values)
         self.update_translations(odoo_record, translatable)
