@@ -14,6 +14,11 @@ class OdooRecordHandler(Component):
 
     unique_key = ''
     importer = None
+    # By default odoo ignores create_uid/write_uid in vals.
+    # If you enable this flags and `create_uid` and/or `write_uid`
+    # are found in values they gonna be used for sudo.
+    override_create_uid = False
+    override_write_uid = False
 
     def _init_handler(self, importer=None, unique_key=None):
         self.importer = importer
@@ -59,6 +64,9 @@ class OdooRecordHandler(Component):
         # TODO: remove keys that are not model's fields
         odoo_record = self.model.with_context(
             **self.create_context()).create(values.copy())
+        # force uid
+        if self.override_create_uid and values.get('create_uid'):
+            self._force_uid(odoo_record, values, 'create_uid')
         self.odoo_post_create(odoo_record, values, orig_values)
         translatable = self.importer.collect_translatable(values, orig_values)
         self.update_translations(odoo_record, translatable)
@@ -83,7 +91,17 @@ class OdooRecordHandler(Component):
         self.odoo_pre_write(odoo_record, values, orig_values)
         # TODO: remove keys that are not model's fields
         odoo_record.with_context(**self.write_context()).write(values.copy())
+        # force uid
+        if self.override_write_uid and values.get('write_uid'):
+            self._force_uid(odoo_record, values, 'write_uid')
         self.odoo_post_write(odoo_record, values, orig_values)
         translatable = self.importer.collect_translatable(values, orig_values)
         self.update_translations(odoo_record, translatable)
         return odoo_record
+
+    def _force_uid(self, record, values, fname):
+        self.env.cr.execute(
+            'UPDATE {} SET {} = %s WHERE id = %s'.format(record._table, fname),
+            (values[fname], record.id, )
+        )
+        record.invalidate_cache([fname, ])
