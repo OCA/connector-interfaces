@@ -17,7 +17,9 @@ class OdooRecordHandler(Component):
     # By default odoo ignores create_uid/write_uid in vals.
     # If you enable this flags and `create_uid` and/or `write_uid`
     # are found in values they gonna be used for sudo.
+    # Same for `create_date`.
     override_create_uid = False
+    override_create_date = False
     override_write_uid = False
 
     def _init_handler(self, importer=None, unique_key=None):
@@ -66,7 +68,10 @@ class OdooRecordHandler(Component):
             **self.create_context()).create(values.copy())
         # force uid
         if self.override_create_uid and values.get('create_uid'):
-            self._force_uid(odoo_record, values, 'create_uid')
+            self._force_value(odoo_record, values, 'create_uid')
+        # force create date
+        if self.override_create_date and values.get('create_date'):
+            self._force_value(odoo_record, values, 'create_date')
         self.odoo_post_create(odoo_record, values, orig_values)
         translatable = self.importer.collect_translatable(values, orig_values)
         self.update_translations(odoo_record, translatable)
@@ -93,13 +98,16 @@ class OdooRecordHandler(Component):
         odoo_record.with_context(**self.write_context()).write(values.copy())
         # force uid
         if self.override_write_uid and values.get('write_uid'):
-            self._force_uid(odoo_record, values, 'write_uid')
+            self._force_value(odoo_record, values, 'write_uid')
+        # force create date
+        if self.override_create_date and values.get('create_date'):
+            self._force_value(odoo_record, values, 'create_date')
         self.odoo_post_write(odoo_record, values, orig_values)
         translatable = self.importer.collect_translatable(values, orig_values)
         self.update_translations(odoo_record, translatable)
         return odoo_record
 
-    def _force_uid(self, record, values, fname):
+    def _force_value(self, record, values, fname):
         self.env.cr.execute(
             'UPDATE {} SET {} = %s WHERE id = %s'.format(record._table, fname),
             (values[fname], record.id, )
