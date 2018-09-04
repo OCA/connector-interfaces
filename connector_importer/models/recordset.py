@@ -3,6 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import json
+import base64
 import os
 from collections import OrderedDict
 
@@ -285,7 +286,7 @@ class ImportRecordset(models.Model, JobRelatedMixin):
             return
         metadata, content = reporter.report_get(self)
         self.write({
-            'report_file': content.encode('base64'),
+            'report_file': base64.encodestring(content.encode()),
             'report_filename': metadata['complete_filename']
         })
         logger.info((
