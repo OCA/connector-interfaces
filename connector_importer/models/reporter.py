@@ -25,7 +25,7 @@ class ReporterMixin(models.AbstractModel):
     @api.model
     def report_get(self, recordset, **options):
         """Create and return a report for given recordset."""
-        fileout = io.BytesIO()
+        fileout = io.StringIO()
         self.report_do(recordset, fileout, **options)
         self.report_finalize(recordset, fileout, **options)
         metadata = self.report_get_metadata(recordset, **options)
