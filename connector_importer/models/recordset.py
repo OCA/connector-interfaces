@@ -280,7 +280,7 @@ class ImportRecordset(models.Model, JobRelatedMixin):
     def generate_report(self):
         self.ensure_one()
         reporter = self.get_source().get_reporter()
-        if not reporter:
+        if reporter is None:
             logger.debug('No reporter found...')
             return
         metadata, content = reporter.report_get(self)
