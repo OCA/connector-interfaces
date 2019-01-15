@@ -98,3 +98,15 @@ class TestRecordsetImporter(TestImporterBase):
         data1 = records[0].get_data()
         self.assertEqual(data1[0]['id'], 'id_1')
         self.assertEqual(data1[0]['fullname'], 'fullname_1')
+        # run it twice and make sure old records are wiped
+         # run the recordset importer
+        with self.backend.work_on(
+            'import.recordset',
+            components_registry=self.comp_registry
+        ) as work:
+            importer = work.component(usage='recordset.importer')
+            self.assertTrue(importer)
+            importer.run(self.recordset)
+        # we expect 5 records w/ 20 lines each
+        records = self.recordset.get_records()
+        self.assertEqual(len(records), 5)
