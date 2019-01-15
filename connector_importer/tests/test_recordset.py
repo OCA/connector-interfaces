@@ -51,7 +51,8 @@ class TestRecordset(common.SavepointCase):
         """Available models are propagated from import type."""
         models = tuple(self.recordset.available_models())
         self.assertEqual(models, (
-            ('res.partner', 'partner.importer'),
+            # model, importer, is_last_importer
+            ('res.partner', 'partner.importer', True),
         ))
 
     def test_get_set_raw_report(self):
