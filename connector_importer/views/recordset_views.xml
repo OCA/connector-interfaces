@@ -52,6 +52,7 @@
                 <field name="record_ids" nolabel="1">
                   <tree>
                     <field name="date" />
+                    <field name="jsondata_file" />
                     <field name="job_id" />
                     <field name="job_state" />
                   </tree>
