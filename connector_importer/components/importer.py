@@ -270,7 +270,7 @@ class RecordImporter(Component):
             'tracking_disable': True,
         }
 
-    def run(self, record, **kw):
+    def run(self, record, is_last_importer=True, **kw):
         """Run record job.
 
         Steps:
