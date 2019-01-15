@@ -2,12 +2,12 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
+import base64
 import json
 import os
 
 from odoo import models, fields, api
 from odoo.addons.queue_job.job import job
-
 from .job_mixin import JobRelatedMixin
 from ..log import logger
 
@@ -39,8 +39,11 @@ class ImportRecord(models.Model, JobRelatedMixin):
         'Import date',
         default=fields.Date.context_today,
     )
-    # TODO: use Serialize field?
-    jsondata = fields.Text('JSON Data')
+    # This field holds the whole bare data to import from the external source
+    # hence it can be huge. For this reason we store it in an attachment.
+    jsondata_file = fields.Binary(
+        attachment=True,
+    )
     recordset_id = fields.Many2one(
         'import.recordset',
         string='Recordset'
@@ -69,12 +72,17 @@ class ImportRecord(models.Model, JobRelatedMixin):
     @api.multi
     def set_data(self, adict):
         self.ensure_one()
-        self.jsondata = json.dumps(adict)
+        jsondata = json.dumps(adict)
+        self.jsondata_file = base64.b64encode(bytes(jsondata, 'utf-8'))
 
     @api.multi
     def get_data(self):
         self.ensure_one()
-        return json.loads(self.jsondata or '{}')
+        jsondata = None
+        if self.jsondata_file:
+            raw_data = base64.b64decode(self.jsondata_file).decode('utf-8')
+            jsondata = json.loads(raw_data)
+        return jsondata or {}
 
     @api.multi
     def debug_mode(self):
