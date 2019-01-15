@@ -257,6 +257,19 @@ class RecordImporter(Component):
             'override_existing': self.recordset.override_existing
         }
 
+    # TODO: make these contexts customizable via recordset settings
+    def _odoo_create_context(self):
+        """Inject context variables on create, merged by odoorecord handler."""
+        return {
+            'tracking_disable': True,
+        }
+
+    def _odoo_write_context(self):
+        """Inject context variables on write, merged by odoorecord handler."""
+        return {
+            'tracking_disable': True,
+        }
+
     def run(self, record, **kw):
         """Run record job.
 
