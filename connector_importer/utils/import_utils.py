@@ -8,7 +8,7 @@ import time
 import io
 try:
     from chardet.universaldetector import UniversalDetector
-except:
+except ImportError:
     import logging
     _logger = logging.getLogger(__name__)
     _logger.debug('`chardet` lib is missing')
@@ -67,7 +67,7 @@ def guess_csv_metadata(filecontent):
                 'delimiter': dialect.delimiter,
                 'quotechar': dialect.quotechar,
             }
-        except:
+        except BaseException:
             meta = {}
         return meta
 
