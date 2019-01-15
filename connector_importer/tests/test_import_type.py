@@ -45,7 +45,8 @@ class TestImportType(common.SavepointCase):
         })
         models = tuple(itype.available_models())
         self.assertEqual(models, (
-            ('res.partner', 'partner.importer'),
-            ('res.users', 'user.importer'),
-            ('another.one', 'import.withspaces'),
+            # model, importer, is_last_importer
+            ('res.partner', 'partner.importer', False),
+            ('res.users', 'user.importer', False),
+            ('another.one', 'import.withspaces', True),
         ))
