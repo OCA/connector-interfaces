@@ -99,7 +99,7 @@ class TestRecordsetImporter(TestImporterBase):
         self.assertEqual(data1[0]['id'], 'id_1')
         self.assertEqual(data1[0]['fullname'], 'fullname_1')
         # run it twice and make sure old records are wiped
-         # run the recordset importer
+        # run the recordset importer
         with self.backend.work_on(
             'import.recordset',
             components_registry=self.comp_registry
