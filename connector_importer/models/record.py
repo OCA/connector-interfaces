@@ -127,5 +127,8 @@ class ImportRecord(models.Model, JobRelatedMixin):
                     # debug mode, no job here: reset it!
                     item.write({'job_id': False})
                 else:
+                    # FIXME: we should have a o2m here otherwise
+                    # w/ multiple importers for the same record
+                    # we keep the reference on w/ the last job.
                     item.write({'job_id': result.db_record().id})
         return _result
