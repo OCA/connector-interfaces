@@ -177,7 +177,7 @@ class ImportSource(models.AbstractModel):
         lines_sorted = self._sort_lines(lines)
 
         for i, chunk in enumerate(gen_chunks(lines_sorted,
-                                  chunksize=self.chunk_size)):
+                                             chunksize=self.chunk_size)):
             # get out of chunk iterator
             yield list(chunk)
 
