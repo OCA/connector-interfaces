@@ -2,7 +2,6 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-import json
 import base64
 import os
 from collections import OrderedDict
