@@ -58,7 +58,11 @@ class OdooRecordHandler(Component):
 
     def create_context(self):
         """Inject context variables on create."""
-        return {}
+        return dict(
+            self.importer._odoo_create_context(),
+            # mark each action w/ this flag
+            connector_importer_session=True,
+        )
 
     def odoo_create(self, values, orig_values):
         """Create a new odoo record."""
@@ -87,15 +91,21 @@ class OdooRecordHandler(Component):
 
     def write_context(self):
         """Inject context variables on write."""
-        return {}
+        return dict(
+            self.importer._odoo_write_context(),
+            # mark each action w/ this flag
+            connector_importer_session=True,
+        )
 
     def odoo_write(self, values, orig_values):
         """Update an existing odoo record."""
-        # TODO: add a checkpoint? log something?
-        odoo_record = self.odoo_find(values, orig_values)
+        # pass context here to be applied always on retrieved record
+        odoo_record = self.odoo_find(
+            values, orig_values
+        ).with_context(**self.write_context())
         self.odoo_pre_write(odoo_record, values, orig_values)
         # TODO: remove keys that are not model's fields
-        odoo_record.with_context(**self.write_context()).write(values.copy())
+        odoo_record.write(values.copy())
         # force uid
         if self.override_write_uid and values.get('write_uid'):
             self._force_value(odoo_record, values, 'write_uid')
