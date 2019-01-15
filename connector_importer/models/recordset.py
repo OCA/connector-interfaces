@@ -186,7 +186,8 @@ class ImportRecordset(models.Model, JobRelatedMixin):
             'report_by_model': OrderedDict(),
         }
         # count keys by model
-        for _model, __ in self.available_models():
+        for item in self.available_models():
+            _model = item[0]
             model = self.env['ir.model']._get(_model)
             data['report_by_model'][model] = {}
             # be defensive here. At some point
@@ -295,7 +296,7 @@ class ImportRecordset(models.Model, JobRelatedMixin):
 
     def _get_importers(self):
         importers = OrderedDict()
-        for model_name, importer in self.available_models():
+        for model_name, importer, __ in self.available_models():
             model = self.env['ir.model']._get(model_name)
             with self.backend_id.work_on(self._name) as work:
                 importers[model] = work.component_by_name(
