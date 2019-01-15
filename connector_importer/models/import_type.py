@@ -57,11 +57,18 @@ class ImportType(models.Model):
     def available_models(self):
         """Retrieve available import models and their importers.
 
-        Parse `settings` and yield a tuple `(model, importer)`.
+        Parse `settings` and yield a tuple
+            `(model, importer, is_last_importer)`.
         """
         self.ensure_one()
-        for line in self.settings.strip().splitlines():
-            line = line.strip()
+        lines = self.settings.strip().splitlines()
+        for _line in lines:
+            line = _line.strip()
             if line and not line.startswith('#'):
                 model_name, importer = line.split('::')
-                yield (model_name.strip(), importer.strip())
+                is_last_importer = False
+                if _line == lines[-1]:
+                    is_last_importer = True
+                yield (
+                    model_name.strip(), importer.strip(), is_last_importer
+                )

@@ -92,12 +92,17 @@ class ImportRecord(models.Model, JobRelatedMixin):
 
     @api.multi
     @job
-    def import_record(self, component_name, model_name):
-        """This job will import a record."""
+    def import_record(self, component_name, model_name, is_last_importer=True):
+        """This job will import a record.
+
+        :param component_name: name of the importer component to use
+        :param model_name: name of the model to import
+        :param is_last_importer: flag for last importer of the recordset
+        """
         with self.backend_id.work_on(self._name) as work:
             importer = work.component_by_name(
                 component_name, model_name=model_name)
-            return importer.run(self)
+            return importer.run(self, is_last_importer=is_last_importer)
 
     @api.multi
     def run_import(self):
@@ -111,9 +116,12 @@ class ImportRecord(models.Model, JobRelatedMixin):
         for item in self:
             # we create a record and a job for each model name
             # that needs to be imported
-            for model, importer in item.recordset_id.available_models():
+            for (
+                model, importer, is_last_importer
+            ) in item.recordset_id.available_models():
                 # TODO: grab component from config
-                result = job_method(importer, model)
+                result = job_method(
+                    importer, model, is_last_importer=is_last_importer)
                 _result[model] = result
                 if self.debug_mode():
                     # debug mode, no job here: reset it!
