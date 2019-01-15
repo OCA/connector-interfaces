@@ -35,6 +35,8 @@ class RecordSetImporter(Component):
                                                 recordset.id)
         logger.info(msg)
 
+        # flush existing records as we are going to re-create them
+        recordset.record_ids.unlink()
         source = recordset.get_source()
         for chunk in source.get_lines():
             # create chuncked records and run their imports
