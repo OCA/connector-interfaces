@@ -32,6 +32,8 @@ class OdooRecordHandler(Component):
 
     def odoo_find(self, values, orig_values):
         """Find any existing item in odoo."""
+        if not self.unique_key:
+            return self.model
         item = self.model.search(
             self.odoo_find_domain(values, orig_values),
             order='create_date desc', limit=1)
