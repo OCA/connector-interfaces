@@ -44,7 +44,7 @@ class CSVSource(models.Model):
         ]
 
     def _binary_csv_content(self):
-        return base64.decodestring(self.csv_file)
+        return base64.b64decode(self.csv_file)
 
     @api.onchange('csv_file')
     def _onchance_csv_file(self):
