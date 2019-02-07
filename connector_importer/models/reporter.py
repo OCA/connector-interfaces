@@ -7,6 +7,7 @@ from odoo import models, api
 import csv
 import io
 import time
+import base64
 
 
 class ReporterMixin(models.AbstractModel):
@@ -133,9 +134,9 @@ class CSVReporter(models.AbstractModel):
                     extra_keys.append(self._report_make_key(key, model=model))
 
         source = recordset.get_source()
-        orig_content = source.csv_file.decode('base64').splitlines()
-        delimiter = source.csv_delimiter.encode('utf-8')
-        quotechar = source.csv_quotechar.encode('utf-8')
+        orig_content = base64.b64decode(source.csv_file).decode().splitlines()
+        delimiter = source.csv_delimiter
+        quotechar = source.csv_quotechar
 
         columns = self.report_get_columns(
             recordset, orig_content,
