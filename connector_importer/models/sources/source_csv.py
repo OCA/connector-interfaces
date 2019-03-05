@@ -55,20 +55,12 @@ class CSVSource(models.Model):
                 self.csv_delimiter = meta['delimiter']
                 self.csv_quotechar = meta['quotechar']
 
-    def _filesize_human(self, size, suffix='B'):
-        """Convert size to human."""
-        for unit in ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z']:
-            if abs(size) < 1024.0:
-                return "%3.1f%s%s" % (size, unit, suffix)
-            size /= 1024.0
-        return "%.1f%s%s" % (size, 'Y', suffix)
-
     @api.depends('csv_file')
     def _compute_csv_filesize(self):
         for item in self:
             if item.csv_file:
-                item.csv_filesize = self._filesize_human(
-                    len(item._binary_csv_content()))
+                # in v11 binary fields now can return the size of the file
+                item.csv_filesize = self.with_context(bin_size=True).csv_file
 
     def _get_lines(self):
         # read CSV
