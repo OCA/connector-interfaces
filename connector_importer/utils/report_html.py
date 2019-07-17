@@ -136,4 +136,5 @@ class Reporter(object):
 
 if __name__ == '__main__':
     reporter = Reporter(JSONDATA, detailed=1)
+    # pylint: disable=print-used
     print(reporter.html())

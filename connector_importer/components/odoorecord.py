@@ -120,8 +120,14 @@ class OdooRecordHandler(Component):
         return odoo_record
 
     def _force_value(self, record, values, fname):
+        # the query construction is not vulnerable to SQL injection, as we are
+        # replacing the table and column names here.
+        # pylint: disable=sql-injection
+        query = 'UPDATE {} SET {} = %s WHERE id = %s'.format(
+            record._table, fname
+        )
         self.env.cr.execute(
-            'UPDATE {} SET {} = %s WHERE id = %s'.format(record._table, fname),
+            query,
             (values[fname], record.id, )
         )
         record.invalidate_cache([fname, ])
