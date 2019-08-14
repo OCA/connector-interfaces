@@ -17,7 +17,7 @@ class ChunkReport(dict):
     )
 
     def __init__(self, **kwargs):
-        super(ChunkReport, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         for k in self.chunk_report_keys:
             self[k] = []
 
