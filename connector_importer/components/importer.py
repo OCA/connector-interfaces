@@ -29,7 +29,7 @@ class RecordSetImporter(Component):
         """
         # update recordset report
         recordset.set_report({
-            '_last_start': fields.Datetime.now(),
+            '_last_start': fields.Datetime.to_string(fields.Datetime.now()),
         }, reset=True)
         msg = 'START RECORDSET {0}({1})'.format(recordset.name,
                                                 recordset.id)
