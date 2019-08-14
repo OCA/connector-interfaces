@@ -18,9 +18,12 @@ class TestRecordImporter(TestImporterBase):
 
     def _setup_records(self):
         super()._setup_records()
-        self.record = self.env['import.record'].create({
-            'recordset_id': self.recordset.id,
-        })
+        # The components registry will be handled by the
+        # `import.record.import_record()' method when initializing its
+        # WorkContext
+        self.record = self.env['import.record'].with_context(
+            test_components_registry=self.comp_registry).create(
+                {'recordset_id': self.recordset.id})
         # no jobs thanks (I know, we should test this too at some point :))
         self.backend.debug_mode = True
 
