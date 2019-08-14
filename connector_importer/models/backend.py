@@ -74,7 +74,7 @@ class ImporterBackend(models.Model):
         """Prevent delete if jobs are running."""
         for item in self:
             item.check_delete()
-        return super(ImporterBackend, self).unlink()
+        return super().unlink()
 
     @api.multi
     def check_delete(self):

@@ -159,7 +159,7 @@ class ImportSource(models.AbstractModel):
     @api.model
     def create(self, vals):
         """Override to update reference to source on the consumer."""
-        res = super(ImportSource, self).create(vals)
+        res = super().create(vals)
         if self.env.context.get('active_model'):
             # update reference on consumer
             self.env[self.env.context['active_model']].browse(
