@@ -5,7 +5,7 @@
 {
     'name': 'Connector Importer',
     'summary': """This module takes care of import sessions.""",
-    'version': '11.0.1.0.0',
+    'version': '12.0.1.0.0',
     'depends': [
         'connector',
         'queue_job',
