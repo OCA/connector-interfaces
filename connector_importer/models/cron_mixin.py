@@ -67,11 +67,12 @@ class CronMixin(models.AbstractModel):
             else:
                 self.cron_id.write(cron_vals)
 
-    @api.model
-    def create(self, vals):
-        rec = super().create(vals)
-        rec._update_or_create_cron()
-        return rec
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        for rec in records:
+            rec._update_or_create_cron()
+        return records
 
     @api.multi
     def write(self, vals):

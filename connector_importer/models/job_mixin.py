@@ -44,4 +44,4 @@ class JobRelatedMixin(object):
     def unlink(self):
         for item in self:
             item.check_delete()
-        return super(JobRelatedMixin, self).unlink()
+        return super().unlink()

@@ -37,7 +37,7 @@ class ImportRecord(models.Model, JobRelatedMixin):
 
     date = fields.Datetime(
         'Import date',
-        default=fields.Date.context_today,
+        default=fields.Datetime.now,
     )
     # This field holds the whole bare data to import from the external source
     # hence it can be huge. For this reason we store it in an attachment.
@@ -58,7 +58,7 @@ class ImportRecord(models.Model, JobRelatedMixin):
     @api.multi
     def unlink(self):
         # inheritance of non-model mixin does not work w/out this
-        return super(ImportRecord, self).unlink()
+        return super().unlink()
 
     @api.multi
     @api.depends('date')
@@ -99,7 +99,11 @@ class ImportRecord(models.Model, JobRelatedMixin):
         :param model_name: name of the model to import
         :param is_last_importer: flag for last importer of the recordset
         """
-        with self.backend_id.work_on(self._name) as work:
+        kwargs = {}
+        if self.env.context.get('test_components_registry'):
+            kwargs['components_registry'] = \
+                self.env.context['test_components_registry']
+        with self.backend_id.work_on(self._name, **kwargs) as work:
             importer = work.component_by_name(
                 component_name, model_name=model_name)
             return importer.run(self, is_last_importer=is_last_importer)
