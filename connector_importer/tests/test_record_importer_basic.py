@@ -25,7 +25,9 @@ class TestRecordImporter(TestImporterBase):
         self.backend.debug_mode = True
 
     def _get_importer(self):
-        with self.backend.work_on(self.record._name) as work:
+        with self.backend.work_on(
+                self.record._name,
+                components_registry=self.comp_registry) as work:
             return work.component(
                 usage='record.importer', model_name='res.partner')
 
