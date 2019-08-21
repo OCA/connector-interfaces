@@ -51,6 +51,7 @@ class ImportSourceConsumerMixin(models.AbstractModel):
     def _selection_source_ref_id(self):
         return [
             ('import.source.csv', 'CSV'),
+            ('import.source.csv.std', 'Odoo CSV'),
         ]
 
     @api.multi
@@ -176,6 +177,9 @@ class ImportSource(models.AbstractModel):
         # sort them
         lines_sorted = self._sort_lines(lines)
 
+        # no chunk size means no chunk of lines
+        if not self.chunk_size:
+            yield list(lines)
         for i, chunk in enumerate(gen_chunks(lines_sorted,
                                              chunksize=self.chunk_size)):
             # get out of chunk iterator

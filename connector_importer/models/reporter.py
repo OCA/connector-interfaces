@@ -100,7 +100,7 @@ class CSVReporter(models.AbstractModel):
         writer.writerow(item)
 
     def report_get_columns(self, recordset, orig_content,
-                           extra_keys=None, delimiter=';'):
+                           extra_keys=None, delimiter=';', quotechar='"'):
         """Retrieve columns by recordset.
 
         :param recordset: instance of recordset.
@@ -110,8 +110,10 @@ class CSVReporter(models.AbstractModel):
         extra_keys = extra_keys or []
         # read only the 1st line of the original file
         if orig_content:
-            line1 = orig_content[0].split(delimiter)
-            return line1 + extra_keys
+            reader = csv.reader(
+                orig_content[:1], delimiter=delimiter, quotechar=quotechar)
+            columns = next(reader)
+            return columns + extra_keys
         return extra_keys
 
     def report_do(self, recordset, fileout, **options):
@@ -140,7 +142,7 @@ class CSVReporter(models.AbstractModel):
 
         columns = self.report_get_columns(
             recordset, orig_content,
-            extra_keys=extra_keys, delimiter=delimiter)
+            extra_keys=extra_keys, delimiter=delimiter, quotechar=quotechar)
 
         writer = self.report_get_writer(
             fileout, columns, delimiter=delimiter, quotechar=quotechar)
