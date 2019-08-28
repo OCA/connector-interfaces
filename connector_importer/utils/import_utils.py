@@ -35,11 +35,12 @@ def get_encoding(data):
     return detector.result
 
 
-def csv_content_to_file(data):
+def csv_content_to_file(data, encoding=None):
     """Odoo binary fields spit out b64 data."""
     # guess encoding via chardet (LOVE IT! :))
-    encoding_info = get_encoding(data)
-    encoding = encoding_info['encoding']
+    if not encoding:
+        encoding_info = get_encoding(data)
+        encoding = encoding_info['encoding']
     if encoding is None or encoding != 'utf-8':
         try:
             data_str = data.decode(encoding)
@@ -85,14 +86,16 @@ class CSVReader(object):
                  filedata=None,
                  delimiter='|',
                  quotechar='"',
+                 encoding=None,
                  fieldnames=None):
         assert filedata or filepath, 'Provide a file path or some file data!'
         if filepath:
             filedata = read_path(filepath)
-        self.bdata = csv_content_to_file(filedata)
+        self.bdata = csv_content_to_file(filedata, encoding)
         self.data = str(self.bdata, 'utf-8')
         self.delimiter = delimiter
         self.quotechar = quotechar
+        self.encoding = encoding
         self.fieldnames = fieldnames
 
     def read_lines(self):
