@@ -26,6 +26,8 @@
           <field name="csv_path" />
           <field name="csv_delimiter" />
           <field name="csv_quotechar" />
+          <field name="csv_encoding" />
+
         </group>
       </group>
     </field>
