@@ -60,7 +60,10 @@ def csv_content_to_file(data, encoding=None):
 
 
 def guess_csv_metadata(filecontent):
-    with io.StringIO(str(filecontent, 'utf-8')) as ff:
+    # we don't care about acuracy but we don't to get an unicode error
+    # when converting to str
+    encoding = get_encoding(filecontent)
+    with io.StringIO(str(filecontent, encoding['encoding'])) as ff:
         try:
             dialect = csv.Sniffer().sniff(ff.readline(), "\t,;")
             ff.seek(0)
