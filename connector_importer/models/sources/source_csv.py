@@ -32,6 +32,9 @@ class CSVSource(models.Model):
         string='CSV quotechar',
         default='"',
     )
+    csv_encoding = fields.Char(
+        string='CSV Encoding',
+    )
 
     _csv_reader_klass = CSVReader
 
@@ -41,6 +44,7 @@ class CSVSource(models.Model):
         return _fields + [
             'csv_filename', 'csv_filesize',
             'csv_delimiter', 'csv_quotechar',
+            'csv_encoding'
         ]
 
     def _binary_csv_content(self):
@@ -66,6 +70,7 @@ class CSVSource(models.Model):
         # read CSV
         reader_args = {
             'delimiter': self.csv_delimiter,
+            'encoding': self.csv_encoding
         }
         if self.csv_path:
             # TODO: join w/ filename
