@@ -63,19 +63,21 @@ class RecordImporter(Component):
     # log and report errors
     # do not make the whole import fail
     _break_on_error = False
+    _record_handler_usage = 'odoorecord.handler'
+    _tracking_handler_usage = 'tracking.handler'
     # a unique key (field name) to retrieve the odoo record
     odoo_unique_key = ''
 
     def _init_importer(self, recordset):
         self.recordset = recordset
         # record handler is responsible for create/write on odoo records
-        self.record_handler = self.component(usage='odoorecord.handler')
+        self.record_handler = self.component(usage=self._record_handler_usage)
         self.record_handler._init_handler(
             importer=self,
             unique_key=self.odoo_unique_key
         )
         # tracking handler is responsible for logging and chunk reports
-        self.tracker = self.component(usage='tracking.handler')
+        self.tracker = self.component(usage=self._tracking_handler_usage)
         self.tracker._init_handler(
             model_name=self.model._name,
             logger_name=LOGGER_NAME,
