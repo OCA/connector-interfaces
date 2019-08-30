@@ -9,6 +9,7 @@ setuptools.setup(
     version=version,
     install_requires=[
         'odoo12-addon-connector_importer',
+        'odoo12-addon-connector_importer_demo',
     ],
     classifiers=[
         'Programming Language :: Python',
