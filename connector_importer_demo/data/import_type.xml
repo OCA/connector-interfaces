@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 Camptocamp SA
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+
+  <record id="import_type_partner" model="import.type">
+    <field name="name">Partner</field>
+    <field name="key">partner</field>
+    <field name="settings">
+res.partner::importer.record.csv.std
+    </field>
+  </record>
+
+</odoo>
