@@ -41,6 +41,16 @@ class ImportType(models.Model):
             product.supplierinfo::supplierinfo.importer.component.name
         """,
     )
+    use_job = fields.Boolean(
+        string="Use job",
+        help=(
+            "For each importer used in the settings, one job will be spawned. "
+            "Untick the box if an importer depends on the result of a "
+            "previous one (for instance to link a record to the previously "
+            "created one)."
+        ),
+        default=True,
+    )
     _sql_constraints = [
         ("key_uniq", "unique (key)", _("Import type `key` must be unique!"))
     ]
