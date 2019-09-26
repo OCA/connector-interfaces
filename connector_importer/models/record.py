@@ -95,9 +95,11 @@ class ImportRecord(models.Model, JobRelatedMixin):
     def run_import(self):
         """ queue a job for importing data stored in to self
         """
+        use_job = self.recordset_id.import_type_id.use_job
         job_method = self.with_delay().import_record
         if self.debug_mode():
             logger.warn("### DEBUG MODE ACTIVE: WILL NOT USE QUEUE ###")
+        if self.debug_mode() or not use_job:
             job_method = self.import_record
         _result = {}
         for item in self:
@@ -111,7 +113,7 @@ class ImportRecord(models.Model, JobRelatedMixin):
                 # TODO: grab component from config
                 result = job_method(importer, model, is_last_importer=is_last_importer)
                 _result[model] = result
-                if self.debug_mode():
+                if self.debug_mode() or not use_job:
                     # debug mode, no job here: reset it!
                     item.write({"job_id": False})
                 else:
