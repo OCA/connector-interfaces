@@ -3,7 +3,7 @@
 
 # Connector Interfaces
 
-This repository provides various projects using the ![Odoo Connector Framework](https://github.com/OCA/connector) for generic purposes, such as importing from data files or from external databases. 
+This repository provides various projects using the ![Odoo Connector Framework](https://github.com/OCA/connector) for generic purposes, such as importing from data files or from external databases.
 
 
 
