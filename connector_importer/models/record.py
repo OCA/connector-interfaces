@@ -50,25 +50,21 @@ class ImportRecord(models.Model, JobRelatedMixin):
         readonly=True,
     )
 
-    @api.multi
     def unlink(self):
         # inheritance of non-model mixin does not work w/out this
         return super().unlink()
 
-    @api.multi
     @api.depends("date")
     def _compute_name(self):
         for item in self:
             names = [item.date]
             item.name = " / ".join([_f for _f in names if _f])
 
-    @api.multi
     def set_data(self, adict):
         self.ensure_one()
         jsondata = json.dumps(adict)
         self.jsondata_file = base64.b64encode(bytes(jsondata, "utf-8"))
 
-    @api.multi
     def get_data(self):
         self.ensure_one()
         jsondata = None
@@ -77,12 +73,10 @@ class ImportRecord(models.Model, JobRelatedMixin):
             jsondata = json.loads(raw_data)
         return jsondata or {}
 
-    @api.multi
     def debug_mode(self):
         self.ensure_one()
         return self.backend_id.debug_mode or os.environ.get("IMPORTER_DEBUG_MODE")
 
-    @api.multi
     @job
     def import_record(self, component_name, model_name, is_last_importer=True):
         """This job will import a record.
@@ -98,7 +92,6 @@ class ImportRecord(models.Model, JobRelatedMixin):
             importer = work.component_by_name(component_name, model_name=model_name)
             return importer.run(self, is_last_importer=is_last_importer)
 
-    @api.multi
     def run_import(self):
         """ queue a job for importing data stored in to self
         """

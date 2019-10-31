@@ -22,17 +22,18 @@ class ReporterMixin(models.AbstractModel):
     """
 
     _name = "reporter.mixin"
+    _description = "Base mixin for reporters"
 
     report_extension = ".txt"
 
     @api.model
     def report_get(self, recordset, **options):
         """Create and return a report for given recordset."""
-        fileout = io.StringIO()
-        self.report_do(recordset, fileout, **options)
-        self.report_finalize(recordset, fileout, **options)
-        metadata = self.report_get_metadata(recordset, **options)
-        return metadata, fileout.getvalue()
+        with io.StringIO() as fileout:
+            self.report_do(recordset, fileout, **options)
+            self.report_finalize(recordset, fileout, **options)
+            metadata = self.report_get_metadata(recordset, **options)
+            return metadata, fileout.getvalue()
 
     def report_do(self, recordset, fileout, **options):
         """Override me to generate the report."""
@@ -76,6 +77,7 @@ class CSVReporter(models.AbstractModel):
     """
 
     _name = "reporter.csv"
+    _description = "Reporter producing a CSV report"
     _inherit = "reporter.mixin"
 
     report_extension = ".csv"

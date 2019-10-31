@@ -94,7 +94,6 @@
     <record id="action_import_backend" model="ir.actions.act_window">
       <field name="name">Import Backends</field>
       <field name="res_model">import.backend</field>
-      <field name="view_type">form</field>
       <field name="view_mode">tree,form</field>
     </record>
 
