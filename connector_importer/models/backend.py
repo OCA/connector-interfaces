@@ -2,23 +2,19 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from odoo import models, fields, api, exceptions, _
 import logging
 
-cleanup_logger = logging.getLogger('[recordset-cleanup]')
+from odoo import _, api, exceptions, fields, models
 
-BACKEND_VERSIONS = [
-    ('1.0', 'Version 1.0'),
-]
+cleanup_logger = logging.getLogger("[recordset-cleanup]")
+
+BACKEND_VERSIONS = [("1.0", "Version 1.0")]
 
 
 class ImporterBackend(models.Model):
-    _name = 'import.backend'
-    _description = 'Importer Backend'
-    _inherit = [
-        'connector.backend',
-        'cron.mixin',
-    ]
+    _name = "import.backend"
+    _description = "Importer Backend"
+    _inherit = ["connector.backend", "cron.mixin"]
 
     @api.model
     def _select_version(self):
@@ -30,43 +26,45 @@ class ImporterBackend(models.Model):
 
     name = fields.Char(required=True)
     version = fields.Selection(
-        selection='_select_version',
-        string='Version',
-        required=True,
+        selection="_select_version", string="Version", required=True
     )
     recordset_ids = fields.One2many(
-        'import.recordset',
-        'backend_id',
-        string='Record Sets'
+        "import.recordset", "backend_id", string="Record Sets"
     )
     # cron stuff
     cron_master_recordset_id = fields.Many2one(
-        'import.recordset',
-        string='Master recordset',
-        help=('If an existing recordset is selected '
-              'it will be used to create a new recordset '
-              'each time the cron runs. '
-              '\nIn this way you can keep every import session isolated. '
-              '\nIf none, all recordsets will run.')
+        "import.recordset",
+        string="Master recordset",
+        help=(
+            "If an existing recordset is selected "
+            "it will be used to create a new recordset "
+            "each time the cron runs. "
+            "\nIn this way you can keep every import session isolated. "
+            "\nIf none, all recordsets will run."
+        ),
     )
     cron_cleanup_keep = fields.Integer(
-        string='Cron cleanup keep',
-        help=('If this value is greater than 0 '
-              'a cron will cleanup old recordsets '
-              'and keep only the latest N records matching this value.'),
+        string="Cron cleanup keep",
+        help=(
+            "If this value is greater than 0 "
+            "a cron will cleanup old recordsets "
+            "and keep only the latest N records matching this value."
+        ),
     )
-    notes = fields.Text('Notes')
+    notes = fields.Text("Notes")
     debug_mode = fields.Boolean(
-        'Debug mode?',
-        help=("Enabling debug mode causes the import to run "
-              "in real time, without using any job queue. "
-              "Make sure you don't do this in production!")
+        "Debug mode?",
+        help=(
+            "Enabling debug mode causes the import to run "
+            "in real time, without using any job queue. "
+            "Make sure you don't do this in production!"
+        ),
     )
     job_running = fields.Boolean(
-        'Job running',
-        compute='_compute_job_running',
+        "Job running",
+        compute="_compute_job_running",
         help="Tells you if a job is running for this backend.",
-        readonly=True
+        readonly=True,
     )
 
     @api.multi
@@ -79,7 +77,7 @@ class ImporterBackend(models.Model):
     @api.multi
     def check_delete(self):
         if not self.debug_mode and self.job_running:
-            raise exceptions.Warning(_('You must complete the job first!'))
+            raise exceptions.Warning(_("You must complete the job first!"))
 
     @api.multi
     def _compute_job_running(self):
@@ -122,25 +120,24 @@ class ImporterBackend(models.Model):
         Here we lookup for backends w/ this settings
         and keep only latest recordsets.
         """
-        cleanup_logger.info('Looking for recorsets to cleanup.')
-        backends = self.search([('cron_cleanup_keep', '>', 0)])
-        to_clean = self.env['import.recordset']
+        cleanup_logger.info("Looking for recorsets to cleanup.")
+        backends = self.search([("cron_cleanup_keep", ">", 0)])
+        to_clean = self.env["import.recordset"]
         for backend in backends:
             if len(backend.recordset_ids) <= backend.cron_cleanup_keep:
                 continue
             to_keep = backend.recordset_ids.sorted(
-                lambda x: x.create_date,
-                reverse=True
-            )[:backend.cron_cleanup_keep]
+                lambda x: x.create_date, reverse=True
+            )[: backend.cron_cleanup_keep]
             # always keep this
             to_keep |= backend.cron_master_recordset_id
             to_clean = backend.recordset_ids - to_keep
         if to_clean:
-            msg = 'Cleaning up {}'.format(','.join(to_clean.mapped('name')))
+            msg = "Cleaning up {}".format(",".join(to_clean.mapped("name")))
             cleanup_logger.info(msg)
             to_clean.unlink()
         else:
-            cleanup_logger.info('Nothing to do.')
+            cleanup_logger.info("Nothing to do.")
 
     @api.multi
     def button_complete_jobs(self):
