@@ -3,18 +3,19 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 from odoo import fields
+
 from odoo.addons.component.core import Component
-from ..log import logger
-from ..log import LOGGER_NAME
+
+from ..log import LOGGER_NAME, logger
 
 
 class RecordSetImporter(Component):
     """Importer for recordsets."""
 
-    _name = 'importer.recordset'
-    _inherit = 'importer.base.component'
-    _usage = 'recordset.importer'
-    _apply_on = 'import.recordset'
+    _name = "importer.recordset"
+    _inherit = "importer.base.component"
+    _usage = "recordset.importer"
+    _apply_on = "import.recordset"
 
     def run(self, recordset, **kw):
         """Run recordset job.
@@ -28,11 +29,11 @@ class RecordSetImporter(Component):
         * schedule import for each record
         """
         # update recordset report
-        recordset.set_report({
-            '_last_start': fields.Datetime.to_string(fields.Datetime.now()),
-        }, reset=True)
-        msg = 'START RECORDSET {0}({1})'.format(recordset.name,
-                                                recordset.id)
+        recordset.set_report(
+            {"_last_start": fields.Datetime.to_string(fields.Datetime.now())},
+            reset=True,
+        )
+        msg = "START RECORDSET {}({})".format(recordset.name, recordset.id)
         logger.info(msg)
 
         # flush existing records as we are going to re-create them
@@ -40,8 +41,7 @@ class RecordSetImporter(Component):
         source = recordset.get_source()
         for chunk in source.get_lines():
             # create chuncked records and run their imports
-            record = self.env['import.record'].create(
-                {'recordset_id': recordset.id})
+            record = self.env["import.record"].create({"recordset_id": recordset.id})
             # store data
             record.set_data(chunk)
             record.run_import()
@@ -56,32 +56,31 @@ class RecordImporter(Component):
     See `run` method for detailed information on what it does.
     """
 
-    _name = 'importer.record'
-    _inherit = ['importer.base.component']
-    _usage = 'record.importer'
-    _apply_on = 'import.record'
+    _name = "importer.record"
+    _inherit = ["importer.base.component"]
+    _usage = "record.importer"
+    _apply_on = "import.record"
     # log and report errors
     # do not make the whole import fail
     _break_on_error = False
-    _record_handler_usage = 'odoorecord.handler'
-    _tracking_handler_usage = 'tracking.handler'
+    _record_handler_usage = "odoorecord.handler"
+    _tracking_handler_usage = "tracking.handler"
     # a unique key (field name) to retrieve the odoo record
-    odoo_unique_key = ''
+    odoo_unique_key = ""
 
     def _init_importer(self, recordset):
         self.recordset = recordset
         # record handler is responsible for create/write on odoo records
         self.record_handler = self.component(usage=self._record_handler_usage)
         self.record_handler._init_handler(
-            importer=self,
-            unique_key=self.odoo_unique_key
+            importer=self, unique_key=self.odoo_unique_key
         )
         # tracking handler is responsible for logging and chunk reports
         self.tracker = self.component(usage=self._tracking_handler_usage)
         self.tracker._init_handler(
             model_name=self.model._name,
             logger_name=LOGGER_NAME,
-            log_prefix=self.recordset.import_type_id.key + ' ',
+            log_prefix=self.recordset.import_type_id.key + " ",
         )
 
     _mapper = None
@@ -89,7 +88,7 @@ class RecordImporter(Component):
     @property
     def mapper(self):
         if not self._mapper:
-            self._mapper = self.component(usage='importer.mapper')
+            self._mapper = self.component(usage="importer.mapper")
         return self._mapper
 
     def required_keys(self, create=False):
@@ -100,14 +99,16 @@ class RecordImporter(Component):
             # make sure values are always tuples
             # as we support multiple dest keys
             if not isinstance(v, (tuple, list)):
-                req[k] = (v, )
+                req[k] = (v,)
             all_values.extend(req[k])
         unique_key = self.odoo_unique_key
-        if (unique_key and
-                unique_key not in list(req.keys()) and
-                unique_key not in all_values):
+        if (
+            unique_key
+            and unique_key not in list(req.keys())
+            and unique_key not in all_values
+        ):
             # this one is REALLY required :)
-            req[unique_key] = (unique_key, )
+            req[unique_key] = (unique_key,)
         return req
 
     # mostly for auto-documentation in UI
@@ -120,11 +121,10 @@ class RecordImporter(Component):
         return self.mapper.translatable_keys()
 
     def translatable_langs(self):
-        return self.env['res.lang'].search([
-            ('translatable', '=', True)]).mapped('code')
+        return self.env["res.lang"].search([("translatable", "=", True)]).mapped("code")
 
     def make_translation_key(self, key, lang):
-        return '{}:{}'.format(key, lang)
+        return "{}:{}".format(key, lang)
 
     def collect_translatable(self, values, orig_values):
         """Get translations values for `mapper.translatable_keys`.
@@ -155,27 +155,21 @@ class RecordImporter(Component):
 
     def _check_missing(self, source_key, dest_key, values, orig_values):
         """Check for required keys missing."""
-        missing = (not source_key.startswith('__') and
-                   orig_values.get(source_key) is None)
+        missing = (
+            not source_key.startswith("__") and orig_values.get(source_key) is None
+        )
         unique_key = self.odoo_unique_key
         if missing:
-            msg = 'MISSING REQUIRED SOURCE KEY={}'.format(source_key)
+            msg = "MISSING REQUIRED SOURCE KEY={}".format(source_key)
             if unique_key and values.get(unique_key):
-                msg += ': {}={}'.format(
-                    unique_key, values[unique_key])
-            return {
-                'message': msg,
-            }
-        missing = (not dest_key.startswith('__') and
-                   values.get(dest_key) is None)
+                msg += ": {}={}".format(unique_key, values[unique_key])
+            return {"message": msg}
+        missing = not dest_key.startswith("__") and values.get(dest_key) is None
         if missing:
-            msg = 'MISSING REQUIRED DESTINATION KEY={}'.format(dest_key)
+            msg = "MISSING REQUIRED DESTINATION KEY={}".format(dest_key)
             if unique_key and values.get(unique_key):
-                msg += ': {}={}'.format(
-                    unique_key, values[unique_key])
-            return {
-                'message': msg,
-            }
+                msg += ": {}={}".format(unique_key, values[unique_key])
+            return {"message": msg}
         return False
 
     def skip_it(self, values, orig_values):
@@ -184,26 +178,29 @@ class RecordImporter(Component):
         You can return back `False` to not skip
         or a dictionary containing info about skip reason.
         """
-        msg = ''
+        msg = ""
         required = self.required_keys()
         for source_key, dest_key in required.items():
             # we support multiple destination keys
             for _dest_key in dest_key:
                 missing = self._check_missing(
-                    source_key, _dest_key, values, orig_values)
+                    source_key, _dest_key, values, orig_values
+                )
                 if missing:
                     return missing
 
-        if self.record_handler.odoo_exists(values, orig_values) \
-                and not self.recordset.override_existing:
-            msg = 'ALREADY EXISTS'
+        if (
+            self.record_handler.odoo_exists(values, orig_values)
+            and not self.recordset.override_existing
+        ):
+            msg = "ALREADY EXISTS"
             if self.odoo_unique_key:
-                msg += ': {}={}'.format(
-                    self.odoo_unique_key, values[self.odoo_unique_key])
+                msg += ": {}={}".format(
+                    self.odoo_unique_key, values[self.odoo_unique_key]
+                )
             return {
-                'message': msg,
-                'odoo_record':
-                    self.record_handler.odoo_find(values, orig_values).id,
+                "message": msg,
+                "odoo_record": self.record_handler.odoo_find(values, orig_values).id,
             }
         return False
 
@@ -213,7 +210,7 @@ class RecordImporter(Component):
         res = {}
         for k, v in line.items():
             # skip internal tech keys if any
-            if not k.startswith('_'):
+            if not k.startswith("_"):
                 k = self.clean_line_key(k)
             if isinstance(v, str):
                 v = v.strip()
@@ -255,22 +252,16 @@ class RecordImporter(Component):
 
     def _load_mapper_options(self):
         """Retrieve mapper options."""
-        return {
-            'override_existing': self.recordset.override_existing
-        }
+        return {"override_existing": self.recordset.override_existing}
 
     # TODO: make these contexts customizable via recordset settings
     def _odoo_create_context(self):
         """Inject context variables on create, merged by odoorecord handler."""
-        return {
-            'tracking_disable': True,
-        }
+        return {"tracking_disable": True}
 
     def _odoo_write_context(self):
         """Inject context variables on write, merged by odoorecord handler."""
-        return {
-            'tracking_disable': True,
-        }
+        return {"tracking_disable": True}
 
     def run(self, record, is_last_importer=True, **kw):
         """Run record job.
@@ -291,7 +282,7 @@ class RecordImporter(Component):
         self.record = record
         if not self.record:
             # maybe deleted???
-            msg = 'NO RECORD FOUND, maybe deleted? Check your jobs!'
+            msg = "NO RECORD FOUND, maybe deleted? Check your jobs!"
             logger.error(msg)
             return
 
@@ -322,12 +313,10 @@ class RecordImporter(Component):
             try:
                 with self.env.cr.savepoint():
                     if self.record_handler.odoo_exists(values, line):
-                        odoo_record = \
-                            self.record_handler.odoo_write(values, line)
+                        odoo_record = self.record_handler.odoo_write(values, line)
                         self.tracker.log_updated(values, line, odoo_record)
                     else:
-                        odoo_record = \
-                            self.record_handler.odoo_create(values, line)
+                        odoo_record = self.record_handler.odoo_create(values, line)
                         self.tracker.log_created(values, line, odoo_record)
             except Exception as err:
                 self.tracker.log_error(values, line, odoo_record, message=err)
@@ -339,19 +328,21 @@ class RecordImporter(Component):
         self._do_report()
 
         # log chunk finished
-        msg = ' '.join([
-            'CHUNK FINISHED',
-            '[created: {created}]',
-            '[updated: {updated}]',
-            '[skipped: {skipped}]',
-            '[errored: {errored}]',
-        ]).format(**self.tracker.get_counters())
+        msg = " ".join(
+            [
+                "CHUNK FINISHED",
+                "[created: {created}]",
+                "[updated: {updated}]",
+                "[skipped: {skipped}]",
+                "[errored: {errored}]",
+            ]
+        ).format(**self.tracker.get_counters())
         self.tracker._log(msg)
 
         # TODO
         # chunk_finished_event.fire(
         #     self.env, self.model._name, self.record)
-        return 'ok'
+        return "ok"
 
     # TODO
     def after_all(self, recordset):

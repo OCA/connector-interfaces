@@ -13,20 +13,20 @@ class RecordImporterCSVStd(Component):
     method of Odoo.
     """
 
-    _name = 'importer.record.csv.std'
-    _inherit = ['importer.record']
+    _name = "importer.record.csv.std"
+    _inherit = ["importer.record"]
 
     # TODO: we should be able to set simple settings in the configuration
     # so we don't have to create a new importer for it
     _break_on_error = True  # We want the import to stop if an error occurs
     _apply_on = None
     _use_xmlid = True
-    _record_handler_usage = 'odoorecord.handler.csv'
+    _record_handler_usage = "odoorecord.handler.csv"
 
     @property
     def mapper(self):
         if not self._mapper:
-            self._mapper = self.component(usage='importer.automapper')
+            self._mapper = self.component(usage="importer.automapper")
         return self._mapper
 
     def prepare_load_params(self, lines):
@@ -36,13 +36,10 @@ class RecordImporterCSVStd(Component):
         """
         fieldnames = list(lines[0].keys())
 
-        data = [
-            [line[fieldname] for fieldname in fieldnames]
-            for line in lines
-        ]
+        data = [[line[fieldname] for fieldname in fieldnames] for line in lines]
         return fieldnames, data
 
-    def run(self, record, is_last_importer=True, **kw):
+    def run(self, record, is_last_importer=True, **kw):  # noqa: C901
         """Run record job.
 
         Steps:
@@ -54,11 +51,11 @@ class RecordImporterCSVStd(Component):
           references from the first step + create log error for them
         * produce a report and store it on recordset
         """
-
+        # noqa: C901
         self.record = record
         if not self.record:
             # maybe deleted???
-            msg = 'NO RECORD FOUND, maybe deleted? Check your jobs!'
+            msg = "NO RECORD FOUND, maybe deleted? Check your jobs!"
             logger.error(msg)
             return msg
 
@@ -66,10 +63,10 @@ class RecordImporterCSVStd(Component):
 
         dataset = []
         tracker_data = {
-            'created': {
+            "created": {
                 # line_nr: (values, line, odoo_record),
             },
-            'updated': {
+            "updated": {
                 # line_nr: (values, line, odoo_record),
             },
         }
@@ -87,8 +84,7 @@ class RecordImporterCSVStd(Component):
                 logger.debug(values)
             except Exception as err:
                 values = {}
-                self.tracker.log_error(
-                    values, line, message=err)
+                self.tracker.log_error(values, line, message=err)
                 if self._break_on_error:
                     raise
                 continue
@@ -97,13 +93,15 @@ class RecordImporterCSVStd(Component):
             # functions, excepted the odoo_record which could not be known
             # for newly created records
             odoo_record_exists = self.record_handler.odoo_exists(
-                values, line, use_xmlid=self._use_xmlid)
+                values, line, use_xmlid=self._use_xmlid
+            )
             if odoo_record_exists:
                 odoo_record = self.record_handler.odoo_find(
-                    values, line, use_xmlid=self._use_xmlid)
-                tracker_data['updated'][i] = [values, line, odoo_record]
+                    values, line, use_xmlid=self._use_xmlid
+                )
+                tracker_data["updated"][i] = [values, line, odoo_record]
             else:
-                tracker_data['created'][i] = [values, line]
+                tracker_data["created"][i] = [values, line]
 
             # handle forced skipping
             skip_info = self.skip_it(values, line)
@@ -122,52 +120,51 @@ class RecordImporterCSVStd(Component):
                     # the cause and the rows range. Here we map these messages
                     # to tracked data and update the references to be able
                     # to provide a precise report.
-                    for message in load_res['messages']:
-                        if message.get('rows'):
+                    for message in load_res["messages"]:
+                        if message.get("rows"):
                             line_numbers = range(
-                                message['rows']['from'],
-                                message['rows']['to'] + 1)
+                                message["rows"]["from"], message["rows"]["to"] + 1
+                            )
                             for line_nr in line_numbers:
                                 # First we remove the entry from tracker data
-                                tracker_data['created'].pop(line_nr, None)
-                                tracker_data['updated'].pop(line_nr, None)
+                                tracker_data["created"].pop(line_nr, None)
+                                tracker_data["updated"].pop(line_nr, None)
                                 # We add 2 as the tracker count lines starting
                                 # from 1 + header line
-                                line = {'_line_nr': line_nr + 2}
+                                line = {"_line_nr": line_nr + 2}
                                 self.tracker.log_error(
-                                    {}, line,
-                                    message=message['message'])
+                                    {}, line, message=message["message"]
+                                )
                         else:
-                            line = {'_line_nr': 0}
-                            self.tracker.log_error(
-                                {}, line,
-                                message=message['message'])
+                            line = {"_line_nr": 0}
+                            self.tracker.log_error({}, line, message=message["message"])
             except Exception as err:
-                line = {'_line_nr': 0}
-                self.tracker.log_error(
-                    {}, line, message=err)
+                line = {"_line_nr": 0}
+                self.tracker.log_error({}, line, message=err)
                 if self._break_on_error:
                     raise
 
-        for arguments in tracker_data['created'].values():
+        for arguments in tracker_data["created"].values():
             self.tracker.log_created(*arguments)
-        for arguments in tracker_data['updated'].values():
+        for arguments in tracker_data["updated"].values():
             self.tracker.log_updated(*arguments)
 
         # update report
         self._do_report()
 
         # log chunk finished
-        msg = ' '.join([
-            'CHUNK FINISHED',
-            '[created: {created}]',
-            '[updated: {updated}]',
-            '[skipped: {skipped}]',
-            '[errored: {errored}]',
-        ]).format(**self.tracker.get_counters())
+        msg = " ".join(
+            [
+                "CHUNK FINISHED",
+                "[created: {created}]",
+                "[updated: {updated}]",
+                "[skipped: {skipped}]",
+                "[errored: {errored}]",
+            ]
+        ).format(**self.tracker.get_counters())
         self.tracker._log(msg)
 
         # TODO
         # chunk_finished_event.fire(
         #     self.env, self.model._name, self.record)
-        return 'ok'
+        return "ok"

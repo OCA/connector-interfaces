@@ -2,21 +2,17 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-import pytz
 from datetime import datetime
+
+import pytz
 
 from odoo import fields
 
 from ..log import logger
 
-FMTS = (
-    '%d/%m/%Y',
-)
+FMTS = ("%d/%m/%Y",)
 
-FMTS_DT = (
-    '%Y-%m-%d %H:%M:%S',
-    '%Y-%m-%d %H:%M:%S.000'
-)
+FMTS_DT = ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M:%S.000")
 
 
 def to_date(value, formats=FMTS):
@@ -39,10 +35,10 @@ def to_date(value, formats=FMTS):
     return None
 
 
-def to_utc_datetime(orig_value, tz='Europe/Rome'):
+def to_utc_datetime(orig_value, tz="Europe/Rome"):
     """Convert date strings to odoo format respecting TZ."""
     value = orig_value
-    local_tz = pytz.timezone('Europe/Rome')
+    local_tz = pytz.timezone("Europe/Rome")
     for fmt in FMTS_DT:
         try:
             naive = datetime.strptime(orig_value, fmt)
@@ -66,7 +62,7 @@ def to_safe_float(value):
     if not value:
         return 0.0
     try:
-        return float(value.replace(',', '.'))
+        return float(value.replace(",", "."))
     except ValueError:
         return 0.0
 
@@ -78,23 +74,20 @@ def to_safe_int(value):
     if not value:
         return 0
     try:
-        return int(value.replace(',', '').replace('.', ''))
+        return int(value.replace(",", "").replace(".", ""))
     except ValueError:
         return 0
 
 
 CONV_MAPPING = {
-    'date': to_date,
-    'utc_date': to_utc_datetime,
-    'safe_float': to_safe_float,
-    'safe_int': to_safe_int,
+    "date": to_date,
+    "utc_date": to_utc_datetime,
+    "safe_float": to_safe_float,
+    "safe_int": to_safe_int,
 }
 
 
-def convert(field, conv_type,
-            fallback_field=None,
-            pre_value_handler=None,
-            **kw):
+def convert(field, conv_type, fallback_field=None, pre_value_handler=None, **kw):
     """ Convert the source field to a defined ``conv_type``
         (ex. str) before returning it.
         You can also use predefined converters like 'date'.
@@ -107,8 +100,7 @@ def convert(field, conv_type,
     def modifier(self, record, to_attr):
         if field not in record:
             # be gentle
-            logger.warn(
-                'Field `%s` missing in line `%s`', field, record['_line_nr'])
+            logger.warn("Field `%s` missing in line `%s`", field, record["_line_nr"])
             return None
         value = record.get(field)
         if not value and fallback_field:
@@ -134,7 +126,7 @@ def from_mapping(field, mapping, default_value=None):
     return modifier
 
 
-def concat(field, separator=' ', handler=None):
+def concat(field, separator=" ", handler=None):
     """Concatenate values from different fields."""
 
     # TODO: `field` is actually a list of fields.
@@ -144,8 +136,7 @@ def concat(field, separator=' ', handler=None):
 
     def modifier(self, record, to_attr):
         value = [
-            record.get(_field, '')
-            for _field in field if record.get(_field, '').strip()
+            record.get(_field, "") for _field in field if record.get(_field, "").strip()
         ]
         return separator.join(value)
 
@@ -168,26 +159,30 @@ def xmlid_to_rel(field):
             return None
         # x2m
         return [
-            (6, 0, self.env.ref(x).ids) for x in value
+            (6, 0, self.env.ref(x).ids)
+            for x in value
             if self.env.ref(x, raise_if_not_found=False)
         ]
 
     return modifier
 
+
 # TODO: consider to move this to mapper base klass
 # to ease maintanability and override
 
 
-def backend_to_rel(field,
-                   search_field=None,
-                   search_operator=None,
-                   value_handler=None,
-                   default_search_value=None,
-                   default_search_field=None,
-                   search_value_handler=None,
-                   allowed_length=None,
-                   create_missing=False,
-                   create_missing_handler=None,):
+def backend_to_rel(  # noqa: C901
+    field,
+    search_field=None,
+    search_operator=None,
+    value_handler=None,
+    default_search_value=None,
+    default_search_field=None,
+    search_value_handler=None,
+    allowed_length=None,
+    create_missing=False,
+    create_missing_handler=None,
+):
     """A modifier intended to be used on the ``direct`` mappings.
 
     Example::
@@ -229,8 +224,7 @@ def backend_to_rel(field,
 
         # get the real column and the model
         column = self.model._fields[to_attr]
-        rel_model = \
-            self.env[column.comodel_name].with_context(active_test=False)
+        rel_model = self.env[column.comodel_name].with_context(active_test=False)
 
         if allowed_length and len(search_value) != allowed_length:
             return None
@@ -242,10 +236,10 @@ def backend_to_rel(field,
         if not search_value:
             return None
 
-        search_operator = '='
-        if column.type.endswith('2many'):
+        search_operator = "="
+        if column.type.endswith("2many"):
             # we need multiple values
-            search_operator = 'in'
+            search_operator = "in"
             if not isinstance(search_value, (list, tuple)):
                 search_value = [search_value]
 
@@ -254,15 +248,15 @@ def backend_to_rel(field,
             search_operator = modifier.search_operator
 
         # finally search it
-        search_args = [(modifier.search_field,
-                        search_operator,
-                        search_value)]
+        search_args = [(modifier.search_field, search_operator, search_value)]
 
         value = rel_model.search(search_args)
 
-        if (column.type.endswith('2many') and
-                isinstance(search_value, (list, tuple)) and
-                not len(search_value) == len(value or [])):
+        if (
+            column.type.endswith("2many")
+            and isinstance(search_value, (list, tuple))
+            and not len(search_value) == len(value or [])
+        ):
             # make sure we consider all the values and related records
             # that we pass here.
             # If one of them is missing we have to create them all before.
@@ -280,24 +274,22 @@ def backend_to_rel(field,
                 if create_missing_handler:
                     value = create_missing_handler(self, rel_model, record)
                 else:
-                    value = rel_model.create({'name': record[field]})
+                    value = rel_model.create({"name": record[field]})
             except Exception as e:
                 msg = (
-                    '`backend_to_rel` failed creation. '
-                    '[model: %s] [line: %s] [to_attr: %s] '
-                    'Error: %s'
+                    "`backend_to_rel` failed creation. "
+                    "[model: %s] [line: %s] [to_attr: %s] "
+                    "Error: %s"
                 )
-                logger.error(
-                    msg, rel_model._name, record['_line_nr'], to_attr, str(e)
-                )
+                logger.error(msg, rel_model._name, record["_line_nr"], to_attr, str(e))
                 # raise error to make importer's savepoint ctx manager catch it
                 raise
 
         # handle the final value based on col type
         if value:
-            if column.type == 'many2one':
+            if column.type == "many2one":
                 value = value[0].id
-            if column.type in ('one2many', 'many2many'):
+            if column.type in ("one2many", "many2many"):
                 value = [(6, 0, [x.id for x in value])]
         else:
             return None
@@ -308,7 +300,7 @@ def backend_to_rel(field,
     # If we change the var inside modifier, without this trick
     # you get UnboundLocalError, as the variable was never defined.
     # Trick tnx to http://stackoverflow.com/a/27910553/647924
-    modifier.search_field = search_field or 'name'
+    modifier.search_field = search_field or "name"
     modifier.search_operator = search_operator or None
 
     return modifier

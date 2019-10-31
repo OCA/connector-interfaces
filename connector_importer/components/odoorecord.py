@@ -8,11 +8,11 @@ from odoo.addons.component.core import Component
 class OdooRecordHandler(Component):
     """Interact w/ odoo importable records."""
 
-    _name = 'importer.odoorecord.handler'
-    _inherit = 'importer.base.component'
-    _usage = 'odoorecord.handler'
+    _name = "importer.odoorecord.handler"
+    _inherit = "importer.base.component"
+    _usage = "odoorecord.handler"
 
-    unique_key = ''
+    unique_key = ""
     importer = None
     # By default odoo ignores create_uid/write_uid in vals.
     # If you enable this flags and `create_uid` and/or `write_uid`
@@ -28,7 +28,7 @@ class OdooRecordHandler(Component):
 
     def odoo_find_domain(self, values, orig_values):
         """Domain to find the record in odoo."""
-        return [(self.unique_key, '=', values[self.unique_key])]
+        return [(self.unique_key, "=", values[self.unique_key])]
 
     def odoo_find(self, values, orig_values):
         """Find any existing item in odoo."""
@@ -36,7 +36,9 @@ class OdooRecordHandler(Component):
             return self.model
         item = self.model.search(
             self.odoo_find_domain(values, orig_values),
-            order='create_date desc', limit=1)
+            order="create_date desc",
+            limit=1,
+        )
         return item
 
     def odoo_exists(self, values, orig_values):
@@ -47,8 +49,9 @@ class OdooRecordHandler(Component):
         """Write translations on given record."""
         ctx = ctx or {}
         for lang, values in translatable.items():
-            odoo_record.with_context(
-                lang=lang, **self.write_context()).write(values.copy())
+            odoo_record.with_context(lang=lang, **self.write_context()).write(
+                values.copy()
+            )
 
     def odoo_pre_create(self, values, orig_values):
         """Do some extra stuff before creating a missing record."""
@@ -70,14 +73,15 @@ class OdooRecordHandler(Component):
         """Create a new odoo record."""
         self.odoo_pre_create(values, orig_values)
         # TODO: remove keys that are not model's fields
-        odoo_record = self.model.with_context(
-            **self.create_context()).create(values.copy())
+        odoo_record = self.model.with_context(**self.create_context()).create(
+            values.copy()
+        )
         # force uid
-        if self.override_create_uid and values.get('create_uid'):
-            self._force_value(odoo_record, values, 'create_uid')
+        if self.override_create_uid and values.get("create_uid"):
+            self._force_value(odoo_record, values, "create_uid")
         # force create date
-        if self.override_create_date and values.get('create_date'):
-            self._force_value(odoo_record, values, 'create_date')
+        if self.override_create_date and values.get("create_date"):
+            self._force_value(odoo_record, values, "create_date")
         self.odoo_post_create(odoo_record, values, orig_values)
         translatable = self.importer.collect_translatable(values, orig_values)
         self.update_translations(odoo_record, translatable)
@@ -102,18 +106,18 @@ class OdooRecordHandler(Component):
     def odoo_write(self, values, orig_values):
         """Update an existing odoo record."""
         # pass context here to be applied always on retrieved record
-        odoo_record = self.odoo_find(
-            values, orig_values
-        ).with_context(**self.write_context())
+        odoo_record = self.odoo_find(values, orig_values).with_context(
+            **self.write_context()
+        )
         self.odoo_pre_write(odoo_record, values, orig_values)
         # TODO: remove keys that are not model's fields
         odoo_record.write(values.copy())
         # force uid
-        if self.override_write_uid and values.get('write_uid'):
-            self._force_value(odoo_record, values, 'write_uid')
+        if self.override_write_uid and values.get("write_uid"):
+            self._force_value(odoo_record, values, "write_uid")
         # force create date
-        if self.override_create_date and values.get('create_date'):
-            self._force_value(odoo_record, values, 'create_date')
+        if self.override_create_date and values.get("create_date"):
+            self._force_value(odoo_record, values, "create_date")
         self.odoo_post_write(odoo_record, values, orig_values)
         translatable = self.importer.collect_translatable(values, orig_values)
         self.update_translations(odoo_record, translatable)
@@ -123,11 +127,6 @@ class OdooRecordHandler(Component):
         # the query construction is not vulnerable to SQL injection, as we are
         # replacing the table and column names here.
         # pylint: disable=sql-injection
-        query = 'UPDATE {} SET {} = %s WHERE id = %s'.format(
-            record._table, fname
-        )
-        self.env.cr.execute(
-            query,
-            (values[fname], record.id, )
-        )
-        record.invalidate_cache([fname, ])
+        query = "UPDATE {} SET {} = %s WHERE id = %s".format(record._table, fname)
+        self.env.cr.execute(query, (values[fname], record.id))
+        record.invalidate_cache([fname])
