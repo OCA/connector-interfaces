@@ -2,7 +2,7 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from odoo import fields, api, exceptions, _
+from odoo import _, api, exceptions, fields
 
 from odoo.addons.queue_job.job import DONE, STATES
 
@@ -14,17 +14,9 @@ class JobRelatedMixin(object):
     the relation on each inheriting model.
     """
 
-    job_id = fields.Many2one(
-        'queue.job',
-        string='Job',
-        readonly=True,
-    )
+    job_id = fields.Many2one("queue.job", string="Job", readonly=True)
     job_state = fields.Selection(
-        STATES,
-        string='Job State',
-        readonly=True,
-        index=True,
-        related='job_id.state'
+        STATES, string="Job State", readonly=True, index=True, related="job_id.state"
     )
 
     @api.model
@@ -38,7 +30,7 @@ class JobRelatedMixin(object):
     @api.model
     def check_delete(self):
         if self.has_job() and not self.job_done():
-            raise exceptions.Warning(_('You must complete the job first!'))
+            raise exceptions.Warning(_("You must complete the job first!"))
 
     @api.multi
     def unlink(self):
