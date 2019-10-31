@@ -67,19 +67,16 @@ class ImporterBackend(models.Model):
         readonly=True,
     )
 
-    @api.multi
     def unlink(self):
         """Prevent delete if jobs are running."""
         for item in self:
             item.check_delete()
         return super().unlink()
 
-    @api.multi
     def check_delete(self):
         if not self.debug_mode and self.job_running:
             raise exceptions.Warning(_("You must complete the job first!"))
 
-    @api.multi
     def _compute_job_running(self):
         for item in self:
             running = False
@@ -98,7 +95,6 @@ class ImporterBackend(models.Model):
         # required by cron mixin
         self.browse(backend_id).run_all()
 
-    @api.multi
     def run_all(self):
         """Run all recordset imports."""
         self.ensure_one()
@@ -139,7 +135,6 @@ class ImporterBackend(models.Model):
         else:
             cleanup_logger.info("Nothing to do.")
 
-    @api.multi
     def button_complete_jobs(self):
         """Set all jobs to "completed" state."""
         self.ensure_one()

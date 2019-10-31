@@ -36,7 +36,7 @@ class TestSource(FakeModelTestCase):
 
     @classmethod
     def _create_consumer(cls):
-        return cls.env["fake.source.consumer"].create({"name": "Foo", "version": "1.0"})
+        return cls.env["fake.source.consumer"].create({})
 
     def test_source_basic(self):
         source = self.source

@@ -33,7 +33,6 @@ class ImportSourceConsumerMixin(models.AbstractModel):
         compute="_compute_source_config_summary", readonly=True
     )
 
-    @api.multi
     @api.depends("source_model", "source_id")
     def _compute_source_ref_id(self):
         for item in self:
@@ -46,7 +45,6 @@ class ImportSourceConsumerMixin(models.AbstractModel):
     def _selection_source_ref_id(self):
         return [("import.source.csv", "CSV"), ("import.source.csv.std", "Odoo CSV")]
 
-    @api.multi
     @api.depends("source_ref_id")
     def _compute_source_config_summary(self):
         for item in self:
@@ -54,7 +52,6 @@ class ImportSourceConsumerMixin(models.AbstractModel):
                 continue
             item.source_config_summary = item.source_ref_id.config_summary
 
-    @api.multi
     def open_source_config(self):
         self.ensure_one()
         action = self.env[self.source_model].get_formview_action()
@@ -96,7 +93,6 @@ class ImportSource(models.AbstractModel):
     # tmpl that renders configuration summary
     _config_summary_template = "connector_importer.source_config_summary"
 
-    @api.multi
     def _compute_name(self):
         self.name = self._source_type
 
@@ -151,7 +147,6 @@ class ImportSource(models.AbstractModel):
             ).source_id = res.id
         return res
 
-    @api.multi
     def get_lines(self):
         """Retrieve lines to import."""
         self.ensure_one()

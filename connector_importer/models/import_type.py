@@ -2,7 +2,7 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from odoo import _, api, fields, models
+from odoo import _, fields, models
 
 
 class ImportType(models.Model):
@@ -48,7 +48,6 @@ class ImportType(models.Model):
     # for an import type to ease bootstrapping recordsets from UI.
     # default_source_model_id = fields.Many2one()
 
-    @api.multi
     def available_models(self):
         """Retrieve available import models and their importers.
 
