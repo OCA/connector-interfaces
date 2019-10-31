@@ -27,6 +27,19 @@ class CSVSource(models.Model):
     csv_delimiter = fields.Char(string="CSV delimiter", default=";")
     csv_quotechar = fields.Char(string="CSV quotechar", default='"')
     csv_encoding = fields.Char(string="CSV Encoding")
+    # Handy fields to get a downloadable example file
+    example_file_ext_id = fields.Char(
+        help=(
+            "You can define example file by creating attachments "
+            "with an external ID matching the 'import.source.csv' record "
+            "external ID:\n"
+            "\t${import.source.csv.ExtID}_example_file\n\n"
+            "You can also specify your own external ID by filling this field."
+        )
+    )
+    example_file_url = fields.Char(
+        string="Download example file", compute="_compute_example_file_url"
+    )
 
     _csv_reader_klass = CSVReader
 
@@ -72,33 +85,20 @@ class CSVSource(models.Model):
         reader = self._csv_reader_klass(**reader_args)
         return reader.read_lines()
 
-    # TODO: this stuff is now unrelated from backend version must be refactored
-    # # handy fields to make the example attachment
-    # # downloadable within recordset view
-    # example_file_xmlid = fields.Char()
-    # example_file_url = fields.Char(
-    #     string='Download example file',
-    #     compute='_compute_example_file_url',
-    #     readonly=True,
-    # )
-    #
-    # def _get_example_attachment(self):
-    #     # You can define example file by creating attachments
-    #     # with an xmlid matching the import type/key
-    #     # `connector_importer.example_file_$version_key`
-    #     if not self.backend_id.version or not self.import_type_id:
-    #         return
-    #     xmlid = self.example_file_xmlid
-    #     if not xmlid:
-    #         xmlid = u'connector_importer.examplefile_{}_{}'.format(
-    #             self.backend_id.version.replace('.', '_'),
-    #             self.import_type_id.key)
-    #     return self.env.ref(xmlid, raise_if_not_found=0)
-    #
-    # @api.depends(
-    # 'backend_id.version', 'import_type_id', 'example_file_xmlid')
-    # def _compute_example_file_url(self):
-    #     att = self._get_example_attachment()
-    #     if att:
-    #         self.example_file_url = u'/web/content/{}/{}'.format(
-    #             att.id, att.name)
+    def _get_example_attachment(self):
+        self.ensure_one()
+        xmlid = self.example_file_ext_id
+        if not xmlid:
+            source_xmlid = self.get_external_id()[self.id]
+            if not source_xmlid:
+                return
+            xmlid = "{}_example_file".format(source_xmlid)
+        return self.env.ref(xmlid, raise_if_not_found=0)
+
+    @api.depends("example_file_ext_id")
+    def _compute_example_file_url(self):
+        for source in self:
+            source.example_file_url = False
+            att = source._get_example_attachment()
+            if att:
+                source.example_file_url = "/web/content/{}/{}".format(att.id, att.name)
