@@ -32,7 +32,6 @@ class JobRelatedMixin(object):
         if self.has_job() and not self.job_done():
             raise exceptions.Warning(_("You must complete the job first!"))
 
-    @api.multi
     def unlink(self):
         for item in self:
             item.check_delete()
