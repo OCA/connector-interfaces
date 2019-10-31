@@ -6,33 +6,25 @@ from odoo.addons.component.core import Component
 
 
 class PartnerMapper(Component):
-    _name = 'fake.partner.mapper'
-    _inherit = 'importer.base.mapper'
-    _apply_on = 'res.partner'
+    _name = "fake.partner.mapper"
+    _inherit = "importer.base.mapper"
+    _apply_on = "res.partner"
 
-    required = {
-        'fullname': 'name',
-        'id': 'ref',
-    }
+    required = {"fullname": "name", "id": "ref"}
 
-    defaults = [
-        ('is_company', False),
-    ]
+    defaults = [("is_company", False)]
 
-    direct = [
-        ('id', 'ref'),
-        ('fullname', 'name'),
-    ]
+    direct = [("id", "ref"), ("fullname", "name")]
 
 
 class PartnerRecordImporter(Component):
-    _name = 'fake.partner.importer'
-    _inherit = 'importer.record'
-    _apply_on = 'res.partner'
+    _name = "fake.partner.importer"
+    _inherit = "importer.record"
+    _apply_on = "res.partner"
 
-    odoo_unique_key = 'ref'
+    odoo_unique_key = "ref"
 
     def create_context(self):
-        return {'tracking_disable': True}
+        return {"tracking_disable": True}
 
     write_context = create_context

@@ -2,39 +2,31 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from odoo import models, fields, api
-from ...utils.import_utils import CSVReader, guess_csv_metadata
 import base64
+
+from odoo import api, fields, models
+
+from ...utils.import_utils import CSVReader, guess_csv_metadata
 
 
 class CSVSource(models.Model):
-    _name = 'import.source.csv'
-    _inherit = 'import.source'
-    _description = 'CSV import source'
-    _source_type = 'csv'
-    _reporter_model = 'reporter.csv'
+    _name = "import.source.csv"
+    _inherit = "import.source"
+    _description = "CSV import source"
+    _source_type = "csv"
+    _reporter_model = "reporter.csv"
 
-    csv_file = fields.Binary('CSV file')
+    csv_file = fields.Binary("CSV file")
     # use these to load file from an FS path
-    csv_filename = fields.Char('CSV filename')
+    csv_filename = fields.Char("CSV filename")
     csv_filesize = fields.Char(
-        string='CSV filesize',
-        compute='_compute_csv_filesize',
-        readonly=True,
+        string="CSV filesize", compute="_compute_csv_filesize", readonly=True
     )
     # This is for scheduled import via FS path (FTP, sFTP, etc)
-    csv_path = fields.Char('CSV path')
-    csv_delimiter = fields.Char(
-        string='CSV delimiter',
-        default=';',
-    )
-    csv_quotechar = fields.Char(
-        string='CSV quotechar',
-        default='"',
-    )
-    csv_encoding = fields.Char(
-        string='CSV Encoding',
-    )
+    csv_path = fields.Char("CSV path")
+    csv_delimiter = fields.Char(string="CSV delimiter", default=";")
+    csv_quotechar = fields.Char(string="CSV quotechar", default='"')
+    csv_encoding = fields.Char(string="CSV Encoding")
 
     _csv_reader_klass = CSVReader
 
@@ -42,24 +34,26 @@ class CSVSource(models.Model):
     def _config_summary_fields(self):
         _fields = super()._config_summary_fields
         return _fields + [
-            'csv_filename', 'csv_filesize',
-            'csv_delimiter', 'csv_quotechar',
-            'csv_encoding'
+            "csv_filename",
+            "csv_filesize",
+            "csv_delimiter",
+            "csv_quotechar",
+            "csv_encoding",
         ]
 
     def _binary_csv_content(self):
         return base64.b64decode(self.csv_file)
 
-    @api.onchange('csv_file')
+    @api.onchange("csv_file")
     def _onchance_csv_file(self):
         if self.csv_file:
             # auto-guess CSV details
             meta = guess_csv_metadata(self._binary_csv_content())
             if meta:
-                self.csv_delimiter = meta['delimiter']
-                self.csv_quotechar = meta['quotechar']
+                self.csv_delimiter = meta["delimiter"]
+                self.csv_quotechar = meta["quotechar"]
 
-    @api.depends('csv_file')
+    @api.depends("csv_file")
     def _compute_csv_filesize(self):
         for item in self:
             if item.csv_file:
@@ -68,15 +62,12 @@ class CSVSource(models.Model):
 
     def _get_lines(self):
         # read CSV
-        reader_args = {
-            'delimiter': self.csv_delimiter,
-            'encoding': self.csv_encoding
-        }
+        reader_args = {"delimiter": self.csv_delimiter, "encoding": self.csv_encoding}
         if self.csv_path:
             # TODO: join w/ filename
-            reader_args['filepath'] = self.csv_path
+            reader_args["filepath"] = self.csv_path
         else:
-            reader_args['filedata'] = base64.decodestring(self.csv_file)
+            reader_args["filedata"] = base64.decodestring(self.csv_file)
 
         reader = self._csv_reader_klass(**reader_args)
         return reader.read_lines()

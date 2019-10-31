@@ -2,7 +2,7 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from odoo import models, fields, api, _
+from odoo import _, api, fields, models
 
 
 class ImportType(models.Model):
@@ -24,19 +24,14 @@ class ImportType(models.Model):
     The importer machinery will run the imports for all the models declared
     and will retrieve their specific importerts to execute them.
     """
-    _name = 'import.type'
-    _description = 'Import type'
 
-    name = fields.Char(
-        required=True,
-        help='A meaningful human-friendly name'
-    )
-    key = fields.Char(
-        required=True,
-        help='Unique mnemonic identifier'
-    )
+    _name = "import.type"
+    _description = "Import type"
+
+    name = fields.Char(required=True, help="A meaningful human-friendly name")
+    key = fields.Char(required=True, help="Unique mnemonic identifier")
     settings = fields.Text(
-        string='Settings',
+        string="Settings",
         required=True,
         help="""
             # comment me
@@ -44,10 +39,10 @@ class ImportType(models.Model):
             product.product::product.importer.component.name
             # another one
             product.supplierinfo::supplierinfo.importer.component.name
-        """
+        """,
     )
     _sql_constraints = [
-        ('key_uniq', 'unique (key)', _("Import type `key` must be unique!"))
+        ("key_uniq", "unique (key)", _("Import type `key` must be unique!"))
     ]
     # TODO: provide default source and configuration policy
     # for an import type to ease bootstrapping recordsets from UI.
@@ -64,11 +59,9 @@ class ImportType(models.Model):
         lines = self.settings.strip().splitlines()
         for _line in lines:
             line = _line.strip()
-            if line and not line.startswith('#'):
-                model_name, importer = line.split('::')
+            if line and not line.startswith("#"):
+                model_name, importer = line.split("::")
                 is_last_importer = False
                 if _line == lines[-1]:
                     is_last_importer = True
-                yield (
-                    model_name.strip(), importer.strip(), is_last_importer
-                )
+                yield (model_name.strip(), importer.strip(), is_last_importer)
