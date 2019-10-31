@@ -121,7 +121,7 @@ class RecordImporter(Component):
         return self.mapper.translatable_keys()
 
     def translatable_langs(self):
-        return self.env["res.lang"].search([("translatable", "=", True)]).mapped("code")
+        return self.env["res.lang"].search([("active", "=", True)]).mapped("code")
 
     def make_translation_key(self, key, lang):
         return "{}:{}".format(key, lang)

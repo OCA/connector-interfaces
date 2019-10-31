@@ -74,7 +74,6 @@ class CronMixin(models.AbstractModel):
             rec._update_or_create_cron()
         return records
 
-    @api.multi
     def write(self, vals):
         res = super().write(vals)
         for backend in self:
