@@ -2,16 +2,15 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from odoo.modules.module import get_resource_path
-import odoo.tests.common as common
-from .fake_models import (
-    setup_test_model,
-    teardown_test_model,
-)
 import io
 
+import odoo.tests.common as common
+from odoo.modules.module import get_resource_path
 
-def _load_filecontent(module, filepath, mode='r'):
+from .fake_models import setup_test_model, teardown_test_model
+
+
+def _load_filecontent(module, filepath, mode="r"):
     path = get_resource_path(module, filepath)
     with io.open(path, mode) as fd:
         return fd.read()
