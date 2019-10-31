@@ -6,12 +6,13 @@ import base64
 import os
 from collections import OrderedDict
 
-from odoo import models, fields, api
-from odoo.addons.queue_job.job import (
-    DONE, STATES, job)
+from odoo import api, fields, models
+
 from odoo.addons.base_sparse_field.models.fields import Serialized
-from .job_mixin import JobRelatedMixin
+from odoo.addons.queue_job.job import DONE, STATES, job
+
 from ..log import logger
+from .job_mixin import JobRelatedMixin
 
 
 class ImportRecordset(models.Model, JobRelatedMixin):
@@ -38,67 +39,47 @@ class ImportRecordset(models.Model, JobRelatedMixin):
     * create an import record for each chunk
     * schedule the import job for each import record
     """
-    _name = 'import.recordset'
-    _inherit = 'import.source.consumer.mixin'
-    _description = 'Import recordset'
-    _order = 'sequence ASC, create_date DESC'
-    _backend_type = 'import_backend'
 
-    backend_id = fields.Many2one(
-        'import.backend',
-        string='Import Backend'
-    )
-    sequence = fields.Integer(
-        'Sequence',
-        help="Sequence for the handle.",
-        default=10
-    )
+    _name = "import.recordset"
+    _inherit = "import.source.consumer.mixin"
+    _description = "Import recordset"
+    _order = "sequence ASC, create_date DESC"
+    _backend_type = "import_backend"
+
+    backend_id = fields.Many2one("import.backend", string="Import Backend")
+    sequence = fields.Integer("Sequence", help="Sequence for the handle.", default=10)
     import_type_id = fields.Many2one(
-        string='Import type',
-        comodel_name='import.type',
-        required=True,
+        string="Import type", comodel_name="import.type", required=True
     )
     override_existing = fields.Boolean(
-        string='Override existing items',
-        help='Enable to update existing items w/ new values. '
-             'If disabled, matching records will be skipped.',
+        string="Override existing items",
+        help="Enable to update existing items w/ new values. "
+        "If disabled, matching records will be skipped.",
         default=True,
     )
-    name = fields.Char(
-        string='Name',
-        compute='_compute_name',
-    )
-    create_date = fields.Datetime('Create date')
-    record_ids = fields.One2many(
-        'import.record',
-        'recordset_id',
-        string='Records',
-    )
+    name = fields.Char(string="Name", compute="_compute_name")
+    create_date = fields.Datetime("Create date")
+    record_ids = fields.One2many("import.record", "recordset_id", string="Records")
     # store info about imports report
-    report_data = Serialized(oldname='jsondata')
+    report_data = Serialized(oldname="jsondata")
     shared_data = Serialized()
-    report_html = fields.Html(
-        'Report summary', compute='_compute_report_html')
-    full_report_url = fields.Char(
-        'Full report url', compute='_compute_full_report_url')
+    report_html = fields.Html("Report summary", compute="_compute_report_html")
+    full_report_url = fields.Char("Full report url", compute="_compute_full_report_url")
     jobs_global_state = fields.Selection(
-        string='Jobs global state',
+        string="Jobs global state",
         selection=STATES,
-        compute='_compute_jobs_global_state',
+        compute="_compute_jobs_global_state",
         help=(
             "Tells you if a job is running for this recordset. "
             "If any of the sub jobs is not DONE or FAILED "
             "we assume the global state is PENDING."
         ),
-        readonly=True
+        readonly=True,
     )
-    report_file = fields.Binary('Report file')
-    report_filename = fields.Char('Report filename')
-    docs_html = fields.Html(
-        string='Docs',
-        compute='_compute_docs_html'
-    )
-    notes = fields.Html('Notes', help="Useful info for your users")
+    report_file = fields.Binary("Report file")
+    report_filename = fields.Char("Report filename")
+    docs_html = fields.Html(string="Docs", compute="_compute_docs_html")
+    notes = fields.Html("Notes", help="Useful info for your users")
 
     @api.multi
     def unlink(self):
@@ -107,19 +88,15 @@ class ImportRecordset(models.Model, JobRelatedMixin):
         return super().unlink()
 
     @api.multi
-    @api.depends('backend_id.name')
+    @api.depends("backend_id.name")
     def _compute_name(self):
         for item in self:
-            names = [
-                item.backend_id.name.strip(),
-                '#' + str(item.id),
-            ]
-            item.name = ' '.join(names)
+            names = [item.backend_id.name.strip(), "#" + str(item.id)]
+            item.name = " ".join(names)
 
     def get_records(self):
         """Retrieve importable records and keep ordering."""
-        return self.env['import.record'].search([
-            ('recordset_id', '=', self.id)])
+        return self.env["import.record"].search([("recordset_id", "=", self.id)])
 
     def _set_serialized(self, fname, values, reset=False):
         """Update seriazed data."""
@@ -143,7 +120,7 @@ class ImportRecordset(models.Model, JobRelatedMixin):
     def set_report(self, values, reset=False):
         """Update import report values."""
         self.ensure_one()
-        self._set_serialized('report_data', values, reset=reset)
+        self._set_serialized("report_data", values, reset=reset)
 
     @api.multi
     def get_report(self):
@@ -154,7 +131,7 @@ class ImportRecordset(models.Model, JobRelatedMixin):
     def set_shared(self, values, reset=False):
         """Update import report values."""
         self.ensure_one()
-        self._set_serialized('shared_data', values, reset=reset)
+        self._set_serialized("shared_data", values, reset=reset)
 
     @api.multi
     def get_shared(self):
@@ -181,24 +158,24 @@ class ImportRecordset(models.Model, JobRelatedMixin):
         """
         report = self.get_report()
         data = {
-            'recordset': self,
-            'last_start': report.pop('_last_start'),
-            'report_by_model': OrderedDict(),
+            "recordset": self,
+            "last_start": report.pop("_last_start"),
+            "report_by_model": OrderedDict(),
         }
         # count keys by model
         for item in self.available_models():
             _model = item[0]
-            model = self.env['ir.model']._get(_model)
-            data['report_by_model'][model] = {}
+            model = self.env["ir.model"]._get(_model)
+            data["report_by_model"][model] = {}
             # be defensive here. At some point
             # we could decide to skip models on demand.
             for k, v in report.get(_model, {}).items():
-                data['report_by_model'][model][k] = len(v)
+                data["report_by_model"][model][k] = len(v)
         return data
 
-    @api.depends('report_data')
+    @api.depends("report_data")
     def _compute_report_html(self):
-        template = self.env.ref('connector_importer.recordset_report')
+        template = self.env.ref("connector_importer.recordset_report")
         for item in self:
             if not item.report_data:
                 continue
@@ -208,15 +185,13 @@ class ImportRecordset(models.Model, JobRelatedMixin):
     @api.multi
     def _compute_full_report_url(self):
         for item in self:
-            item.full_report_url = \
-                '/importer/import-recordset/{}'.format(item.id)
+            item.full_report_url = "/importer/import-recordset/{}".format(item.id)
 
     def debug_mode(self):
-        return self.backend_id.debug_mode or \
-            os.getenv('IMPORTER_DEBUG_MODE')
+        return self.backend_id.debug_mode or os.getenv("IMPORTER_DEBUG_MODE")
 
     @api.multi
-    @api.depends('job_id.state', 'record_ids.job_id.state')
+    @api.depends("job_id.state", "record_ids.job_id.state")
     def _compute_jobs_global_state(self):
         for item in self:
             item.jobs_global_state = item._get_global_state()
@@ -244,7 +219,7 @@ class ImportRecordset(models.Model, JobRelatedMixin):
     def import_recordset(self):
         """This job will import a recordset."""
         with self.backend_id.work_on(self._name) as work:
-            importer = work.component(usage='recordset.importer')
+            importer = work.component(usage="recordset.importer")
             return importer.run(self)
 
     @api.multi
@@ -253,17 +228,17 @@ class ImportRecordset(models.Model, JobRelatedMixin):
         """
         job_method = self.with_delay().import_recordset
         if self.debug_mode():
-            logger.warn('### DEBUG MODE ACTIVE: WILL NOT USE QUEUE ###')
+            logger.warn("### DEBUG MODE ACTIVE: WILL NOT USE QUEUE ###")
             job_method = self.import_recordset
 
         for item in self:
             result = job_method()
             if self.debug_mode():
                 # debug mode, no job here: reset it!
-                item.write({'job_id': False})
+                item.write({"job_id": False})
             else:
                 # link the job
-                item.write({'job_id': result.db_record().id})
+                item.write({"job_id": result.db_record().id})
         if self.debug_mode():
             # TODO: port this
             # the "after_all" job needs to be fired manually when in debug mode
@@ -282,38 +257,39 @@ class ImportRecordset(models.Model, JobRelatedMixin):
         self.ensure_one()
         reporter = self.get_source().get_reporter()
         if reporter is None:
-            logger.debug('No reporter found...')
+            logger.debug("No reporter found...")
             return
         metadata, content = reporter.report_get(self)
-        self.write({
-            'report_file': base64.encodestring(content.encode()),
-            'report_filename': metadata['complete_filename']
-        })
-        logger.info((
-            'Report file updated on recordset={}. '
-            'Filename: {}'
-        ).format(self.id, metadata['complete_filename']))
+        self.write(
+            {
+                "report_file": base64.encodestring(content.encode()),
+                "report_filename": metadata["complete_filename"],
+            }
+        )
+        logger.info(
+            ("Report file updated on recordset={}. " "Filename: {}").format(
+                self.id, metadata["complete_filename"]
+            )
+        )
 
     def _get_importers(self):
         importers = OrderedDict()
         for model_name, importer, __ in self.available_models():
-            model = self.env['ir.model']._get(model_name)
+            model = self.env["ir.model"]._get(model_name)
             with self.backend_id.work_on(self._name) as work:
                 importers[model] = work.component_by_name(
-                    importer, model_name=model_name)
+                    importer, model_name=model_name
+                )
         return importers
 
-    @api.depends('import_type_id')
+    @api.depends("import_type_id")
     def _compute_docs_html(self):
-        template = self.env.ref('connector_importer.recordset_docs')
+        template = self.env.ref("connector_importer.recordset_docs")
         for item in self:
             if isinstance(item.id, models.NewId):
                 continue
             importers = item._get_importers()
-            data = {
-                'recordset': item,
-                'importers': importers,
-            }
+            data = {"recordset": item, "importers": importers}
             item.docs_html = template.render(data)
 
 

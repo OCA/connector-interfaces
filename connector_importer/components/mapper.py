@@ -7,9 +7,9 @@ from odoo.addons.connector.components.mapper import mapping
 
 
 class ImportMapper(Component):
-    _name = 'importer.base.mapper'
-    _inherit = ['importer.base.component', 'base.import.mapper']
-    _usage = 'importer.mapper'
+    _name = "importer.base.mapper"
+    _inherit = ["importer.base.component", "base.import.mapper"]
+    _usage = "importer.mapper"
 
     required = {
         # source key: dest key
@@ -18,30 +18,24 @@ class ImportMapper(Component):
         # `source key` means a key in the source record
         # either a line in a csv file or a lien from an sql table.
         # `dest key` is the destination the for the source one.
-
         # Eg: in your mapper you could have a mapping like
         #     direct = [
         #         ('title', 'name'),
         #         (concat(('title', 'foo', ), separator=' - '), 'baz'),
         #     ]
-
         # You want the record to be skipped if:
-
         # 1. title or name are not valued in the source
         # 2. title is valued but the conversion gives an empty value for name
         # 3. title or foo are not valued in the source
         # 4. title and foo are valued but the conversion
         #    gives an empty value for baz
-
         # You can achieve this like:
         # required = {
         #     'title': ('name', 'baz'),
         #     'foo': 'baz',
         # }
-
         # If you want to check only the source or the destination key
         # use the same name and prefix it w/ double underscore, like:
-
         # {'__foo': 'baz', 'foo': '__baz'}
     }
 
@@ -70,7 +64,6 @@ class ImportMapper(Component):
     defaults = [
         # odoo field, value
         # ('sale_ok', True),
-
         # defaults can be also retrieved via xmlid to other records.
         # The format is: `_xmlid::$record_xmlid::$record_field_value`
         # whereas `$record_xmlid` is the xmlid to retrieve
@@ -87,8 +80,8 @@ class ImportMapper(Component):
         """
         values = {}
         for k, v in self.defaults:
-            if isinstance(v, str) and v.startswith('_xmlid::'):
-                xmlid, field_value = v.split('::')[1:]
+            if isinstance(v, str) and v.startswith("_xmlid::"):
+                xmlid, field_value = v.split("::")[1:]
                 v = self.env.ref(xmlid)[field_value]
             values[k] = v
         return values

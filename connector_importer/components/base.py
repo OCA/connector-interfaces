@@ -7,6 +7,6 @@ from odoo.addons.component.core import AbstractComponent
 
 class ImporterComponent(AbstractComponent):
 
-    _name = 'importer.base.component'
-    _inherit = 'base.connector'
-    _collection = 'import.backend'
+    _name = "importer.base.component"
+    _inherit = "base.connector"
+    _collection = "import.backend"
