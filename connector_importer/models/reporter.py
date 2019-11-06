@@ -20,6 +20,7 @@ class ReporterMixin(models.AbstractModel):
     See the CSV example for a real case.
     """
     _name = 'reporter.mixin'
+    _description = "Mixin used to produce import summary"
 
     report_extension = '.txt'
 
