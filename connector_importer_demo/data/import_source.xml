@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 Camptocamp SA
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+
+  <record id="import_source_csv_partner" model="import.source.csv">
+    <field name="chunk_size" eval="0" />  <!-- do not chunk CSV lines -->
+    <field name="csv_delimiter">,</field>
+  </record>
+
+  <record id="import_source_csv_partner_example_file" model="ir.attachment">
+    <field name="name">partner.example.csv</field>
+    <field name="datas" type="base64" file="connector_importer_demo/example/res.partner.csv"/>
+  </record>
+
+</odoo>
