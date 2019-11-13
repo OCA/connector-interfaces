@@ -28,3 +28,37 @@ class PartnerRecordImporter(Component):
         return {"tracking_disable": True}
 
     write_context = create_context
+
+
+# Same component but with the "id" source column handled as an XML-ID
+
+
+class PartnerMapperXMLID(Component):
+    _name = "fake.partner.mapper.xmlid"
+    _inherit = "importer.base.mapper"
+    _apply_on = "res.partner"
+
+    required = {"fullname": "name"}
+
+    defaults = [("is_company", False)]
+
+    direct = [("id", "id"), ("id", "ref"), ("fullname", "name")]
+
+
+class PartnerRecordImporterXMLID(Component):
+    _name = "fake.partner.importer.xmlid"
+    _inherit = "importer.record"
+    _apply_on = "res.partner"
+
+    odoo_unique_key = "id"
+    odoo_unique_key_is_xmlid = True
+
+    def create_context(self):
+        return {"tracking_disable": True}
+
+    def prepare_line(self, line):
+        res = super().prepare_line(line)
+        res["id"] = "__import__." + line["id"]
+        return res
+
+    write_context = create_context
