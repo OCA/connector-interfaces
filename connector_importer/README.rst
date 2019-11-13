@@ -39,6 +39,8 @@ Known issues / Roadmap
   The job is automatically retried a second time (without concurrency errors).
   For small files it's not a big issue, but for files with a huge amount of
   lines it takes time to process them two times.
+* unit tests from `tests.test_source_csv` are not imported (Odoo ignores them)
+  and they need to be fixed
 
 Bug Tracker
 ===========
