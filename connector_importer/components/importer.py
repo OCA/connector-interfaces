@@ -66,14 +66,18 @@ class RecordImporter(Component):
     _record_handler_usage = "odoorecord.handler"
     _tracking_handler_usage = "tracking.handler"
     # a unique key (field name) to retrieve the odoo record
+    # if this key is an external/XML ID, set 'odoo_unique_key_is_xmlid' to True
     odoo_unique_key = ""
+    odoo_unique_key_is_xmlid = False
 
     def _init_importer(self, recordset):
         self.recordset = recordset
         # record handler is responsible for create/write on odoo records
         self.record_handler = self.component(usage=self._record_handler_usage)
         self.record_handler._init_handler(
-            importer=self, unique_key=self.odoo_unique_key
+            importer=self,
+            unique_key=self.odoo_unique_key,
+            unique_key_is_xmlid=self.odoo_unique_key_is_xmlid,
         )
         # tracking handler is responsible for logging and chunk reports
         self.tracker = self.component(usage=self._tracking_handler_usage)
@@ -165,7 +169,8 @@ class RecordImporter(Component):
                 msg += ": {}={}".format(unique_key, values[unique_key])
             return {"message": msg}
         missing = not dest_key.startswith("__") and values.get(dest_key) is None
-        if missing:
+        is_xmlid = dest_key == unique_key and self.odoo_unique_key_is_xmlid
+        if missing and not is_xmlid:
             msg = "MISSING REQUIRED DESTINATION KEY={}".format(dest_key)
             if unique_key and values.get(unique_key):
                 msg += ": {}={}".format(unique_key, values[unique_key])
