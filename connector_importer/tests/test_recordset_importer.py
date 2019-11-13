@@ -45,7 +45,10 @@ class TestImporterBase(common.TransactionComponentRegistryCase):
         super().setUp()
         self._setup_records()
         self._load_module_components("connector_importer")
-        self._build_components(PartnerMapper, PartnerRecordImporter)
+        self._build_components(*self._get_components())
+
+    def _get_components(self):
+        return [PartnerMapper, PartnerRecordImporter]
 
     def _setup_records(self):
         self.backend = self.env["import.backend"].create(

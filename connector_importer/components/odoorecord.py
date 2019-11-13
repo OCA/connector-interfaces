@@ -13,6 +13,7 @@ class OdooRecordHandler(Component):
     _usage = "odoorecord.handler"
 
     unique_key = ""
+    unique_key_is_xmlid = False
     importer = None
     # By default odoo ignores create_uid/write_uid in vals.
     # If you enable this flags and `create_uid` and/or `write_uid`
@@ -22,9 +23,10 @@ class OdooRecordHandler(Component):
     override_create_date = False
     override_write_uid = False
 
-    def _init_handler(self, importer=None, unique_key=None):
+    def _init_handler(self, importer=None, unique_key=None, unique_key_is_xmlid=False):
         self.importer = importer
         self.unique_key = unique_key
+        self.unique_key_is_xmlid = unique_key_is_xmlid
 
     def odoo_find_domain(self, values, orig_values):
         """Domain to find the record in odoo."""
@@ -34,6 +36,9 @@ class OdooRecordHandler(Component):
         """Find any existing item in odoo."""
         if not self.unique_key:
             return self.model
+        if self.unique_key_is_xmlid:
+            item = self.env.ref(values[self.unique_key], raise_if_not_found=False)
+            return item
         item = self.model.search(
             self.odoo_find_domain(values, orig_values),
             order="create_date desc",
@@ -85,6 +90,20 @@ class OdooRecordHandler(Component):
         self.odoo_post_create(odoo_record, values, orig_values)
         translatable = self.importer.collect_translatable(values, orig_values)
         self.update_translations(odoo_record, translatable)
+        # Set the external ID if necessary
+        if self.unique_key_is_xmlid:
+            external_id = values[self.unique_key]
+            if not self.env.ref(external_id, raise_if_not_found=False):
+                module, id_ = external_id.split(".", 1)
+                self.env["ir.model.data"].create(
+                    {
+                        "name": id_,
+                        "module": module,
+                        "model": odoo_record._name,
+                        "res_id": odoo_record.id,
+                        "noupdate": False,
+                    }
+                )
         return odoo_record
 
     def odoo_pre_write(self, odoo_record, values, orig_values):
