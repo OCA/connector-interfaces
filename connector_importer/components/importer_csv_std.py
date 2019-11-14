@@ -116,7 +116,9 @@ class RecordImporterCSVStd(Component):
             try:
                 with self.env.cr.savepoint():
                     fieldnames, data = self.prepare_load_params(dataset)
-                    load_res = self.model.load(fieldnames, data)
+                    context = self._odoo_create_context()
+                    load_res = self.model.with_context(
+                        **context).load(fieldnames, data)
 
                     # In case of errors `load` returns a list of messages with
                     # the cause and the rows range. Here we map these messages
