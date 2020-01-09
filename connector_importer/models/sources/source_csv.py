@@ -69,6 +69,7 @@ class CSVSource(models.Model):
     @api.depends("csv_file")
     def _compute_csv_filesize(self):
         for item in self:
+            item.csv_filesize = False
             if item.csv_file:
                 # in v11 binary fields now can return the size of the file
                 item.csv_filesize = self.with_context(bin_size=True).csv_file

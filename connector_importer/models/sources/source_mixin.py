@@ -36,6 +36,7 @@ class ImportSourceConsumerMixin(models.AbstractModel):
     @api.depends("source_model", "source_id")
     def _compute_source_ref_id(self):
         for item in self:
+            item.source_ref_id = False
             if not item.source_id or not item.source_model:
                 continue
             item.source_ref_id = "{0.source_model},{0.source_id}".format(item)
@@ -48,6 +49,7 @@ class ImportSourceConsumerMixin(models.AbstractModel):
     @api.depends("source_ref_id")
     def _compute_source_config_summary(self):
         for item in self:
+            item.source_config_summary = False
             if not item.source_ref_id:
                 continue
             item.source_config_summary = item.source_ref_id.config_summary
