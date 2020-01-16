@@ -44,6 +44,8 @@ Known issues / Roadmap
 * trigger an event at the end of the whole import (to be able to hook custom
   behavior like move imported files on a remote filesystem).
 * move generic functions from `utils.mapper_utils` to the `connector` module
+* unit tests from `tests.test_source_csv` are not imported (Odoo ignores them)
+  and they need to be fixed
 
 Bug Tracker
 ===========
