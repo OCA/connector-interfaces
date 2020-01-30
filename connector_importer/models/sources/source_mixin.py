@@ -27,7 +27,10 @@ class ImportSourceConsumerMixin(models.AbstractModel):
         string="Source",
         compute="_compute_source_ref_id",
         selection="_selection_source_ref_id",
-        store=True,
+        # NOTE: do not store a computed fields.Reference, Odoo crashes
+        # with an error message "Mixing appels and orange..." when performing
+        # a self.recompute() on such fields.
+        store=False,
     )
     source_config_summary = fields.Html(
         compute="_compute_source_config_summary", readonly=True
