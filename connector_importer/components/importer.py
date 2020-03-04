@@ -87,12 +87,25 @@ class RecordImporter(Component):
             log_prefix=self.recordset.import_type_id.key + " ",
         )
 
+    # Override to not rely on automatic mapper lookup.
+    # This is especially needed if you register more than one importer
+    # for a given odoo model. Eg: 2 importers for res.partner
+    # (1 for customers and 1 for suppliers)
+    _mapper_name = None
+    _mapper_usage = "importer.mapper"
+    # just an instance cache for the mapper
     _mapper = None
+
+    # TODO: add tests
+    def _get_mapper(self):
+        if self._mapper_name:
+            return self.component_by_name(self._mapper_name)
+        return self.component(usage=self._mapper_usage)
 
     @property
     def mapper(self):
         if not self._mapper:
-            self._mapper = self.component(usage="importer.mapper")
+            self._mapper = self._get_mapper()
         return self._mapper
 
     def required_keys(self, create=False):
