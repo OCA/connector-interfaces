@@ -253,6 +253,14 @@ msgid "Field"
 msgstr ""
 
 #. module: connector_importer
+#: model:ir.model.fields,help:connector_importer.field_import_type__use_job
+msgid ""
+"For each importer used in the settings, one job will be spawned. Untick the "
+"box if an importer depends on the result of a previous one (for instance to "
+"link a record to the previously created one)."
+msgstr ""
+
+#. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_recordset__full_report_url
 msgid "Full report url"
 msgstr ""
@@ -691,6 +699,11 @@ msgstr ""
 #. module: connector_importer
 #: model:ir.model.fields,help:connector_importer.field_import_type__key
 msgid "Unique mnemonic identifier"
+msgstr ""
+
+#. module: connector_importer
+#: model:ir.model.fields,field_description:connector_importer.field_import_type__use_job
+msgid "Use job"
 msgstr ""
 
 #. module: connector_importer
