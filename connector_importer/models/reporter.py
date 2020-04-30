@@ -3,11 +3,14 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 
-from odoo import models, api
 import csv
 import io
 import time
 import base64
+
+from odoo import models, api
+
+from ..utils.import_utils import get_encoding
 
 
 class ReporterMixin(models.AbstractModel):
@@ -137,7 +140,10 @@ class CSVReporter(models.AbstractModel):
                     extra_keys.append(self._report_make_key(key, model=model))
 
         source = recordset.get_source()
-        orig_content = base64.b64decode(source.csv_file).decode().splitlines()
+        csv_file_bin = base64.b64decode(source.csv_file)
+        # Try to guess the encoding of the file supplied
+        csv_file_encoding = get_encoding(csv_file_bin).get("encoding", "utf-8")
+        orig_content = csv_file_bin.decode(csv_file_encoding).splitlines()
         delimiter = source.csv_delimiter
         quotechar = source.csv_quotechar
 
