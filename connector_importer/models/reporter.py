@@ -10,6 +10,8 @@ import time
 
 from odoo import api, models
 
+from ..utils.import_utils import get_encoding
+
 
 class ReporterMixin(models.AbstractModel):
     """Base mixin for reporters.
@@ -136,7 +138,10 @@ class CSVReporter(models.AbstractModel):
                     extra_keys.append(self._report_make_key(key, model=model))
 
         source = recordset.get_source()
-        orig_content = base64.b64decode(source.csv_file).decode().splitlines()
+        csv_file_bin = base64.b64decode(source.csv_file)
+        # Try to guess the encoding of the file supplied
+        csv_file_encoding = get_encoding(csv_file_bin).get("encoding", "utf-8")
+        orig_content = csv_file_bin.decode(csv_file_encoding).splitlines()
         delimiter = source.csv_delimiter
         quotechar = source.csv_quotechar
 
