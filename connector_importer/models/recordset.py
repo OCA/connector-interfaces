@@ -207,7 +207,7 @@ class ImportRecordset(models.Model, JobRelatedMixin):
     def available_models(self):
         return self.import_type_id.available_models()
 
-    @job
+    @job(default_channel="root.connector_importer")
     def import_recordset(self):
         """This job will import a recordset."""
         with self.backend_id.work_on(self._name) as work:
