@@ -77,7 +77,7 @@ class ImportRecord(models.Model, JobRelatedMixin):
         self.ensure_one()
         return self.backend_id.debug_mode or os.environ.get("IMPORTER_DEBUG_MODE")
 
-    @job
+    @job(default_channel="root.connector_importer")
     def import_record(self, component_name, model_name, is_last_importer=True):
         """This job will import a record.
 
