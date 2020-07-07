@@ -6,6 +6,7 @@
     name="Importer"
     sequence="10"
     groups="connector.group_connector_manager"
+    web_icon="stock,static/description/icon.png"
     />
 
   <menuitem
