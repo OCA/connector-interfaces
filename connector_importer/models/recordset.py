@@ -61,7 +61,7 @@ class ImportRecordset(models.Model, JobRelatedMixin):
     create_date = fields.Datetime("Create date")
     record_ids = fields.One2many("import.record", "recordset_id", string="Records")
     # store info about imports report
-    report_data = Serialized(oldname="jsondata")
+    report_data = Serialized()
     shared_data = Serialized()
     report_html = fields.Html("Report summary", compute="_compute_report_html")
     full_report_url = fields.Char("Full report url", compute="_compute_full_report_url")
