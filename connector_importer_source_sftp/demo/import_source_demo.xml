@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2020 ACSONE SA/NV (<http://acsone.eu>)
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+    <record id="demo_import_source_csv_sftp" model="import.source.csv.sftp">
+        <field name="name">demo_source_sftp_csv</field>
+        <field name="csv_delimiter">,</field>
+        <field name="csv_encoding">utf-8</field>
+        <field name="storage_id" ref="demo_storage_backend_sftp" />
+        <field name="sftp_filename_pattern">.*\.csv$</field>
+        <field name="move_file_after_import" eval="False" />
+        <field name="sftp_path_input">input</field>
+        <field name="sftp_path_error">error</field>
+        <field name="sftp_path_success">success</field>
+    </record>
+</odoo>
