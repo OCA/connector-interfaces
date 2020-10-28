@@ -4,24 +4,33 @@
 
 import base64
 
-from .common import FakeModelTestCase
-from .fake_models import FakeSourceConsumer
+from odoo_test_helper import FakeModelLoader
+
+from odoo.tools import mute_logger
+
+from .common import BaseTestCase
 
 
-class TestSourceCSV(FakeModelTestCase):
-
-    TEST_MODELS_KLASSES = [FakeSourceConsumer]
-
+class TestSourceCSV(BaseTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls._setup_models()
+        cls.loader = FakeModelLoader(cls.env, cls.__module__)
+        cls.loader.backup_registry()
+        # fmt: off
+        from .fake_models import (
+            FakeSourceConsumer,
+        )
+        cls.loader.update_registry((
+            FakeSourceConsumer,
+        ))
+        # fmt: on
         cls.source = cls._create_source()
         cls.consumer = cls._create_consumer()
 
     @classmethod
     def tearDownClass(cls):
-        cls._teardown_models()
+        cls.loader.restore_registry()
         super().tearDownClass()
 
     @classmethod
@@ -37,7 +46,7 @@ class TestSourceCSV(FakeModelTestCase):
 
     @classmethod
     def _create_consumer(cls):
-        return cls.env["fake.source.consumer"].create({"name": "Foo", "version": "1.0"})
+        return cls.env["fake.source.consumer"].create({"name": "Foo"})
 
     extra_fields = [
         "chunk_size",
@@ -45,8 +54,10 @@ class TestSourceCSV(FakeModelTestCase):
         "csv_filename",
         "csv_delimiter",
         "csv_quotechar",
+        "csv_encoding",
     ]
 
+    @mute_logger("[importer]")
     def test_source_basic(self):
         source = self.source
         self.assertEqual(source.name, "csv")
@@ -54,6 +65,7 @@ class TestSourceCSV(FakeModelTestCase):
         self.assertEqual(source.csv_delimiter, ",")
         self.assertEqual(source.csv_quotechar, '"')
 
+    @mute_logger("[importer]")
     def test_source_get_lines(self):
         source = self.source
         # call private method to skip chunking, pointless here

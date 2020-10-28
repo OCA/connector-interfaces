@@ -5,31 +5,12 @@
 from odoo import fields, models
 
 
-def setup_test_model(env, model_cls):
-    """Pass a test model class and initialize it.
-
-    Courtesy of SBidoul from https://github.com/OCA/mis-builder :)
-    """
-    model_cls._build_model(env.registry, env.cr)
-    env.registry.setup_models(env.cr)
-    env.registry.init_models(
-        env.cr, [model_cls._name], dict(env.context, update_custom_fields=True)
-    )
-
-
-def teardown_test_model(env, model_cls):
-    """Pass a test model class and deinitialize it.
-
-    Courtesy of SBidoul from https://github.com/OCA/mis-builder :)
-    """
-    del env.registry.models[model_cls._name]
-    env.registry.setup_models(env.cr)
-
-
 class FakeSourceConsumer(models.Model):
 
     _name = "fake.source.consumer"
     _inherit = "import.source.consumer.mixin"
+
+    name = fields.Char()
 
 
 class FakeSourceStatic(models.Model):
