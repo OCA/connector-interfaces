@@ -2,28 +2,21 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-import logging
-
 from odoo.tools import mute_logger
 
-from .test_recordset_importer import TestImporterBase
-
-# TODO: really annoying when running tests. Remove or find a better way
-logging.getLogger("PIL.PngImagePlugin").setLevel(logging.ERROR)
-logging.getLogger("passlib.registry").setLevel(logging.ERROR)
-
-MOD_PATH = "odoo.addons.connector_importer"
-RECORD_MODEL = MOD_PATH + ".models.record.ImportRecord"
+from .common import TestImporterBase
 
 
 class TestRecordImporter(TestImporterBase):
-    def _setup_records(self):
+    @classmethod
+    def _setup_records(cls):
         super()._setup_records()
-        self.record = self.env["import.record"].create(
-            {"recordset_id": self.recordset.id}
-        )
-        # no jobs thanks (I know, we should test this too at some point :))
-        self.backend.debug_mode = True
+        cls.record = cls.env["import.record"].create({"recordset_id": cls.recordset.id})
+
+    def _get_components(self):
+        from .fake_components import PartnerRecordImporter, PartnerMapper
+
+        return [PartnerRecordImporter, PartnerMapper]
 
     def _get_importer(self):
         with self.backend.work_on(

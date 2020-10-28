@@ -3,11 +3,18 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import io
+import logging
 
 import odoo.tests.common as common
 from odoo.modules.module import get_resource_path
 
-from .fake_models import setup_test_model, teardown_test_model
+from odoo.addons.component.tests.common import SavepointComponentRegistryCase
+
+from ..utils.import_utils import gen_chunks
+
+# TODO: really annoying when running tests. Remove or find a better way
+logging.getLogger("PIL.PngImagePlugin").setLevel(logging.ERROR)
+logging.getLogger("passlib.registry").setLevel(logging.ERROR)
 
 
 def _load_filecontent(module, filepath, mode="r"):
@@ -21,19 +28,71 @@ class BaseTestCase(common.SavepointCase):
     load_filecontent = _load_filecontent
 
 
-class FakeModelTestCase(BaseTestCase):
+class MockedSource(object):
+    """A fake source for recordsets."""
 
-    # override this in your test case to inject new models on the fly
-    TEST_MODELS_KLASSES = []
+    lines = []
+    chunks_size = 5
+
+    def __init__(self, lines, chunk_size=5):
+        self.lines = lines
+        self.chunks_size = chunk_size
+
+    def get_lines(self):
+        return gen_chunks(self.lines, self.chunks_size)
+
+
+def fake_lines(count, keys):
+    """Generate importable fake lines."""
+    res = []
+    _item = {}.fromkeys(keys, "")
+    for i in range(1, count + 1):
+        item = _item.copy()
+        for k in keys:
+            item[k] = "{}_{}".format(k, i)
+        item["_line_nr"] = i
+        res.append(item)
+    return res
+
+
+class TestImporterBase(SavepointComponentRegistryCase):
+
+    load_filecontent = _load_filecontent
 
     @classmethod
-    def _setup_models(cls):
-        """Setup new fake models for testing."""
-        for kls in cls.TEST_MODELS_KLASSES:
-            setup_test_model(cls.env, kls)
+    def setUpClass(cls):
+        super().setUpClass()
+        cls._setup_records()
+
+    def setUp(self):
+        super().setUp()
+        self._load_module_components("connector_importer")
+        self._build_components(*self._get_components())
+
+    def _get_components(self):
+        return []
 
     @classmethod
-    def _teardown_models(cls):
-        """Wipe fake models once tests have finished."""
-        for kls in cls.TEST_MODELS_KLASSES:
-            teardown_test_model(cls.env, kls)
+    def _setup_records(cls):
+        cls.backend = cls.env["import.backend"].create(
+            # no jobs thanks (I know, we should test this too at some point :))
+            {"name": "Foo", "version": "1.0", "debug_mode": True}
+        )
+        cls.import_type = cls.env["import.type"].create(
+            {
+                "name": "Fake",
+                "key": "fake",
+                "settings": "res.partner::fake.partner.importer",
+            }
+        )
+        cls.recordset = cls.env["import.recordset"].create(
+            {"backend_id": cls.backend.id, "import_type_id": cls.import_type.id}
+        )
+
+    def _patch_get_source(self, lines, chunk_size=5):
+        self.env["import.recordset"]._patch_method(
+            "get_source", lambda x: MockedSource(lines, chunk_size=chunk_size)
+        )
+
+    def _fake_lines(self, count, keys=None):
+        return fake_lines(count, keys=keys or [])
