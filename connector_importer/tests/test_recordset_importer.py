@@ -4,77 +4,20 @@
 
 import mock
 
-from odoo.addons.component.tests import common
+from odoo.tools import mute_logger
 
-from ..utils.import_utils import gen_chunks
+from .common import TestImporterBase
 from .fake_components import PartnerMapper, PartnerRecordImporter
 
 MOD_PATH = "odoo.addons.connector_importer"
 RECORD_MODEL = MOD_PATH + ".models.record.ImportRecord"
 
 
-class MockedSource(object):
-    """A fake source for recordsets."""
-
-    lines = []
-    chunks_size = 5
-
-    def __init__(self, lines, chunk_size=5):
-        self.lines = lines
-        self.chunks_size = chunk_size
-
-    def get_lines(self):
-        return gen_chunks(self.lines, self.chunks_size)
-
-
-def fake_lines(count, keys):
-    """Generate importable fake lines."""
-    res = []
-    _item = {}.fromkeys(keys, "")
-    for i in range(1, count + 1):
-        item = _item.copy()
-        for k in keys:
-            item[k] = "{}_{}".format(k, i)
-        item["_line_nr"] = i
-        res.append(item)
-    return res
-
-
-class TestImporterBase(common.TransactionComponentRegistryCase):
-    def setUp(self):
-        super().setUp()
-        self._setup_records()
-        self._load_module_components("connector_importer")
-        self._build_components(*self._get_components())
-
+class TestRecordsetImporter(TestImporterBase):
     def _get_components(self):
         return [PartnerMapper, PartnerRecordImporter]
 
-    def _setup_records(self):
-        self.backend = self.env["import.backend"].create(
-            {"name": "Foo", "version": "1.0"}
-        )
-        itype = self.env["import.type"].create(
-            {
-                "name": "Fake",
-                "key": "fake",
-                "settings": "res.partner::fake.partner.importer",
-            }
-        )
-        self.recordset = self.env["import.recordset"].create(
-            {"backend_id": self.backend.id, "import_type_id": itype.id}
-        )
-
-    def _patch_get_source(self, lines, chunk_size=5):
-        self.env["import.recordset"]._patch_method(
-            "get_source", lambda x: MockedSource(lines, chunk_size=chunk_size)
-        )
-
-    def _fake_lines(self, count, keys=None):
-        return fake_lines(count, keys=keys or [])
-
-
-class TestRecordsetImporter(TestImporterBase):
+    @mute_logger("[importer]")
     @mock.patch("%s.run_import" % RECORD_MODEL)
     def test_recordset_importer(self, mocked_run_inport):
         # generate 100 records
