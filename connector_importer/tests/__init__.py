@@ -6,3 +6,4 @@ from . import test_record_importer
 from . import test_record_importer_basic
 from . import test_record_importer_xmlid
 from . import test_source
+from . import test_source_csv
