@@ -2,23 +2,23 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-import logging
-
 from odoo.tools import mute_logger
 
-from .test_recordset_importer import TestImporterBase
-
-# TODO: really annoying when running tests. Remove or find a better way
-logging.getLogger("PIL.PngImagePlugin").setLevel(logging.ERROR)
-logging.getLogger("passlib.registry").setLevel(logging.ERROR)
+from .common import TestImporterBase
 
 MOD_PATH = "odoo.addons.connector_importer"
 RECORD_MODEL = MOD_PATH + ".models.record.ImportRecord"
 
 
 class TestRecordImporter(TestImporterBase):
-    def _setup_records(self):
-        super()._setup_records()
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        # generate 10 records
+        cls.fake_lines = cls._fake_lines(cls, 10, keys=("id", "fullname"))
+
+    def setUp(self):
+        super().setUp()
         # The components registry will be handled by the
         # `import.record.import_record()' method when initializing its
         # WorkContext
@@ -27,15 +27,16 @@ class TestRecordImporter(TestImporterBase):
             .with_context(test_components_registry=self.comp_registry)
             .create({"recordset_id": self.recordset.id})
         )
-        # no jobs thanks (I know, we should test this too at some point :))
-        self.backend.debug_mode = True
+
+    def _get_components(self):
+        from .fake_components import PartnerRecordImporter, PartnerMapper
+
+        return [PartnerRecordImporter, PartnerMapper]
 
     @mute_logger("[importer]")
     def test_importer_create(self):
-        # generate 10 records
-        lines = self._fake_lines(10, keys=("id", "fullname"))
         # set them on record
-        self.record.set_data(lines)
+        self.record.set_data(self.fake_lines)
         res = self.record.run_import()
         # in any case we'll get this per each model if the import is not broken
         self.assertEqual(res, {"res.partner": "ok"})

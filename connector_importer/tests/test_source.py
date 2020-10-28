@@ -4,28 +4,36 @@
 
 
 import mock
+from odoo_test_helper import FakeModelLoader
 
-from .common import FakeModelTestCase
-from .fake_models import FakeSourceConsumer, FakeSourceStatic
+from .common import BaseTestCase
 
 MOD_PATH = "odoo.addons.connector_importer.models"
 SOURCE_MODEL = MOD_PATH + ".sources.source_mixin.ImportSourceConsumerMixin"
 
 
-class TestSource(FakeModelTestCase):
-
-    TEST_MODELS_KLASSES = [FakeSourceStatic, FakeSourceConsumer]
-
+class TestSource(BaseTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls._setup_models()
+        cls.loader = FakeModelLoader(cls.env, cls.__module__)
+        cls.loader.backup_registry()
+        # fmt: off
+        from .fake_models import (
+            FakeSourceConsumer,
+            FakeSourceStatic
+        )
+        cls.loader.update_registry((
+            FakeSourceConsumer,
+            FakeSourceStatic
+        ))
+        # fmt: on
         cls.source = cls._create_source()
         cls.consumer = cls._create_consumer()
 
     @classmethod
     def tearDownClass(cls):
-        cls._teardown_models()
+        cls.loader.restore_registry()
         super().tearDownClass()
 
     @classmethod
