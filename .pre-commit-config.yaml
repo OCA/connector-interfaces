@@ -14,6 +14,11 @@ default_language_version:
   python: python3
   node: "14.13.0"
 repos:
+  - repo: https://github.com/myint/autoflake
+    rev: v1.4
+    hooks:
+      - id: autoflake
+        args: ["-i", "--ignore-init-module-imports"]
   - repo: https://github.com/psf/black
     rev: 19.10b0
     hooks:

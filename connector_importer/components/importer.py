@@ -370,4 +370,3 @@ class RecordImporter(Component):
         """
         # TODO: needed for logger and other stuff. Can be simplified.
         # self._init_importer(recordset)
-        pass
