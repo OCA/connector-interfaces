@@ -60,11 +60,9 @@ class OdooRecordHandler(Component):
 
     def odoo_pre_create(self, values, orig_values):
         """Do some extra stuff before creating a missing record."""
-        pass
 
     def odoo_post_create(self, odoo_record, values, orig_values):
         """Do some extra stuff after creating a missing record."""
-        pass
 
     def create_context(self):
         """Inject context variables on create."""
@@ -108,11 +106,9 @@ class OdooRecordHandler(Component):
 
     def odoo_pre_write(self, odoo_record, values, orig_values):
         """Do some extra stuff before updating an existing object."""
-        pass
 
     def odoo_post_write(self, odoo_record, values, orig_values):
         """Do some extra stuff after updating an existing object."""
-        pass
 
     def write_context(self):
         """Inject context variables on write."""
