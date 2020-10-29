@@ -2,7 +2,7 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from odoo import api, fields, models, tools
+from odoo import api, fields, models
 
 
 class ImportSourceConsumerMixin(models.AbstractModel):
@@ -43,7 +43,6 @@ class ImportSourceConsumerMixin(models.AbstractModel):
             item.source_ref_id = "{0.source_model},{0.source_id}".format(item)
 
     @api.model
-    @tools.ormcache("self")
     def _selection_source_ref_id(self):
         return [("import.source.csv", "CSV"), ("import.source.csv.std", "Odoo CSV")]
 
