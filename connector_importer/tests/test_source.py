@@ -9,7 +9,7 @@ from odoo_test_helper import FakeModelLoader
 from .common import BaseTestCase
 
 MOD_PATH = "odoo.addons.connector_importer.models"
-SOURCE_MODEL = MOD_PATH + ".sources.source_mixin.ImportSourceConsumerMixin"
+SOURCE_MODEL = MOD_PATH + ".sources.source_consumer_mixin.ImportSourceConsumerMixin"
 
 
 class TestSource(BaseTestCase):
