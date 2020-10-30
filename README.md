@@ -19,7 +19,7 @@ Available addons
 ----------------
 addon | version | summary
 --- | --- | ---
-[connector_importer](connector_importer/) | 13.0.1.3.3 | This module takes care of import sessions.
+[connector_importer](connector_importer/) | 13.0.1.4.0 | This module takes care of import sessions.
 [connector_importer_demo](connector_importer_demo/) | 13.0.1.0.0 | Demo module for Connector Importer.
 
 [//]: # (end addons)
