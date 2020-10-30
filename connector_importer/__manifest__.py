@@ -11,6 +11,7 @@
     "license": "AGPL-3",
     "category": "Connector",
     "website": "https://github.com/OCA/connector-interfaces",
+    "maintainers": ["simahawk"],
     "data": [
         "data/ir_cron.xml",
         "security/security.xml",
