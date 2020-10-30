@@ -6,26 +6,28 @@
         <field name="arch" type="xml">
             <form string="Import recordset">
                 <h1>Import recordset</h1>
-                <group col="4" string="Configuration">
-                    <field name="name" readonly="1" />
-                    <field name="import_type_id" options="{'no_create': True}" />
-                    <field name="override_existing" />
-                </group>
-                <group col="4" string="Source">
-                    <group name="config" colspan="4">
-                        <field name="source_model" />
-                        <button
-                            name="open_source_config"
-                            type="object"
-                            class="btn-default btn-sm"
-                            string="Configure source"
-                            attrs="{'invisible': [('source_model', '=', False)]}"
-                        />
+                <group col="4" name="main">
+                    <group colspan="2" name="base" string="Base configuration">
+                        <field name="name" readonly="1" />
+                        <field name="import_type_id" options="{'no_create': True}" />
+                        <field name="override_existing" />
                     </group>
-                    <group name="summary" colspan="4">
-                        <field name="source_id" invisible="1" />
-                        <field name="source_ref_id" invisible="1" />
-                        <field name="source_config_summary" />
+                    <group colspan="2" name="source" string="Source">
+                        <group name="source_config" colspan="4">
+                            <field name="source_model" />
+                            <button
+                                name="open_source_config"
+                                type="object"
+                                class="oe_highlight btn-sm"
+                                string="Configure source"
+                                attrs="{'invisible': [('source_model', '=', False)]}"
+                            />
+                        </group>
+                        <group name="source_summary" colspan="4">
+                            <field name="source_id" invisible="1" />
+                            <field name="source_ref_id" invisible="1" />
+                            <field name="source_config_summary" />
+                        </group>
                     </group>
                 </group>
                 <group name="buttons">
