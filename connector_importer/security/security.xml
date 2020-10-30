@@ -8,6 +8,9 @@
         <field name="name">Connector importer user</field>
         <field name="implied_ids" eval="[(4, ref('base.group_no_one'))]" />
         <field name="category_id" ref="module_category_connector_importer" />
-        <field name="users" eval="[(4, ref('base.user_root'))]" />
+        <field
+            name="users"
+            eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"
+        />
     </record>
 </odoo>
