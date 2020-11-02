@@ -1,4 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_import_backend,connector_importer.access_import_backend,model_import_backend,connector.group_connector_manager,1,1,1,1
 access_import_recordset,connector_importer.access_import_recordset,model_import_recordset,connector.group_connector_manager,1,1,1,1
 access_import_record,connector_importer.access_import_record,model_import_record,connector.group_connector_manager,1,1,1,1
 access_import_type,connector_importer.access_import_type,model_import_type,connector.group_connector_manager,1,1,1,1

@@ -7,6 +7,7 @@
     "version": "13.0.1.0.0",
     "depends": ["connector_importer"],
     "author": "Camptocamp, Odoo Community Association (OCA)",
+    "maintainers": ["simahawk"],
     "license": "AGPL-3",
     "category": "Connector",
     "website": "https://github.com/OCA/connector-interfaces",
