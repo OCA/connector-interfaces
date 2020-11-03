@@ -45,15 +45,11 @@ class TestRecordset(common.SavepointCase):
             self.recordset.backend_id.name + " #" + str(self.recordset.id),
         )
 
-    def test_available_models(self):
+    def test_available_importers(self):
         """Available models are propagated from import type."""
-        models = tuple(self.recordset.available_models())
         self.assertEqual(
-            models,
-            (
-                # model, importer, is_last_importer
-                ("res.partner", "partner.importer", True),
-            ),
+            tuple(self.recordset.available_importers()),
+            tuple(self.recordset.import_type_id.available_importers()),
         )
 
     def test_get_set_raw_report(self):
