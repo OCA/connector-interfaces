@@ -157,13 +157,12 @@ class ImportRecordset(models.Model, JobRelatedMixin):
             "report_by_model": OrderedDict(),
         }
         # count keys by model
-        for item in self.available_models():
-            _model = item[0]
-            model = self.env["ir.model"]._get(_model)
+        for config in self.available_importers():
+            model = self.env["ir.model"]._get(config.model)
             data["report_by_model"][model] = {}
             # be defensive here. At some point
             # we could decide to skip models on demand.
-            for k, v in report.get(_model, {}).items():
+            for k, v in report.get(config.model, {}).items():
                 data["report_by_model"][model][k] = len(v)
         return data
 
@@ -204,8 +203,8 @@ class ImportRecordset(models.Model, JobRelatedMixin):
                 break
         return res
 
-    def available_models(self):
-        return self.import_type_id.available_models()
+    def available_importers(self):
+        return self.import_type_id.available_importers()
 
     @job(default_channel="root.connector_importer")
     def import_recordset(self):
@@ -264,11 +263,11 @@ class ImportRecordset(models.Model, JobRelatedMixin):
 
     def _get_importers(self):
         importers = OrderedDict()
-        for model_name, importer, __ in self.available_models():
-            model = self.env["ir.model"]._get(model_name)
+        for config in self.available_importers():
+            model = self.env["ir.model"]._get(config.model)
             with self.backend_id.work_on(self._name) as work:
                 importers[model] = work.component_by_name(
-                    importer, model_name=model_name
+                    config.importer, model_name=config.model
                 )
         return importers
 

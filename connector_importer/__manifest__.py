@@ -5,7 +5,7 @@
 {
     "name": "Connector Importer",
     "summary": """This module takes care of import sessions.""",
-    "version": "13.0.1.4.1",
+    "version": "13.0.1.5.0",
     "depends": ["connector", "queue_job"],
     "author": "Camptocamp, Odoo Community Association (OCA)",
     "license": "AGPL-3",
@@ -24,5 +24,5 @@
         "views/source_config_template.xml",
         "menuitems.xml",
     ],
-    "external_dependencies": {"python": ["chardet", "pytz"]},
+    "external_dependencies": {"python": ["chardet", "pytz", "pyyaml"]},
 }
