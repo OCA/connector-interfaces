@@ -12,6 +12,7 @@ class OdooRecordHandler(Component):
     _inherit = "importer.base.component"
     _usage = "odoorecord.handler"
 
+    # TODO: collect these from `work.options.record_handler`
     unique_key = ""
     unique_key_is_xmlid = False
     importer = None
@@ -22,6 +23,7 @@ class OdooRecordHandler(Component):
     override_create_uid = False
     override_create_date = False
     override_write_uid = False
+    override_write_date = False
 
     def _init_handler(self, importer=None, unique_key=None, unique_key_is_xmlid=False):
         self.importer = importer
@@ -124,16 +126,23 @@ class OdooRecordHandler(Component):
         odoo_record = self.odoo_find(values, orig_values).with_context(
             **self.write_context()
         )
-        self.odoo_pre_write(odoo_record, values, orig_values)
-        # TODO: remove keys that are not model's fields
-        odoo_record.write(values.copy())
+        # copy values to not affect original values (mainly for introspection)
+        values_for_write = values.copy()
+        # purge unneeded values
+        self._odoo_write_purge_values(odoo_record, values_for_write)
+        # hook before write
+        self.odoo_pre_write(odoo_record, values_for_write, orig_values)
+        # do write now
+        odoo_record.write(values_for_write)
         # force uid
         if self.override_write_uid and values.get("write_uid"):
             self._force_value(odoo_record, values, "write_uid")
-        # force create date
-        if self.override_create_date and values.get("create_date"):
-            self._force_value(odoo_record, values, "create_date")
-        self.odoo_post_write(odoo_record, values, orig_values)
+        # force write date
+        if self.override_write_date and values.get("write_date"):
+            self._force_value(odoo_record, values, "write_date")
+        # hook after write
+        self.odoo_post_write(odoo_record, values_for_write, orig_values)
+        # handle translations
         translatable = self.importer.collect_translatable(values, orig_values)
         self.update_translations(odoo_record, translatable)
         return odoo_record
@@ -145,3 +154,17 @@ class OdooRecordHandler(Component):
         query = "UPDATE {} SET {} = %s WHERE id = %s".format(record._table, fname)
         self.env.cr.execute(query, (values[fname], record.id))
         record.invalidate_cache([fname])
+
+    def _odoo_write_purge_values(self, odoo_record, values):
+        # remove non fields values
+        field_names = tuple(values.keys())
+        for fname in field_names:
+            if fname not in self.model._fields:
+                values.pop(fname)
+        # remove fields having the same value
+        field_names = tuple(values.keys())
+        if self.work.options.record_handler.skip_fields_unchanged:
+            current_values = odoo_record.read(field_names, load="_classic_write")
+            for k, v in current_values.items():
+                if values[k] != v:
+                    values.pop(k)
