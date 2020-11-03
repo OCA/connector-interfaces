@@ -6,8 +6,9 @@
   lines it takes time to process them two times.
 * refactor the `recordset.full_report_url` field to return a QWeb report
   instead of a home-made HTML document + display it on the recordset form.
-* trigger an event at the end of the whole import (to be able to hook custom
-  behavior like move imported files on a remote filesystem).
 * move generic functions from `utils.mapper_utils` to the `connector` module
 * unit tests from `tests.test_source_csv` are not imported (Odoo ignores them)
   and they need to be fixed
+* unit tests for record handler and tracker
+* rely on `self.work.options` in all components to replace all custom flags
+  (eg: `_break_on_error`)
