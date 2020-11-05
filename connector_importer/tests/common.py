@@ -58,8 +58,12 @@ def fake_lines(count, keys):
 
 class TestImporterMixin(object):
     def _setup_components(self):
-        self._load_module_components("connector_importer")
+        for mod in self._get_component_modules():
+            self._load_module_components(mod)
         self._build_components(*self._get_components())
+
+    def _get_component_modules(self):
+        return ["connector_importer"]
 
     def _get_components(self):
         return []
