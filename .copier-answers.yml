@@ -1,0 +1,12 @@
+# Do NOT update manually; changes here will be overwritten by Copier
+_commit: v1.0.2
+_src_path: https://github.com/OCA/oca-addons-repo-template.git
+dependency_installation_mode: PIP
+include_wkhtmltopdf: false
+odoo_version: 13.0
+rebel_module_groups: []
+repo_description: Odoo Generic Connector for ODBC, importers, etc
+repo_name: Connector Interfaces
+repo_slug: connector-interfaces
+travis_apt_packages: []
+travis_apt_sources: []
