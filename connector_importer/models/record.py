@@ -82,8 +82,6 @@ class ImportRecord(models.Model):
         kwargs = {
             "options": importer_config.options,
         }
-        if self.env.context.get("test_components_registry"):
-            kwargs["components_registry"] = self.env.context["test_components_registry"]
         with self.backend_id.with_context(**importer_config.context).work_on(
             self._name, **kwargs
         ) as work:
