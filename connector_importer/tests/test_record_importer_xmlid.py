@@ -13,10 +13,8 @@ class TestRecordImporterXMLID(TestImporterBase):
         # The components registry will be handled by the
         # `import.record.import_record()' method when initializing its
         # WorkContext
-        self.record = (
-            self.env["import.record"]
-            .with_context(test_components_registry=self.comp_registry)
-            .create({"recordset_id": self.recordset.id})
+        self.record = self.env["import.record"].create(
+            {"recordset_id": self.recordset.id}
         )
 
     def _get_components(self):
