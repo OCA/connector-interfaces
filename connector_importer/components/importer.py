@@ -358,5 +358,7 @@ class RecordImporter(Component):
         self.tracker._log(msg)
 
         if is_last_importer:
-            self.recordset._event("on_last_record_import_finished").notify(self, record)
+            self.recordset._event(
+                "on_last_record_import_finished", collection=self.work.collection
+            ).notify(self, record)
         return "ok"
