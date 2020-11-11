@@ -327,6 +327,13 @@ class RecordImporter(Component):
                         odoo_record = self.record_handler.odoo_write(values, line)
                         self.tracker.log_updated(values, line, odoo_record)
                     else:
+                        if self.work.options.importer.write_only:
+                            self.tracker.log_skipped(
+                                values,
+                                line,
+                                {"message": "Write-only importer, record not found."},
+                            )
+                            continue
                         odoo_record = self.record_handler.odoo_create(values, line)
                         self.tracker.log_created(values, line, odoo_record)
             except Exception as err:
