@@ -94,7 +94,7 @@ class ImportRecordset(models.Model):
         return self.env["import.record"].search([("recordset_id", "=", self.id)])
 
     def _set_serialized(self, fname, values, reset=False):
-        """Update seriazed data."""
+        """Update serialized data."""
         _values = {}
         if not reset:
             _values = self[fname]
