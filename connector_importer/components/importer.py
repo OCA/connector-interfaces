@@ -346,6 +346,7 @@ class RecordImporter(Component):
         self._do_report()
 
         # log chunk finished
+        counters = self.tracker.get_counters()
         msg = " ".join(
             [
                 "CHUNK FINISHED",
@@ -354,10 +355,10 @@ class RecordImporter(Component):
                 "[skipped: {skipped}]",
                 "[errored: {errored}]",
             ]
-        ).format(**self.tracker.get_counters())
+        ).format(**counters)
         self.tracker._log(msg)
         self._trigger_finish_events(record, is_last_importer=is_last_importer)
-        return "ok"
+        return counters
 
     def _trigger_finish_events(self, record, is_last_importer=False):
         """Trigger events when the importer has done its job.

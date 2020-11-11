@@ -36,16 +36,16 @@ class TestRecordImporter(TestImporterBase):
         # set them on record
         self.record.set_data(self.fake_lines)
         res = self.record.run_import()
-        # in any case we'll get this per each model if the import is not broken
-        self.assertEqual(res, {"res.partner": "ok"})
         report = self.recordset.get_report()
-        self.assertEqual(len(report["res.partner"]["created"]), 10)
-        self.assertEqual(len(report["res.partner"]["errored"]), 0)
-        self.assertEqual(len(report["res.partner"]["updated"]), 0)
-        self.assertEqual(len(report["res.partner"]["skipped"]), 0)
-        self.assertEqual(
-            self.env["res.partner"].search_count([("ref", "like", "id_%")]), 10
-        )
+        # in any case we'll get this per each model if the import is not broken
+        model = "res.partner"
+        expected = {
+            model: {"created": 10, "errored": 0, "updated": 0, "skipped": 0},
+        }
+        self.assertEqual(res, expected)
+        for k, v in expected[model].items():
+            self.assertEqual(len(report[model][k]), v)
+        self.assertEqual(self.env[model].search_count([("ref", "like", "id_%")]), 10)
 
     @mute_logger("[importer]")
     def test_importer_skip(self):
@@ -57,22 +57,19 @@ class TestRecordImporter(TestImporterBase):
         # set them on record
         self.record.set_data(lines)
         res = self.record.run_import()
-        # in any case we'll get this per each model if the import is not broken
-        self.assertEqual(res, {"res.partner": "ok"})
         report = self.recordset.get_report()
-        self.assertEqual(len(report["res.partner"]["created"]), 8)
-        self.assertEqual(len(report["res.partner"]["errored"]), 0)
-        self.assertEqual(len(report["res.partner"]["updated"]), 0)
-        self.assertEqual(len(report["res.partner"]["skipped"]), 2)
-        skipped_msg1 = report["res.partner"]["skipped"][0]["message"]
-        skipped_msg2 = report["res.partner"]["skipped"][1]["message"]
+        model = "res.partner"
+        expected = {model: {"created": 8, "errored": 0, "updated": 0, "skipped": 2}}
+        self.assertEqual(res, expected)
+        for k, v in expected[model].items():
+            self.assertEqual(len(report[model][k]), v)
+        skipped_msg1 = report[model]["skipped"][0]["message"]
+        skipped_msg2 = report[model]["skipped"][1]["message"]
         self.assertEqual(skipped_msg1, "MISSING REQUIRED SOURCE KEY=fullname: ref=id_1")
         # `id` missing, so the destination key `ref` is missing
         # so we don't see it in the message
         self.assertEqual(skipped_msg2, "MISSING REQUIRED SOURCE KEY=id")
-        self.assertEqual(
-            self.env["res.partner"].search_count([("ref", "like", "id_%")]), 8
-        )
+        self.assertEqual(self.env[model].search_count([("ref", "like", "id_%")]), 8)
 
     @mute_logger("[importer]")
     def test_importer_update(self):
@@ -80,27 +77,31 @@ class TestRecordImporter(TestImporterBase):
         lines = self._fake_lines(10, keys=("id", "fullname"))
         self.record.set_data(lines)
         res = self.record.run_import()
-        # in any case we'll get this per each model if the import is not broken
-        self.assertEqual(res, {"res.partner": "ok"})
         report = self.recordset.get_report()
-        self.assertEqual(len(report["res.partner"]["created"]), 10)
-        self.assertEqual(len(report["res.partner"]["updated"]), 0)
+        model = "res.partner"
+        expected = {model: {"created": 10, "errored": 0, "updated": 0, "skipped": 0}}
+        self.assertEqual(res, expected)
+        for k, v in expected[model].items():
+            self.assertEqual(len(report[model][k]), v)
         # now run it a second time
         # but we must flush the old report which is usually done
         # by the recordset importer
         self.recordset.set_report({}, reset=True)
         res = self.record.run_import()
         report = self.recordset.get_report()
-        self.assertEqual(len(report["res.partner"]["created"]), 0)
-        self.assertEqual(len(report["res.partner"]["updated"]), 10)
+        expected = {model: {"created": 0, "errored": 0, "updated": 10, "skipped": 0}}
+        self.assertEqual(res, expected)
+        for k, v in expected[model].items():
+            self.assertEqual(len(report[model][k]), v)
         # now run it a second time
         # but we set `override existing` false
         self.recordset.set_report({}, reset=True)
         report = self.recordset.override_existing = False
         res = self.record.run_import()
         report = self.recordset.get_report()
-        self.assertEqual(len(report["res.partner"]["created"]), 0)
-        self.assertEqual(len(report["res.partner"]["updated"]), 0)
-        self.assertEqual(len(report["res.partner"]["skipped"]), 10)
-        skipped_msg1 = report["res.partner"]["skipped"][0]["message"]
+        expected = {model: {"created": 0, "errored": 0, "updated": 0, "skipped": 10}}
+        self.assertEqual(res, expected)
+        for k, v in expected[model].items():
+            self.assertEqual(len(report[model][k]), v)
+        skipped_msg1 = report[model]["skipped"][0]["message"]
         self.assertEqual(skipped_msg1, "ALREADY EXISTS: ref=id_1")
