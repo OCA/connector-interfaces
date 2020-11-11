@@ -2,8 +2,6 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from odoo import fields
-
 from odoo.addons.component.core import Component
 
 from ..log import LOGGER_NAME, logger
@@ -28,16 +26,11 @@ class RecordSetImporter(Component):
         * create an import record per each chunk
         * schedule import for each record
         """
-        # update recordset report
-        recordset.set_report(
-            {"_last_start": fields.Datetime.to_string(fields.Datetime.now())},
-            reset=True,
-        )
-        msg = "START RECORDSET {}({})".format(recordset.name, recordset.id)
+        # reset recordset
+        recordset._prepare_for_import_session()
+        msg = "START RECORDSET {} ({})".format(recordset.name, recordset.id)
         logger.info(msg)
-
         # flush existing records as we are going to re-create them
-        recordset.record_ids.unlink()
         source = recordset.get_source()
         for chunk in source.get_lines():
             # create chuncked records and run their imports

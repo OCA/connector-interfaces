@@ -132,6 +132,22 @@ class ImportRecordset(models.Model, JobRelatedMixin):
         self.ensure_one()
         return self.shared_data or {}
 
+    def _prepare_for_import_session(self, start=True):
+        """Wipe all session related data.
+        """
+        report_data = {}
+        if start:
+            report_data["_last_start"] = fields.Datetime.to_string(
+                fields.Datetime.now()
+            )
+        values = {
+            "record_ids": [(5, 0, 0)],
+            "report_data": report_data,
+            "shared_data": {},
+        }
+        self.write(values)
+        self.invalidate_cache(tuple(values.keys()))
+
     def _get_report_html_data(self):
         """Prepare data for HTML report.
 
