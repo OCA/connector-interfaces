@@ -356,9 +356,18 @@ class RecordImporter(Component):
             ]
         ).format(**self.tracker.get_counters())
         self.tracker._log(msg)
+        self._trigger_finish_events(record, is_last_importer=is_last_importer)
+        return "ok"
 
+    def _trigger_finish_events(self, record, is_last_importer=False):
+        """Trigger events when the importer has done its job.
+        """
         if is_last_importer:
+            # Trigger global event for recordset
             self.recordset._event(
                 "on_last_record_import_finished", collection=self.work.collection
             ).notify(self, record)
-        return "ok"
+            # Trigger model specific event
+            self.model.browse()._event(
+                "on_last_record_import_finished", collection=self.work.collection
+            ).notify(self, record)
