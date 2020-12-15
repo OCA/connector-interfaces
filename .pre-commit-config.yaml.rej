@@ -1,0 +1,27 @@
+diff a/.pre-commit-config.yaml b/.pre-commit-config.yaml	(rejected hunks)
+@@ -14,2 +14,3 @@ default_language_version:
+   python: python3
++  node: "14.13.0"
+ repos:
+@@ -24,4 +25,4 @@ repos:
+       - id: black
+-  - repo: https://github.com/prettier/prettier
+-    rev: "1.19.1"
++  - repo: https://github.com/prettier/pre-commit
++    rev: "v1.19.1"
+     hooks:
+@@ -82,3 +83,3 @@ repos:
+   - repo: https://github.com/pre-commit/mirrors-pylint
+-    rev: v2.3.1
++    rev: v2.5.3
+     hooks:
+@@ -88,3 +89,3 @@ repos:
+         verbose: true
+-        additional_dependencies: ["pylint-odoo==3.1.0"]
++        additional_dependencies: ["pylint-odoo==3.5.0"]
+       - id: pylint
+@@ -92,3 +93,3 @@ repos:
+         args: ["--rcfile=.pylintrc-mandatory"]
+-        additional_dependencies: ["pylint-odoo==3.1.0"]
++        additional_dependencies: ["pylint-odoo==3.5.0"]
+   - repo: https://github.com/asottile/pyupgrade
