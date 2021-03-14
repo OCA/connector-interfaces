@@ -61,7 +61,7 @@ class ImportSource(models.AbstractModel):
         """
         template = self.env.ref(self._config_summary_template)
         for item in self:
-            item.config_summary = template.render(item._config_summary_data())
+            item.config_summary = template._render(item._config_summary_data())
 
     def _config_summary_data(self):
         """Collect data for summary."""
