@@ -215,8 +215,7 @@ class ImportRecordset(models.Model, JobRelatedMixin):
             return importer.run(self)
 
     def run_import(self):
-        """ queue a job for creating records (import.record items)
-        """
+        """queue a job for creating records (import.record items)"""
         job_method = self.with_delay().import_recordset
         if self.debug_mode():
             logger.warn("### DEBUG MODE ACTIVE: WILL NOT USE QUEUE ###")

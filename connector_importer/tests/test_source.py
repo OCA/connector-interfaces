@@ -19,10 +19,7 @@ class TestSource(BaseTestCase):
         cls.loader = FakeModelLoader(cls.env, cls.__module__)
         cls.loader.backup_registry()
         # fmt: off
-        from .fake_models import (
-            FakeSourceConsumer,
-            FakeSourceStatic
-        )
+        from .fake_models import FakeSourceConsumer, FakeSourceStatic
         cls.loader.update_registry((
             FakeSourceConsumer,
             FakeSourceStatic

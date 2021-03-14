@@ -18,9 +18,7 @@ class TestSourceCSV(BaseTestCase):
         cls.loader = FakeModelLoader(cls.env, cls.__module__)
         cls.loader.backup_registry()
         # fmt: off
-        from .fake_models import (
-            FakeSourceConsumer,
-        )
+        from .fake_models import FakeSourceConsumer
         cls.loader.update_registry((
             FakeSourceConsumer,
         ))
