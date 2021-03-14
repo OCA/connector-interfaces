@@ -11,7 +11,8 @@ _logger = logging.getLogger(__name__)
 @openupgrade.migrate()
 def migrate(env, version):
     importer_channel = env["queue.job.channel"].search(
-        [("complete_name", "=", "root.connector_importer")], limit=1,
+        [("complete_name", "=", "root.connector_importer")],
+        limit=1,
     )
     if not importer_channel:
         _logger.info("Create queue job channel 'root.connector_importer'...")
