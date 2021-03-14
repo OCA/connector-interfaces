@@ -93,8 +93,7 @@ class ImportRecord(models.Model, JobRelatedMixin):
             return importer.run(self, is_last_importer=is_last_importer)
 
     def run_import(self):
-        """ queue a job for importing data stored in to self
-        """
+        """queue a job for importing data stored in to self"""
         use_job = self.recordset_id.import_type_id.use_job
         job_method = self.with_delay().import_record
         if self.debug_mode():

@@ -88,11 +88,11 @@ CONV_MAPPING = {
 
 
 def convert(field, conv_type, fallback_field=None, pre_value_handler=None, **kw):
-    """ Convert the source field to a defined ``conv_type``
-        (ex. str) before returning it.
-        You can also use predefined converters like 'date'.
-        Use ``fallback_field`` to provide a field of the same type
-        to be used in case the base field has no value.
+    """Convert the source field to a defined ``conv_type``
+    (ex. str) before returning it.
+    You can also use predefined converters like 'date'.
+    Use ``fallback_field`` to provide a field of the same type
+    to be used in case the base field has no value.
     """
     if conv_type in CONV_MAPPING:
         conv_type = CONV_MAPPING[conv_type]
@@ -116,8 +116,7 @@ def convert(field, conv_type, fallback_field=None, pre_value_handler=None, **kw)
 
 
 def from_mapping(field, mapping, default_value=None):
-    """ Convert the source value using a ``mapping`` of values.
-    """
+    """Convert the source value using a ``mapping`` of values."""
 
     def modifier(self, record, to_attr):
         value = record.get(field)
@@ -144,8 +143,7 @@ def concat(field, separator=" ", handler=None):
 
 
 def xmlid_to_rel(field):
-    """ Convert xmlids source values to ids.
-    """
+    """Convert xmlids source values to ids."""
 
     def modifier(self, record, to_attr):
         value = record.get(field)

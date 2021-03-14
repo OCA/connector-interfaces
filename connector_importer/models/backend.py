@@ -18,7 +18,7 @@ class ImporterBackend(models.Model):
 
     @api.model
     def _select_version(self):
-        """ Available versions
+        """Available versions
 
         Can be inherited to add custom versions.
         """
