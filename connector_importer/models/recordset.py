@@ -9,7 +9,7 @@ from collections import OrderedDict
 from odoo import api, fields, models
 
 from odoo.addons.base_sparse_field.models.fields import Serialized
-from odoo.addons.queue_job.job import DONE, STATES, job
+from odoo.addons.queue_job.job import DONE, STATES
 
 from ..log import logger
 from .job_mixin import JobRelatedMixin
@@ -175,7 +175,7 @@ class ImportRecordset(models.Model, JobRelatedMixin):
             if not item.report_data:
                 continue
             data = item._get_report_html_data()
-            item.report_html = template.render(data)
+            item.report_html = template._render(data)
 
     def _compute_full_report_url(self):
         for item in self:
@@ -207,7 +207,6 @@ class ImportRecordset(models.Model, JobRelatedMixin):
     def available_models(self):
         return self.import_type_id.available_models()
 
-    @job(default_channel="root.connector_importer")
     def import_recordset(self):
         """This job will import a recordset."""
         with self.backend_id.work_on(self._name) as work:
@@ -280,7 +279,7 @@ class ImportRecordset(models.Model, JobRelatedMixin):
                 continue
             importers = item._get_importers()
             data = {"recordset": item, "importers": importers}
-            item.docs_html = template.render(data)
+            item.docs_html = template._render(data)
 
 
 # TODO
