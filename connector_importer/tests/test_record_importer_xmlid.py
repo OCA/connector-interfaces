@@ -20,10 +20,7 @@ class TestRecordImporterXMLID(TestImporterBase):
         )
 
     def _get_components(self):
-        from .fake_components import (
-            PartnerMapperXMLID,
-            PartnerRecordImporterXMLID,
-        )
+        from .fake_components import PartnerMapperXMLID, PartnerRecordImporterXMLID
 
         return [
             PartnerMapperXMLID,
