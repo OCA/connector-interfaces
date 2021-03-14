@@ -8,8 +8,6 @@ import os
 
 from odoo import api, fields, models
 
-from odoo.addons.queue_job.job import job
-
 from ..log import logger
 from .job_mixin import JobRelatedMixin
 
@@ -77,7 +75,6 @@ class ImportRecord(models.Model, JobRelatedMixin):
         self.ensure_one()
         return self.backend_id.debug_mode or os.environ.get("IMPORTER_DEBUG_MODE")
 
-    @job(default_channel="root.connector_importer")
     def import_record(self, component_name, model_name, is_last_importer=True):
         """This job will import a record.
 
