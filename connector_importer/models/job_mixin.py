@@ -2,17 +2,20 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from odoo import _, api, exceptions, fields
+from odoo import _, api, exceptions, fields, models
 
 from odoo.addons.queue_job.job import DONE, STATES
 
 
-class JobRelatedMixin(object):
+class JobRelatedMixin(models.AbstractModel):
     """Mixin klass for queue.job relationship.
 
     We do not use an abstract model to be able to not re-define
     the relation on each inheriting model.
     """
+
+    _name = "job.related.mixin"
+    _description = "Job Related Mixin"
 
     job_id = fields.Many2one("queue.job", string="Job", readonly=True)
     job_state = fields.Selection(

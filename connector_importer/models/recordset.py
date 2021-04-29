@@ -41,7 +41,7 @@ class ImportRecordset(models.Model, JobRelatedMixin):
     """
 
     _name = "import.recordset"
-    _inherit = "import.source.consumer.mixin"
+    _inherit = ["import.source.consumer.mixin"]
     _description = "Import recordset"
     _order = "sequence ASC, create_date DESC"
     _backend_type = "import_backend"
@@ -175,7 +175,7 @@ class ImportRecordset(models.Model, JobRelatedMixin):
             if not item.report_data:
                 continue
             data = item._get_report_html_data()
-            item.report_html = template.render(data)
+            item.report_html = template._render(data)
 
     def _compute_full_report_url(self):
         for item in self:
@@ -279,7 +279,7 @@ class ImportRecordset(models.Model, JobRelatedMixin):
                 continue
             importers = item._get_importers()
             data = {"recordset": item, "importers": importers}
-            item.docs_html = template.render(data)
+            item.docs_html = template._render(data)
 
 
 # TODO
