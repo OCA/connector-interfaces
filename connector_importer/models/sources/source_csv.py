@@ -58,7 +58,7 @@ class CSVSource(models.Model):
         return base64.b64decode(self.csv_file)
 
     @api.onchange("csv_file")
-    def _onchance_csv_file(self):
+    def _onchange_csv_file(self):
         if self.csv_file:
             # auto-guess CSV details
             meta = guess_csv_metadata(self._binary_csv_content())
