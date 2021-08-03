@@ -78,47 +78,54 @@ class ImportRecord(models.Model, JobRelatedMixin):
         return self.backend_id.debug_mode or os.environ.get("IMPORTER_DEBUG_MODE")
 
     @job(default_channel="root.connector_importer")
-    def import_record(self, component_name, model_name, is_last_importer=True):
+    def import_record(self, importer_config):
         """This job will import a record.
 
+        # TODO rewrite
         :param component_name: name of the importer component to use
         :param model_name: name of the model to import
         :param is_last_importer: flag for last importer of the recordset
         """
-        kwargs = {}
+        kwargs = {
+            "options": importer_config.options,
+        }
         if self.env.context.get("test_components_registry"):
             kwargs["components_registry"] = self.env.context["test_components_registry"]
-        with self.backend_id.work_on(self._name, **kwargs) as work:
-            importer = work.component_by_name(component_name, model_name=model_name)
-            return importer.run(self, is_last_importer=is_last_importer)
+        with self.backend_id.with_context(**importer_config.context).work_on(
+            self._name, **kwargs
+        ) as work:
+            importer = work.component_by_name(
+                importer_config.importer, model_name=importer_config.model
+            )
+            return importer.run(self, is_last_importer=importer_config.is_last_importer)
 
     def run_import(self):
         """ queue a job for importing data stored in to self
         """
+        self.ensure_one()
         use_job = self.recordset_id.import_type_id.use_job
+        # TODO: use ctx key to disable job instead
         job_method = self.with_delay().import_record
         if self.debug_mode():
             logger.warn("### DEBUG MODE ACTIVE: WILL NOT USE QUEUE ###")
         if self.debug_mode() or not use_job:
             job_method = self.import_record
-        _result = {}
-        for item in self:
-            # we create a record and a job for each model name
-            # that needs to be imported
-            for (
-                model,
-                importer,
-                is_last_importer,
-            ) in item.recordset_id.available_models():
-                # TODO: grab component from config
-                result = job_method(importer, model, is_last_importer=is_last_importer)
-                _result[model] = result
-                if self.debug_mode() or not use_job:
-                    # debug mode, no job here: reset it!
-                    item.write({"job_id": False})
-                else:
-                    # FIXME: we should have a o2m here otherwise
-                    # w/ multiple importers for the same record
-                    # we keep the reference on w/ the last job.
-                    item.write({"job_id": result.db_record().id})
-        return _result
+        result = self._run_import(job_method, use_job)
+        return result
+
+    def _run_import(self, job_method, use_job):
+        res = {}
+        # we create a record and a job for each model name
+        # that needs to be imported
+        for config in self.recordset_id.available_importers():
+            result = job_method(config)
+            res[config.model] = result
+            if self.debug_mode() or not use_job:
+                # debug mode, no job here: reset it!
+                self.write({"job_id": False})
+            else:
+                # FIXME: we should have a o2m here otherwise
+                # w/ multiple importers for the same record
+                # we keep the reference on w/ the last job.
+                self.write({"job_id": result.db_record().id})
+        return res
