@@ -370,9 +370,7 @@ msgid "Import type"
 msgstr ""
 
 #. module: connector_importer
-#: code:addons/connector_importer/models/import_type.py:0
 #: model:ir.model.constraint,message:connector_importer.constraint_import_type_key_uniq
-#, python-format
 msgid "Import type `key` must be unique!"
 msgstr ""
 
@@ -482,6 +480,11 @@ msgid "Last start:"
 msgstr ""
 
 #. module: connector_importer
+#: model:ir.model.fields,field_description:connector_importer.field_import_type__settings
+msgid "Legacy Settings"
+msgstr ""
+
+#. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.recordset_docs
 msgid "Legend: TODO"
 msgstr ""
@@ -506,6 +509,12 @@ msgid "Name"
 msgstr ""
 
 #. module: connector_importer
+#: code:addons/connector_importer/models/import_type.py:0
+#, python-format
+msgid "No options found for: {}."
+msgstr ""
+
+#. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_backend__notes
 #: model:ir.model.fields,field_description:connector_importer.field_import_recordset__notes
 #: model_terms:ir.ui.view,arch_db:connector_importer.view_import_backend_form
@@ -515,6 +524,11 @@ msgstr ""
 #. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.recordset_docs
 msgid "Notes:"
+msgstr ""
+
+#. module: connector_importer
+#: model:ir.model.fields,field_description:connector_importer.field_import_type__options
+msgid "Options"
 msgstr ""
 
 #. module: connector_importer
@@ -624,11 +638,6 @@ msgstr ""
 #. module: connector_importer
 #: model:ir.model.fields,help:connector_importer.field_import_recordset__sequence
 msgid "Sequence for the handle."
-msgstr ""
-
-#. module: connector_importer
-#: model:ir.model.fields,field_description:connector_importer.field_import_type__settings
-msgid "Settings"
 msgstr ""
 
 #. module: connector_importer
