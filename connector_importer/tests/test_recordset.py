@@ -27,8 +27,9 @@ class TestRecordset(common.SavepointCase):
             {
                 "name": "Ok",
                 "key": "ok",
-                "settings": """
-            res.partner::partner.importer
+                "options": """
+- model: res.partner
+  importer: partner.importer
             """,
             }
         )
