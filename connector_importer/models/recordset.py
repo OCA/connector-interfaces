@@ -97,7 +97,7 @@ class ImportRecordset(models.Model, JobRelatedMixin):
         return self.env["import.record"].search([("recordset_id", "=", self.id)])
 
     def _set_serialized(self, fname, values, reset=False):
-        """Update seriazed data."""
+        """Update serialized data."""
         _values = {}
         if not reset:
             _values = self[fname]
@@ -131,6 +131,22 @@ class ImportRecordset(models.Model, JobRelatedMixin):
     def get_shared(self):
         self.ensure_one()
         return self.shared_data or {}
+
+    def _prepare_for_import_session(self, start=True):
+        """Wipe all session related data.
+        """
+        report_data = {}
+        if start:
+            report_data["_last_start"] = fields.Datetime.to_string(
+                fields.Datetime.now()
+            )
+        values = {
+            "record_ids": [(5, 0, 0)],
+            "report_data": report_data,
+            "shared_data": {},
+        }
+        self.write(values)
+        self.invalidate_cache(tuple(values.keys()))
 
     def _get_report_html_data(self):
         """Prepare data for HTML report.

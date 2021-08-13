@@ -2,8 +2,6 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from odoo import fields
-
 from odoo.addons.component.core import Component
 
 from ..log import LOGGER_NAME, logger
@@ -28,16 +26,11 @@ class RecordSetImporter(Component):
         * create an import record per each chunk
         * schedule import for each record
         """
-        # update recordset report
-        recordset.set_report(
-            {"_last_start": fields.Datetime.to_string(fields.Datetime.now())},
-            reset=True,
-        )
-        msg = "START RECORDSET {}({})".format(recordset.name, recordset.id)
+        # reset recordset
+        recordset._prepare_for_import_session()
+        msg = "START RECORDSET {} ({})".format(recordset.name, recordset.id)
         logger.info(msg)
-
         # flush existing records as we are going to re-create them
-        recordset.record_ids.unlink()
         source = recordset.get_source()
         for chunk in source.get_lines():
             # create chuncked records and run their imports
@@ -334,6 +327,13 @@ class RecordImporter(Component):
                         odoo_record = self.record_handler.odoo_write(values, line)
                         self.tracker.log_updated(values, line, odoo_record)
                     else:
+                        if self.work.options.importer.write_only:
+                            self.tracker.log_skipped(
+                                values,
+                                line,
+                                {"message": "Write-only importer, record not found."},
+                            )
+                            continue
                         odoo_record = self.record_handler.odoo_create(values, line)
                         self.tracker.log_created(values, line, odoo_record)
             except Exception as err:
@@ -346,6 +346,7 @@ class RecordImporter(Component):
         self._do_report()
 
         # log chunk finished
+        counters = self.tracker.get_counters()
         msg = " ".join(
             [
                 "CHUNK FINISHED",
@@ -354,9 +355,20 @@ class RecordImporter(Component):
                 "[skipped: {skipped}]",
                 "[errored: {errored}]",
             ]
-        ).format(**self.tracker.get_counters())
+        ).format(**counters)
         self.tracker._log(msg)
+        self._trigger_finish_events(record, is_last_importer=is_last_importer)
+        return counters
 
+    def _trigger_finish_events(self, record, is_last_importer=False):
+        """Trigger events when the importer has done its job.
+        """
         if is_last_importer:
-            self.recordset._event("on_last_record_import_finished").notify(self, record)
-        return "ok"
+            # Trigger global event for recordset
+            self.recordset._event(
+                "on_last_record_import_finished", collection=self.work.collection
+            ).notify(self, record)
+            # Trigger model specific event
+            self.model.browse()._event(
+                "on_last_record_import_finished", collection=self.work.collection
+            ).notify(self, record)

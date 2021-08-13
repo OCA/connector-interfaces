@@ -41,7 +41,7 @@ class TestSourceCSV(BaseTestCase):
         source = cls.env["import.source.csv"].create(
             {"csv_file": base64.encodestring(filecontent)}
         )
-        source._onchance_csv_file()
+        source._onchange_csv_file()
         return source
 
     @classmethod

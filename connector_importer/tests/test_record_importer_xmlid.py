@@ -13,10 +13,8 @@ class TestRecordImporterXMLID(TestImporterBase):
         # The components registry will be handled by the
         # `import.record.import_record()' method when initializing its
         # WorkContext
-        self.record = (
-            self.env["import.record"]
-            .with_context(test_components_registry=self.comp_registry)
-            .create({"recordset_id": self.recordset.id})
+        self.record = self.env["import.record"].create(
+            {"recordset_id": self.recordset.id}
         )
 
     def _get_components(self):
@@ -32,24 +30,27 @@ class TestRecordImporterXMLID(TestImporterBase):
 
     @mute_logger("[importer]")
     def test_importer_create(self):
-        self.import_type.write({"settings": "res.partner::fake.partner.importer.xmlid"})
-
+        self.import_type.write(
+            {
+                "options": """
+- model: res.partner
+  importer: fake.partner.importer.xmlid
+                """
+            }
+        )
         # generate 10 records
         count = 10
         lines = self._fake_lines(count, keys=("id", "fullname"))
         # set them on record
         self.record.set_data(lines)
         res = self.record.run_import()
-        # in any case we'll get this per each model if the import is not broken
-        self.assertEqual(res, {"res.partner": "ok"})
         report = self.recordset.get_report()
-        self.assertEqual(len(report["res.partner"]["created"]), 10)
-        self.assertEqual(len(report["res.partner"]["errored"]), 0)
-        self.assertEqual(len(report["res.partner"]["updated"]), 0)
-        self.assertEqual(len(report["res.partner"]["skipped"]), 0)
-        self.assertEqual(
-            self.env["res.partner"].search_count([("ref", "like", "id_%")]), 10
-        )
+        model = "res.partner"
+        expected = {model: {"created": 10, "errored": 0, "updated": 0, "skipped": 0}}
+        self.assertEqual(res, expected)
+        for k, v in expected[model].items():
+            self.assertEqual(len(report[model][k]), v)
+        self.assertEqual(self.env[model].search_count([("ref", "like", "id_%")]), 10)
         # Check XML-IDs
         for i in range(1, count + 1):
             partner = self.env.ref(

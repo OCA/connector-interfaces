@@ -20,9 +20,7 @@ class TestBackend(common.SavepointCase):
         bknd = self.backend_model.create(
             {"name": "Foo", "version": "1.0", "cron_cleanup_keep": 3}
         )
-        itype = self.env["import.type"].create(
-            {"name": "Fake", "key": "fake", "settings": "# nothing to do"}
-        )
+        itype = self.env["import.type"].create({"name": "Fake", "key": "fake"})
         # and 5 recorsets
         for x in range(5):
             rec = self.env["import.recordset"].create(

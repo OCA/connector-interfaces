@@ -24,8 +24,9 @@ def _load_filecontent(module, filepath, mode="r"):
 
 
 class BaseTestCase(common.SavepointCase):
-
-    load_filecontent = _load_filecontent
+    @staticmethod
+    def load_filecontent(*args, **kwargs):
+        return _load_filecontent(*args, **kwargs)
 
 
 class MockedSource(object):
@@ -55,19 +56,14 @@ def fake_lines(count, keys):
     return res
 
 
-class TestImporterBase(SavepointComponentRegistryCase):
-
-    load_filecontent = _load_filecontent
-
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls._setup_records()
-
-    def setUp(self):
-        super().setUp()
-        self._load_module_components("connector_importer")
+class TestImporterMixin(object):
+    def _setup_components(self):
+        for mod in self._get_component_modules():
+            self._load_module_components(mod)
         self._build_components(*self._get_components())
+
+    def _get_component_modules(self):
+        return ["connector_importer"]
 
     def _get_components(self):
         return []
@@ -82,7 +78,10 @@ class TestImporterBase(SavepointComponentRegistryCase):
             {
                 "name": "Fake",
                 "key": "fake",
-                "settings": "res.partner::fake.partner.importer",
+                "options": """
+- model: res.partner
+  importer: fake.partner.importer
+                """,
             }
         )
         cls.recordset = cls.env["import.recordset"].create(
@@ -96,3 +95,18 @@ class TestImporterBase(SavepointComponentRegistryCase):
 
     def _fake_lines(self, count, keys=None):
         return fake_lines(count, keys=keys or [])
+
+    @staticmethod
+    def load_filecontent(*args, **kwargs):
+        return _load_filecontent(*args, **kwargs)
+
+
+class TestImporterBase(SavepointComponentRegistryCase, TestImporterMixin):
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls._setup_records()
+
+    def setUp(self):
+        super().setUp()
+        self._setup_components()

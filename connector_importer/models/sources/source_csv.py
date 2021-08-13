@@ -58,7 +58,7 @@ class CSVSource(models.Model):
         return base64.b64decode(self.csv_file)
 
     @api.onchange("csv_file")
-    def _onchance_csv_file(self):
+    def _onchange_csv_file(self):
         if self.csv_file:
             # auto-guess CSV details
             meta = guess_csv_metadata(self._binary_csv_content())
@@ -81,7 +81,7 @@ class CSVSource(models.Model):
             # TODO: join w/ filename
             reader_args["filepath"] = self.csv_path
         else:
-            reader_args["filedata"] = base64.decodestring(self.csv_file)
+            reader_args["filedata"] = base64.decodebytes(self.csv_file)
 
         reader = self._csv_reader_klass(**reader_args)
         return reader.read_lines()
