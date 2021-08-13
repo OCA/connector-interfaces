@@ -16,6 +16,13 @@ class PartnerMapper(Component):
 
     direct = [("id", "ref"), ("fullname", "name")]
 
+    def finalize(self, map_record, values):
+        res = super().finalize(map_record, values)
+        # allow easy simulation of broken import
+        if self.env.context.get("_test_break_import"):
+            raise ValueError(self.env.context.get("_test_break_import"))
+        return res
+
 
 class PartnerRecordImporter(Component):
     _name = "fake.partner.importer"
