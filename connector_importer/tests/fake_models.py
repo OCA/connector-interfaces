@@ -10,6 +10,7 @@ class FakeSourceConsumer(models.Model):
     _name = "fake.source.consumer"
     _description = _name
     _inherit = "import.source.consumer.mixin"
+    _description = "Fake source consumer"
 
     name = fields.Char()
 
@@ -20,6 +21,7 @@ class FakeSourceStatic(models.Model):
     _description = _name
     _inherit = "import.source"
     _source_type = "static"
+    _description = "Fake static source"
 
     fake_param = fields.Char()
 
