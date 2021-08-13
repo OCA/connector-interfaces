@@ -16,12 +16,11 @@ class TestImportType(common.SavepointCase):
 
     @mute_logger("odoo.sql_db")
     def test_unique_constrain(self):
-        self.type_model.create({"name": "Ok", "key": "ok", "settings": ""})
+        self.type_model.create({"name": "Ok", "key": "ok"})
         with self.assertRaises(IntegrityError):
-            self.type_model.create(
-                {"name": "Duplicated Ok", "key": "ok", "settings": ""}
-            )
+            self.type_model.create({"name": "Duplicated Ok", "key": "ok"})
 
+    @mute_logger("odoo.addons.connector_importer.models.import_type")
     def test_available_importers_legacy(self):
         """Ensure old text-like settings work with new options."""
         itype = self.type_model.create(

@@ -78,7 +78,10 @@ class TestImporterMixin(object):
             {
                 "name": "Fake",
                 "key": "fake",
-                "settings": "res.partner::fake.partner.importer",
+                "options": """
+- model: res.partner
+  importer: fake.partner.importer
+                """,
             }
         )
         cls.recordset = cls.env["import.recordset"].create(

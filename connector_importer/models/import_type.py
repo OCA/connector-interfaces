@@ -23,7 +23,7 @@ class ImportType(models.Model):
     You can describe an import using the `options` field with YAML format.
     Here you can declare what you want to import (model) and how (importer).
 
-    Settings example:
+    Options example:
 
     - model: product.template
       importer: template.importer.component.name
@@ -61,7 +61,7 @@ class ImportType(models.Model):
 
     name = fields.Char(required=True, help="A meaningful human-friendly name")
     key = fields.Char(required=True, help="Unique mnemonic identifier")
-    options = fields.Text()
+    options = fields.Text(help="YAML configuration")
     settings = fields.Text(
         string="Legacy Settings",
         required=False,
