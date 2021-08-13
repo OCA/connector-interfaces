@@ -30,8 +30,14 @@ class TestRecordImporterXMLID(TestImporterBase):
 
     @mute_logger("[importer]")
     def test_importer_create(self):
-        self.import_type.write({"settings": "res.partner::fake.partner.importer.xmlid"})
-
+        self.import_type.write(
+            {
+                "options": """
+- model: res.partner
+  importer: fake.partner.importer.xmlid
+                """
+            }
+        )
         # generate 10 records
         count = 10
         lines = self._fake_lines(count, keys=("id", "fullname"))

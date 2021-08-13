@@ -105,7 +105,7 @@ class ImportRecord(models.Model, JobRelatedMixin):
         # TODO: use ctx key to disable job instead
         job_method = self.with_delay().import_record
         if self.debug_mode():
-            logger.warn("### DEBUG MODE ACTIVE: WILL NOT USE QUEUE ###")
+            logger.warning("### DEBUG MODE ACTIVE: WILL NOT USE QUEUE ###")
         if self.debug_mode() or not use_job:
             job_method = self.import_record
         result = self._run_import(job_method, use_job)
