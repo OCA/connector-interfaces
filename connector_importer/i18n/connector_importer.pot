@@ -743,6 +743,11 @@ msgid ""
 msgstr ""
 
 #. module: connector_importer
+#: model:ir.model.fields,help:connector_importer.field_import_type__options
+msgid "YAML configuration"
+msgstr ""
+
+#. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.view_import_backend_form
 msgid "You are about to run ALL configured recordsets. Are you sure?"
 msgstr ""
