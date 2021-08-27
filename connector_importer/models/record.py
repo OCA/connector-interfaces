@@ -50,10 +50,6 @@ class ImportRecord(models.Model):
         readonly=True,
     )
 
-    def unlink(self):
-        # inheritance of non-model mixin does not work w/out this
-        return super().unlink()
-
     @api.depends("date")
     def _compute_name(self):
         for item in self:

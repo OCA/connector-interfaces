@@ -19,10 +19,7 @@ class TestSource(BaseTestCase):
         cls.loader = FakeModelLoader(cls.env, cls.__module__)
         cls.loader.backup_registry()
         # fmt: off
-        from .fake_models import (
-            FakeSourceConsumer,
-            FakeSourceStatic
-        )
+        from .fake_models import FakeSourceConsumer, FakeSourceStatic
         cls.loader.update_registry((
             FakeSourceConsumer,
             FakeSourceStatic
@@ -52,6 +49,9 @@ class TestSource(BaseTestCase):
         self.assertItemsEqual(
             source._config_summary_fields, ["chunk_size", "fake_param"]
         )
+        source.config_summary = False
+        source._compute_config_summary()
+        self.assertTrue(source.config_summary)
 
     def test_source_get_lines(self):
         source = self.source

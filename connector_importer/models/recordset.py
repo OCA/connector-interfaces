@@ -80,11 +80,6 @@ class ImportRecordset(models.Model):
     docs_html = fields.Html(string="Docs", compute="_compute_docs_html")
     notes = fields.Html("Notes", help="Useful info for your users")
 
-    def unlink(self):
-        # inheritance of non-model mixin - like JobRelatedMixin -
-        # does not work w/out this
-        return super().unlink()
-
     @api.depends("backend_id.name")
     def _compute_name(self):
         for item in self:

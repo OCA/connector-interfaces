@@ -34,6 +34,11 @@ class TestRecordsetImporter(TestImporterBase):
         mocked_run_inport.assert_called()
         # we expect 5 records w/ 20 lines each
         records = self.recordset.get_records()
+        rs = self.recordset
+        rs.report_html, rs.docs_html = False, False
+        self.recordset._compute_docs_html()
+        self.recordset._compute_report_html()
+        self.assertNotEqual((False, False), (rs.report_html, rs.docs_html))
         self.assertEqual(len(records), 5)
         for rec in records:
             data = rec.get_data()
