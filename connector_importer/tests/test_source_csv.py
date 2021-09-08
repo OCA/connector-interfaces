@@ -37,7 +37,7 @@ class TestSourceCSV(BaseTestCase):
             "connector_importer", "tests/fixtures/csv_source_test1.csv", mode="rb"
         )
         source = cls.env["import.source.csv"].create(
-            {"csv_file": base64.encodestring(filecontent)}
+            {"csv_file": base64.encodebytes(filecontent)}
         )
         source._onchance_csv_file()
         return source

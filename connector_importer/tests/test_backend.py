@@ -3,6 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import odoo.tests.common as common
+from odoo.tools.misc import mute_logger
 
 
 class TestBackend(common.SavepointCase):
@@ -15,6 +16,7 @@ class TestBackend(common.SavepointCase):
         bknd = self.backend_model.create({"name": "Foo", "version": "1.0"})
         self.assertTrue(bknd)
 
+    @mute_logger("odoo.models.unlink")
     def test_backend_cron_cleanup_recordsets(self):
         # create a backend
         bknd = self.backend_model.create(
