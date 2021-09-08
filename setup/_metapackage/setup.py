@@ -10,6 +10,7 @@ setuptools.setup(
     install_requires=[
         'odoo13-addon-connector_importer',
         'odoo13-addon-connector_importer_demo',
+        'odoo13-addon-connector_importer_source_sftp',
     ],
     classifiers=[
         'Programming Language :: Python',
