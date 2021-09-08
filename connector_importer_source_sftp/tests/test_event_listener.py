@@ -30,8 +30,8 @@ class TestRecordImporterFinishedEvent(SFTPSourceSavepointComponentRegistryCase):
 
     def _get_components(self):
         from odoo.addons.connector_importer.tests.fake_components import (
-            PartnerRecordImporter,
             PartnerMapper,
+            PartnerRecordImporter,
         )
 
         return [PartnerRecordImporter, PartnerMapper]

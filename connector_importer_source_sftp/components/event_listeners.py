@@ -65,20 +65,17 @@ class SFTPSourceImportRecordsetEventListener(Component):
     # TODO: make it configurable on the source via code snippet
     # when it should go to errored or success.
     def _move_file_to_error(self, importer):
-        """State if file should be moved to error folder.
-        """
+        """State if file should be moved to error folder."""
         counters = importer.tracker.get_counters()
         return counters["errored"]
 
     def _move_file_to_success(self, importer):
-        """State if file should be moved to success folder.
-        """
+        """State if file should be moved to success folder."""
         counters = importer.tracker.get_counters()
         return counters["created"] or counters["updated"] or counters["skipped"]
 
     def _add_after_commit_hook(self, move_func, sftp_filepath, sftp_destination_path):
-        """Add hook after commit to move the file when transaction is over.
-        """
+        """Add hook after commit to move the file when transaction is over."""
         self.env.cr.after(
             "commit",
             functools.partial(move_func, [sftp_filepath], sftp_destination_path),
