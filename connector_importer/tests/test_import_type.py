@@ -137,5 +137,6 @@ class TestImportType(common.SavepointCase):
             },
         )
         self.assertEqual(
-            importers, expected,
+            importers,
+            expected,
         )
