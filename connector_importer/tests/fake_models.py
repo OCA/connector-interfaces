@@ -8,6 +8,7 @@ from odoo import fields, models
 class FakeSourceConsumer(models.Model):
 
     _name = "fake.source.consumer"
+    _description = _name
     _inherit = "import.source.consumer.mixin"
 
     name = fields.Char()
@@ -16,10 +17,11 @@ class FakeSourceConsumer(models.Model):
 class FakeSourceStatic(models.Model):
 
     _name = "fake.source.static"
+    _description = _name
     _inherit = "import.source"
     _source_type = "static"
 
-    fake_param = fields.Char(summary_field=True)
+    fake_param = fields.Char()
 
     @property
     def _config_summary_fields(self):
