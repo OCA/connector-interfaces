@@ -26,6 +26,14 @@ Add import source capable of loading files from SFTP.
 
 Source type provided at the moment: CSV.
 
+Special feature: move files to another path when the import is finished.
+
+You can configure input, error, success path.
+
+Files are searched into input folder and if the flag `move_file_after_import`
+is enabled, the file will be moved to error or success path
+depending on the result of the import process.
+
 **Table of contents**
 
 .. contents::
@@ -68,6 +76,17 @@ This module is maintained by the OCA.
 OCA, or the Odoo Community Association, is a nonprofit organization whose
 mission is to support the collaborative development of Odoo features and
 promote its widespread use.
+
+.. |maintainer-simahawk| image:: https://github.com/simahawk.png?size=40px
+    :target: https://github.com/simahawk
+    :alt: simahawk
+.. |maintainer-sebalix| image:: https://github.com/sebalix.png?size=40px
+    :target: https://github.com/sebalix
+    :alt: sebalix
+
+Current `maintainers <https://odoo-community.org/page/maintainer-role>`__:
+
+|maintainer-simahawk| |maintainer-sebalix| 
 
 This module is part of the `OCA/connector-interfaces <https://github.com/OCA/connector-interfaces/tree/13.0/connector_importer_source_sftp>`_ project on GitHub.
 
