@@ -70,10 +70,10 @@ class ImporterBackend(models.Model):
     def unlink(self):
         """Prevent delete if jobs are running."""
         for item in self:
-            item.check_delete()
+            item._check_delete()
         return super().unlink()
 
-    def check_delete(self):
+    def _check_delete(self):
         if not self.debug_mode and self.job_running:
             raise exceptions.Warning(_("You must complete the job first!"))
 
