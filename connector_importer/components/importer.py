@@ -2,7 +2,7 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from odoo import fields
+from odoo import _, exceptions, fields
 
 from odoo.addons.component.core import Component
 
@@ -39,6 +39,10 @@ class RecordSetImporter(Component):
         # flush existing records as we are going to re-create them
         recordset.record_ids.unlink()
         source = recordset.get_source()
+        if not source:
+            raise exceptions.UserError(
+                _("No source configured on recordset '%s'") % recordset.name
+            )
         for chunk in source.get_lines():
             # create chuncked records and run their imports
             record = self.env["import.record"].create({"recordset_id": recordset.id})
