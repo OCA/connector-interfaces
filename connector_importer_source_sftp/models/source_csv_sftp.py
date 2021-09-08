@@ -10,8 +10,7 @@ from odoo import fields, models
 
 # TODO: in the future, split this to a generic mixin not tied to CSV.
 class ImportSourceCSVSFTP(models.Model):
-    """Import source for CSV files on SFTP.
-    """
+    """Import source for CSV files on SFTP."""
 
     _name = "import.source.csv.sftp"
     _inherit = [
