@@ -9,10 +9,9 @@ import os
 from odoo import api, fields, models
 
 from ..log import logger
-from .job_mixin import JobRelatedMixin
 
 
-class ImportRecord(models.Model, JobRelatedMixin):
+class ImportRecord(models.Model):
     """Data to be imported.
 
     An import record contains what you are actually importing.
@@ -32,6 +31,7 @@ class ImportRecord(models.Model, JobRelatedMixin):
     """
 
     _name = "import.record"
+    _inherit = "job.related.mixin"
     _description = "Import record"
     _order = "id"
     _backend_type = "import_backend"
@@ -47,10 +47,6 @@ class ImportRecord(models.Model, JobRelatedMixin):
         related="recordset_id.backend_id",
         readonly=True,
     )
-
-    def unlink(self):
-        # inheritance of non-model mixin does not work w/out this
-        return super().unlink()
 
     @api.depends("date")
     def _compute_name(self):
