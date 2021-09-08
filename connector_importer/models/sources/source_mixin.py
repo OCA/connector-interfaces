@@ -24,9 +24,9 @@ class ImportSource(models.AbstractModel):
     _source_type = "none"
     _reporter_model = ""
 
-    name = fields.Char(compute="_compute_name", readony=True)
+    name = fields.Char(compute="_compute_name")
     chunk_size = fields.Integer(required=True, default=500, string="Chunks Size")
-    config_summary = fields.Html(compute="_compute_config_summary", readonly=True)
+    config_summary = fields.Html(compute="_compute_config_summary")
 
     # tmpl that renders configuration summary
     _config_summary_template = "connector_importer.source_config_summary"

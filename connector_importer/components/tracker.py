@@ -110,7 +110,7 @@ class Tracker(Component):
 
     def log_skipped(self, values, line, skip_info):
         # `skip_it` could contain a msg
-        self._log("SKIPPED " + skip_info.get("message"), line=line, level="warn")
+        self._log("SKIPPED " + skip_info.get("message"), line=line, level="warning")
 
         item = self.chunk_report_item(line)
         item.update(skip_info)

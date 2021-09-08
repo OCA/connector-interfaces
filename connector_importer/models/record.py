@@ -90,7 +90,7 @@ class ImportRecord(models.Model):
         use_job = self.recordset_id.import_type_id.use_job
         job_method = self.with_delay().import_record
         if self.debug_mode():
-            logger.warn("### DEBUG MODE ACTIVE: WILL NOT USE QUEUE ###")
+            logger.warning("### DEBUG MODE ACTIVE: WILL NOT USE QUEUE ###")
         if self.debug_mode() or not use_job:
             job_method = self.import_record
         _result = {}
