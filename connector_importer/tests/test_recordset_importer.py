@@ -6,6 +6,8 @@ import mock
 
 from odoo.tools import mute_logger
 
+from odoo.addons.queue_job.job import Job
+
 from .common import TestImporterBase
 from .fake_components import PartnerMapper, PartnerRecordImporter
 
@@ -53,3 +55,29 @@ class TestRecordsetImporter(TestImporterBase):
         # we expect 5 records w/ 20 lines each
         records = self.recordset.get_records()
         self.assertEqual(len(records), 5)
+
+    @mute_logger("[importer]")
+    def test_job_state(self):
+        self.backend.debug_mode = False
+        # generate 100 records
+        lines = self._fake_lines(100, keys=("id", "fullname"))
+        # source will provide 5x20 chunks
+        self._patch_get_source(lines, chunk_size=20)
+        self.recordset.run_import()
+        self.assertFalse(self.recordset.record_ids)
+        self.assertEqual(self.recordset.job_id.state, "pending")
+        self.assertEqual(self.recordset.job_state, "pending")
+        self.assertEqual(self.recordset.jobs_global_state, "no_job")
+        Job.load(self.env, self.recordset.job_id.uuid).perform()
+        self.assertTrue(self.recordset.record_ids)
+        self.assertEqual(self.recordset.jobs_global_state, "pending")
+        # perform each job in sequence and check global state
+        records = self.recordset.record_ids
+        for record in records:
+            job = Job.load(self.env, record.job_id.uuid)
+            job.set_done()
+            job.store()
+            expected_state = "pending"
+            if record == records[-1]:
+                expected_state = "done"
+            self.assertEqual(self.recordset.jobs_global_state, expected_state)

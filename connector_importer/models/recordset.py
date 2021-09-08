@@ -69,14 +69,14 @@ class ImportRecordset(models.Model):
     full_report_url = fields.Char("Full report url", compute="_compute_full_report_url")
     jobs_global_state = fields.Selection(
         string="Jobs global state",
-        selection=STATES,
+        selection=[("no_job", "No job")] + STATES,
+        default="no_job",
         compute="_compute_jobs_global_state",
         help=(
             "Tells you if a job is running for this recordset. "
             "If any of the sub jobs is not DONE or FAILED "
             "we assume the global state is PENDING."
         ),
-        readonly=True,
     )
     report_file = fields.Binary("Report file")
     report_filename = fields.Char("Report filename")
@@ -188,17 +188,16 @@ class ImportRecordset(models.Model):
 
     @api.model
     def _get_global_state(self):
-        if not self.job_id:
-            return DONE
-        res = DONE
-        for item in self.record_ids:
-            if not item.job_id:
-                # TODO: investigate how this is possible
-                continue
-            # TODO: check why `item.job_state` does not reflect the job state
-            if item.job_id.state != DONE:
-                res = item.job_id.state
-                break
+        res = "no_job"
+        if not self.job_id or not self.record_ids:
+            return res
+        records_job_states = self.mapped("record_ids.job_id.state")
+        if all([x == DONE for x in records_job_states]):
+            res = DONE
+        else:
+            # pick the 1st one not done
+            not_done = [x for x in records_job_states if x != DONE]
+            res = not_done[0] if not_done else res
         return res
 
     def available_models(self):
