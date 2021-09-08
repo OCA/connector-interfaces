@@ -17,7 +17,7 @@ class ImportSourceConsumerMixin(models.AbstractModel):
     _name = "import.source.consumer.mixin"
     _description = "Import source consumer"
 
-    source_id = fields.Integer(string="Source ID", required=False, ondelete="cascade")
+    source_id = fields.Integer(string="Source ID", required=False)
     source_model = fields.Selection(
         string="Source type", selection="_selection_source_ref_id"
     )
