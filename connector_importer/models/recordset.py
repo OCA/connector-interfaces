@@ -130,8 +130,7 @@ class ImportRecordset(models.Model):
         return self.shared_data or {}
 
     def _prepare_for_import_session(self, start=True):
-        """Wipe all session related data.
-        """
+        """Wipe all session related data."""
         report_data = {}
         if start:
             report_data["_last_start"] = fields.Datetime.to_string(
