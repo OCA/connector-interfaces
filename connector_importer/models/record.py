@@ -11,10 +11,9 @@ from odoo import api, fields, models
 from odoo.addons.queue_job.job import job
 
 from ..log import logger
-from .job_mixin import JobRelatedMixin
 
 
-class ImportRecord(models.Model, JobRelatedMixin):
+class ImportRecord(models.Model):
     """Data to be imported.
 
     An import record contains what you are actually importing.
@@ -34,6 +33,7 @@ class ImportRecord(models.Model, JobRelatedMixin):
     """
 
     _name = "import.record"
+    _inherit = "job.related.mixin"
     _description = "Import record"
     _order = "id"
     _backend_type = "import_backend"
