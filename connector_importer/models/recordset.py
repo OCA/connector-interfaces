@@ -12,10 +12,9 @@ from odoo.addons.base_sparse_field.models.fields import Serialized
 from odoo.addons.queue_job.job import DONE, STATES
 
 from ..log import logger
-from .job_mixin import JobRelatedMixin
 
 
-class ImportRecordset(models.Model, JobRelatedMixin):
+class ImportRecordset(models.Model):
     """Set of records, together with their configuration.
 
     A recordset can be considered as an "import session".
@@ -41,7 +40,10 @@ class ImportRecordset(models.Model, JobRelatedMixin):
     """
 
     _name = "import.recordset"
-    _inherit = "import.source.consumer.mixin"
+    _inherit = [
+        "import.source.consumer.mixin",
+        "job.related.mixin",
+    ]
     _description = "Import recordset"
     _order = "sequence ASC, create_date DESC"
     _backend_type = "import_backend"
@@ -80,11 +82,6 @@ class ImportRecordset(models.Model, JobRelatedMixin):
     report_filename = fields.Char("Report filename")
     docs_html = fields.Html(string="Docs", compute="_compute_docs_html")
     notes = fields.Html("Notes", help="Useful info for your users")
-
-    def unlink(self):
-        # inheritance of non-model mixin - like JobRelatedMixin -
-        # does not work w/out this
-        return super().unlink()
 
     @api.depends("backend_id.name")
     def _compute_name(self):
