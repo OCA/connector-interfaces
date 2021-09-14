@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <menuitem
+        id="menu_importer_root"
+        name="Importer"
+        sequence="10"
+        groups="connector.group_connector_manager"
+    />
+    <menuitem
+        id="menu_import_backend"
+        name="Import Backends"
+        parent="menu_importer_root"
+        action="action_import_backend"
+    />
+    <menuitem
+        id="menu_import_recordset"
+        name="Import Recordsets"
+        parent="menu_importer_root"
+        action="action_import_recordset"
+    />
+</odoo>
