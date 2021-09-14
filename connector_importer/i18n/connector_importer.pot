@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 13.0\n"
+"Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -196,6 +196,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:connector_importer.field_import_source_consumer_mixin__display_name
 #: model:ir.model.fields,field_description:connector_importer.field_import_source_csv__display_name
 #: model:ir.model.fields,field_description:connector_importer.field_import_type__display_name
+#: model:ir.model.fields,field_description:connector_importer.field_job_related_mixin__display_name
 #: model:ir.model.fields,field_description:connector_importer.field_reporter_csv__display_name
 #: model:ir.model.fields,field_description:connector_importer.field_reporter_mixin__display_name
 msgid "Display Name"
@@ -288,6 +289,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:connector_importer.field_import_source_consumer_mixin__id
 #: model:ir.model.fields,field_description:connector_importer.field_import_source_csv__id
 #: model:ir.model.fields,field_description:connector_importer.field_import_type__id
+#: model:ir.model.fields,field_description:connector_importer.field_job_related_mixin__id
 #: model:ir.model.fields,field_description:connector_importer.field_reporter_csv__id
 #: model:ir.model.fields,field_description:connector_importer.field_reporter_mixin__id
 msgid "ID"
@@ -370,9 +372,7 @@ msgid "Import type"
 msgstr ""
 
 #. module: connector_importer
-#: code:addons/connector_importer/models/import_type.py:0
 #: model:ir.model.constraint,message:connector_importer.constraint_import_type_key_uniq
-#, python-format
 msgid "Import type `key` must be unique!"
 msgstr ""
 
@@ -414,12 +414,11 @@ msgstr ""
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_record__job_id
 #: model:ir.model.fields,field_description:connector_importer.field_import_recordset__job_id
+#: model:ir.model.fields,field_description:connector_importer.field_job_related_mixin__job_id
 msgid "Job"
 msgstr ""
 
 #. module: connector_importer
-#: model:ir.model.fields,field_description:connector_importer.field_import_record__job_state
-#: model:ir.model.fields,field_description:connector_importer.field_import_recordset__job_state
 #: model_terms:ir.ui.view,arch_db:connector_importer.view_import_recordset_search
 msgid "Job State"
 msgstr ""
@@ -453,6 +452,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:connector_importer.field_import_source_consumer_mixin____last_update
 #: model:ir.model.fields,field_description:connector_importer.field_import_source_csv____last_update
 #: model:ir.model.fields,field_description:connector_importer.field_import_type____last_update
+#: model:ir.model.fields,field_description:connector_importer.field_job_related_mixin____last_update
 #: model:ir.model.fields,field_description:connector_importer.field_reporter_csv____last_update
 #: model:ir.model.fields,field_description:connector_importer.field_reporter_mixin____last_update
 msgid "Last Modified on"
@@ -482,6 +482,11 @@ msgid "Last start:"
 msgstr ""
 
 #. module: connector_importer
+#: model:ir.model.fields,field_description:connector_importer.field_import_type__settings
+msgid "Legacy Settings"
+msgstr ""
+
+#. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.recordset_docs
 msgid "Legend: TODO"
 msgstr ""
@@ -497,12 +502,34 @@ msgid "Master recordset"
 msgstr ""
 
 #. module: connector_importer
+#: model:ir.model,name:connector_importer.model_job_related_mixin
+msgid "Mixin klass for queue.job relationship."
+msgstr ""
+
+#. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_backend__name
 #: model:ir.model.fields,field_description:connector_importer.field_import_recordset__name
 #: model:ir.model.fields,field_description:connector_importer.field_import_source__name
 #: model:ir.model.fields,field_description:connector_importer.field_import_source_csv__name
 #: model:ir.model.fields,field_description:connector_importer.field_import_type__name
 msgid "Name"
+msgstr ""
+
+#. module: connector_importer
+#: model:ir.model.fields.selection,name:connector_importer.selection__import_recordset__jobs_global_state__no_job
+msgid "No job"
+msgstr ""
+
+#. module: connector_importer
+#: code:addons/connector_importer/models/import_type.py:0
+#, python-format
+msgid "No options found for: {}."
+msgstr ""
+
+#. module: connector_importer
+#: code:addons/connector_importer/components/importer.py:0
+#, python-format
+msgid "No source configured on recordset '%s'"
 msgstr ""
 
 #. module: connector_importer
@@ -515,6 +542,11 @@ msgstr ""
 #. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.recordset_docs
 msgid "Notes:"
+msgstr ""
+
+#. module: connector_importer
+#: model:ir.model.fields,field_description:connector_importer.field_import_type__options
+msgid "Options"
 msgstr ""
 
 #. module: connector_importer
@@ -627,11 +659,6 @@ msgid "Sequence for the handle."
 msgstr ""
 
 #. module: connector_importer
-#: model:ir.model.fields,field_description:connector_importer.field_import_type__settings
-msgid "Settings"
-msgstr ""
-
-#. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_recordset__shared_data
 msgid "Shared Data"
 msgstr ""
@@ -675,6 +702,13 @@ msgstr ""
 #. module: connector_importer
 #: model:ir.model.fields.selection,name:connector_importer.selection__import_recordset__jobs_global_state__started
 msgid "Started"
+msgstr ""
+
+#. module: connector_importer
+#: model:ir.model.fields,field_description:connector_importer.field_import_record__job_state
+#: model:ir.model.fields,field_description:connector_importer.field_import_recordset__job_state
+#: model:ir.model.fields,field_description:connector_importer.field_job_related_mixin__job_state
+msgid "State"
 msgstr ""
 
 #. module: connector_importer
@@ -731,6 +765,11 @@ msgid ""
 "WARNING: one or more jobs are scheduled for a recorset or a record. <br/>\n"
 "                    You will not be able to run the import again or to delete this backend<br/>\n"
 "                    until you complete the jobs."
+msgstr ""
+
+#. module: connector_importer
+#: model:ir.model.fields,help:connector_importer.field_import_type__options
+msgid "YAML configuration"
 msgstr ""
 
 #. module: connector_importer
