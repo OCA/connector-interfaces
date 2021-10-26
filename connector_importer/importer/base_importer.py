@@ -97,7 +97,10 @@ class OdooRecordMixin(object):
 
     def exists(self, values, orig_values):
         """Return true if the items exists."""
-        return bool(self.find(values, orig_values))
+        res = False
+        if self.unique_key:
+            res = bool(self.find(values, orig_values))
+        return res
 
     def default_values(self):
         """Values that are automatically assigned."""
