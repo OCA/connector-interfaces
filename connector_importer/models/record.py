@@ -7,6 +7,7 @@ import json
 import os
 
 from odoo import api, fields, models
+from odoo.tools import DotDict
 
 from ..log import logger
 
@@ -71,14 +72,14 @@ class ImportRecord(models.Model):
         self.ensure_one()
         return self.backend_id.debug_mode or os.environ.get("IMPORTER_DEBUG_MODE")
 
-    def import_record(self, importer_config):
+    def import_record(self, importer_config_dict):
         """This job will import a record.
 
-        # TODO rewrite
-        :param component_name: name of the importer component to use
-        :param model_name: name of the model to import
-        :param is_last_importer: flag for last importer of the recordset
+        :param importer_config_dict: configuration of the importer
         """
+        # set the importer_config as DotDict
+        importer_config = DotDict(importer_config_dict)
+
         kwargs = {
             "options": importer_config.options,
         }
