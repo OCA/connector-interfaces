@@ -310,6 +310,7 @@ class RecordImporter(Component):
             return
 
         self._init_importer(self.record.recordset_id)
+
         for line in self._record_lines():
             line = self.prepare_line(line)
             options = self._load_mapper_options()
@@ -369,8 +370,12 @@ class RecordImporter(Component):
             ]
         ).format(**counters)
         self.tracker._log(msg)
+        self._set_shared_storage_values(self.tracker.chunk_report)
         self._trigger_finish_events(record, is_last_importer=is_last_importer)
         return counters
+
+    def _set_shared_storage_values(self, chunk_report):
+        """Put desired values in shared storage from the chunk report"""
 
     def _trigger_finish_events(self, record, is_last_importer=False):
         """Trigger events when the importer has done its job."""
