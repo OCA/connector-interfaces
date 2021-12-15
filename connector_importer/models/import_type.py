@@ -62,21 +62,11 @@ class ImportType(models.Model):
     name = fields.Char(required=True, help="A meaningful human-friendly name")
     key = fields.Char(required=True, help="Unique mnemonic identifier")
     options = fields.Text(help="YAML configuration")
-    settings = fields.Text(
-        string="Legacy Settings",
-        required=False,
-        help="""
-            # comment me
-            product.template::template.importer.component.name
-            product.product::product.importer.component.name
-            # another one
-            product.supplierinfo::supplierinfo.importer.component.name
-        """,
-    )
+
     use_job = fields.Boolean(
         string="Use job",
         help=(
-            "For each importer used in the settings, one job will be spawned. "
+            "For each importer used in the options, one job will be spawned. "
             "Untick the box if an importer depends on the result of a "
             "previous one (for instance to link a record to the previously "
             "created one)."
@@ -94,7 +84,7 @@ class ImportType(models.Model):
     def _check_options(self):
         no_options = self.browse()
         for rec in self:
-            if not rec.options and not rec.settings:
+            if not rec.options:
                 no_options.append(rec)
             # TODO: validate yaml schema (maybe w/ Cerberus?)
         if no_options:
@@ -109,9 +99,6 @@ class ImportType(models.Model):
 
     def available_importers(self):
         self.ensure_one()
-        if self.settings:
-            for item in self._legacy_available_importers():
-                yield item
         options = self._load_options()
         for line in options:
             is_last_importer = False
@@ -122,7 +109,7 @@ class ImportType(models.Model):
     def _make_importer_info(self, line, is_last_importer=True):
         """Prepare importer information.
 
-        :param line: dictionary representing a config line from `settings`
+        :param line: dictionary representing a config line from `options`
         :param is_last_importer: boolean to state if the line represents the last one
         :return: odoo.tools.DotDict instance containing all importer options.
         """
@@ -135,28 +122,3 @@ class ImportType(models.Model):
             if k not in res.options:
                 res["options"][k] = {}
         return res
-
-    # TODO: trash it for v14
-    def _legacy_available_importers(self):
-        for item in self.available_models():
-            yield self._make_importer_info(
-                {"model": item[0], "importer": item[1]}, is_last_importer=item[2]
-            )
-
-    def available_models(self):
-        """Retrieve available import models and their importers.
-
-        Parse `settings` and yield a tuple
-            `(model, importer, is_last_importer)`.
-        """
-        _logger.warning("DEPRECATED legacy settings: move to JSON settings.")
-        self.ensure_one()
-        lines = self.settings.strip().splitlines()
-        for _line in lines:
-            line = _line.strip()
-            if line and not line.startswith("#"):
-                model_name, importer = line.split("::")
-                is_last_importer = False
-                if _line == lines[-1]:
-                    is_last_importer = True
-                yield (model_name.strip(), importer.strip(), is_last_importer)

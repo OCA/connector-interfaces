@@ -5,8 +5,9 @@
     <record id="import_type_partner" model="import.type">
         <field name="name">Partner</field>
         <field name="key">partner</field>
-        <field name="settings">
-res.partner::importer.record.csv.std
+        <field name="options">
+            - model: res.partner
+              importer: importer.record.csv.std
     </field>
     </record>
 </odoo>
