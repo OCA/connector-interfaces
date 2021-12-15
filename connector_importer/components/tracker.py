@@ -68,7 +68,7 @@ class Tracker(Component):
             self._chunk_report = self._chunk_report_klass()
         return self._chunk_report
 
-    def chunk_report_item(self, line, odoo_record=None, message=""):
+    def chunk_report_item(self, line, odoo_record=None, message="", values=None):
         return {
             "line_nr": line["_line_nr"],
             "message": message,
@@ -90,7 +90,9 @@ class Tracker(Component):
         if odoo_record:
             self._log("UPDATED [id: {}]".format(odoo_record.id), line=line)
         self.chunk_report.track_updated(
-            self.chunk_report_item(line, odoo_record=odoo_record, message=message)
+            self.chunk_report_item(
+                line, odoo_record=odoo_record, message=message, values=values
+            )
         )
 
     def log_error(self, values, line, odoo_record=None, message=""):
@@ -98,21 +100,25 @@ class Tracker(Component):
             message = str(message)
         self._log(message, line=line, level="error")
         self.chunk_report.track_error(
-            self.chunk_report_item(line, odoo_record=odoo_record, message=message)
+            self.chunk_report_item(
+                line, odoo_record=odoo_record, message=message, values=values
+            )
         )
 
     def log_created(self, values, line, odoo_record=None, message=""):
         if odoo_record:
             self._log("CREATED [id: {}]".format(odoo_record.id), line=line)
         self.chunk_report.track_created(
-            self.chunk_report_item(line, odoo_record=odoo_record, message=message)
+            self.chunk_report_item(
+                line, odoo_record=odoo_record, message=message, values=values
+            )
         )
 
     def log_skipped(self, values, line, skip_info):
         # `skip_it` could contain a msg
         self._log("SKIPPED " + skip_info.get("message"), line=line, level="warning")
 
-        item = self.chunk_report_item(line)
+        item = self.chunk_report_item(line, values=values)
         item.update(skip_info)
         self.chunk_report.track_skipped(item)
 
