@@ -17,7 +17,6 @@ FMTS_DT = ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M:%S.000")
 
 def to_date(value, formats=FMTS):
     """Convert date strings to odoo format."""
-
     for fmt in formats:
         try:
             value = datetime.strptime(value, fmt).date()
@@ -35,11 +34,11 @@ def to_date(value, formats=FMTS):
     return None
 
 
-def to_utc_datetime(orig_value, tz="Europe/Rome"):
+def to_utc_datetime(orig_value, tz="Europe/Rome", formats=FMTS_DT):
     """Convert date strings to odoo format respecting TZ."""
     value = orig_value
-    local_tz = pytz.timezone("Europe/Rome")
-    for fmt in FMTS_DT:
+    local_tz = pytz.timezone(tz)
+    for fmt in formats:
         try:
             naive = datetime.strptime(orig_value, fmt)
             local_dt = local_tz.localize(naive, is_dst=None)
