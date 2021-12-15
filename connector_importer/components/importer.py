@@ -1,7 +1,6 @@
 # Author: Simone Orsi
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
-
 from odoo import _, exceptions
 
 from odoo.addons.component.core import Component
@@ -282,13 +281,20 @@ class RecordImporter(Component):
         return {"override_existing": self.recordset.override_existing}
 
     # TODO: make these contexts customizable via recordset settings
+    def _odoo_default_context(self):
+        """Default context to be used in both create and write methods"""
+        return {
+            "importer_type_id": self.recordset.import_type_id.id,
+            "tracking_disable": True,
+        }
+
     def _odoo_create_context(self):
         """Inject context variables on create, merged by odoorecord handler."""
-        return {"tracking_disable": True}
+        return self._odoo_default_context()
 
     def _odoo_write_context(self):
         """Inject context variables on write, merged by odoorecord handler."""
-        return {"tracking_disable": True}
+        return self._odoo_default_context()
 
     def run(self, record, is_last_importer=True, **kw):
         """Run record job.
