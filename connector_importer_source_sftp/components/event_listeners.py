@@ -42,6 +42,7 @@ class SFTPSourceImportRecordsetEventListener(Component):
         source = importer.recordset.get_source()
         storage = source.storage_id
         sftp_filepath = source._sftp_filepath()
+        sftp_destination_path = False
 
         if self._move_file_to_error(importer):
             sftp_destination_path = source.sftp_path_error
@@ -58,9 +59,10 @@ class SFTPSourceImportRecordsetEventListener(Component):
                 sftp_destination_path,
             )
 
-        self._add_after_commit_hook(
-            storage._move_files, sftp_filepath, sftp_destination_path
-        )
+        if sftp_destination_path:
+            self._add_after_commit_hook(
+                storage._move_files, sftp_filepath, sftp_destination_path
+            )
 
     # TODO: make it configurable on the source via code snippet
     # when it should go to errored or success.
