@@ -25,9 +25,7 @@ class ImporterBackend(models.Model):
         return BACKEND_VERSIONS
 
     name = fields.Char(required=True)
-    version = fields.Selection(
-        selection="_select_version", string="Version", required=True
-    )
+    version = fields.Selection(selection="_select_version", required=True)
     recordset_ids = fields.One2many(
         "import.recordset", "backend_id", string="Record Sets"
     )
@@ -44,14 +42,13 @@ class ImporterBackend(models.Model):
         ),
     )
     cron_cleanup_keep = fields.Integer(
-        string="Cron cleanup keep",
         help=(
             "If this value is greater than 0 "
             "a cron will cleanup old recordsets "
             "and keep only the latest N records matching this value."
         ),
     )
-    notes = fields.Text("Notes")
+    notes = fields.Text()
     debug_mode = fields.Boolean(
         "Debug mode?",
         help=(
@@ -61,7 +58,6 @@ class ImporterBackend(models.Model):
         ),
     )
     job_running = fields.Boolean(
-        "Job running",
         compute="_compute_job_running",
         help="Tells you if a job is running for this backend.",
         readonly=True,
