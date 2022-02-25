@@ -8,7 +8,7 @@ import logging
 import odoo.tests.common as common
 from odoo.modules.module import get_resource_path
 
-from odoo.addons.component.tests.common import SavepointComponentRegistryCase
+from odoo.addons.component.tests.common import TransactionComponentRegistryCase
 
 from ..utils.import_utils import gen_chunks
 
@@ -23,7 +23,7 @@ def _load_filecontent(module, filepath, mode="r"):
         return fd.read()
 
 
-class BaseTestCase(common.SavepointCase):
+class BaseTestCase(common.TransactionCase):
     @staticmethod
     def load_filecontent(*args, **kwargs):
         return _load_filecontent(*args, **kwargs)
@@ -101,12 +101,18 @@ class TestImporterMixin(object):
         return _load_filecontent(*args, **kwargs)
 
 
-class TestImporterBase(SavepointComponentRegistryCase, TestImporterMixin):
+class TestImporterBase(TransactionComponentRegistryCase, TestImporterMixin):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls._setup_registry(cls)
         cls._setup_records()
 
     def setUp(self):
         super().setUp()
         self._setup_components()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls._teardown_registry(cls)
+        return super().tearDownClass()
