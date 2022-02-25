@@ -7,7 +7,7 @@ import odoo.tests.common as common
 from odoo import fields
 
 
-class TestBackendCron(common.SavepointCase):
+class TestBackendCron(common.TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()

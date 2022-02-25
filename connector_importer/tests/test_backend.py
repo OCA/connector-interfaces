@@ -6,7 +6,7 @@ import odoo.tests.common as common
 from odoo.tools.misc import mute_logger
 
 
-class TestBackend(common.SavepointCase):
+class TestBackend(common.TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
