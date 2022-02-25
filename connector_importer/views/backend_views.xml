@@ -106,7 +106,7 @@
     <record id="view_import_backend_tree" model="ir.ui.view">
         <field name="model">import.backend</field>
         <field name="arch" type="xml">
-            <tree string="import Backends">
+            <tree>
                 <field name="name" />
                 <field name="version" />
             </tree>

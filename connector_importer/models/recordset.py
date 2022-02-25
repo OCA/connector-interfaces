@@ -49,7 +49,7 @@ class ImportRecordset(models.Model):
     _backend_type = "import_backend"
 
     backend_id = fields.Many2one("import.backend", string="Import Backend")
-    sequence = fields.Integer("Sequence", help="Sequence for the handle.", default=10)
+    sequence = fields.Integer(help="Sequence for the handle.", default=10)
     import_type_id = fields.Many2one(
         string="Import type", comodel_name="import.type", required=True
     )
@@ -59,16 +59,15 @@ class ImportRecordset(models.Model):
         "If disabled, matching records will be skipped.",
         default=True,
     )
-    name = fields.Char(string="Name", compute="_compute_name")
-    create_date = fields.Datetime("Create date")
+    name = fields.Char(compute="_compute_name")
+    create_date = fields.Datetime()
     record_ids = fields.One2many("import.record", "recordset_id", string="Records")
     # store info about imports report
     report_data = Serialized()
     shared_data = Serialized()
     report_html = fields.Html("Report summary", compute="_compute_report_html")
-    full_report_url = fields.Char("Full report url", compute="_compute_full_report_url")
+    full_report_url = fields.Char(compute="_compute_full_report_url")
     jobs_global_state = fields.Selection(
-        string="Jobs global state",
         selection=[("no_job", "No job")] + STATES,
         default="no_job",
         compute="_compute_jobs_global_state",
@@ -78,10 +77,10 @@ class ImportRecordset(models.Model):
             "we assume the global state is PENDING."
         ),
     )
-    report_file = fields.Binary("Report file")
-    report_filename = fields.Char("Report filename")
+    report_file = fields.Binary()
+    report_filename = fields.Char()
     docs_html = fields.Html(string="Docs", compute="_compute_docs_html")
-    notes = fields.Html("Notes", help="Useful info for your users")
+    notes = fields.Html(help="Useful info for your users")
 
     @api.depends("backend_id.name")
     def _compute_name(self):

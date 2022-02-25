@@ -10,8 +10,9 @@ from .common import TestImporterBase
 class TestRecordImporter(TestImporterBase):
     @classmethod
     def _setup_records(cls):
-        super()._setup_records()
+        res = super()._setup_records()
         cls.record = cls.env["import.record"].create({"recordset_id": cls.recordset.id})
+        return res
 
     def _get_components(self):
         from .fake_components import PartnerMapper, PartnerRecordImporter
