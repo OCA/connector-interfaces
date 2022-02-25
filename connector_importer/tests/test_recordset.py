@@ -6,7 +6,7 @@
 import odoo.tests.common as common
 
 
-class TestRecordset(common.SavepointCase):
+class TestRecordset(common.TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
