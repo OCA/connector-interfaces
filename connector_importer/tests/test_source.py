@@ -31,7 +31,7 @@ class TestSource(BaseTestCase):
     @classmethod
     def tearDownClass(cls):
         cls.loader.restore_registry()
-        super().tearDownClass()
+        return super().tearDownClass()
 
     @classmethod
     def _create_source(cls):

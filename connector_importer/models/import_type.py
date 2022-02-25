@@ -74,7 +74,6 @@ class ImportType(models.Model):
         """,
     )
     use_job = fields.Boolean(
-        string="Use job",
         help=(
             "For each importer used in the settings, one job will be spawned. "
             "Untick the box if an importer depends on the result of a "
