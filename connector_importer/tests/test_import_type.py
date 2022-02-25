@@ -8,7 +8,7 @@ import odoo.tests.common as common
 from odoo.tools import mute_logger
 
 
-class TestImportType(common.SavepointCase):
+class TestImportType(common.TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
