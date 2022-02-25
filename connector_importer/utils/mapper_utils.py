@@ -17,7 +17,7 @@ FMTS_DT = ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M:%S.000")
 
 def to_date(value, formats=FMTS):
     """Convert date strings to odoo format."""
-
+    # pylint: disable=except-pass
     for fmt in formats:
         try:
             value = datetime.strptime(value, fmt).date()
@@ -37,6 +37,7 @@ def to_date(value, formats=FMTS):
 
 def to_utc_datetime(orig_value, tz="Europe/Rome"):
     """Convert date strings to odoo format respecting TZ."""
+    # pylint: disable=except-pass
     value = orig_value
     local_tz = pytz.timezone("Europe/Rome")
     for fmt in FMTS_DT:
