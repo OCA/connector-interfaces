@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 Camptocamp SA
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+
+  <record id="demo_import_recordset_product_category" model="import.recordset">
+    <field name="sequence" eval="20" />
+    <field name="backend_id" ref="demo_import_backend" />
+    <field name="source_model">import.source.csv</field>
+    <field name="source_id" ref="demo_import_source_csv_product_category" />
+    <field name="import_type_id" ref="demo_import_type_product_category" />
+  </record>
+
+  <record id="demo_import_recordset_product_attribute" model="import.recordset">
+    <field name="sequence" eval="30" />
+    <field name="backend_id" ref="demo_import_backend" />
+    <field name="source_model">import.source.csv</field>
+    <field name="source_id" ref="demo_import_source_csv_product_attribute" />
+    <field name="import_type_id" ref="demo_import_type_product_attribute" />
+  </record>
+
+  <record id="demo_import_recordset_product_attribute_value" model="import.recordset">
+    <field name="sequence" eval="35" />
+    <field name="backend_id" ref="demo_import_backend" />
+    <field name="source_model">import.source.csv</field>
+    <field name="source_id" ref="demo_import_source_csv_product_attribute_value" />
+    <field name="import_type_id" ref="demo_import_type_product_attribute_value" />
+  </record>
+
+  <record id="demo_import_recordset_product_product" model="import.recordset">
+    <field name="sequence" eval="45" />
+    <field name="backend_id" ref="demo_import_backend" />
+    <field name="source_model">import.source.csv</field>
+    <field name="source_id" ref="demo_import_source_csv_product_product" />
+    <field name="import_type_id" ref="demo_import_type_product_product" />
+  </record>
+
+  <record id="demo_import_recordset_product_supplierinfo" model="import.recordset">
+    <field name="sequence" eval="50" />
+    <field name="backend_id" ref="demo_import_backend" />
+    <field name="source_model">import.source.csv</field>
+    <field name="source_id" ref="demo_import_source_csv_product_supplierinfo" />
+    <field name="import_type_id" ref="demo_import_type_product_supplierinfo" />
+  </record>
+
+  <record id="demo_import_recordset_product_packaging" model="import.recordset">
+    <field name="sequence" eval="55" />
+    <field name="backend_id" ref="demo_import_backend" />
+    <field name="source_model">import.source.csv</field>
+    <field name="source_id" ref="demo_import_source_csv_product_packaging" />
+    <field name="import_type_id" ref="demo_import_type_product_packaging" />
+  </record>
+
+</odoo>
