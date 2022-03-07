@@ -1,0 +1,4 @@
+id,name,name_de,name_fr,name_it,create_variant,sequence,display_type
+product_attr_name_test1,TEST_1,TEST_1,,,Always,,Select
+product_attr_name_test2,TEST_2,TEST_2,,,Always,,Radio
+product_attr_name_test3,TEST_3,TEST_3,,,Always,,Radio
