@@ -1,0 +1,13 @@
+id,name,name_de,name_fr,name_it,html_color,is_custom,sequence,attribute_id/id
+product_attr_value_test1_value1,VALUE_1,VALUE_1,,,,,,product_attr_name_test1
+product_attr_value_test1_value2,VALUE_2,VALUE_2,,,,0,2,product_attr_name_test1
+product_attr_value_test1_value3,VALUE_3,VALUE_3,,,,,,product_attr_name_test1
+product_attr_value_test1_value4,VALUE_4,VALUE_4,,,,0,1,product_attr_name_test1
+product_attr_value_test2_value1,VALUE_1,VALUE_1,,,,,,product_attr_name_test2
+product_attr_value_test2_value2,VALUE_2,VALUE_2,,,,0,2,product_attr_name_test2
+product_attr_value_test2_value3,VALUE_3,VALUE_3,,,,,,product_attr_name_test2
+product_attr_value_test2_value4,VALUE_4,VALUE_4,,,,0,1,product_attr_name_test2
+product_attr_value_test3_value1,VALUE_1,VALUE_1,,,,,,product_attr_name_test3
+product_attr_value_test3_value2,VALUE_2,VALUE_2,,,,0,2,product_attr_name_test3
+product_attr_value_test3_value3,VALUE_3,VALUE_3,,,,,,product_attr_name_test3
+product_attr_value_test3_value4,VALUE_4,VALUE_4,,,,0,1,product_attr_name_test3
