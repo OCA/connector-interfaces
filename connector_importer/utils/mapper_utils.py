@@ -7,6 +7,7 @@ from datetime import datetime
 import pytz
 
 from odoo import fields
+from odoo.tools.misc import str2bool
 
 from ..log import logger
 
@@ -85,6 +86,7 @@ CONV_MAPPING = {
     "utc_date": to_utc_datetime,
     "safe_float": to_safe_float,
     "safe_int": to_safe_int,
+    "bool": lambda x: str2bool(x, default=False),
 }
 
 
