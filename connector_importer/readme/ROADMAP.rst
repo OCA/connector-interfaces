@@ -11,4 +11,3 @@
   and they need to be fixed
 * unit tests for record handler and tracker
 * rely on `self.work.options` in all components to replace all custom flags
-  (eg: `_break_on_error`)
