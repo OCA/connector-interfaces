@@ -85,7 +85,7 @@ class RecordImporterCSVStd(Component):
             except Exception as err:
                 values = {}
                 self.tracker.log_error(values, line, message=err)
-                if self._break_on_error:
+                if self.must_break_on_error:
                     raise
                 continue
             # Collect tracker data for later
@@ -141,7 +141,7 @@ class RecordImporterCSVStd(Component):
             except Exception as err:
                 line = {"_line_nr": 0}
                 self.tracker.log_error({}, line, message=err)
-                if self._break_on_error:
+                if self.must_break_on_error:
                     raise
 
         for arguments in tracker_data["created"].values():

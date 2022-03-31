@@ -107,6 +107,10 @@ class RecordImporter(Component):
             self._mapper = self._get_mapper()
         return self._mapper
 
+    @property
+    def must_break_on_error(self):
+        return self.work.options.importer.get("break_on_error", self._break_on_error)
+
     def required_keys(self, create=False):
         """Keys that are mandatory to import a line."""
         req = self.mapper.required_keys()
@@ -317,7 +321,7 @@ class RecordImporter(Component):
             except Exception as err:
                 values = {}
                 self.tracker.log_error(values, line, odoo_record, message=err)
-                if self._break_on_error:
+                if self.must_break_on_error:
                     raise
                 continue
 
@@ -344,7 +348,7 @@ class RecordImporter(Component):
                         self.tracker.log_created(values, line, odoo_record)
             except Exception as err:
                 self.tracker.log_error(values, line, odoo_record, message=err)
-                if self._break_on_error:
+                if self.must_break_on_error:
                     raise
                 continue
 
