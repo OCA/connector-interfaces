@@ -144,7 +144,13 @@ class RecordImporter(Component):
         return self.env["res.lang"].search([("active", "=", True)]).mapped("code")
 
     def make_translation_key(self, key, lang):
-        return "{}:{}".format(key, lang)
+        sep = self.work.options.importer.get("translation_key_sep", ":")
+        regional_lang = self.work.options.importer.get(
+            "translation_use_regional_lang", True
+        )
+        if not regional_lang:
+            lang = lang[:2]  # eg: "de_DE" -> "de"
+        return f"{key}{sep}{lang}"
 
     def collect_translatable(self, values, orig_values):
         """Get translations values for `mapper.translatable_keys`.
