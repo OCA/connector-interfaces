@@ -40,10 +40,14 @@ class ProductAttributeMapper(Component):
     def create_variant(self, record):
         if record.get("create_variant"):
             return {"create_variant": record["create_variant"].lower()}
-        return {"create_variant": False}
+        return {"create_variant": self._get_field_default("create_variant")}
 
     @mapping
     def display_type(self, record):
         if record.get("display_type"):
             return {"display_type": record["display_type"].lower()}
-        return {"display_type": False}
+        return {"display_type": self._get_field_default("display_type")}
+
+    def _get_field_default(self, fname):
+        model = self.env["product.attribute"]
+        return model._fields[fname].default(model)

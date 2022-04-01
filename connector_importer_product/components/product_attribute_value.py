@@ -12,6 +12,8 @@ class ProductAttributeValueRecordImporter(Component):
     _inherit = ["common.product.importer"]
     _apply_on = "product.attribute.value"
     odoo_unique_key = "id"
+    # FIXME: we should be able to use `name` as unique key
+    # and pass the key to be used for the XID to be added in odoorecordhandler.
     odoo_unique_key_is_xmlid = True
 
     def prepare_line(self, line):
@@ -39,3 +41,4 @@ class ProductAttributeValueMapper(Component):
         (xmlid_to_rel("attribute_id/id"), "attribute_id"),
     ]
     translatable = ["name"]
+    required = {"attribute_id/id": "attribute_id"}
