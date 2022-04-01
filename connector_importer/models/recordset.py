@@ -271,11 +271,16 @@ class ImportRecordset(models.Model):
 
     def _get_importers(self):
         importers = OrderedDict()
-        for config in self.available_importers():
-            model = self.env["ir.model"]._get(config.model)
-            with self.backend_id.work_on(self._name) as work:
+        for importer_config in self.available_importers():
+            kwargs = {
+                "options": importer_config.options,
+            }
+            model = self.env["ir.model"]._get(importer_config.model)
+            with self.backend_id.with_context(**importer_config.context).work_on(
+                self._name, **kwargs
+            ) as work:
                 importers[model] = work.component_by_name(
-                    config.importer, model_name=config.model
+                    importer_config.importer, model_name=importer_config.model
                 )
         return importers
 
