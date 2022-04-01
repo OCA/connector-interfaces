@@ -17,7 +17,13 @@ Additionl tools for connecting external services and manage import/export of dat
 
 [//]: # (addons)
 
-This part will be replaced when running the oca-gen-addons-table script from OCA/maintainer-tools.
+Available addons
+----------------
+addon | version | maintainers | summary
+--- | --- | --- | ---
+[connector_importer](connector_importer/) | 14.0.1.0.0 | [![simahawk](https://github.com/simahawk.png?size=30px)](https://github.com/simahawk) | This module takes care of import sessions.
+[connector_importer_demo](connector_importer_demo/) | 14.0.1.0.0 | [![simahawk](https://github.com/simahawk.png?size=30px)](https://github.com/simahawk) | Demo module for Connector Importer.
+[connector_importer_source_sftp](connector_importer_source_sftp/) | 14.0.1.0.0 | [![simahawk](https://github.com/simahawk.png?size=30px)](https://github.com/simahawk) [![sebalix](https://github.com/sebalix.png?size=30px)](https://github.com/sebalix) | Add import source capable of loading files from SFTP.
 
 [//]: # (end addons)
 
