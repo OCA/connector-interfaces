@@ -10,6 +10,7 @@ setuptools.setup(
     install_requires=[
         'odoo14-addon-connector_importer',
         'odoo14-addon-connector_importer_demo',
+        'odoo14-addon-connector_importer_product',
         'odoo14-addon-connector_importer_source_sftp',
     ],
     classifiers=[
