@@ -4,27 +4,8 @@
 from odoo import _
 
 from odoo.addons.component.core import Component
-from odoo.addons.connector.components.mapper import mapping
-from odoo.addons.connector_importer.utils.mapper_utils import xmlid_to_rel
 
-from ..utils import sanitize_external_id
-
-
-class ProductProductRecordImporter(Component):
-    _name = "product.product.importer"
-    _inherit = ["common.product.importer"]
-    _apply_on = "product.product"
-    odoo_unique_key = "id"
-    odoo_unique_key_is_xmlid = True
-
-    def prepare_line(self, line):
-        res = super().prepare_line(line)
-        res["id"] = sanitize_external_id(line["id"])
-        res["template_default_code"] = sanitize_external_id(
-            line["template_default_code"]
-        )
-        res["categ_id"] = sanitize_external_id(line["categ_id"])
-        return res
+from ...utils import sanitize_external_id
 
 
 class ProductProductRecordHandler(Component):
@@ -172,40 +153,3 @@ class ProductProductRecordHandler(Component):
         # (and not in the loop) to not trigger internal mechanisms done by Odoo
         else:
             odoo_record.product_template_attribute_value_ids = tpl_attr_values
-
-
-class ProductProductMapper(Component):
-    _name = "product.product.mapper"
-    _inherit = "importer.base.mapper"
-    _apply_on = "product.product"
-
-    direct = [
-        # "id" needs to be in the mapped values to be converted as XML-ID
-        # TODO: need to allow the use of fake destination fields like '_xmlid'
-        # in direct mapping here:
-        # https://github.com/OCA/connector/blob/13.0/connector/components/mapper.py#L891
-        ("id", "id"),
-        ("name", "name"),
-        ("default_code", "default_code"),
-        ("barcode", "barcode"),
-        ("list_price", "list_price"),
-        ("standard_price", "standard_price"),
-        ("type", "type"),
-        (xmlid_to_rel("uom_id"), "uom_id"),
-        (xmlid_to_rel("categ_id"), "categ_id"),
-    ]
-    required = {"categ_id": "categ_id"}
-    translatable = ["name"]
-
-    @mapping
-    def product_tmpl_id(self, record):
-        if record.get("template_default_code"):
-            template = self.env.ref(
-                record["template_default_code"], raise_if_not_found=False
-            )
-            # If no product.template is found, it'll be created automatically
-            # as usual when the product.product is created.Then the importer
-            # will set its External ID.
-            if template:
-                return {"product_tmpl_id": template.id}
-        return {}
