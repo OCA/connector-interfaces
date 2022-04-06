@@ -1,11 +1,23 @@
 # Copyright 2022 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
+import re
+import unicodedata
+
 from odoo import _
 
 from odoo.addons.component.core import Component
 
 from ...utils import sanitize_external_id
+
+
+def slugify_one(s, max_length=0):
+    # similar to odoo.addons.http_routing.models.ir_http.slugify_one
+    # but no lower and no ext lib
+    uni = unicodedata.normalize("NFKD", s).encode("ascii", "ignore").decode("ascii")
+    slug_str = re.sub(r"[\W_]", " ", uni).strip()
+    slug_str = re.sub(r"[-\s]+", "-", slug_str)
+    return slug_str[:max_length] if max_length > 0 else slug_str
 
 
 class ProductProductRecordHandler(Component):
@@ -26,7 +38,10 @@ class ProductProductRecordHandler(Component):
         """Set the External ID on the template once the variant created."""
         template = odoo_record.product_tmpl_id
         external_id = template.get_external_id()[template.id]
-        if not external_id and orig_values["template_default_code"]:
+        # TODO: check where `template_default_code` and get rid of it.
+        # If you need to generate a XID use `must_generate_xmlid`
+        # into `record_handler.options`.
+        if not external_id and orig_values.get("template_default_code"):
             external_id = sanitize_external_id(orig_values["template_default_code"])
             module, id_ = external_id.split(".", 1)
             self.env["ir.model.data"].create(
@@ -51,6 +66,21 @@ class ProductProductRecordHandler(Component):
         - 'product.template.attribute.value' records making the link between a
           template attribute line and an attribute value, and link it to the
           variant through the M2M field 'product_template_attribute_value_ids'.
+
+        Assumptions:
+
+        * `product.attribute` and `.value` must be imported beforehand
+          using `product.attribute.importer` and `product.attribute.value.importer`
+          respectively. Those importers will take care of prefixing the value
+          found in `id` w/ the `__setup__.` module name to generate a valid xid.
+          This will be later used to find the matching attribute here.
+
+        * product attribute columns must contain the `product_attr` prefix
+          and it should represent the XID of the `product.attribute` to match.
+
+        * product attribute column values will be used to find the values
+          which were already imported first by name then by XID.
+          See `_find_attr_value` docs.
         """
         TplAttrLine = self.env["product.template.attribute.line"]
         TplAttrValue = self.env["product.template.attribute.value"]
@@ -64,10 +94,9 @@ class ProductProductRecordHandler(Component):
         for attr_column in attr_columns:
             if not orig_values[attr_column]:
                 continue
-            attr_value_external_id = sanitize_external_id(orig_values[attr_column])
-            attr_value = self.env.ref(attr_value_external_id)
-            # attr_values_to_import |= attr_value
-            attr_values_to_import_ids.append(attr_value.id)
+            attr_value = self._find_attr_value(orig_values, attr_column)
+            if attr_value:
+                attr_values_to_import_ids.append(attr_value.id)
         # Detect if the set of attributes among this template is wrong
         # (if a previously variant V1 has been imported with attributes A
         # and B, we cannot import a second variant V2 with attributes A and C
@@ -153,3 +182,38 @@ class ProductProductRecordHandler(Component):
         # (and not in the loop) to not trigger internal mechanisms done by Odoo
         else:
             odoo_record.product_template_attribute_value_ids = tpl_attr_values
+
+    def _find_attr_value(self, orig_values, attr_column):
+        """Find matching attribute value.
+
+        FIXME
+
+          By computing their XID w/ the column name
+          + _value_ + the value itself.
+
+          For instance, a column `product_attr_Size` could have the values
+          "S" , "M", "L" and they will be converted
+          to find their matching attributes, like this:
+
+            * S -> product_attr_Size_value_S
+            * M -> product_attr_Size_value_M
+            * L -> product_attr_Size_value_L
+
+          If no attribute value matching this convention is found,
+          the value will be skipped.
+        """
+        attr_xid = sanitize_external_id(attr_column)
+        attr = self.env.ref(attr_xid)
+        # 1st search by name
+        orig_val = orig_values[attr_column]
+        model = self.env["product.attribute.value"]
+        attr_value = model.search(
+            [("attribute_id", "=", attr.id), ("name", "=", orig_val)], limit=1
+        )
+        if not attr_value:
+            # 2nd try w/ auto generated xid
+            value = slugify_one(orig_val).replace("-", "_")
+            xid = f"{attr_column}_value_{value}"
+            attr_value_external_id = sanitize_external_id(xid)
+            attr_value = self.env.ref(attr_value_external_id, False)
+        return attr_value
