@@ -157,6 +157,8 @@ def xmlid_to_rel(field):
         value = record.get(field)
         if value is None:
             return None
+        if isinstance(value, str) and "," in value:
+            value = [x.strip() for x in value.split(",") if x.strip()]
         if isinstance(value, str):
             # m2o
             rec = self.env.ref(value, raise_if_not_found=False)
