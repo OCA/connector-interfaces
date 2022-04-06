@@ -74,8 +74,8 @@ class RecordImporter(Component):
         self.record_handler = self.component(usage=self._record_handler_usage)
         self.record_handler._init_handler(
             importer=self,
-            unique_key=self.odoo_unique_key,
-            unique_key_is_xmlid=self.odoo_unique_key_is_xmlid,
+            unique_key=self.unique_key,
+            unique_key_is_xmlid=self.unique_key_is_xmlid,
         )
         # tracking handler is responsible for logging and chunk reports
         self.tracker = self.component(usage=self._tracking_handler_usage)
@@ -83,6 +83,16 @@ class RecordImporter(Component):
             model_name=self.model._name,
             logger_name=LOGGER_NAME,
             log_prefix=self.recordset.import_type_id.key + " ",
+        )
+
+    @property
+    def unique_key(self):
+        return self.work.options.importer.get("odoo_unique_key", self.odoo_unique_key)
+
+    @property
+    def unique_key_is_xmlid(self):
+        return self.work.options.importer.get(
+            "odoo_unique_key_is_xmlid", self.odoo_unique_key_is_xmlid
         )
 
     # Override to not rely on automatic mapper lookup.
@@ -120,7 +130,7 @@ class RecordImporter(Component):
             if not isinstance(v, (tuple, list)):
                 req[k] = (v,)
             all_values.extend(req[k])
-        unique_key = self.odoo_unique_key
+        unique_key = self.unique_key
         if (
             unique_key
             and unique_key not in list(req.keys())
@@ -183,7 +193,7 @@ class RecordImporter(Component):
         missing = (
             not source_key.startswith("__") and orig_values.get(source_key) is None
         )
-        unique_key = self.odoo_unique_key
+        unique_key = self.unique_key
         if missing:
             msg = "MISSING REQUIRED SOURCE KEY={}".format(source_key)
             if unique_key and values.get(unique_key):
@@ -220,10 +230,8 @@ class RecordImporter(Component):
             and not self.recordset.override_existing
         ):
             msg = "ALREADY EXISTS"
-            if self.odoo_unique_key:
-                msg += ": {}={}".format(
-                    self.odoo_unique_key, values[self.odoo_unique_key]
-                )
+            if self.unique_key:
+                msg += ": {}={}".format(self.unique_key, values[self.unique_key])
             return {
                 "message": msg,
                 "odoo_record": self.record_handler.odoo_find(values, orig_values).id,
