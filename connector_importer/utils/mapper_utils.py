@@ -97,6 +97,8 @@ def convert(field, conv_type, fallback_field=None, pre_value_handler=None, **kw)
     Use ``fallback_field`` to provide a field of the same type
     to be used in case the base field has no value.
     """
+    convert._from_key = field
+
     if conv_type in CONV_MAPPING:
         conv_type = CONV_MAPPING[conv_type]
 
@@ -120,6 +122,7 @@ def convert(field, conv_type, fallback_field=None, pre_value_handler=None, **kw)
 
 def from_mapping(field, mapping, default_value=None):
     """Convert the source value using a ``mapping`` of values."""
+    from_mapping._from_key = field
 
     def modifier(self, record, to_attr):
         value = record.get(field)
@@ -130,6 +133,7 @@ def from_mapping(field, mapping, default_value=None):
 
 def concat(field, separator=" ", handler=None):
     """Concatenate values from different fields."""
+    concat._from_key = field
 
     # TODO: `field` is actually a list of fields.
     # `field` attribute is required ATM by the base connector mapper and
@@ -147,6 +151,7 @@ def concat(field, separator=" ", handler=None):
 
 def xmlid_to_rel(field):
     """Convert xmlids source values to ids."""
+    xmlid_to_rel._from_key = field
 
     def modifier(self, record, to_attr):
         value = record.get(field)
@@ -210,6 +215,7 @@ def backend_to_rel(  # noqa: C901
     :param create_missing_handler: provide an handler
         for getting new values for a new record to be created.
     """
+    backend_to_rel._from_key = field
 
     def modifier(self, record, to_attr):
         search_value = record.get(field)
