@@ -226,7 +226,7 @@ class ImportRecordset(models.Model):
         """queue a job for creating records (import.record items)"""
         job_method = self.with_delay().import_recordset
         if self.debug_mode():
-            logger.warn("### DEBUG MODE ACTIVE: WILL NOT USE QUEUE ###")
+            logger.warning("### DEBUG MODE ACTIVE: WILL NOT USE QUEUE ###")
             job_method = self.import_recordset
 
         for item in self:
