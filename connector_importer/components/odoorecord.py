@@ -75,6 +75,12 @@ class OdooRecordHandler(Component):
             connector_importer_session=True,
         )
 
+    @property
+    def must_generate_xmlid(self):
+        return self.work.options.record_handler.get(
+            "must_generate_xmlid", self.unique_key_is_xmlid
+        )
+
     def odoo_create(self, values, orig_values):
         """Create a new odoo record."""
         self.odoo_pre_create(values, orig_values)
@@ -92,7 +98,7 @@ class OdooRecordHandler(Component):
         translatable = self.importer.collect_translatable(values, orig_values)
         self.update_translations(odoo_record, translatable)
         # Set the external ID if necessary
-        if self.unique_key_is_xmlid:
+        if self.must_generate_xmlid:
             external_id = values[self.unique_key]
             if not self.env.ref(external_id, raise_if_not_found=False):
                 module, id_ = external_id.split(".", 1)
