@@ -225,15 +225,25 @@ def backend_to_rel(  # noqa: C901
         if search_value and value_handler:
             search_value = value_handler(self, record, search_value)
 
+        # get the real column and the model
+        column = self.model._fields[to_attr]
+        rel_model = self.env[column.comodel_name].with_context(active_test=False)
+
         # handle defaults if no search value here
         if not search_value and default_search_value:
             search_value = default_search_value
             if default_search_field:
                 modifier.search_field = default_search_field
 
-        # get the real column and the model
-        column = self.model._fields[to_attr]
-        rel_model = self.env[column.comodel_name].with_context(active_test=False)
+        # Support Odoo studio fields dynamically.
+        # When a model is created automatically from Odoo studio
+        # it gets an `x_name` field which cannot be modified :/
+        if (
+            not default_search_field
+            and modifier.search_field not in rel_model._fields
+            and "x_name" in rel_model._fields
+        ):
+            modifier.search_field = "x_name"
 
         if allowed_length and len(search_value) != allowed_length:
             return None
