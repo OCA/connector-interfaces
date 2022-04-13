@@ -282,7 +282,10 @@ class ImportRecordset(models.Model):
         template = self.env.ref("connector_importer.recordset_docs")
         for item in self:
             item.docs_html = False
-            if isinstance(item.id, models.NewId):
+            if isinstance(item.id, models.NewId) or not item.backend_id:
+                # Surprise surprise: when editing a new recordset
+                # if you hit `configure source` btn
+                # the record will be saved but the backend can be null :S
                 continue
             importers = item._get_importers()
             data = {"recordset": item, "importers": importers}
