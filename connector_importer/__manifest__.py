@@ -19,6 +19,7 @@
         "security/ir.model.access.csv",
         "views/backend_views.xml",
         "views/recordset_views.xml",
+        "views/import_type_views.xml",
         "views/source_views.xml",
         "views/report_template.xml",
         "views/docs_template.xml",
