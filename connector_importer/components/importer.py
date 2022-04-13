@@ -103,11 +103,13 @@ class RecordImporter(Component):
     # just an instance cache for the mapper
     _mapper = None
 
-    # TODO: add tests
+    # TODO: do the same for record handler and tracking handler
     def _get_mapper(self):
-        if self._mapper_name:
-            return self.component_by_name(self._mapper_name)
-        return self.component(usage=self._mapper_usage)
+        mapper_name = self.work.options.mapper.get("name", self._mapper_name)
+        if mapper_name:
+            return self.component_by_name(mapper_name)
+        mapper_usage = self.work.options.mapper.get("usage", self._mapper_usage)
+        return self.component(usage=mapper_usage)
 
     @property
     def mapper(self):
