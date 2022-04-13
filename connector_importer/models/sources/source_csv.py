@@ -27,6 +27,11 @@ class CSVSource(models.Model):
     csv_delimiter = fields.Char(string="CSV delimiter", default=";")
     csv_quotechar = fields.Char(string="CSV quotechar", default='"')
     csv_encoding = fields.Char(string="CSV Encoding")
+    csv_rows_from_to = fields.Char(
+        string="CSV use only a slice of the available lines. "
+        "Format: $from:$to. "
+        "NOTE: recommended only for debug/test purpose.",
+    )
     # Handy fields to get a downloadable example file
     example_file_ext_id = fields.Char(
         help=(
@@ -76,7 +81,11 @@ class CSVSource(models.Model):
 
     def _get_lines(self):
         # read CSV
-        reader_args = {"delimiter": self.csv_delimiter, "encoding": self.csv_encoding}
+        reader_args = {
+            "delimiter": self.csv_delimiter,
+            "encoding": self.csv_encoding,
+            "rows_from_to": self.csv_rows_from_to,
+        }
         if self.csv_path:
             # TODO: join w/ filename
             reader_args["filepath"] = self.csv_path
