@@ -14,6 +14,9 @@
                       <field name="key" />
                       <field name="use_job" />
                   </group>
+                  <group col="2" name="desc">
+                      <field name="description" />
+                  </group>
                 </page>
                 <page string="Advanced" name="adv_settings">
                   <separator string="Adv. options" />
