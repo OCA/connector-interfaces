@@ -2,7 +2,7 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from odoo.tools import mute_logger
+from odoo.tools import DotDict, mute_logger
 
 from .common import TestImporterBase
 
@@ -21,7 +21,9 @@ class TestRecordImporter(TestImporterBase):
 
     def _get_importer(self):
         with self.backend.work_on(
-            self.record._name, components_registry=self.comp_registry
+            self.record._name,
+            components_registry=self.comp_registry,
+            options=DotDict({"importer": {}, "mapper": {}}),
         ) as work:
             return work.component(usage="record.importer", model_name="res.partner")
 
