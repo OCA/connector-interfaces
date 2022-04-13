@@ -20,12 +20,19 @@ class DynamicMapper(Component):
 
         Source keys = destination keys.
         """
-        if not isinstance(getattr(self, "_apply_on", None), str):
-            # cannot work w/ non models or multiple models
-            return {}
+        # TODO: add tests!
+        model = self.work.model_name
         vals = {}
-        available_fields = self.env[self._apply_on].fields_get()
-        for fname in self._non_mapped_keys(record):
+        available_fields = self.env[model].fields_get()
+        prefix = self._source_key_prefix
+        valid_keys = self._get_valid_keys(record, prefix)
+        record = {k: v for k, v in record.items() if k in valid_keys}
+        for source_fname in self._non_mapped_keys(record):
+            fname = source_fname
+            if prefix and source_fname.startswith(prefix):
+                # Eg: prefix all supplier fields w/ `supplier_`
+                fname = fname[len(prefix) :]
+                record[fname] = record.pop(source_fname)
             if available_fields.get(fname):
                 fspec = available_fields.get(fname)
                 ftype = fspec["type"]
@@ -36,6 +43,23 @@ class DynamicMapper(Component):
                 if converter:
                     vals[fname] = converter(self, record, fname)
         return vals
+
+    def _get_valid_keys(self, record, prefix):
+        valid_keys = [k for k in record.keys() if not k.startswith("_")]
+        if prefix:
+            valid_keys = [k for k in valid_keys if k.startswith(prefix)]
+        whitelist = self._source_key_whitelist
+        if whitelist:
+            valid_keys = [k for k in valid_keys if k in whitelist]
+        return valid_keys
+
+    @property
+    def _source_key_whitelist(self):
+        return self.work.options.mapper.get("source_key_whitelist", [])
+
+    @property
+    def _source_key_prefix(self):
+        return self.work.options.mapper.get("source_key_prefix", "")
 
     def _is_xmlid_key(self, fname, ftype):
         return fname.startswith("xid:") and ftype in (
@@ -65,7 +89,7 @@ class DynamicMapper(Component):
 
     def _non_mapped_keys(self, record):
         if self._non_mapped_keys_cache is None:
-            all_keys = {k for k in record.keys() if not k.startswith("_")}
+            all_keys = set(record.keys())
             mapped_keys = set()
             # NOTE: keys coming from `@mapping` methods can't be tracked.
             # Worse case: they get computed twice.
