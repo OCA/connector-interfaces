@@ -25,6 +25,7 @@
                     <field name="csv_delimiter" />
                     <field name="csv_quotechar" />
                     <field name="csv_encoding" />
+                    <field name="csv_rows_from_to" />
                     <field name="example_file_ext_id" />
                     <field name="example_file_url" widget="url" />
                 </group>
