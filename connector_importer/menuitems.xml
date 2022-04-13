@@ -18,4 +18,15 @@
         parent="menu_importer_root"
         action="action_import_recordset"
     />
+    <menuitem
+        id="menu_import_settings_root"
+        name="Settings"
+        parent="menu_importer_root"
+    />
+    <menuitem
+        id="menu_import_settings_types"
+        name="Import types"
+        parent="menu_import_settings_root"
+        action="action_import_type"
+    />
 </odoo>
