@@ -57,7 +57,6 @@ class RecordImporter(Component):
     _name = "importer.record"
     _inherit = ["importer.base.component"]
     _usage = "record.importer"
-    _apply_on = "import.record"
     # log and report errors
     # do not make the whole import fail
     _break_on_error = False
