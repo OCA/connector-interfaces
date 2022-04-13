@@ -83,11 +83,9 @@ class ImportRecordset(models.Model):
     docs_html = fields.Html(string="Docs", compute="_compute_docs_html")
     notes = fields.Html(help="Useful info for your users")
 
-    @api.depends("backend_id.name")
     def _compute_name(self):
         for item in self:
-            names = [item.backend_id.name.strip(), "#" + str(item.id)]
-            item.name = " ".join(names)
+            item.name = f"#{item.id}"
 
     def get_records(self):
         """Retrieve importable records and keep ordering."""
