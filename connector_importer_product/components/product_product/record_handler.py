@@ -28,31 +28,10 @@ class ProductProductRecordHandler(Component):
     _apply_on = "product.product"
 
     def odoo_post_create(self, odoo_record, values, orig_values):
-        self._set_external_id_on_template(odoo_record, values, orig_values)
         self._update_template_attributes(odoo_record, values, orig_values)
 
     def odoo_post_write(self, odoo_record, values, orig_values):
         self._update_template_attributes(odoo_record, values, orig_values)
-
-    def _set_external_id_on_template(self, odoo_record, values, orig_values):
-        """Set the External ID on the template once the variant created."""
-        template = odoo_record.product_tmpl_id
-        external_id = template.get_external_id()[template.id]
-        # TODO: check where `template_default_code` and get rid of it.
-        # If you need to generate a XID use `must_generate_xmlid`
-        # into `record_handler.options`.
-        if not external_id and orig_values.get("template_default_code"):
-            external_id = sanitize_external_id(orig_values["template_default_code"])
-            module, id_ = external_id.split(".", 1)
-            self.env["ir.model.data"].create(
-                {
-                    "name": id_,
-                    "module": module,
-                    "model": template._name,
-                    "res_id": template.id,
-                    "noupdate": False,
-                }
-            )
 
     def _update_template_attributes(self, odoo_record, values, orig_values):
         """Update the 'attribute_line_ids' field of the related template.
