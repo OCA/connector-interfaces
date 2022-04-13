@@ -12,6 +12,7 @@ from odoo.addons.base_sparse_field.models.fields import Serialized
 from odoo.addons.queue_job.job import DONE, STATES
 
 from ..log import logger
+from ..utils.misc import get_importer_for_config
 
 
 class ImportRecordset(models.Model):
@@ -272,16 +273,10 @@ class ImportRecordset(models.Model):
     def _get_importers(self):
         importers = OrderedDict()
         for importer_config in self.available_importers():
-            kwargs = {
-                "options": importer_config.options,
-            }
-            model = self.env["ir.model"]._get(importer_config.model)
-            with self.backend_id.with_context(**importer_config.context).work_on(
-                self._name, **kwargs
-            ) as work:
-                importers[model] = work.component_by_name(
-                    importer_config.importer, model_name=importer_config.model
-                )
+            model_record = self.env["ir.model"]._get(importer_config.model)
+            importers[model_record] = get_importer_for_config(
+                self.backend_id, self._name, importer_config
+            )
         return importers
 
     @api.depends("import_type_id")
