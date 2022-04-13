@@ -121,6 +121,12 @@ class RecordImporter(Component):
     def must_break_on_error(self):
         return self.work.options.importer.get("break_on_error", self._break_on_error)
 
+    @property
+    def must_override_existing(self):
+        return self.work.options.importer.get(
+            "override_existing", self.recordset.override_existing
+        )
+
     def required_keys(self, create=False):
         """Keys that are mandatory to import a line."""
         req = self.mapper.required_keys()
@@ -228,7 +234,7 @@ class RecordImporter(Component):
 
         if (
             self.record_handler.odoo_exists(values, orig_values)
-            and not self.recordset.override_existing
+            and not self.must_override_existing
         ):
             msg = "ALREADY EXISTS"
             if self.unique_key:
@@ -287,7 +293,7 @@ class RecordImporter(Component):
 
     def _load_mapper_options(self):
         """Retrieve mapper options."""
-        return {"override_existing": self.recordset.override_existing}
+        return {"override_existing": self.must_override_existing}
 
     # TODO: make these contexts customizable via recordset settings
     def _odoo_default_context(self):
