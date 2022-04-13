@@ -92,6 +92,7 @@ class CSVReader(object):
         quotechar='"',
         encoding=None,
         fieldnames=None,
+        rows_from_to=None,
     ):
         assert filedata or filepath, "Provide a file path or some file data!"
         if filepath:
@@ -102,11 +103,20 @@ class CSVReader(object):
         self.quotechar = quotechar
         self.encoding = encoding
         self.fieldnames = fieldnames
+        self.rows_from_to = rows_from_to or ""
 
     def read_lines(self):
         """Yields lines and add info to them (like line nr)."""
+        lines = self.data.splitlines()
+        if ":" in self.rows_from_to:
+            header = lines[0]
+            lines = lines[1:]
+            _from, _to = self.rows_from_to.split(":")
+            lines = [
+                header,
+            ] + lines[int(_from or 0) : int(_to or len(lines) + 1)]
         reader = csv.DictReader(
-            self.data.splitlines(),
+            lines,
             delimiter=str(self.delimiter),
             quotechar=str(self.quotechar),
             fieldnames=self.fieldnames,
