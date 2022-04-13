@@ -62,6 +62,7 @@ class ImportType(models.Model):
     _description = "Import type"
 
     name = fields.Char(required=True, help="A meaningful human-friendly name")
+    description = fields.Text()
     key = fields.Char(required=True, help="Unique mnemonic identifier")
     options = fields.Text(help="YAML configuration")
     settings = fields.Text(
