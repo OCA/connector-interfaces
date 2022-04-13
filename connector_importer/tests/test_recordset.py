@@ -43,7 +43,7 @@ class TestRecordset(common.TransactionCase):
     def test_recordset_name(self):
         self.assertEqual(
             self.recordset.name,
-            self.recordset.backend_id.name + " #" + str(self.recordset.id),
+            "#" + str(self.recordset.id),
         )
 
     def test_available_importers(self):
