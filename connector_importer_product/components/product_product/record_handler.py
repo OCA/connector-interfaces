@@ -141,7 +141,8 @@ class ProductProductRecordHandler(Component):
                 )
             tpl_attr_values |= tpl_attr_value
         # Detect variant duplicates (same attributes)
-        combination_indices = tpl_attr_values._ids2str()
+        valid_tpl_attr_values = tpl_attr_values._without_no_variant_attributes()
+        combination_indices = valid_tpl_attr_values._ids2str()
         existing_product = self.env["product.product"].search(
             [
                 ("id", "!=", odoo_record.id),
@@ -160,7 +161,7 @@ class ProductProductRecordHandler(Component):
         # It is required to set the whole template attribute values at the end
         # (and not in the loop) to not trigger internal mechanisms done by Odoo
         else:
-            odoo_record.product_template_attribute_value_ids = tpl_attr_values
+            odoo_record.product_template_attribute_value_ids = valid_tpl_attr_values
 
     def _find_attr_value(self, orig_values, attr_column):
         """Find matching attribute value.
