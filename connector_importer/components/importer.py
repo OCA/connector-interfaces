@@ -1,7 +1,6 @@
 # Author: Simone Orsi
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
-
 from odoo import _, exceptions
 
 from odoo.addons.component.core import Component
@@ -107,6 +106,10 @@ class RecordImporter(Component):
             self._mapper = self._get_mapper()
         return self._mapper
 
+    @property
+    def must_break_on_error(self):
+        return self.work.options.importer.get("break_on_error", self._break_on_error)
+
     def required_keys(self, create=False):
         """Keys that are mandatory to import a line."""
         req = self.mapper.required_keys()
@@ -140,7 +143,13 @@ class RecordImporter(Component):
         return self.env["res.lang"].search([("active", "=", True)]).mapped("code")
 
     def make_translation_key(self, key, lang):
-        return "{}:{}".format(key, lang)
+        sep = self.work.options.importer.get("translation_key_sep", ":")
+        regional_lang = self.work.options.importer.get(
+            "translation_use_regional_lang", True
+        )
+        if not regional_lang:
+            lang = lang[:2]  # eg: "de_DE" -> "de"
+        return f"{key}{sep}{lang}"
 
     def collect_translatable(self, values, orig_values):
         """Get translations values for `mapper.translatable_keys`.
@@ -272,13 +281,20 @@ class RecordImporter(Component):
         return {"override_existing": self.recordset.override_existing}
 
     # TODO: make these contexts customizable via recordset settings
+    def _odoo_default_context(self):
+        """Default context to be used in both create and write methods"""
+        return {
+            "importer_type_id": self.recordset.import_type_id.id,
+            "tracking_disable": True,
+        }
+
     def _odoo_create_context(self):
         """Inject context variables on create, merged by odoorecord handler."""
-        return {"tracking_disable": True}
+        return self._odoo_default_context()
 
     def _odoo_write_context(self):
         """Inject context variables on write, merged by odoorecord handler."""
-        return {"tracking_disable": True}
+        return self._odoo_default_context()
 
     def run(self, record, is_last_importer=True, **kw):
         """Run record job.
@@ -317,7 +333,7 @@ class RecordImporter(Component):
             except Exception as err:
                 values = {}
                 self.tracker.log_error(values, line, odoo_record, message=err)
-                if self._break_on_error:
+                if self.must_break_on_error:
                     raise
                 continue
 
@@ -344,7 +360,7 @@ class RecordImporter(Component):
                         self.tracker.log_created(values, line, odoo_record)
             except Exception as err:
                 self.tracker.log_error(values, line, odoo_record, message=err)
-                if self._break_on_error:
+                if self.must_break_on_error:
                     raise
                 continue
 

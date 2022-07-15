@@ -2,6 +2,8 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
+from odoo import _, exceptions
+
 from odoo.addons.component.core import Component
 from odoo.addons.connector.components.mapper import mapping
 
@@ -69,7 +71,7 @@ class ImportMapper(Component):
         # whereas `$record_xmlid` is the xmlid to retrieve
         # and ``$record_field_value` is the field to be used as value.
         # Example:
-        # ('company_id', '_xmlid:base.main_company:id'),
+        # ('company_id', '_xmlid::base.main_company:id'),
     ]
 
     @mapping
@@ -81,7 +83,12 @@ class ImportMapper(Component):
         values = {}
         for k, v in self.defaults:
             if isinstance(v, str) and v.startswith("_xmlid::"):
-                xmlid, field_value = v.split("::")[1:]
+                real_val = v.replace("_xmlid::", "").strip()
+                if not real_val or ":" not in real_val:
+                    raise exceptions.UserError(
+                        _("Malformated xml id ref: `%s`") % real_val
+                    )
+                xmlid, field_value = real_val.split(":")
                 v = self.env.ref(xmlid)[field_value]
             values[k] = v
         return values
