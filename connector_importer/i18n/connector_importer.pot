@@ -479,6 +479,12 @@ msgid "Make all related jobs completed"
 msgstr ""
 
 #. module: connector_importer
+#: code:addons/connector_importer/components/mapper.py:0
+#, python-format
+msgid "Malformated xml id ref: `%s`"
+msgstr ""
+
+#. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_backend__cron_master_recordset_id
 msgid "Master recordset"
 msgstr ""
