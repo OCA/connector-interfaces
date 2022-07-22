@@ -41,7 +41,10 @@ class DynamicMapper(Component):
                     ftype = "_xmlid"
                 converter = self._get_converter(fname, ftype)
                 if converter:
-                    vals[fname] = converter(self, record, fname)
+                    value = converter(self, record, fname)
+                    if not value and source_fname in self._source_key_empty_skip:
+                        continue
+                    vals[fname] = value
         return vals
 
     def _get_valid_keys(self, record, prefix):
@@ -56,6 +59,17 @@ class DynamicMapper(Component):
     @property
     def _source_key_whitelist(self):
         return self.work.options.mapper.get("source_key_whitelist", [])
+
+    @property
+    def _source_key_empty_skip(self):
+        """List of source keys to skip when empty.
+
+        Use cases:
+
+            * field w/ unique constraint but not populated (eg: product barcode)
+            * field not to override when empty
+        """
+        return self.work.options.mapper.get("source_key_empty_skip", [])
 
     @property
     def _source_key_prefix(self):
