@@ -9,7 +9,7 @@ import mock
 
 from odoo.tools import mute_logger
 
-from .common import SFTPSourceSavepointComponentRegistryCase
+from .common import SFTPSourceTransactionComponentRegistryCase
 
 MOD_PATH = "odoo.addons.connector_importer_source_sftp"
 EVENT_LISTENER_PATH = (
@@ -18,7 +18,7 @@ EVENT_LISTENER_PATH = (
 SOURCE_MODEL_PATH = MOD_PATH + ".models.source_csv_sftp.ImportSourceCSVSFTP"
 
 
-class TestRecordImporterFinishedEvent(SFTPSourceSavepointComponentRegistryCase):
+class TestRecordImporterFinishedEvent(SFTPSourceTransactionComponentRegistryCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
@@ -89,7 +89,7 @@ class TestRecordImporterFinishedEvent(SFTPSourceSavepointComponentRegistryCase):
             self._test_result({"created": 5, "errored": 0, "updated": 0, "skipped": 0})
 
         self._test_called_with(
-            mocked_method, "_move_files", "input/filename.csv", "success"
+            mocked_method, "move_files", "input/filename.csv", "success"
         )
 
     @mute_logger("[importer]")
@@ -107,7 +107,7 @@ class TestRecordImporterFinishedEvent(SFTPSourceSavepointComponentRegistryCase):
             self._test_result({"created": 0, "errored": 5, "updated": 0, "skipped": 0})
 
         self._test_called_with(
-            mocked_method, "_move_files", "input/filename.csv", "error"
+            mocked_method, "move_files", "input/filename.csv", "error"
         )
 
     @mute_logger("[importer]")
@@ -127,7 +127,7 @@ class TestRecordImporterFinishedEvent(SFTPSourceSavepointComponentRegistryCase):
             self._test_result({"created": 0, "errored": 5, "updated": 0, "skipped": 0})
 
         self._test_called_with(
-            mocked_method, "_move_files", "input/filename.csv", "error"
+            mocked_method, "move_files", "input/filename.csv", "error"
         )
         mocked_add.assert_called_with(
             "error/filename.report.csv", self.recordset.report_file, binary=False
