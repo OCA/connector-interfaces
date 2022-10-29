@@ -11,10 +11,10 @@ from odoo.tools import mute_logger
 
 from odoo.addons.storage_backend_sftp.tests.test_sftp import PARAMIKO_PATH
 
-from .common import SFTPSourceSavepointComponentCase
+from .common import SFTPSourceTransactionComponentCase
 
 
-class TestSourceCSV(SFTPSourceSavepointComponentCase):
+class TestSourceCSV(SFTPSourceTransactionComponentCase):
 
     extra_fields = [
         "chunk_size",
