@@ -61,7 +61,7 @@ class SFTPSourceImportRecordsetEventListener(Component):
 
         if sftp_destination_path:
             self._add_after_commit_hook(
-                storage._move_files, sftp_filepath, sftp_destination_path
+                storage.move_files, sftp_filepath, sftp_destination_path
             )
 
     # TODO: make it configurable on the source via code snippet
@@ -78,8 +78,7 @@ class SFTPSourceImportRecordsetEventListener(Component):
 
     def _add_after_commit_hook(self, move_func, sftp_filepath, sftp_destination_path):
         """Add hook after commit to move the file when transaction is over."""
-        self.env.cr.after(
-            "commit",
+        self.env.cr.postcommit.add(
             functools.partial(move_func, [sftp_filepath], sftp_destination_path),
         )
 
