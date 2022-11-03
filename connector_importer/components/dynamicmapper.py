@@ -25,36 +25,43 @@ class DynamicMapper(Component):
         vals = {}
         available_fields = self.env[model].fields_get()
         prefix = self._source_key_prefix
-        valid_keys = self._get_valid_keys(record, prefix)
-        record = {k: v for k, v in record.items() if k in valid_keys}
-        for source_fname in self._non_mapped_keys(record):
+        clean_record = self._clean_record(record)
+        for source_fname in self._non_mapped_keys(clean_record):
             fname = source_fname
             if prefix and source_fname.startswith(prefix):
                 # Eg: prefix all supplier fields w/ `supplier_`
                 fname = fname[len(prefix) :]
-                record[fname] = record.pop(source_fname)
+                clean_record[fname] = clean_record.pop(source_fname)
+            if "::" in fname:
+                # Eg: transformers like `xid::``
+                fname = fname.split("::")[-1]
+                clean_record[fname] = clean_record.pop(source_fname)
             if available_fields.get(fname):
                 fspec = available_fields.get(fname)
                 ftype = fspec["type"]
-                if self._is_xmlid_key(fname, ftype):
-                    fname = fname.replace("xid:", "")
+                if self._is_xmlid_key(source_fname, ftype):
                     ftype = "_xmlid"
                 converter = self._get_converter(fname, ftype)
                 if converter:
-                    value = converter(self, record, fname)
+                    value = converter(self, clean_record, fname)
                     if not value and source_fname in self._source_key_empty_skip:
                         continue
                     vals[fname] = value
         return vals
 
-    def _get_valid_keys(self, record, prefix):
+    def _clean_record(self, record):
+        valid_keys = self._get_valid_keys(record)
+        return {k: v for k, v in record.items() if k in valid_keys}
+
+    def _get_valid_keys(self, record):
         valid_keys = [k for k in record.keys() if not k.startswith("_")]
+        prefix = self._source_key_prefix
         if prefix:
             valid_keys = [k for k in valid_keys if k.startswith(prefix)]
         whitelist = self._source_key_whitelist
         if whitelist:
             valid_keys = [k for k in valid_keys if k in whitelist]
-        return valid_keys
+        return tuple(valid_keys)
 
     @property
     def _source_key_whitelist(self):
@@ -76,7 +83,7 @@ class DynamicMapper(Component):
         return self.work.options.mapper.get("source_key_prefix", "")
 
     def _is_xmlid_key(self, fname, ftype):
-        return fname.startswith("xid:") and ftype in (
+        return fname.startswith("xid::") and ftype in (
             "many2one",
             "one2many",
             "many2many",
