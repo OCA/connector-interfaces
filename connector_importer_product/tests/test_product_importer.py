@@ -1,26 +1,13 @@
 # Copyright 2022 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
-import base64
-import logging
-import os
-
-from odoo.tests import tagged
-from odoo.tests.common import SavepointCase
-
-_logger = logging.getLogger(__name__)
-
-DIR_DATA_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), "data")
+from .common import TestImportProductBase
 
 
-@tagged("post_install", "-at_install")
-class TestProduct(SavepointCase):
+class TestProduct(TestImportProductBase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.env = cls.env(context=dict(cls.env.context, tracking_disable=True))
-        backend = cls.env.ref("connector_importer_product.demo_import_backend")
-        backend.debug_mode = True  # synchronous jobs
         # Load and import product attributes
         cls.importer_load_file(
             "connector_importer_product.demo_import_source_csv_product_attribute",
@@ -42,21 +29,6 @@ class TestProduct(SavepointCase):
             "connector_importer_product.demo_import_source_csv_product_product",
             "product_product.csv",
         )
-
-    @classmethod
-    def importer_load_file(cls, src_external_id, csv_filename):
-        csv_path = os.path.join(DIR_DATA_PATH, csv_filename)
-        _logger.info("Loading '%s' file to '%s'...", csv_path, src_external_id)
-        source = cls.env.ref(src_external_id)
-        with open(csv_path, "rb") as csv_file:
-            csv_content = csv_file.read()
-            b64_content = base64.b64encode(csv_content)
-            source.write({"csv_file": b64_content, "csv_filename": csv_filename})
-
-    @classmethod
-    def importer_run(cls, external_id):
-        recordset = cls.env.ref(external_id)
-        recordset.run_import()
 
     def test_init_product(self):
         """Ensure that variants are not removed/recreated during the import."""
