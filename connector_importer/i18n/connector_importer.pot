@@ -97,6 +97,11 @@ msgid "CSV quotechar"
 msgstr ""
 
 #. module: connector_importer
+#: model:ir.model.fields.selection,name:connector_importer.selection__import_recordset__jobs_global_state__cancelled
+msgid "Cancelled"
+msgstr ""
+
+#. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_source__chunk_size
 #: model:ir.model.fields,field_description:connector_importer.field_import_source_csv__chunk_size
 msgid "Chunks Size"
