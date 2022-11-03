@@ -1,0 +1,4 @@
+id,name,name_fr,parent_id/id
+product_cat_test1,TEST_1,TEST_1 FR,
+product_cat_test2,TEST_2,TEST_2 FR,product_cat_test1
+product_cat_test3,TEST_3,TEST_3 FR,product_cat_test2
