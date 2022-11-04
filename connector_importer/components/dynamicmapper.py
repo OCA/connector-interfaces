@@ -27,6 +27,9 @@ class DynamicMapper(Component):
         prefix = self._source_key_prefix
         clean_record = self._clean_record(record)
         for source_fname in self._non_mapped_keys(clean_record):
+            if source_fname in ("id", "xid::id"):
+                # Never convert IDs
+                continue
             fname = source_fname
             if prefix and source_fname.startswith(prefix):
                 # Eg: prefix all supplier fields w/ `supplier_`
