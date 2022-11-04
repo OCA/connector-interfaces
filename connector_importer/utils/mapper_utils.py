@@ -10,6 +10,7 @@ from odoo import fields
 from odoo.tools.misc import str2bool
 
 from ..log import logger
+from ..utils.misc import sanitize_external_id
 
 FMTS = ("%d/%m/%Y",)
 
@@ -149,9 +150,21 @@ def concat(field, separator=" ", handler=None):
     return modifier
 
 
-def xmlid_to_rel(field):
+def xmlid_to_rel(field, sanitize=True, sanitize_default_mod_name=None):
     """Convert xmlids source values to ids."""
     xmlid_to_rel._from_key = field
+    xmlid_to_rel._sanitize = sanitize
+    xmlid_to_rel._sanitize_default_mod_name = sanitize_default_mod_name
+
+    def _xid_to_record(env, xid):
+        xid = (
+            sanitize_external_id(
+                xid, default_mod_name=xmlid_to_rel._sanitize_default_mod_name
+            )
+            if xmlid_to_rel._sanitize
+            else xid
+        )
+        return env.ref(xid, raise_if_not_found=False)
 
     def modifier(self, record, to_attr):
         value = record.get(field)
@@ -161,16 +174,17 @@ def xmlid_to_rel(field):
             value = [x.strip() for x in value.split(",") if x.strip()]
         if isinstance(value, str):
             # m2o
-            rec = self.env.ref(value, raise_if_not_found=False)
+            rec = _xid_to_record(self.env, value)
             if rec:
                 return rec.id
             return None
         # x2m
-        return [
-            (6, 0, self.env.ref(x).ids)
-            for x in value
-            if self.env.ref(x, raise_if_not_found=False)
-        ]
+        values = []
+        for xid in value:
+            rec = _xid_to_record(self.env, xid)
+            if rec:
+                values.append((6, 0, rec.ids))
+        return values
 
     return modifier
 
