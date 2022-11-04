@@ -100,6 +100,7 @@ class DynamicMapper(Component):
     def _dynamic_keys_mapping(self, fname):
         return {
             "char": lambda self, rec, fname: rec[fname],
+            "selection": lambda self, rec, fname: rec[fname],
             "integer": convert(fname, "safe_int"),
             "float": convert(fname, "safe_float"),
             "boolean": convert(fname, "bool"),
