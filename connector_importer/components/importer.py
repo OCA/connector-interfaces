@@ -162,7 +162,7 @@ class RecordImporter(Component):
     def make_translation_key(self, key, lang):
         sep = self.work.options.importer.get("translation_key_sep", ":")
         regional_lang = self.work.options.importer.get(
-            "translation_use_regional_lang", True
+            "translation_use_regional_lang", False
         )
         if not regional_lang:
             lang = lang[:2]  # eg: "de_DE" -> "de"
