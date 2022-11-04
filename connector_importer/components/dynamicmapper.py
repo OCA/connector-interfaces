@@ -85,6 +85,11 @@ class DynamicMapper(Component):
     def _source_key_prefix(self):
         return self.work.options.mapper.get("source_key_prefix", "")
 
+    @property
+    def _source_key_xid_module(self):
+        """Module name to use to sanitize XMLids"""
+        return self.work.options.mapper.get("source_key_xid_module", "")
+
     def _is_xmlid_key(self, fname, ftype):
         return fname.startswith("xid::") and ftype in (
             "many2one",
@@ -103,7 +108,9 @@ class DynamicMapper(Component):
             "many2one": backend_to_rel(fname),
             "many2many": backend_to_rel(fname),
             "one2many": backend_to_rel(fname),
-            "_xmlid": xmlid_to_rel(fname),
+            "_xmlid": xmlid_to_rel(
+                fname, sanitize_default_mod_name=self._source_key_xid_module
+            ),
         }
 
     def _get_converter(self, fname, ftype):
