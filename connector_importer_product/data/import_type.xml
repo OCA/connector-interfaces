@@ -41,11 +41,17 @@
     <field name="options">
 - model: product.attribute.value
   importer:
-    name:
-      product.attribute.value.importer
+    name: importer.record
   options:
     importer:
+      odoo_unique_key: xid::id
       break_on_error: true
+    mapper:
+      name: importer.mapper.dynamic
+      required_keys:
+        xid::attribute_id: attribute_id
+      translatable_keys:
+        - name
     </field>
   </record>
 
