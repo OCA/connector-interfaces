@@ -4,6 +4,8 @@
 
 from odoo.addons.component.core import Component
 
+from ..utils.misc import sanitize_external_id
+
 
 class OdooRecordHandler(Component):
     """Interact w/ odoo importable records."""
@@ -14,7 +16,6 @@ class OdooRecordHandler(Component):
 
     # TODO: collect these from `work.options.record_handler`
     unique_key = ""
-    unique_key_is_xmlid = False
     importer = None
     # By default odoo ignores create_uid/write_uid in vals.
     # If you enable this flags and `create_uid` and/or `write_uid`
@@ -25,10 +26,13 @@ class OdooRecordHandler(Component):
     override_write_uid = False
     override_write_date = False
 
-    def _init_handler(self, importer=None, unique_key=None, unique_key_is_xmlid=False):
+    def _init_handler(self, importer=None, unique_key=None):
         self.importer = importer
         self.unique_key = unique_key
-        self.unique_key_is_xmlid = unique_key_is_xmlid
+
+    @property
+    def unique_key_is_xmlid(self):
+        return self.unique_key.startswith("xid::")
 
     def odoo_find_domain(self, values, orig_values):
         """Domain to find the record in odoo."""
@@ -40,7 +44,8 @@ class OdooRecordHandler(Component):
             # if unique_key is None we might use as special find domain
             return self.model
         if self.unique_key_is_xmlid:
-            item = self.env.ref(values[self.unique_key], raise_if_not_found=False)
+            xid = self._get_xmlid(values, orig_values)
+            item = self.env.ref(xid, raise_if_not_found=False)
             return item
         item = self.model.search(
             self.odoo_find_domain(values, orig_values),
@@ -48,6 +53,11 @@ class OdooRecordHandler(Component):
             limit=1,
         )
         return item
+
+    def _get_xmlid(self, values, orig_values):
+        # Mappers will remove `xid::` prefix from the final values
+        # hence, look for the original key.
+        return sanitize_external_id(orig_values.get(self.unique_key))
 
     def odoo_exists(self, values, orig_values):
         """Return true if the items exists."""
@@ -99,9 +109,9 @@ class OdooRecordHandler(Component):
         self.update_translations(odoo_record, translatable)
         # Set the external ID if necessary
         if self.must_generate_xmlid:
-            external_id = values[self.unique_key]
-            if not self.env.ref(external_id, raise_if_not_found=False):
-                module, id_ = external_id.split(".", 1)
+            xid = self._get_xmlid(values, orig_values)
+            if not self.env.ref(xid, raise_if_not_found=False):
+                module, id_ = xid.split(".", 1)
                 self.env["ir.model.data"].create(
                     {
                         "name": id_,
