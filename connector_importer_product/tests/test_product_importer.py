@@ -1,6 +1,8 @@
 # Copyright 2022 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
+from odoo.tools import mute_logger
+
 from .common import TestImportProductBase
 
 
@@ -30,6 +32,7 @@ class TestProduct(TestImportProductBase):
             "product_product.csv",
         )
 
+    @mute_logger("[importer]")
     def test_init_product(self):
         """Ensure that variants are not removed/recreated during the import."""
         recordset = self.env.ref(
