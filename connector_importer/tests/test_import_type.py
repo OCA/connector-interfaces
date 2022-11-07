@@ -80,6 +80,47 @@ class TestImportType(common.TransactionCase):
             ),
         )
 
+    def test_available_importers_defaults(self):
+        options = """
+        - model: res.partner
+        - model: res.users
+          options:
+            importer:
+              baz: True
+        """
+        itype = self.type_model.create({"name": "Ok", "key": "ok", "options": options})
+        importers = tuple(itype.available_importers())
+        expected = (
+            {
+                "context": {},
+                "importer": {"name": "importer.record"},
+                "is_last_importer": False,
+                "model": "res.partner",
+                "options": {
+                    "importer": {},
+                    "mapper": {},
+                    "record_handler": {},
+                    "tracking_handler": {},
+                },
+            },
+            {
+                "context": {},
+                "importer": {"name": "importer.record"},
+                "is_last_importer": True,
+                "model": "res.users",
+                "options": {
+                    "importer": {"baz": True},
+                    "mapper": {},
+                    "record_handler": {},
+                    "tracking_handler": {},
+                },
+            },
+        )
+        self.assertEqual(
+            importers,
+            expected,
+        )
+
     def test_available_importers(self):
         options = """
         - model: res.partner
