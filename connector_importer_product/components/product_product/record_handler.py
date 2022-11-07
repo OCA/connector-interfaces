@@ -7,8 +7,8 @@ import unicodedata
 from odoo import _
 
 from odoo.addons.component.core import Component
-
-from ...utils import sanitize_external_id
+from odoo.addons.connector_importer.log import logger
+from odoo.addons.connector_importer.utils.misc import sanitize_external_id
 
 
 def slugify_one(s, max_length=0):
@@ -163,6 +163,7 @@ class ProductProductRecordHandler(Component):
         else:
             odoo_record.product_template_attribute_value_ids = valid_tpl_attr_values
 
+    # TODO: add unit test
     def _find_attr_value(self, orig_values, attr_column):
         """Find matching attribute value.
 
@@ -191,9 +192,14 @@ class ProductProductRecordHandler(Component):
             [("attribute_id", "=", attr.id), ("name", "=", orig_val)], limit=1
         )
         if not attr_value:
-            # 2nd try w/ auto generated xid
+            # 2nd assume it's an xmlid
+            attr_value = self.env.ref(sanitize_external_id(orig_val), False)
+        if not attr_value and "_value_" not in orig_val:
+            # 3rd try w/ auto generated xid
             value = slugify_one(orig_val).replace("-", "_")
             xid = f"{attr_column}_value_{value}"
             attr_value_external_id = sanitize_external_id(xid)
             attr_value = self.env.ref(attr_value_external_id, False)
+        if not attr_value:
+            logger.error("Cannot determine product attr value: %s", orig_val)
         return attr_value
