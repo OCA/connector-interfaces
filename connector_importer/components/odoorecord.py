@@ -32,7 +32,7 @@ class OdooRecordHandler(Component):
 
     @property
     def unique_key_is_xmlid(self):
-        return self.unique_key.startswith("xid::")
+        return self.importer.unique_key_is_xmlid
 
     def odoo_find_domain(self, values, orig_values):
         """Domain to find the record in odoo."""
