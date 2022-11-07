@@ -10,4 +10,8 @@
 * unit tests from `tests.test_source_csv` are not imported (Odoo ignores them)
   and they need to be fixed
 * unit tests for record handler and tracker
-* rely on `self.work.options` in all components to replace all custom flags
+* add more test coverage for mapper utils and dynamic mapper
+* consider making dynamic mapper the default one
+* xid::id seems reduntant: if you have an "id" column, always assume you have an xmlid
+  and always assume is the unique_key unless stated otherwise
+* make "importer.record" the default to avoid specificying it every time
