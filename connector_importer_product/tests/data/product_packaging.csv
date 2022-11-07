@@ -1,0 +1,5 @@
+id,name,qty,barcode,xid::product_id
+product_pkg_test1,TEST_1,10,code_1,
+product_pkg_test2,TEST_2,8,code_2,product.product_product_3
+product_pkg_test3,TEST_3,6,code_3,
+product_pkg_test4,TEST_4,4,code_4,
