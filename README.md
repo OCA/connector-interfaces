@@ -23,6 +23,13 @@ addon | version | maintainers | summary
 --- | --- | --- | ---
 [connector_importer](connector_importer/) | 15.0.1.2.0 | [![simahawk](https://github.com/simahawk.png?size=30px)](https://github.com/simahawk) | This module takes care of import sessions.
 
+
+Unported addons
+---------------
+addon | version | maintainers | summary
+--- | --- | --- | ---
+[connector_importer_product](connector_importer_product/) | 14.0.1.0.0 (unported) |  | Ease definition of product imports using `connector_importer`.
+
 [//]: # (end addons)
 
 <!-- prettier-ignore-end -->
