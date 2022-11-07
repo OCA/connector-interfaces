@@ -54,3 +54,22 @@ class ProductProductMapper(Component):
                 vals["default_code"] = record[key]
                 break
         return vals
+
+    def finalize(self, map_record, values):
+        res = super().finalize(map_record, values)
+        # Avoid having an empty barcode which must be unique.
+        # Odoo will try to store the barcode as an empty string
+        # whenever is not valued: simply ignore it when it happens
+        # to avoid:
+        # psycopg2.errors.UniqueViolation: duplicate key value
+        # violates unique constraint "product_product_barcode_uniq".
+        #
+        # Note: this can be achieved by using this mapper option:
+        #
+        # source_key_empty_skip:
+        #   - barcode
+        #
+        # Since we have a special mapper, let's handle it here.
+        if "barcode" in res and not res.get("barcode"):
+            res.pop("barcode")
+        return res
