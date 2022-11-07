@@ -12,6 +12,4 @@
 * unit tests for record handler and tracker
 * add more test coverage for mapper utils and dynamic mapper
 * consider making dynamic mapper the default one
-* xid::id seems reduntant: if you have an "id" column, always assume you have an xmlid
-  and always assume is the unique_key unless stated otherwise
 * make "importer.record" the default to avoid specificying it every time

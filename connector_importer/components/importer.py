@@ -88,7 +88,7 @@ class RecordImporter(Component):
 
     @property
     def unique_key_is_xmlid(self):
-        return self.unique_key.startswith("xid::")
+        return self.unique_key.startswith("xid::") or self.unique_key == "id"
 
     # Override to not rely on automatic mapper lookup.
     # This is especially needed if you register more than one importer

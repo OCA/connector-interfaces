@@ -58,7 +58,6 @@ class PartnerRecordImporterXMLID(Component):
     _apply_on = "res.partner"
 
     odoo_unique_key = "id"
-    odoo_unique_key_is_xmlid = True
 
     def create_context(self):
         return {"tracking_disable": True}
