@@ -8,7 +8,13 @@
     <field name="key">product_category</field>
     <field name="options">
 - model: product.category
-  importer: product.category.importer
+  importer:
+    name: importer.record
+  options:
+    importer:
+      odoo_unique_key: xid::id
+    mapper:
+      name: importer.mapper.dynamic
     </field>
   </record>
 
