@@ -25,10 +25,31 @@
                     <field name="csv_delimiter" />
                     <field name="csv_quotechar" />
                     <field name="csv_encoding" />
+                    <field name="csv_rows_from_to" />
                     <field name="example_file_ext_id" />
                     <field name="example_file_url" widget="url" />
                 </group>
             </group>
         </field>
+    </record>
+    <record id="view_import_source_csv_tree" model="ir.ui.view">
+        <field name="name">import.source.csv tree</field>
+        <field name="model">import.source.csv</field>
+        <field name="priority" eval="99" />
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field name="csv_filename" />
+                <field name="csv_path" />
+                <field name="csv_delimiter" />
+                <field name="csv_quotechar" />
+                <field name="csv_encoding" />
+            </tree>
+        </field>
+    </record>
+    <record id="action_import_source" model="ir.actions.act_window">
+        <field name="name">Import sources</field>
+        <field name="res_model">import.source</field>
+        <field name="view_mode">tree,form</field>
     </record>
 </odoo>

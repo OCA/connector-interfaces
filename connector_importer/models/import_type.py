@@ -46,6 +46,8 @@ class ImportType(models.Model):
       options:
         importer:
           break_on_error: True
+        mapper:
+            name: my.nice.mapper
         record_handler:
           one: False
 
@@ -60,6 +62,7 @@ class ImportType(models.Model):
     _description = "Import type"
 
     name = fields.Char(required=True, help="A meaningful human-friendly name")
+    description = fields.Text()
     key = fields.Char(required=True, help="Unique mnemonic identifier")
     options = fields.Text(help="YAML configuration")
     settings = fields.Text(
@@ -126,10 +129,9 @@ class ImportType(models.Model):
         :return: odoo.tools.DotDict instance containing all importer options.
         """
         res = DotDict(line, is_last_importer=is_last_importer)
-        if "options" not in res:
-            res["options"] = {}
-        if "context" not in res:
-            res["context"] = {}
+        for key in ("importer", "options", "context"):
+            if key not in res:
+                res[key] = {}
         for k in ("importer", "mapper", "record_handler", "tracking_handler"):
             if k not in res.options:
                 res["options"][k] = {}

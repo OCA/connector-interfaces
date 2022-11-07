@@ -57,7 +57,6 @@ class RecordImporter(Component):
     _name = "importer.record"
     _inherit = ["importer.base.component"]
     _usage = "record.importer"
-    _apply_on = "import.record"
     # log and report errors
     # do not make the whole import fail
     _break_on_error = False
@@ -74,8 +73,8 @@ class RecordImporter(Component):
         self.record_handler = self.component(usage=self._record_handler_usage)
         self.record_handler._init_handler(
             importer=self,
-            unique_key=self.odoo_unique_key,
-            unique_key_is_xmlid=self.odoo_unique_key_is_xmlid,
+            unique_key=self.unique_key,
+            unique_key_is_xmlid=self.unique_key_is_xmlid,
         )
         # tracking handler is responsible for logging and chunk reports
         self.tracker = self.component(usage=self._tracking_handler_usage)
@@ -83,6 +82,16 @@ class RecordImporter(Component):
             model_name=self.model._name,
             logger_name=LOGGER_NAME,
             log_prefix=self.recordset.import_type_id.key + " ",
+        )
+
+    @property
+    def unique_key(self):
+        return self.work.options.importer.get("odoo_unique_key", self.odoo_unique_key)
+
+    @property
+    def unique_key_is_xmlid(self):
+        return self.work.options.importer.get(
+            "odoo_unique_key_is_xmlid", self.odoo_unique_key_is_xmlid
         )
 
     # Override to not rely on automatic mapper lookup.
@@ -94,11 +103,13 @@ class RecordImporter(Component):
     # just an instance cache for the mapper
     _mapper = None
 
-    # TODO: add tests
+    # TODO: do the same for record handler and tracking handler
     def _get_mapper(self):
-        if self._mapper_name:
-            return self.component_by_name(self._mapper_name)
-        return self.component(usage=self._mapper_usage)
+        mapper_name = self.work.options.mapper.get("name", self._mapper_name)
+        if mapper_name:
+            return self.component_by_name(mapper_name)
+        mapper_usage = self.work.options.mapper.get("usage", self._mapper_usage)
+        return self.component(usage=mapper_usage)
 
     @property
     def mapper(self):
@@ -110,6 +121,12 @@ class RecordImporter(Component):
     def must_break_on_error(self):
         return self.work.options.importer.get("break_on_error", self._break_on_error)
 
+    @property
+    def must_override_existing(self):
+        return self.work.options.importer.get(
+            "override_existing", self.recordset.override_existing
+        )
+
     def required_keys(self, create=False):
         """Keys that are mandatory to import a line."""
         req = self.mapper.required_keys()
@@ -120,7 +137,7 @@ class RecordImporter(Component):
             if not isinstance(v, (tuple, list)):
                 req[k] = (v,)
             all_values.extend(req[k])
-        unique_key = self.odoo_unique_key
+        unique_key = self.unique_key
         if (
             unique_key
             and unique_key not in list(req.keys())
@@ -145,7 +162,7 @@ class RecordImporter(Component):
     def make_translation_key(self, key, lang):
         sep = self.work.options.importer.get("translation_key_sep", ":")
         regional_lang = self.work.options.importer.get(
-            "translation_use_regional_lang", True
+            "translation_use_regional_lang", False
         )
         if not regional_lang:
             lang = lang[:2]  # eg: "de_DE" -> "de"
@@ -183,7 +200,7 @@ class RecordImporter(Component):
         missing = (
             not source_key.startswith("__") and orig_values.get(source_key) is None
         )
-        unique_key = self.odoo_unique_key
+        unique_key = self.unique_key
         if missing:
             msg = "MISSING REQUIRED SOURCE KEY={}".format(source_key)
             if unique_key and values.get(unique_key):
@@ -217,13 +234,11 @@ class RecordImporter(Component):
 
         if (
             self.record_handler.odoo_exists(values, orig_values)
-            and not self.recordset.override_existing
+            and not self.must_override_existing
         ):
             msg = "ALREADY EXISTS"
-            if self.odoo_unique_key:
-                msg += ": {}={}".format(
-                    self.odoo_unique_key, values[self.odoo_unique_key]
-                )
+            if self.unique_key:
+                msg += ": {}={}".format(self.unique_key, values[self.unique_key])
             return {
                 "message": msg,
                 "odoo_record": self.record_handler.odoo_find(values, orig_values).id,
@@ -278,7 +293,7 @@ class RecordImporter(Component):
 
     def _load_mapper_options(self):
         """Retrieve mapper options."""
-        return {"override_existing": self.recordset.override_existing}
+        return {"override_existing": self.must_override_existing}
 
     # TODO: make these contexts customizable via recordset settings
     def _odoo_default_context(self):
