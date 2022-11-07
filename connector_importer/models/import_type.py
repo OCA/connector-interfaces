@@ -131,11 +131,17 @@ class ImportType(models.Model):
         res = DotDict(line, is_last_importer=is_last_importer)
         for key in ("importer", "options", "context"):
             if key not in res:
-                res[key] = {}
+                res[key] = self._importer_info_defaults.get(key, {})
         for k in ("importer", "mapper", "record_handler", "tracking_handler"):
             if k not in res.options:
                 res["options"][k] = {}
         return res
+
+    _importer_info_defaults = {
+        "importer": {
+            "name": "importer.record",
+        },
+    }
 
     # TODO: trash it for v14
     def _legacy_available_importers(self):
