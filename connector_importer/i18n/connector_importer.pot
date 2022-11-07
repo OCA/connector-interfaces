@@ -41,6 +41,16 @@ msgid "Additional notes"
 msgstr ""
 
 #. module: connector_importer
+#: model_terms:ir.ui.view,arch_db:connector_importer.view_import_type_form
+msgid "Adv. options"
+msgstr ""
+
+#. module: connector_importer
+#: model_terms:ir.ui.view,arch_db:connector_importer.view_import_type_form
+msgid "Advanced"
+msgstr ""
+
+#. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_record__backend_id
 #: model_terms:ir.ui.view,arch_db:connector_importer.view_import_recordset_search
 msgid "Backend"
@@ -94,6 +104,13 @@ msgstr ""
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_source_csv__csv_quotechar
 msgid "CSV quotechar"
+msgstr ""
+
+#. module: connector_importer
+#: model:ir.model.fields,field_description:connector_importer.field_import_source_csv__csv_rows_from_to
+msgid ""
+"CSV use only a slice of the available lines. Format: $from:$to. NOTE: "
+"recommended only for debug/test purpose."
 msgstr ""
 
 #. module: connector_importer
@@ -185,6 +202,11 @@ msgstr ""
 #. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.recordset_docs
 msgid "Defaults"
+msgstr ""
+
+#. module: connector_importer
+#: model:ir.model.fields,field_description:connector_importer.field_import_type__description
+msgid "Description"
 msgstr ""
 
 #. module: connector_importer
@@ -359,6 +381,12 @@ msgid "Import source consumer"
 msgstr ""
 
 #. module: connector_importer
+#: model:ir.actions.act_window,name:connector_importer.action_import_source
+#: model:ir.ui.menu,name:connector_importer.menu_import_settings_sources
+msgid "Import sources"
+msgstr ""
+
+#. module: connector_importer
 #: model:ir.model,name:connector_importer.model_import_type
 #: model:ir.model.fields,field_description:connector_importer.field_import_recordset__import_type_id
 msgid "Import type"
@@ -367,6 +395,12 @@ msgstr ""
 #. module: connector_importer
 #: model:ir.model.constraint,message:connector_importer.constraint_import_type_key_uniq
 msgid "Import type `key` must be unique!"
+msgstr ""
+
+#. module: connector_importer
+#: model:ir.actions.act_window,name:connector_importer.action_import_type
+#: model:ir.ui.menu,name:connector_importer.menu_import_settings_types
+msgid "Import types"
 msgstr ""
 
 #. module: connector_importer
@@ -476,6 +510,11 @@ msgstr ""
 #. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.recordset_docs
 msgid "Legend: TODO"
+msgstr ""
+
+#. module: connector_importer
+#: model_terms:ir.ui.view,arch_db:connector_importer.view_import_type_form
+msgid "Main"
 msgstr ""
 
 #. module: connector_importer
@@ -653,6 +692,11 @@ msgstr ""
 #. module: connector_importer
 #: model:ir.model.fields,help:connector_importer.field_import_recordset__sequence
 msgid "Sequence for the handle."
+msgstr ""
+
+#. module: connector_importer
+#: model:ir.ui.menu,name:connector_importer.menu_import_settings_root
+msgid "Settings"
 msgstr ""
 
 #. module: connector_importer
