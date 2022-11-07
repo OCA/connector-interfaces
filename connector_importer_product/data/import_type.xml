@@ -81,8 +81,12 @@
     <field name="options">
 - model: product.packaging
   importer:
-    name:
-      product.packaging.importer
+    name: importer.record
+  options:
+    importer:
+      odoo_unique_key: xid::id
+    mapper:
+      name: importer.mapper.dynamic
     </field>
   </record>
 
