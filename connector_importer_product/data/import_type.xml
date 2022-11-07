@@ -68,4 +68,46 @@
     </field>
   </record>
 
+  <record id="import_type_product_product_all_in_one" model="import.type">
+    <field name="name">Import Product - all in one</field>
+    <field name="key">product_product_all_in_one</field>
+    <field name="options">
+- model: product.product
+  importer:
+    name:
+      importer.record
+  options:
+    importer:
+      odoo_unique_key: barcode
+    mapper:
+      name: product.product.mapper
+
+- model: res.partner
+  importer:
+    name:
+      importer.record
+  options:
+    importer:
+      odoo_unique_key: name
+      override_existing: false
+    mapper:
+      name: importer.mapper.dynamic
+      source_key_prefix: supplier.
+      source_key_whitelist: supplier.name
+      default_keys:
+        supplier_rank: 1
+
+- model: product.supplierinfo
+  importer:
+    name:
+      importer.record
+  options:
+    importer:
+      odoo_unique_key: name
+    mapper:
+      name: product.supplierinfo.mapper
+      source_key_prefix: supplier.
+    </field>
+  </record>
+
 </odoo>
