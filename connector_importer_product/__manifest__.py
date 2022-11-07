@@ -14,10 +14,11 @@
         # src
         "product",
     ],
-    "data": [],
+    "data": [
+        "data/import_type.xml",
+    ],
     "demo": [
         "demo/import_backend.xml",
-        "demo/import_type.xml",
         "demo/import_source.xml",
         "demo/import_recordset.xml",
     ],
