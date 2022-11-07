@@ -7,9 +7,6 @@
 * refactor the `recordset.full_report_url` field to return a QWeb report
   instead of a home-made HTML document + display it on the recordset form.
 * move generic functions from `utils.mapper_utils` to the `connector` module
-* unit tests from `tests.test_source_csv` are not imported (Odoo ignores them)
-  and they need to be fixed
 * unit tests for record handler and tracker
 * add more test coverage for mapper utils and dynamic mapper
 * consider making dynamic mapper the default one
-* make "importer.record" the default to avoid specificying it every time
