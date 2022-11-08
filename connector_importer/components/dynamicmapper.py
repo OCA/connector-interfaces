@@ -26,7 +26,12 @@ class DynamicMapper(Component):
         available_fields = self.env[model].fields_get()
         prefix = self._source_key_prefix
         clean_record = self._clean_record(record)
+        required_keys = self._required_keys()
+        missing_required_keys = []
         for source_fname in self._non_mapped_keys(clean_record):
+            if source_fname in ("id", "xid::id"):
+                # Never convert IDs
+                continue
             fname = source_fname
             if prefix and source_fname.startswith(prefix):
                 # Eg: prefix all supplier fields w/ `supplier_`
@@ -44,9 +49,14 @@ class DynamicMapper(Component):
                 converter = self._get_converter(fname, ftype)
                 if converter:
                     value = converter(self, clean_record, fname)
-                    if not value and source_fname in self._source_key_empty_skip:
-                        continue
+                    if not value:
+                        if source_fname in self._source_key_empty_skip:
+                            continue
+                        if fname in required_keys:
+                            missing_required_keys.append(fname)
                     vals[fname] = value
+        if missing_required_keys:
+            vals.update(self._get_defaults(missing_required_keys))
         return vals
 
     def _clean_record(self, record):
@@ -62,6 +72,9 @@ class DynamicMapper(Component):
         if whitelist:
             valid_keys = [k for k in valid_keys if k in whitelist]
         return tuple(valid_keys)
+
+    def _required_keys(self):
+        return [k for k, v in self.model.fields_get().items() if v["required"]]
 
     @property
     def _source_key_whitelist(self):
@@ -82,6 +95,11 @@ class DynamicMapper(Component):
     def _source_key_prefix(self):
         return self.work.options.mapper.get("source_key_prefix", "")
 
+    @property
+    def _source_key_xid_module(self):
+        """Module name to use to sanitize XMLids"""
+        return self.work.options.mapper.get("source_key_xid_module", "")
+
     def _is_xmlid_key(self, fname, ftype):
         return fname.startswith("xid::") and ftype in (
             "many2one",
@@ -92,6 +110,7 @@ class DynamicMapper(Component):
     def _dynamic_keys_mapping(self, fname):
         return {
             "char": lambda self, rec, fname: rec[fname],
+            "selection": lambda self, rec, fname: rec[fname],
             "integer": convert(fname, "safe_int"),
             "float": convert(fname, "safe_float"),
             "boolean": convert(fname, "bool"),
@@ -100,7 +119,9 @@ class DynamicMapper(Component):
             "many2one": backend_to_rel(fname),
             "many2many": backend_to_rel(fname),
             "one2many": backend_to_rel(fname),
-            "_xmlid": xmlid_to_rel(fname),
+            "_xmlid": xmlid_to_rel(
+                fname, sanitize_default_mod_name=self._source_key_xid_module
+            ),
         }
 
     def _get_converter(self, fname, ftype):
@@ -123,3 +144,6 @@ class DynamicMapper(Component):
                     mapped_keys.add(pair[0]._from_key)
             self._non_mapped_keys_cache = tuple(all_keys - mapped_keys)
         return self._non_mapped_keys_cache
+
+    def _get_defaults(self, fnames):
+        return self.model.default_get(fnames)
