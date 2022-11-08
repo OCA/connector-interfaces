@@ -6,6 +6,8 @@ from odoo.addons.component.core import Component
 
 from ..utils.misc import sanitize_external_id
 
+NO_VALUE = object()
+
 
 class OdooRecordHandler(Component):
     """Interact w/ odoo importable records."""
@@ -36,7 +38,16 @@ class OdooRecordHandler(Component):
 
     def odoo_find_domain(self, values, orig_values):
         """Domain to find the record in odoo."""
-        return [(self.unique_key, "=", values[self.unique_key])]
+        value = NO_VALUE
+        if self.unique_key in values:
+            value = values[self.unique_key]
+        elif self.unique_key in orig_values:
+            value = orig_values[self.unique_key]
+        if value is NO_VALUE:
+            raise ValueError(
+                f"Cannot find {self.unique_key} in `values` nor `orig_values`"
+            )
+        return [(self.unique_key, "=", value)]
 
     def odoo_find(self, values, orig_values):
         """Find any existing item in odoo."""
