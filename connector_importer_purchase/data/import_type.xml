@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 Camptocamp SA
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo noupdate="1">
+
+  <record id="import_type_purchase_order" model="import.type">
+    <field name="name">Purchase Order</field>
+    <field name="key">purchase_order</field>
+    <field name="options">
+- model: purchase.order.line
+  options:
+    importer:
+      odoo_unique_key: order_id.partner_ref
+      break_on_error: true
+    mapper:
+      name: purchase.order.import.mapper
+    </field>
+  </record>
+
+  <record id="import_type_purchase_order_all_in_one" model="import.type">
+    <field name="name">Import purchaser order - all in one</field>
+    <field name="key">purchase_order_all_in_one</field>
+    <field name="options">
+- model: res.partner
+  options:
+    importer:
+      odoo_unique_key: name
+      override_existing: false
+    mapper:
+      name: importer.mapper.dynamic
+      source_key_prefix: supplier.
+      source_key_whitelist: supplier.name
+      default_keys:
+        supplier_rank: 1
+
+- model: purchase.order.line
+  options:
+    importer:
+      odoo_unique_key: order_id.partner_ref
+    mapper:
+      name: purchase.order.import.mapper
+    </field>
+  </record>
+
+</odoo>

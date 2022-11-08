@@ -1,0 +1,11 @@
+order_id.partner_ref,supplier.name,product_id,product_qty,name,price_unit
+REF#1,Suppl 1,prod1,4,custom desc,10
+REF#1,,prod2,5,,20
+REF#1,,prod3,6,,30
+REF#1,,prod4,10,,
+REF#2,Suppl 2,prod1,4,custom desc,10
+REF#2,,prod2,5,,20
+REF#3,Suppl 3,prod3,6,,40
+REF#3,,prod4,6,,
+REF#3,,prod5,6,,15
+REF#3,,prod6,1,,
