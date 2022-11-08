@@ -765,6 +765,14 @@ msgid ""
 msgstr ""
 
 #. module: connector_importer
+#: code:addons/connector_importer/utils/misc.py:0
+#, python-format
+msgid ""
+"The ID reference '%s' must contain maximum one dot (or 0). They are used to "
+"refer to other modules ID, in the form: module.record_id"
+msgstr ""
+
+#. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.recordset_docs
 msgid "Translatable"
 msgstr ""
