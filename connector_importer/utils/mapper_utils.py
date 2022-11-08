@@ -96,7 +96,6 @@ def convert(field, conv_type, fallback_field=None, pre_value_handler=None, **kw)
     Use ``fallback_field`` to provide a field of the same type
     to be used in case the base field has no value.
     """
-    convert._from_key = field
 
     if conv_type in CONV_MAPPING:
         conv_type = CONV_MAPPING[conv_type]
@@ -116,23 +115,23 @@ def convert(field, conv_type, fallback_field=None, pre_value_handler=None, **kw)
             return None
         return conv_type(value, **kw)
 
+    modifier._from_key = field
     return modifier
 
 
 def from_mapping(field, mapping, default_value=None):
     """Convert the source value using a ``mapping`` of values."""
-    from_mapping._from_key = field
 
     def modifier(self, record, to_attr):
         value = record.get(field)
         return mapping.get(value, default_value)
 
+    modifier._from_key = field
     return modifier
 
 
 def concat(field, separator=" ", handler=None):
     """Concatenate values from different fields."""
-    concat._from_key = field
 
     # TODO: `field` is actually a list of fields.
     # `field` attribute is required ATM by the base connector mapper and
@@ -145,12 +144,12 @@ def concat(field, separator=" ", handler=None):
         ]
         return separator.join(value)
 
+    modifier._from_key = field
     return modifier
 
 
 def xmlid_to_rel(field, sanitize=True, sanitize_default_mod_name=None):
     """Convert xmlids source values to ids."""
-    xmlid_to_rel._from_key = field
     xmlid_to_rel._sanitize = sanitize
     xmlid_to_rel._sanitize_default_mod_name = sanitize_default_mod_name
 
@@ -184,6 +183,7 @@ def xmlid_to_rel(field, sanitize=True, sanitize_default_mod_name=None):
                 values.append((6, 0, rec.ids))
         return values
 
+    modifier._from_key = field
     return modifier
 
 
@@ -229,7 +229,6 @@ def backend_to_rel(  # noqa: C901
     :param create_missing_handler: provide an handler
         for getting new values for a new record to be created.
     """
-    backend_to_rel._from_key = field
 
     def modifier(self, record, to_attr):
         search_value = record.get(field)
@@ -333,5 +332,5 @@ def backend_to_rel(  # noqa: C901
     # Trick tnx to http://stackoverflow.com/a/27910553/647924
     modifier.search_field = search_field or "name"
     modifier.search_operator = search_operator or None
-
+    modifier._from_key = field
     return modifier
