@@ -258,7 +258,7 @@ class ImportRecordset(models.Model):
         metadata, content = reporter.report_get(self)
         self.write(
             {
-                "report_file": base64.encodestring(content.encode()),
+                "report_file": base64.encodebytes(content.encode()),
                 "report_filename": metadata["complete_filename"],
             }
         )
