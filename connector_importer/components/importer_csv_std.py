@@ -153,6 +153,7 @@ class RecordImporterCSVStd(Component):
         self._do_report()
 
         # log chunk finished
+        counters = self.tracker.get_counters()
         msg = " ".join(
             [
                 "CHUNK FINISHED",
@@ -161,10 +162,7 @@ class RecordImporterCSVStd(Component):
                 "[skipped: {skipped}]",
                 "[errored: {errored}]",
             ]
-        ).format(**self.tracker.get_counters())
+        ).format(**counters)
         self.tracker._log(msg)
-
-        # TODO
-        # chunk_finished_event.fire(
-        #     self.env, self.model._name, self.record)
-        return "ok"
+        self._trigger_finish_events(record, is_last_importer=is_last_importer)
+        return counters
