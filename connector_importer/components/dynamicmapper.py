@@ -57,6 +57,12 @@ class DynamicMapper(Component):
                     vals[fname] = value
         if missing_required_keys:
             vals.update(self._get_defaults(missing_required_keys))
+            for k in missing_required_keys:
+                if k in vals and not vals[k]:
+                    # Discard empty values for required keys.
+                    # Avoids overriding values that might be already set
+                    # and that cannot be emptied.
+                    vals.pop(k)
         return vals
 
     def _clean_record(self, record):
