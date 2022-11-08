@@ -8,11 +8,9 @@
     <field name="key">product_category</field>
     <field name="options">
 - model: product.category
-  importer:
-    name: importer.record
   options:
     importer:
-      odoo_unique_key: xid::id
+      odoo_unique_key: id
     mapper:
       name: importer.mapper.dynamic
     </field>
@@ -23,11 +21,9 @@
     <field name="key">product_attribute</field>
     <field name="options">
 - model: product.attribute
-  importer:
-    name: importer.record
   options:
     importer:
-      odoo_unique_key: xid::id
+      odoo_unique_key: id
     mapper:
       name: importer.mapper.dynamic
       translatable_keys:
@@ -40,11 +36,9 @@
     <field name="key">product_attribute_value</field>
     <field name="options">
 - model: product.attribute.value
-  importer:
-    name: importer.record
   options:
     importer:
-      odoo_unique_key: xid::id
+      odoo_unique_key: id
       break_on_error: true
     mapper:
       name: importer.mapper.dynamic
@@ -60,7 +54,11 @@
     <field name="key">product_product</field>
     <field name="options">
 - model: product.product
-  importer: product.product.importer
+  options:
+    importer:
+      odoo_unique_key: default_code
+    mapper:
+      name: product.product.mapper
     </field>
   </record>
 
@@ -80,11 +78,9 @@
     <field name="key">product_packaging</field>
     <field name="options">
 - model: product.packaging
-  importer:
-    name: importer.record
   options:
     importer:
-      odoo_unique_key: xid::id
+      odoo_unique_key: id
     mapper:
       name: importer.mapper.dynamic
     </field>
@@ -95,9 +91,6 @@
     <field name="key">product_product_all_in_one</field>
     <field name="options">
 - model: product.product
-  importer:
-    name:
-      importer.record
   options:
     importer:
       odoo_unique_key: barcode
@@ -105,9 +98,6 @@
       name: product.product.mapper
 
 - model: res.partner
-  importer:
-    name:
-      importer.record
   options:
     importer:
       odoo_unique_key: name
@@ -120,9 +110,6 @@
         supplier_rank: 1
 
 - model: product.supplierinfo
-  importer:
-    name:
-      importer.record
   options:
     importer:
       odoo_unique_key: name
