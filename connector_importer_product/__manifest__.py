@@ -6,7 +6,7 @@
     "version": "15.0.1.0.0",
     "category": "Tools",
     "website": "https://github.com/OCA/connector-interfaces",
-    "author": "Camptocamp SA, Odoo Community Association (OCA)",
+    "author": "Camptocamp, Odoo Community Association (OCA)",
     "license": "AGPL-3",
     "depends": [
         # oca
