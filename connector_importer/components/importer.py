@@ -81,6 +81,10 @@ class RecordImporter(Component):
             logger_name=LOGGER_NAME,
             log_prefix=self.recordset.import_type_id.key + " ",
         )
+        # TODO: trash on v16
+        # `odoo_unique_key_is_xmlid` has been deprecated from v15
+        if hasattr(self, "odoo_unique_key_is_xmlid"):
+            raise AttributeError("`odoo_unique_key_is_xmlid` is not supported anymore")
 
     @property
     def unique_key(self):
