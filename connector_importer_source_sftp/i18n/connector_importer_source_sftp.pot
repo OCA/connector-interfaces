@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 14.0\n"
+"Project-Id-Version: Odoo Server 15.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -54,6 +54,13 @@ msgid "CSV quotechar"
 msgstr ""
 
 #. module: connector_importer_source_sftp
+#: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_csv_sftp__csv_rows_from_to
+msgid ""
+"CSV use only a slice of the available lines. Format: $from:$to. NOTE: "
+"recommended only for debug/test purpose."
+msgstr ""
+
+#. module: connector_importer_source_sftp
 #: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_csv_sftp__chunk_size
 msgid "Chunks Size"
 msgstr ""
@@ -74,7 +81,6 @@ msgid "Created on"
 msgstr ""
 
 #. module: connector_importer_source_sftp
-#: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_consumer_mixin__display_name
 #: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_csv_sftp__display_name
 msgid "Display Name"
 msgstr ""
@@ -90,7 +96,6 @@ msgid "Example File Ext"
 msgstr ""
 
 #. module: connector_importer_source_sftp
-#: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_consumer_mixin__id
 #: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_csv_sftp__id
 msgid "ID"
 msgstr ""
@@ -114,7 +119,6 @@ msgid "Import source consumer"
 msgstr ""
 
 #. module: connector_importer_source_sftp
-#: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_consumer_mixin____last_update
 #: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_csv_sftp____last_update
 msgid "Last Modified on"
 msgstr ""
