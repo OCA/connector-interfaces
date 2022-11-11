@@ -22,6 +22,7 @@ Available addons
 addon | version | maintainers | summary
 --- | --- | --- | ---
 [connector_importer](connector_importer/) | 15.0.1.3.0 | [![simahawk](https://github.com/simahawk.png?size=30px)](https://github.com/simahawk) | This module takes care of import sessions.
+[connector_importer_source_sftp](connector_importer_source_sftp/) | 15.0.1.0.0 | [![simahawk](https://github.com/simahawk.png?size=30px)](https://github.com/simahawk) [![sebalix](https://github.com/sebalix.png?size=30px)](https://github.com/sebalix) | Add import source capable of loading files from SFTP.
 
 
 Unported addons
