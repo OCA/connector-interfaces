@@ -9,6 +9,7 @@ setuptools.setup(
     version=version,
     install_requires=[
         'odoo-addon-connector_importer>=15.0dev,<15.1dev',
+        'odoo-addon-connector_importer_source_sftp>=15.0dev,<15.1dev',
     ],
     classifiers=[
         'Programming Language :: Python',
