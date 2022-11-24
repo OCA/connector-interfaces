@@ -4,6 +4,7 @@
 from odoo.addons.component.core import Component
 from odoo.addons.connector.components.mapper import mapping
 
+from ..log import logger
 from ..utils.mapper_utils import backend_to_rel, convert, xmlid_to_rel
 
 
@@ -55,8 +56,18 @@ class DynamicMapper(Component):
                         if fname in required_keys:
                             missing_required_keys.append(fname)
                     vals[fname] = value
+                else:
+                    logger.debug(
+                        "Dynamic mapper cannot find converte for field `%s`", fname
+                    )
         if missing_required_keys:
             vals.update(self._get_defaults(missing_required_keys))
+            for k in missing_required_keys:
+                if k in vals and not vals[k]:
+                    # Discard empty values for required keys.
+                    # Avoids overriding values that might be already set
+                    # and that cannot be emptied.
+                    vals.pop(k)
         return vals
 
     def _clean_record(self, record):
@@ -110,6 +121,7 @@ class DynamicMapper(Component):
     def _dynamic_keys_mapping(self, fname):
         return {
             "char": lambda self, rec, fname: rec[fname],
+            "text": lambda self, rec, fname: rec[fname],
             "selection": lambda self, rec, fname: rec[fname],
             "integer": convert(fname, "safe_int"),
             "float": convert(fname, "safe_float"),
