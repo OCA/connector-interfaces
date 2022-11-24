@@ -817,6 +817,11 @@ msgid ""
 msgstr ""
 
 #. module: connector_importer
+#: model:ir.model.fields.selection,name:connector_importer.selection__import_recordset__jobs_global_state__wait_dependencies
+msgid "Wait Dependencies"
+msgstr ""
+
+#. module: connector_importer
 #: model:ir.model.fields,help:connector_importer.field_import_type__options
 msgid "YAML configuration"
 msgstr ""
