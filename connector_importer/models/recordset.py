@@ -153,7 +153,7 @@ class ImportRecordset(models.Model):
         # In order to streamline this I invalidate cache right away so the
         # values are converted right away
         # TL/DR integer dict keys will always be converted to strings, beware
-        self.invalidate_cache((fname,))
+        self.invalidate_recordset((fname,))
 
     def set_report(self, values, reset=False):
         """Update import report values."""
@@ -186,7 +186,7 @@ class ImportRecordset(models.Model):
             "shared_data": {},
         }
         self.write(values)
-        self.invalidate_cache(tuple(values.keys()))
+        self.invalidate_recordset(tuple(values.keys()))
 
     def _get_report_html_data(self):
         """Prepare data for HTML report.

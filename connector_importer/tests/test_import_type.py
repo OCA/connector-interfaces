@@ -64,16 +64,20 @@ class TestImportType(common.TransactionCase):
     def test_available_importers(self):
         options = """
         - model: res.partner
-          importer: partner.importer
+          importer:
+            name: fake.partner.importer
         - model: res.users
-          importer: user.importer
+          importer:
+            name:
+                user.importer
           options:
             importer:
               baz: True
             record_handler:
               bar: False
         - model: another.one
-          importer: import.withspaces
+          importer:
+            name: import.withspaces
           context:
             foo: True
         """
@@ -81,7 +85,9 @@ class TestImportType(common.TransactionCase):
         importers = tuple(itype.available_importers())
         expected = (
             {
-                "importer": "partner.importer",
+                "importer": {
+                    "name": "fake.partner.importer",
+                },
                 "model": "res.partner",
                 "is_last_importer": False,
                 "context": {},
@@ -93,7 +99,9 @@ class TestImportType(common.TransactionCase):
                 },
             },
             {
-                "importer": "user.importer",
+                "importer": {
+                    "name": "user.importer",
+                },
                 "model": "res.users",
                 "is_last_importer": False,
                 "context": {},
@@ -105,7 +113,9 @@ class TestImportType(common.TransactionCase):
                 },
             },
             {
-                "importer": "import.withspaces",
+                "importer": {
+                    "name": "import.withspaces",
+                },
                 "model": "another.one",
                 "is_last_importer": True,
                 "context": {"foo": 1},

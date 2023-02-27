@@ -218,7 +218,7 @@ class OdooRecordHandler(Component):
         # pylint: disable=sql-injection
         query = "UPDATE {} SET {} = %s WHERE id = %s".format(record._table, fname)
         self.env.cr.execute(query, (values[fname], record.id))
-        record.invalidate_cache([fname])
+        record.invalidate_recordset([fname])
 
     def _odoo_write_purge_values(self, odoo_record, values):
         # remove non fields values
