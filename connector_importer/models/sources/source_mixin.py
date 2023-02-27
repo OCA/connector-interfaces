@@ -59,9 +59,10 @@ class ImportSource(models.AbstractModel):
         just override `_config_summary_fields`.
         They'll be automatically included in the summary.
         """
-        template = self.env.ref(self._config_summary_template)
+        tmpl_xid = self._config_summary_template
+        qweb = self.env["ir.qweb"].sudo()
         for item in self:
-            item.config_summary = template._render(item._config_summary_data())
+            item.config_summary = qweb._render(tmpl_xid, item._config_summary_data())
 
     def _config_summary_data(self):
         """Collect data for summary."""
@@ -71,10 +72,11 @@ class ImportSource(models.AbstractModel):
             "fields_info": self.fields_get(self._config_summary_fields),
         }
 
+    # TODO: check if still needed + use create multi
     @api.model
     def create(self, vals):
-        """Override to update reference to source on the consumer."""
         res = super().create(vals)
+        # Override to update reference to source on the consumer
         if self.env.context.get("active_model"):
             # update reference on consumer
             self.env[self.env.context["active_model"]].browse(

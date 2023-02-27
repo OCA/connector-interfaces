@@ -2,7 +2,8 @@
 # Copyright 2023 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-import mock
+from unittest import mock
+
 from odoo_test_helper import FakeModelLoader
 
 from odoo.tools import mute_logger
@@ -56,7 +57,8 @@ log(msg)
             {
                 "options": f"""
 - model: res.partner
-  importer: fake.partner.importer
+  importer:
+    name: fake.partner.importer
 - model: {FakeImportedModel._name}
   options:
     record_handler:
