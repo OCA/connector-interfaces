@@ -85,8 +85,8 @@ class ImportType(models.Model):
     def _check_options(self):
         no_options = self.browse()
         for rec in self:
-            if not rec.options and not rec.settings:
-                no_options.append(rec)
+            if not rec.options:
+                no_options += rec
             # TODO: validate yaml schema (maybe w/ Cerberus?)
         if no_options:
             raise exceptions.UserError(
