@@ -25,18 +25,7 @@ def get_importer_for_config(backend, work_on_model, importer_config, **work_on_k
     with backend.with_context(**importer_config.context).work_on(
         importer_config.model, **work_on_kw
     ) as work:
-        try:
-            importer_name = importer_config.importer.name
-        except AttributeError:
-            # Originally you could pass `importer` = name
-            # now you have to pass it in an inner key `name`.
-            importer_name = importer_config.importer
-            _logger.warning(
-                "`importer` name as string is deprecated. "
-                "Please use a nested `name` key. "
-                "Name: `%s`",
-                importer_name,
-            )
+        importer_name = importer_config.importer.name
         return work.component_by_name(importer_name)
 
 
