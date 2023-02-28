@@ -8,6 +8,10 @@ from .common import TestImporterBase
 
 MOD_PATH = "odoo.addons.connector_importer"
 RECORD_MODEL = MOD_PATH + ".models.record.ImportRecord"
+LOGGERS_TO_MUTE = (
+    "[importer]",
+    "odoo.addons.queue_job.utils",
+)
 
 
 class TestRecordImporter(TestImporterBase):
@@ -31,7 +35,7 @@ class TestRecordImporter(TestImporterBase):
 
         return [PartnerRecordImporter, PartnerMapper]
 
-    @mute_logger("[importer]")
+    @mute_logger(*LOGGERS_TO_MUTE)
     def test_importer_create(self):
         # set them on record
         self.record.set_data(self.fake_lines)
@@ -48,7 +52,7 @@ class TestRecordImporter(TestImporterBase):
             self.assertEqual(len(report[model][k]), v)
         self.assertEqual(self.env[model].search_count([("ref", "like", "id_%")]), 10)
 
-    @mute_logger("[importer]")
+    @mute_logger(*LOGGERS_TO_MUTE)
     def test_importer_skip(self):
         # generate 10 records
         lines = self._fake_lines(10, keys=("id", "fullname"))
@@ -73,7 +77,7 @@ class TestRecordImporter(TestImporterBase):
         self.assertEqual(skipped_msg2, "MISSING REQUIRED SOURCE KEY=id")
         self.assertEqual(self.env[model].search_count([("ref", "like", "id_%")]), 8)
 
-    @mute_logger("[importer]")
+    @mute_logger(*LOGGERS_TO_MUTE)
     def test_importer_update(self):
         # generate 10 records
         lines = self._fake_lines(10, keys=("id", "fullname"))
