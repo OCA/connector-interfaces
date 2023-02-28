@@ -42,7 +42,8 @@ class TestRecordImporter(TestImporterBase):
         expected = {
             model: {"created": 10, "errored": 0, "updated": 0, "skipped": 0},
         }
-        self.assertEqual(res, expected)
+        delayable = res[model]
+        self.assertEqual(delayable.result, expected[model])
         for k, v in expected[model].items():
             self.assertEqual(len(report[model][k]), v)
         self.assertEqual(self.env[model].search_count([("ref", "like", "id_%")]), 10)
@@ -60,7 +61,8 @@ class TestRecordImporter(TestImporterBase):
         report = self.recordset.get_report()
         model = "res.partner"
         expected = {model: {"created": 8, "errored": 0, "updated": 0, "skipped": 2}}
-        self.assertEqual(res, expected)
+        delayable = res[model]
+        self.assertEqual(delayable.result, expected[model])
         for k, v in expected[model].items():
             self.assertEqual(len(report[model][k]), v)
         skipped_msg1 = report[model]["skipped"][0]["message"]
@@ -80,7 +82,8 @@ class TestRecordImporter(TestImporterBase):
         report = self.recordset.get_report()
         model = "res.partner"
         expected = {model: {"created": 10, "errored": 0, "updated": 0, "skipped": 0}}
-        self.assertEqual(res, expected)
+        delayable = res[model]
+        self.assertEqual(delayable.result, expected[model])
         for k, v in expected[model].items():
             self.assertEqual(len(report[model][k]), v)
         # now run it a second time
@@ -90,7 +93,8 @@ class TestRecordImporter(TestImporterBase):
         res = self.record.run_import()
         report = self.recordset.get_report()
         expected = {model: {"created": 0, "errored": 0, "updated": 10, "skipped": 0}}
-        self.assertEqual(res, expected)
+        delayable = res[model]
+        self.assertEqual(delayable.result, expected[model])
         for k, v in expected[model].items():
             self.assertEqual(len(report[model][k]), v)
         # now run it a second time
@@ -100,7 +104,8 @@ class TestRecordImporter(TestImporterBase):
         res = self.record.run_import()
         report = self.recordset.get_report()
         expected = {model: {"created": 0, "errored": 0, "updated": 0, "skipped": 10}}
-        self.assertEqual(res, expected)
+        delayable = res[model]
+        self.assertEqual(delayable.result, expected[model])
         for k, v in expected[model].items():
             self.assertEqual(len(report[model][k]), v)
         skipped_msg1 = report[model]["skipped"][0]["message"]
