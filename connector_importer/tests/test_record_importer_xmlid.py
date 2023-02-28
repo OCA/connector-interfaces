@@ -6,6 +6,11 @@ from odoo.tools import mute_logger
 
 from .common import TestImporterBase
 
+LOGGERS_TO_MUTE = (
+    "[importer]",
+    "odoo.addons.queue_job.utils",
+)
+
 
 class TestRecordImporterXMLID(TestImporterBase):
     def setUp(self):
@@ -25,7 +30,7 @@ class TestRecordImporterXMLID(TestImporterBase):
             PartnerRecordImporterXMLID,
         ]
 
-    @mute_logger("[importer]")
+    @mute_logger(*LOGGERS_TO_MUTE)
     def test_importer_create(self):
         self.import_type.write(
             {
