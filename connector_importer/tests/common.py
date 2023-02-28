@@ -80,7 +80,8 @@ class TestImporterMixin(object):
                 "key": "fake",
                 "options": """
 - model: res.partner
-  importer: fake.partner.importer
+  importer:
+    name: fake.partner.importer
                 """,
             }
         )
