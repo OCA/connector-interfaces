@@ -22,5 +22,5 @@
         "demo/import_source.xml",
         "demo/import_recordset.xml",
     ],
-    "installable": True,
+    "installable": False,
 }
