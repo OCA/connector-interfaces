@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="recordset_report" name="Import Recordset Report">
+        <div class="recordset_report">
+            <h1>Report for <span t-translation="off" t-field="recordset.name" /></h1>
+            <p>Last start: <span t-translation="off" t-esc="last_start" /></p>
+            <div class="report-wrapper">
+                <t t-foreach="report_by_model.keys()" t-as="model">
+                    <h4>
+                        <strong><span class="model_name" t-field="model.name" /> (<span
+                                class="model_model"
+                                t-field="model.model"
+                            />)</strong>
+                    </h4>
+                    <t t-set="data" t-value="report_by_model[model]" />
+                    <table class="table table-condensed" style="width:auto;">
+                        <thead>
+                            <tr>
+                                <t t-foreach="data.keys()" t-as="key">
+                                    <th class="text-center">
+                                        <t t-esc="key.upper()" />
+                                    </th>
+                                </t>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <t t-foreach="data.keys()" t-as="key">
+                                    <td class="text-center" t-esc="data[key]" />
+                                </t>
+                            </tr>
+                        </tbody>
+                    </table>
+                </t>
+            </div>
+        </div>
+    </template>
+    <template id="recordset_report_full" name="Import Recordset FUll Report">
+        <t t-call="web.layout">
+            <t t-set="body_classname" t-value="import_recordset_report" />
+            <h1>Report for <span t-translation="off" t-field="recordset.name" /></h1>
+            <div class="report-wrapper">
+                <t t-raw="report" />
+            </div>
+        </t>
+    </template>
+</odoo>

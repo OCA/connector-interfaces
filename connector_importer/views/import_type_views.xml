@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_import_type_form" model="ir.ui.view">
+        <field name="name">connector_importer: import.type.csv form</field>
+        <field name="model">import.type</field>
+        <field name="priority" eval="99" />
+        <field name="arch" type="xml">
+          <form>
+            <sheet>
+              <notebook>
+                <page string="Main" name="main">
+                  <group col="2" name="main">
+                      <field name="name" />
+                      <field name="key" />
+                      <field name="use_job" />
+                  </group>
+                  <group col="2" name="desc">
+                      <field name="description" />
+                  </group>
+                </page>
+                <page string="Advanced" name="adv_settings">
+                  <separator string="Adv. options" />
+                  <field name="options" widget="ace" />
+                </page>
+              </notebook>
+            </sheet>
+          </form>
+        </field>
+    </record>
+
+    <record id="view_import_type_tree" model="ir.ui.view">
+        <field name="model">import.type</field>
+        <field name="arch" type="xml">
+            <tree>
+              <field name="name" />
+              <field name="key" />
+              <field name="use_job" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_import_type" model="ir.actions.act_window">
+        <field name="name">Import types</field>
+        <field name="res_model">import.type</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

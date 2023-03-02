@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <template id="recordset_docs" name="Import Recordset Docs">
+        <div class="recordset_docs">
+            <h1>Docs for <span t-translation="off" t-field="recordset.name" /></h1>
+            <div id="docs-wrapper">
+                <div id="importable_models">
+                    <h2>Importable models:</h2>
+                    <p class="text-muted">Legend: TODO</p>
+                    <t t-foreach="importers.keys()" t-as="model">
+                        <div
+                            t-attf-class="model model-#{model.model.replace('.', '_')}"
+                        >
+                            <h4 class="mt16">
+                                <strong><span
+                                        class="model_name"
+                                        t-field="model.name"
+                                    /> (<span
+                                        class="model_model"
+                                        t-field="model.model"
+                                    />)</strong>
+                            </h4>
+                            <t t-set="importer" t-value="importers[model]" />
+                            <t t-set="required" t-value="importer.required_keys()" />
+                            <t
+                                t-set="translatable"
+                                t-value="importer.translatable_keys()"
+                            />
+                            <t
+                                t-set="translatable_langs"
+                                t-value="importer.translatable_langs()"
+                            />
+                            <t t-set="defaults" t-value="importer.default_values()" />
+                            <div class="row">
+                                <div class="col-md-4 required">
+                                    <table
+                                        class="table table-condensed table-striped"
+                                        style="width:100%;"
+                                    >
+                                        <thead>
+                                            <tr>
+                                                <th
+                                                    colspan="2"
+                                                    class="text-center"
+                                                >Required</th>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-left">Source key</th>
+                                                <th
+                                                    class="text-left"
+                                                >Destination key</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t
+                                                t-foreach="required.keys()"
+                                                t-as="source_key"
+                                            >
+                                                <t
+                                                    t-set="dest_keys"
+                                                    t-value="required[source_key]"
+                                                />
+                                                <tr>
+                                                    <td class="text-left">
+                                                        <t
+                                                            t-if="source_key.startswith('__')"
+                                                        > - </t>
+                                                        <t
+                                                            t-if="not source_key.startswith('__')"
+                                                        >
+                                                            <t t-esc="source_key" />
+                                                        </t>
+                                                    </td>
+                                                    <td class="text-left">
+                                                        <t
+                                                            t-esc="', '.join([key for key in dest_keys if not key.startswith('__')])"
+                                                        />
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="col-md-4 translatable">
+                                    <table
+                                        class="table table-condensed table-striped"
+                                        style="width:100%;"
+                                    >
+                                        <thead>
+                                            <tr>
+                                                <th
+                                                    colspan="2"
+                                                    class="text-center"
+                                                >Translatable</th>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-left">Source key</th>
+                                                <th
+                                                    class="text-left"
+                                                >Destination key</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="translatable" t-as="key">
+                                                <t
+                                                    t-foreach="translatable_langs"
+                                                    t-as="lang"
+                                                >
+                                                    <tr>
+                                                        <td class="text-left">
+                                                            <t
+                                                                t-esc="importer.make_translation_key(key, lang)"
+                                                            />
+                                                        </td>
+                                                        <td class="text-left">
+                                                            <t t-esc="key" />
+                                                        </td>
+                                                    </tr>
+                                                </t>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="col-md-4 defaults">
+                                    <table
+                                        class="table table-condensed table-striped"
+                                        style="width:100%;"
+                                    >
+                                        <thead>
+                                            <tr>
+                                                <th
+                                                    colspan="2"
+                                                    class="text-center"
+                                                >Defaults</th>
+                                            </tr>
+                                            <tr>
+                                                <th class="text-left">Field</th>
+                                                <th class="text-left">Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <t t-foreach="defaults.keys()" t-as="key">
+                                                <tr>
+                                                    <td class="text-left">
+                                                        <t t-esc="key" />
+                                                    </td>
+                                                    <td class="text-left">
+                                                        <t t-esc="str(defaults[key])" />
+                                                    </td>
+                                                </tr>
+                                            </t>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+                <t t-if="recordset.notes">
+                    <div id="notes">
+                        <h2>Notes:</h2>
+                        <div t-raw="recordset.notes" />
+                    </div>
+                </t>
+            </div>
+        </div>
+    </template>
+</odoo>
