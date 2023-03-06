@@ -15,7 +15,7 @@ class ProductSupplierinfoMapper(Component):
     _usage = "importer.mapper"
 
     required = {
-        "__name": "name",
+        "__name": "partner_id",
         "__tmpl": "product_tmpl_id",
     }
 
