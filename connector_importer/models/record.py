@@ -72,6 +72,16 @@ class ImportRecord(models.Model):
         self.ensure_one()
         return self.backend_id.debug_mode or os.environ.get("IMPORTER_DEBUG_MODE")
 
+    def _should_use_jobs(self):
+        self.ensure_one()
+        debug_mode = self.debug_mode()
+        if debug_mode:
+            logger.warning("### DEBUG MODE ACTIVE: WILL NOT USE QUEUE ###")
+        use_job = self.recordset_id.import_type_id.use_job
+        if debug_mode:
+            use_job = False
+        return use_job
+
     def import_record(self, importer_config):
         """This job will import a record.
 
@@ -88,13 +98,7 @@ class ImportRecord(models.Model):
     def run_import(self):
         """Queue a job for importing data stored in to self"""
         self.ensure_one()
-        debug_mode = self.debug_mode()
-        if debug_mode:
-            logger.warning("### DEBUG MODE ACTIVE: WILL NOT USE QUEUE ###")
-        use_job = self.recordset_id.import_type_id.use_job
-        if debug_mode:
-            use_job = False
-        result = self._run_import(use_job=use_job)
+        result = self._run_import(use_job=self._should_use_jobs())
         return result
 
     def _run_import(self, use_job=True):
@@ -103,7 +107,9 @@ class ImportRecord(models.Model):
         # that needs to be imported
         new_self = self.with_context(queue_job__no_delay=not use_job)
         for config in self.recordset_id.available_importers():
-            result = new_self.with_delay().import_record(config)
+            result = new_self.with_delay(
+                **self._run_import_job_params(config)
+            ).import_record(config)
             res[config.model] = result
             if self.debug_mode() or not use_job:
                 # debug mode, no job here: reset it!
@@ -114,3 +120,11 @@ class ImportRecord(models.Model):
                 # we keep the reference on w/ the last job.
                 self.write({"job_id": result.db_record().id})
         return res
+
+    def _run_import_job_params(self, config):
+        params = {
+            "description": (
+                f"recordset {self.recordset_id.name}: import {config['model']}"
+            )
+        }
+        return params
