@@ -73,13 +73,16 @@
       override_existing: false
     mapper:
       name: importer.mapper.dynamic
+      source_key_whitelist: supplier.name
+      source_key_rename:
+        partner_id: name
       default_keys:
         supplier_rank: 1
 
 - model: product.supplierinfo
   options:
     importer:
-      odoo_unique_key: name
+      odoo_unique_key: partner_id
     mapper:
       name: product.supplierinfo.mapper
     </field>
@@ -118,13 +121,15 @@
       name: importer.mapper.dynamic
       source_key_prefix: supplier.
       source_key_whitelist: supplier.name
+      source_key_rename:
+        partner_id: name
       default_keys:
         supplier_rank: 1
 
 - model: product.supplierinfo
   options:
     importer:
-      odoo_unique_key: name
+      odoo_unique_key: partner_id
     mapper:
       name: product.supplierinfo.mapper
       source_key_prefix: supplier.
