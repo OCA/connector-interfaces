@@ -8,7 +8,7 @@
     <field name="backend_id" ref="demo_import_backend" />
     <field name="source_model">import.source.csv</field>
     <field name="source_id" ref="demo_import_source_csv_product_category" />
-    <field name="import_type_id" ref="demo_import_type_product_category" />
+    <field name="import_type_id" ref="import_type_product_category" />
   </record>
 
   <record id="demo_import_recordset_product_attribute" model="import.recordset">
@@ -16,7 +16,7 @@
     <field name="backend_id" ref="demo_import_backend" />
     <field name="source_model">import.source.csv</field>
     <field name="source_id" ref="demo_import_source_csv_product_attribute" />
-    <field name="import_type_id" ref="demo_import_type_product_attribute" />
+    <field name="import_type_id" ref="import_type_product_attribute" />
   </record>
 
   <record id="demo_import_recordset_product_attribute_value" model="import.recordset">
@@ -24,7 +24,7 @@
     <field name="backend_id" ref="demo_import_backend" />
     <field name="source_model">import.source.csv</field>
     <field name="source_id" ref="demo_import_source_csv_product_attribute_value" />
-    <field name="import_type_id" ref="demo_import_type_product_attribute_value" />
+    <field name="import_type_id" ref="import_type_product_attribute_value" />
   </record>
 
   <record id="demo_import_recordset_product_product" model="import.recordset">
@@ -32,7 +32,7 @@
     <field name="backend_id" ref="demo_import_backend" />
     <field name="source_model">import.source.csv</field>
     <field name="source_id" ref="demo_import_source_csv_product_product" />
-    <field name="import_type_id" ref="demo_import_type_product_product" />
+    <field name="import_type_id" ref="import_type_product_product" />
   </record>
 
   <record id="demo_import_recordset_product_supplierinfo" model="import.recordset">
@@ -40,7 +40,7 @@
     <field name="backend_id" ref="demo_import_backend" />
     <field name="source_model">import.source.csv</field>
     <field name="source_id" ref="demo_import_source_csv_product_supplierinfo" />
-    <field name="import_type_id" ref="demo_import_type_product_supplierinfo" />
+    <field name="import_type_id" ref="import_type_product_supplierinfo" />
   </record>
 
   <record id="demo_import_recordset_product_packaging" model="import.recordset">
@@ -48,7 +48,7 @@
     <field name="backend_id" ref="demo_import_backend" />
     <field name="source_model">import.source.csv</field>
     <field name="source_id" ref="demo_import_source_csv_product_packaging" />
-    <field name="import_type_id" ref="demo_import_type_product_packaging" />
+    <field name="import_type_id" ref="import_type_product_packaging" />
   </record>
 
 </odoo>
