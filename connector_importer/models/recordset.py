@@ -179,13 +179,13 @@ class ImportRecordset(models.Model):
 
     @api.depends("report_data")
     def _compute_report_html(self):
-        template = self.env.ref("connector_importer.recordset_report")
+        qweb = self.env["ir.qweb"].sudo()
         for item in self:
             item.report_html = False
             if not item.report_data:
                 continue
             data = item._get_report_html_data()
-            item.report_html = template._render(data)
+            item.report_html = qweb._render("connector_importer.recordset_report", data)
 
     def _compute_full_report_url(self):
         for item in self:
