@@ -9,6 +9,7 @@ from collections import OrderedDict
 from odoo import api, fields, models
 
 from odoo.addons.base_sparse_field.models.fields import Serialized
+from odoo.addons.component.utils import is_component_registry_ready
 from odoo.addons.queue_job.job import DONE, STATES
 
 from ..log import logger
@@ -279,7 +280,11 @@ class ImportRecordset(models.Model):
 
     @api.depends("import_type_id")
     def _compute_docs_html(self):
-        template = self.env.ref("connector_importer.recordset_docs")
+        if not is_component_registry_ready(self.env.cr.dbname):
+            # We cannot render anything if we cannot load components
+            self.docs_html = False
+            return
+        qweb = self.env["ir.qweb"].sudo()
         for item in self:
             item.docs_html = False
             if isinstance(item.id, models.NewId) or not item.backend_id:
@@ -289,7 +294,7 @@ class ImportRecordset(models.Model):
                 continue
             importers = item._get_importers()
             data = {"recordset": item, "importers": importers}
-            item.docs_html = template._render(data)
+            item.docs_html = qweb._render("connector_importer.recordset_docs", data)
 
 
 # TODO
