@@ -74,6 +74,8 @@ class TestSource(BaseTestCase):
 
     @mock.patch(SOURCE_MODEL + "._selection_source_ref_id")
     def test_consumer_basic(self, _selection_source_ref_id):
+        # Needed to let `odoo.fields.determine` work properly
+        _selection_source_ref_id.__name__ = "_selection_source_ref_id"
         # enable our fake source
         _selection_source_ref_id.return_value = [(self.source._name, "Fake")]
         consumer = self.consumer
