@@ -2,7 +2,10 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
 
-from odoo.tests.common import RecordCapturer
+try:
+    from odoo.tests.common import RecordCapturer
+except ImportError:
+    from odoo.addons.connector_importer.tests.record_capturer import RecordCapturer
 from odoo.tools import mute_logger
 
 from .common import TestImportProductBase

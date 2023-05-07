@@ -9,7 +9,9 @@ from pathlib import Path
 
 from odoo.tests import tagged
 
-from odoo.addons.component.tests.common import TransactionComponentCase
+from odoo.addons.component.tests.common import (
+    SavepointComponentCase as TransactionComponentCase,
+)
 
 _logger = logging.getLogger(__name__)
 
