@@ -83,6 +83,7 @@ class ImportRecordset(models.Model):
     report_filename = fields.Char()
     docs_html = fields.Html(string="Docs", compute="_compute_docs_html")
     notes = fields.Html(help="Useful info for your users")
+    last_run_on = fields.Datetime()
 
     def _compute_name(self):
         for item in self:
@@ -237,6 +238,7 @@ class ImportRecordset(models.Model):
             else:
                 # link the job
                 item.write({"job_id": result.db_record().id})
+        self.last_run_on = fields.Datetime.now()
         if self.debug_mode():
             # TODO: port this
             # the "after_all" job needs to be fired manually when in debug mode
