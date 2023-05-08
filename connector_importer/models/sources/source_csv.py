@@ -89,8 +89,10 @@ class CSVSource(models.Model):
         if self.csv_path:
             # TODO: join w/ filename
             reader_args["filepath"] = self.csv_path
-        else:
+        elif self.csv_file:
             reader_args["filedata"] = base64.decodebytes(self.csv_file)
+        else:
+            return iter([])
 
         reader = self._csv_reader_klass(**reader_args)
         return reader.read_lines()
