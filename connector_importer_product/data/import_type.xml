@@ -66,10 +66,22 @@
     <field name="name">Import Product Supplier Info</field>
     <field name="key">product_supplierinfo</field>
     <field name="options">
+- model: res.partner
+  options:
+    importer:
+      odoo_unique_key: name
+      override_existing: false
+    mapper:
+      name: importer.mapper.dynamic
+      default_keys:
+        supplier_rank: 1
+
 - model: product.supplierinfo
-  importer:
-    name:
-      product.supplierinfo.importer
+  options:
+    importer:
+      odoo_unique_key: name
+    mapper:
+      name: product.supplierinfo.mapper
     </field>
   </record>
 
