@@ -87,6 +87,14 @@
                                         class="oe_highlight"
                                         string="Import"
                                     />
+                                    <field name="source_model" invisible="1" />
+                                    <button
+                                        name="open_source_config"
+                                        type="object"
+                                        class="oe_highlight btn-sm"
+                                        string="Source"
+                                        attrs="{'invisible': [('source_model', '=', False)]}"
+                                    />
                                 </tree>
                             </field>
                         </page>
