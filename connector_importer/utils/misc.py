@@ -2,6 +2,7 @@
 # Copyright 2022 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
+import base64
 import logging
 
 from odoo import _
@@ -48,3 +49,13 @@ def sanitize_external_id(external_id, default_mod_name=None):
         default_mod_name = default_mod_name or "__setup__"
         return f"{default_mod_name}.{external_id}"
     return external_id
+
+
+def to_b64(file_content):
+    """Safe convertion to b64"""
+    try:
+        # py > 3.9
+        return base64.encodestring(file_content)
+    except AttributeError:
+        # py <= 3.9
+        return base64.b64encode(file_content)
