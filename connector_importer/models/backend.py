@@ -99,6 +99,9 @@ class ImporterBackend(models.Model):
             # clone and use it to run
             recordsets = self.cron_master_recordset_id.copy()
         for recordset in recordsets:
+            if not recordset.source_ref_id:
+                # source not configured yet, useless to run
+                continue
             recordset.run_import()
 
     @api.model
