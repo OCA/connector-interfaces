@@ -2,7 +2,6 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-import base64
 import os
 from collections import OrderedDict
 
@@ -13,7 +12,7 @@ from odoo.addons.component.utils import is_component_registry_ready
 from odoo.addons.queue_job.job import DONE, STATES
 
 from ..log import logger
-from ..utils.misc import get_importer_for_config
+from ..utils.misc import get_importer_for_config, to_b64
 
 
 class ImportRecordset(models.Model):
@@ -261,7 +260,7 @@ class ImportRecordset(models.Model):
         metadata, content = reporter.report_get(self)
         self.write(
             {
-                "report_file": base64.encodestring(content.encode()),
+                "report_file": to_b64(content.encode()),
                 "report_filename": metadata["complete_filename"],
             }
         )
