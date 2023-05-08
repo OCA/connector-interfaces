@@ -73,6 +73,7 @@
                                     <field name="sequence" widget="handle" />
                                     <field name="name" readonly="1" />
                                     <field name="create_date" readonly="1" />
+                                    <field name="last_run_on" readonly="1" />
                                     <field name="import_type_id" />
                                     <field
                                         name="override_existing"
