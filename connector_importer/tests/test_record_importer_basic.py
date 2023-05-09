@@ -2,7 +2,7 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from odoo.tools import mute_logger
+from odoo.tools import DotDict, mute_logger
 
 from .common import TestImporterBase
 
@@ -20,7 +20,9 @@ class TestRecordImporter(TestImporterBase):
 
     def _get_importer(self):
         with self.backend.work_on(
-            self.record._name, components_registry=self.comp_registry
+            self.record._name,
+            components_registry=self.comp_registry,
+            options=DotDict({"importer": {}, "mapper": {}}),
         ) as work:
             return work.component(usage="record.importer", model_name="res.partner")
 
@@ -86,3 +88,18 @@ class TestRecordImporter(TestImporterBase):
         self.assertDictEqual(
             missing, {"message": "MISSING REQUIRED DESTINATION KEY=ref"}
         )
+
+    def test_importer_get_mapper(self):
+        importer = self._get_importer()
+        mapper = importer._get_mapper()
+        self.assertEqual(mapper._name, "fake.partner.mapper")
+        importer.work.options["mapper"] = {"name": "importer.mapper.dynamic"}
+        mapper = importer._get_mapper()
+        self.assertEqual(mapper._name, "importer.mapper.dynamic")
+        importer.work.options["mapper"] = {"usage": "importer.dynamicmapper"}
+        mapper = importer._get_mapper()
+        self.assertEqual(mapper._name, "importer.mapper.dynamic")
+        # name via class attribute have precedence
+        importer._mapper_name = "fake.partner.mapper"
+        mapper = importer._get_mapper()
+        self.assertEqual(mapper._name, "fake.partner.mapper")

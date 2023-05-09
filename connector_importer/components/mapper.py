@@ -2,10 +2,13 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
+
 from odoo import _, exceptions
 
 from odoo.addons.component.core import Component
 from odoo.addons.connector.components.mapper import mapping
+
+from ..log import logger
 
 
 class ImportMapper(Component):
@@ -49,7 +52,9 @@ class ImportMapper(Component):
 
         The recordset will use this to show required fields to users.
         """
-        return self.required
+        req = dict(self.required)
+        req.update(self.work.options.mapper.get("required_keys", {}))
+        return req
 
     translatable = []
 
@@ -61,7 +66,23 @@ class ImportMapper(Component):
 
         The recordset will use this to show translatable fields to users.
         """
-        return self.translatable
+        translatable = list(self.translatable)
+        translatable += self.work.options.mapper.get("translatable_keys", [])
+        translatable = self._validate_translate_keys(set(translatable))
+        return tuple(translatable)
+
+    def _validate_translate_keys(self, translatable):
+        valid = []
+        fields_spec = self.model.fields_get(translatable)
+        for fname in translatable:
+            if not fields_spec.get(fname):
+                logger.error("%s - translate key not found: `%s`.", self._name, fname)
+                continue
+            if not fields_spec[fname]["translate"]:
+                logger.error("%s - `%s` key is not translatable.", self._name, fname)
+                continue
+            valid.append(fname)
+        return valid
 
     defaults = [
         # odoo field, value
@@ -91,4 +112,5 @@ class ImportMapper(Component):
                 xmlid, field_value = real_val.split(":")
                 v = self.env.ref(xmlid)[field_value]
             values[k] = v
+        values.update(self.work.options.mapper.get("default_keys", {}))
         return values
