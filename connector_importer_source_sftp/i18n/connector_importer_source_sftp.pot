@@ -54,6 +54,13 @@ msgid "CSV quotechar"
 msgstr ""
 
 #. module: connector_importer_source_sftp
+#: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_csv_sftp__csv_rows_from_to
+msgid ""
+"CSV use only a slice of the available lines. Format: $from:$to. NOTE: "
+"recommended only for debug/test purpose."
+msgstr ""
+
+#. module: connector_importer_source_sftp
 #: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_csv_sftp__chunk_size
 msgid "Chunks Size"
 msgstr ""
