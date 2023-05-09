@@ -41,6 +41,16 @@ msgid "Additional notes"
 msgstr ""
 
 #. module: connector_importer
+#: model_terms:ir.ui.view,arch_db:connector_importer.view_import_type_form
+msgid "Adv. options"
+msgstr ""
+
+#. module: connector_importer
+#: model_terms:ir.ui.view,arch_db:connector_importer.view_import_type_form
+msgid "Advanced"
+msgstr ""
+
+#. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_record__backend_id
 #: model_terms:ir.ui.view,arch_db:connector_importer.view_import_recordset_search
 msgid "Backend"
@@ -94,6 +104,13 @@ msgstr ""
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_source_csv__csv_quotechar
 msgid "CSV quotechar"
+msgstr ""
+
+#. module: connector_importer
+#: model:ir.model.fields,field_description:connector_importer.field_import_source_csv__csv_rows_from_to
+msgid ""
+"CSV use only a slice of the available lines. Format: $from:$to. NOTE: "
+"recommended only for debug/test purpose."
 msgstr ""
 
 #. module: connector_importer
@@ -185,6 +202,11 @@ msgstr ""
 #. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.recordset_docs
 msgid "Defaults"
+msgstr ""
+
+#. module: connector_importer
+#: model:ir.model.fields,field_description:connector_importer.field_import_type__description
+msgid "Description"
 msgstr ""
 
 #. module: connector_importer
@@ -371,6 +393,12 @@ msgid "Import source consumer"
 msgstr ""
 
 #. module: connector_importer
+#: model:ir.actions.act_window,name:connector_importer.action_import_source
+#: model:ir.ui.menu,name:connector_importer.menu_import_settings_sources
+msgid "Import sources"
+msgstr ""
+
+#. module: connector_importer
 #: model:ir.model,name:connector_importer.model_import_type
 #: model:ir.model.fields,field_description:connector_importer.field_import_recordset__import_type_id
 msgid "Import type"
@@ -379,6 +407,12 @@ msgstr ""
 #. module: connector_importer
 #: model:ir.model.constraint,message:connector_importer.constraint_import_type_key_uniq
 msgid "Import type `key` must be unique!"
+msgstr ""
+
+#. module: connector_importer
+#: model:ir.actions.act_window,name:connector_importer.action_import_type
+#: model:ir.ui.menu,name:connector_importer.menu_import_settings_types
+msgid "Import types"
 msgstr ""
 
 #. module: connector_importer
@@ -464,6 +498,11 @@ msgid "Last Modified on"
 msgstr ""
 
 #. module: connector_importer
+#: model:ir.model.fields,field_description:connector_importer.field_import_recordset__last_run_on
+msgid "Last Run On"
+msgstr ""
+
+#. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_backend__write_uid
 #: model:ir.model.fields,field_description:connector_importer.field_import_record__write_uid
 #: model:ir.model.fields,field_description:connector_importer.field_import_recordset__write_uid
@@ -494,6 +533,11 @@ msgstr ""
 #. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.recordset_docs
 msgid "Legend: TODO"
+msgstr ""
+
+#. module: connector_importer
+#: model_terms:ir.ui.view,arch_db:connector_importer.view_import_type_form
+msgid "Main"
 msgstr ""
 
 #. module: connector_importer
@@ -670,6 +714,11 @@ msgid "Sequence for the handle."
 msgstr ""
 
 #. module: connector_importer
+#: model:ir.ui.menu,name:connector_importer.menu_import_settings_root
+msgid "Settings"
+msgstr ""
+
+#. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_recordset__shared_data
 msgid "Shared Data"
 msgstr ""
@@ -677,6 +726,7 @@ msgstr ""
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_recordset__source_ref_id
 #: model:ir.model.fields,field_description:connector_importer.field_import_source_consumer_mixin__source_ref_id
+#: model_terms:ir.ui.view,arch_db:connector_importer.view_import_backend_form
 #: model_terms:ir.ui.view,arch_db:connector_importer.view_import_recordset_form
 msgid "Source"
 msgstr ""
@@ -735,6 +785,14 @@ msgid ""
 msgstr ""
 
 #. module: connector_importer
+#: code:addons/connector_importer/utils/misc.py:0
+#, python-format
+msgid ""
+"The ID reference '%s' must contain maximum one dot (or 0). They are used to "
+"refer to other modules ID, in the form: module.record_id"
+msgstr ""
+
+#. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.recordset_docs
 msgid "Translatable"
 msgstr ""
@@ -776,6 +834,11 @@ msgid ""
 "WARNING: one or more jobs are scheduled for a recorset or a record. <br/>\n"
 "                    You will not be able to run the import again or to delete this backend<br/>\n"
 "                    until you complete the jobs."
+msgstr ""
+
+#. module: connector_importer
+#: model:ir.model.fields.selection,name:connector_importer.selection__import_recordset__jobs_global_state__wait_dependencies
+msgid "Wait Dependencies"
 msgstr ""
 
 #. module: connector_importer
