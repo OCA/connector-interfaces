@@ -33,6 +33,25 @@ class ProductProductRecordHandler(Component):
     def odoo_post_write(self, odoo_record, values, orig_values):
         self._update_template_attributes(odoo_record, values, orig_values)
 
+    def odoo_create(self, values, orig_values):
+        odoo_record = super().odoo_create(values, orig_values)
+        # Set the external ID for the template if necessary
+        # TODO: add tests
+        if self.must_generate_xmlid and orig_values.get("xid::product_tmpl_id"):
+            tmpl_xid = sanitize_external_id(orig_values.get("xid::product_tmpl_id"))
+            if not self.env.ref(tmpl_xid, raise_if_not_found=False):
+                module, id_ = tmpl_xid.split(".", 1)
+                self.env["ir.model.data"].create(
+                    {
+                        "name": id_,
+                        "module": module,
+                        "model": odoo_record.product_tmpl_id._name,
+                        "res_id": odoo_record.product_tmpl_id.id,
+                        "noupdate": False,
+                    }
+                )
+        return odoo_record
+
     def _update_template_attributes(self, odoo_record, values, orig_values):
         """Update the 'attribute_line_ids' field of the related template.
 
