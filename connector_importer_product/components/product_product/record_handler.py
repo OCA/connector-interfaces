@@ -64,8 +64,10 @@ class ProductProductRecordHandler(Component):
         TplAttrLine = self.env["product.template.attribute.line"]
         TplAttrValue = self.env["product.template.attribute.value"]
         template = odoo_record.product_tmpl_id
+        blacklist = self.work.options.mapper.get("source_key_blacklist", [])
         attr_columns = filter(
-            lambda col: col.startswith("product_attr"), orig_values.keys()
+            lambda col: col.startswith("product_attr") and col not in blacklist,
+            orig_values.keys(),
         )
         tpl_attr_values = self.env["product.template.attribute.value"]
         # Detect and gather attributes and attribute values to import
