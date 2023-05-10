@@ -82,6 +82,9 @@ class DynamicMapper(Component):
         whitelist = self._source_key_whitelist
         if whitelist:
             valid_keys = [k for k in valid_keys if k in whitelist]
+        blacklist = self._source_key_blacklist
+        if blacklist:
+            valid_keys = [k for k in valid_keys if k not in blacklist]
         return tuple(valid_keys)
 
     def _required_keys(self):
@@ -90,6 +93,10 @@ class DynamicMapper(Component):
     @property
     def _source_key_whitelist(self):
         return self.work.options.mapper.get("source_key_whitelist", [])
+
+    @property
+    def _source_key_blacklist(self):
+        return self.work.options.mapper.get("source_key_blacklist", [])
 
     @property
     def _source_key_empty_skip(self):
