@@ -1,0 +1,4 @@
+id,name,xid::parent_id
+product_cat_test1,TEST_1,
+product_cat_test2,TEST_2,product_cat_test1
+product_cat_test3,TEST_3,product_cat_test2
