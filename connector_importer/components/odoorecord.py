@@ -82,13 +82,11 @@ class OdooRecordHandler(Component):
 
     def odoo_find(self, values, orig_values):
         """Find any existing item in odoo."""
-        if self.unique_key == "":
+        if self.unique_key and self.unique_key_is_xmlid:
             # if unique_key is None we might use as special find domain
-            return self.model
-        if self.unique_key_is_xmlid:
             xid = self._get_xmlid(values, orig_values)
             item = self.env.ref(xid, raise_if_not_found=False)
-            return item
+            return item or self.model
         item = self.model.search(
             self.odoo_find_domain(values, orig_values),
             order="create_date desc",

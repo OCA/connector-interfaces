@@ -61,6 +61,14 @@ class TestRecordsetImporter(TestImporterBase):
             "ref": "12345",
         }
         self.assertEqual(mapper._clean_record(rec), expected)
+        # Blacklist
+        mapper = self._get_dynamyc_mapper(options=dict(source_key_blacklist=["ref"]))
+        expected = {
+            "name": "John Doe",
+            "some_one": 1,
+            "some_two": 2,
+        }
+        self.assertEqual(mapper._clean_record(rec), expected)
         # Prefix
         mapper = self._get_dynamyc_mapper(options=dict(source_key_prefix="some_"))
         expected = {
