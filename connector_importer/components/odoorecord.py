@@ -42,6 +42,8 @@ class OdooRecordHandler(Component):
         """Domain to find the record in odoo."""
         domain = self._odoo_find_domain_from_options(values, orig_values)
         if not domain:
+            if not self.unique_key:
+                raise ValueError("No unique key and no domain to find this record")
             domain = self._odoo_find_domain_from_unique_key(values, orig_values)
         return domain
 
