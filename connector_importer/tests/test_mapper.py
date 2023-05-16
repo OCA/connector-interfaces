@@ -123,6 +123,27 @@ class TestRecordsetImporter(TestImporterBase):
         }
         self.assertEqual(mapper.dynamic_fields(rec), expected)
 
+    def test_dynamic_mapper_values_with_prefix(self):
+        mapper = self._get_dynamyc_mapper(options=dict(source_key_prefix="foo."))
+        rec = {}
+        expected = {}
+        categs = self.env.ref("base.res_partner_category_0") + self.env.ref(
+            "base.res_partner_category_2"
+        )
+        rec = {
+            "foo.name": "John Doe",
+            "ref": "12345",
+            "xid::foo.parent_id": "base.res_partner_10",
+            "xid::foo.category_id": "base.res_partner_category_0,base.res_partner_category_2",
+            "title_id": "Doctor",
+        }
+        expected = {
+            "name": "John Doe",
+            "parent_id": self.env.ref("base.res_partner_10").id,
+            "category_id": [(6, 0, categs.ids)],
+        }
+        self.assertEqual(mapper.dynamic_fields(rec), expected)
+
     def test_dynamic_mapper_skip_empty(self):
         rec = {
             "name": "John Doe",
