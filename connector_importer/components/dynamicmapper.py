@@ -34,14 +34,14 @@ class DynamicMapper(Component):
                 # Never convert IDs
                 continue
             fname = source_fname
-            if prefix and source_fname.startswith(prefix):
-                # Eg: prefix all supplier fields w/ `supplier_`
-                fname = fname[len(prefix) :]
-                clean_record[fname] = clean_record.pop(source_fname)
             if "::" in fname:
                 # Eg: transformers like `xid::``
                 fname = fname.split("::")[-1]
                 clean_record[fname] = clean_record.pop(source_fname)
+            if prefix and fname.startswith(prefix):
+                # Eg: prefix all supplier fields w/ `supplier.`
+                fname = fname[len(prefix) :]
+                clean_record[fname] = clean_record.pop(prefix + fname)
             if available_fields.get(fname):
                 fspec = available_fields.get(fname)
                 ftype = fspec["type"]
@@ -78,7 +78,7 @@ class DynamicMapper(Component):
         valid_keys = [k for k in record.keys() if not k.startswith("_")]
         prefix = self._source_key_prefix
         if prefix:
-            valid_keys = [k for k in valid_keys if k.startswith(prefix)]
+            valid_keys = [k for k in valid_keys if prefix in k]
         whitelist = self._source_key_whitelist
         if whitelist:
             valid_keys = [k for k in valid_keys if k in whitelist]
