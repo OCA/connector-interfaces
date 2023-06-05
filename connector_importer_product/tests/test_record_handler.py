@@ -74,12 +74,10 @@ class TestProduct(TestImportProductBase):
         )
 
     def _get_handler(self, options=None):
-        options = options or DotDict(
-            {"importer": {}, "mapper": {}, "record_handler": {}}
-        )
+        options = options or {"importer": {}, "mapper": {}, "record_handler": {}}
         with self.backend.work_on(
             "import.record",
-            options=options,
+            options=DotDict(options),
         ) as work:
             return work.component_by_name(
                 "product.product.handler", model_name="product.product"
@@ -104,32 +102,61 @@ class TestProduct(TestImportProductBase):
         orig_values = {attr_column: "L"}
         self.assertEqual(handler._find_attr(attr_column, orig_values), self.prod_attr)
 
-    def test_find_attr_value_by_name(self):
+    def test_find_or_create_attr_value_by_name(self):
         handler = self._get_handler()
         attr_column = "product_attr_Size"
         orig_values = {attr_column: "L"}
         self.assertEqual(
-            handler._find_attr_value(self.prod_attr, attr_column, orig_values),
+            handler._find_or_create_attr_value(
+                self.prod_attr, attr_column, orig_values
+            ),
             self.prod_attr_value_L,
         )
 
-    def test_find_attr_value_by_xid_conventional(self):
+    def test_find_or_create_attr_value_by_xid_conventional(self):
         handler = self._get_handler()
         attr_column = "product_attr_Size"
         # Value does not match name anymore, but it matched the conventional auto-computed xid
         orig_values = {attr_column: "M"}
         self.prod_attr_value_M.name = "Medium"
         self.assertEqual(
-            handler._find_attr_value(self.prod_attr, attr_column, orig_values),
+            handler._find_or_create_attr_value(
+                self.prod_attr, attr_column, orig_values
+            ),
             self.prod_attr_value_M,
         )
 
-    def test_find_attr_value_by_xid_custom(self):
+    def test_find_or_create_attr_value_by_xid_custom(self):
         handler = self._get_handler()
         attr_column = "product_attr_Size"
         # pass a specific value for xid
         orig_values = {attr_column: "product_attr_SizeM"}
         self.assertEqual(
-            handler._find_attr_value(self.prod_attr, attr_column, orig_values),
+            handler._find_or_create_attr_value(
+                self.prod_attr, attr_column, orig_values
+            ),
             self.prod_attr_value_M,
+        )
+
+    def test_find_or_create_attr_value_create_missing(self):
+        handler = self._get_handler(
+            options=dict(record_handler=dict(create_attribute_value_if_missing=True))
+        )
+        attr_column = "product_attr_Size"
+        orig_values = {attr_column: "XL"}
+        self.assertFalse(
+            self.env.ref(
+                "__setup__.product_attr_Size_value_XL", raise_if_not_found=False
+            )
+        )
+        self.assertEqual(
+            handler._find_or_create_attr_value(
+                self.prod_attr, attr_column, orig_values
+            ).name,
+            "XL",
+        )
+        self.assertTrue(
+            self.env.ref(
+                "__setup__.product_attr_Size_value_XL", raise_if_not_found=False
+            )
         )
