@@ -87,7 +87,7 @@ class ProductProductRecordHandler(Component):
 
         * product attribute column values will be used to find the values
           which were already imported first by name then by XID.
-          See `_find_attr_value` docs.
+          See `_find_or_create_attr_value` docs.
         """
         TplAttrLine = self.env["product.template.attribute.line"]
         TplAttrValue = self.env["product.template.attribute.value"]
@@ -104,7 +104,7 @@ class ProductProductRecordHandler(Component):
             if not orig_values[attr_column]:
                 continue
             attr = self._find_attr(attr_column, orig_values)
-            attr_value = self._find_attr_value(attr, attr_column, orig_values)
+            attr_value = self._find_or_create_attr_value(attr, attr_column, orig_values)
             if attr_value:
                 attr_values_to_import_ids.append(attr_value.id)
         # Detect if the set of attributes among this template is wrong
@@ -200,9 +200,8 @@ class ProductProductRecordHandler(Component):
         return self.env.ref(attr_xid)
 
     # TODO: add unit test
-    def _find_attr_value(self, attr, attr_column, orig_values):
+    def _find_or_create_attr_value(self, attr, attr_column, orig_values):
         """Find matching attribute value.
-
 
         The column name is used to compute the product.attribute xid. Eg:
 
@@ -225,7 +224,17 @@ class ProductProductRecordHandler(Component):
              * L -> product_attr_Size_value_L
 
         If no attribute value matching this convention is found,
-        the value will be skipped.
+        the value will be skipped unless `create_attribute_value_if_missing`
+        flag is passed to `record_handler` options. Eg:
+
+            - model: product.product
+              options:
+                importer:
+                  odoo_unique_key: barcode
+                mapper:
+                  name: product.product.mapper
+                record_handler:
+                  create_attribute_value_if_missing: true
         """
         # 1st search by name
         orig_val = orig_values[attr_column]
@@ -238,10 +247,44 @@ class ProductProductRecordHandler(Component):
             attr_value = self.env.ref(sanitize_external_id(orig_val), False)
         if not attr_value and "_value_" not in orig_val:
             # 3rd try w/ auto generated xid
-            value = slugify_one(orig_val).replace("-", "_")
-            xid = f"{attr_column}_value_{value}"
-            attr_value_external_id = sanitize_external_id(xid)
-            attr_value = self.env.ref(attr_value_external_id, False)
+            attr_value_xid = self._make_attribute_value_xid(attr_column, orig_val)
+            attr_value = self.env.ref(attr_value_xid, False)
+        if not attr_value and self.create_attribute_value_if_missing:
+            attr_value = self._create_missing_attribute_value(
+                attr, attr_column, orig_val
+            )
         if not attr_value:
             logger.error("Cannot determine product attr value: %s", orig_val)
         return attr_value
+
+    def _make_attribute_value_xid(self, attr_column, orig_val):
+        value = slugify_one(orig_val).replace("-", "_")
+        xid = f"{attr_column}_value_{value}"
+        return sanitize_external_id(xid)
+
+    def _create_missing_attribute_value(self, attr, attr_column, orig_val):
+        rec = self.env["product.attribute.value"].create(
+            self._create_missing_attribute_value_values(attr, orig_val)
+        )
+        xid = self._make_attribute_value_xid(attr_column, orig_val)
+        module, id_ = xid.split(".", 1)
+        self.env["ir.model.data"].create(
+            {
+                "name": id_,
+                "module": module,
+                "model": rec._name,
+                "res_id": rec.id,
+                "noupdate": False,
+            }
+        )
+        logger.info("Created product.attribute.value: %s", xid)
+        return rec
+
+    def _create_missing_attribute_value_values(self, attr, orig_val):
+        return {"attribute_id": attr.id, "name": orig_val}
+
+    @property
+    def create_attribute_value_if_missing(self):
+        return self.work.options.record_handler.get(
+            "create_attribute_value_if_missing", False
+        )
