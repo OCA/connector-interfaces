@@ -37,6 +37,16 @@ class ProductProductRecordHandler(Component):
         odoo_record = super().odoo_create(values, orig_values)
         # Set the external ID for the template if necessary
         # TODO: add tests
+        self._handle_template_xid(odoo_record, values, orig_values)
+        return odoo_record
+
+    def _handle_template_xid(self, odoo_record, values, orig_values):
+        """Create the xid for the template if needed.
+
+        The xid for the variant has been already created by `odoo_create`.
+        If the template is identified via xid using the column `xid::product_tmpl_id`
+        we must create this reference or other variant lines won't use the same template.
+        """
         if self.must_generate_xmlid and orig_values.get("xid::product_tmpl_id"):
             tmpl_xid = sanitize_external_id(orig_values.get("xid::product_tmpl_id"))
             if not self.env.ref(tmpl_xid, raise_if_not_found=False):
@@ -50,7 +60,6 @@ class ProductProductRecordHandler(Component):
                         "noupdate": False,
                     }
                 )
-        return odoo_record
 
     def _update_template_attributes(self, odoo_record, values, orig_values):
         """Update the 'attribute_line_ids' field of the related template.
