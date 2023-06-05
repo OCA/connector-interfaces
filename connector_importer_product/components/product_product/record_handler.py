@@ -94,7 +94,8 @@ class ProductProductRecordHandler(Component):
         for attr_column in attr_columns:
             if not orig_values[attr_column]:
                 continue
-            attr_value = self._find_attr_value(orig_values, attr_column)
+            attr = self._find_attr(attr_column, orig_values)
+            attr_value = self._find_attr_value(attr, attr_column, orig_values)
             if attr_value:
                 attr_values_to_import_ids.append(attr_value.id)
         # Detect if the set of attributes among this template is wrong
@@ -184,8 +185,13 @@ class ProductProductRecordHandler(Component):
         else:
             odoo_record.product_template_attribute_value_ids = valid_tpl_attr_values
 
+    def _find_attr(self, attr_column, orig_values):
+        """Find matching attribute."""
+        attr_xid = sanitize_external_id(attr_column)
+        return self.env.ref(attr_xid)
+
     # TODO: add unit test
-    def _find_attr_value(self, orig_values, attr_column):
+    def _find_attr_value(self, attr, attr_column, orig_values):
         """Find matching attribute value.
 
 
@@ -212,8 +218,6 @@ class ProductProductRecordHandler(Component):
         If no attribute value matching this convention is found,
         the value will be skipped.
         """
-        attr_xid = sanitize_external_id(attr_column)
-        attr = self.env.ref(attr_xid)
         # 1st search by name
         orig_val = orig_values[attr_column]
         model = self.env["product.attribute.value"]
