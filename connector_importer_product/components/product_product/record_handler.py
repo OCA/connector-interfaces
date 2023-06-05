@@ -188,21 +188,29 @@ class ProductProductRecordHandler(Component):
     def _find_attr_value(self, orig_values, attr_column):
         """Find matching attribute value.
 
-        FIXME
 
-          By computing their XID w/ the column name
-          + _value_ + the value itself.
+        The column name is used to compute the product.attribute xid. Eg:
 
-          For instance, a column `product_attr_Size` could have the values
-          "S" , "M", "L" and they will be converted
-          to find their matching attributes, like this:
+            * product_attr_Size -> __setup__.product_attr_Size
+            * product_attr_Color -> __setup__.product_attr_Color
 
-            * S -> product_attr_Size_value_S
-            * M -> product_attr_Size_value_M
-            * L -> product_attr_Size_value_L
+        The value will be used to determine the product.attribute.value.
+        The lookup happens in this order:
 
-          If no attribute value matching this convention is found,
-          the value will be skipped.
+        1. search by name
+        2. search by xid, assuming the value itself is already an xid.
+        3. search by composed xid, assuming the value is the last part of an xid.
+           The first part is computed as: `__setup__.$product_attr_xid_value_$col_value`.
+           For instance, a column `product_attr_Size` could have the values
+           "S" , "M", "L" and they will be converted
+           to find their matching attributes, like this:
+
+             * S -> product_attr_Size_value_S
+             * M -> product_attr_Size_value_M
+             * L -> product_attr_Size_value_L
+
+        If no attribute value matching this convention is found,
+        the value will be skipped.
         """
         attr_xid = sanitize_external_id(attr_column)
         attr = self.env.ref(attr_xid)
