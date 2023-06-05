@@ -20,8 +20,8 @@ class TestImportProductBase(TransactionComponentCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.env = cls.env(context=dict(cls.env.context, tracking_disable=True))
-        backend = cls.env.ref("connector_importer_product.demo_import_backend")
-        backend.debug_mode = True  # synchronous jobs
+        cls.backend = cls.env.ref("connector_importer_product.demo_import_backend")
+        cls.backend.debug_mode = True  # synchronous jobs
 
     @classmethod
     def importer_load_file(cls, src_external_id, csv_filename):
