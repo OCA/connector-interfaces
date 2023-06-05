@@ -121,7 +121,7 @@ def convert(field, conv_type, fallback_field=None, pre_value_handler=None, **kw)
     return modifier
 
 
-def from_mapping(field, mapping, default_value=None):
+def from_mapping(field, mapping, default_value=None, **kw):
     """Convert the source value using a ``mapping`` of values."""
 
     def modifier(self, record, to_attr):
@@ -132,7 +132,7 @@ def from_mapping(field, mapping, default_value=None):
     return modifier
 
 
-def concat(field, separator=" ", handler=None):
+def concat(field, separator=" ", handler=None, **kw):
     """Concatenate values from different fields."""
 
     # TODO: `field` is actually a list of fields.
@@ -150,7 +150,7 @@ def concat(field, separator=" ", handler=None):
     return modifier
 
 
-def xmlid_to_rel(field, sanitize=True, sanitize_default_mod_name=None):
+def xmlid_to_rel(field, sanitize=True, sanitize_default_mod_name=None, **kw):
     """Convert xmlids source values to ids."""
     xmlid_to_rel._sanitize = sanitize
     xmlid_to_rel._sanitize_default_mod_name = sanitize_default_mod_name
@@ -208,6 +208,7 @@ def backend_to_rel(  # noqa: C901
     allowed_length=None,
     create_missing=False,
     create_missing_handler=None,
+    **kw
 ):
     """A modifier intended to be used on the ``direct`` mappings.
 
