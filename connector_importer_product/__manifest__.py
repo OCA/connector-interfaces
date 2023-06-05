@@ -3,7 +3,7 @@
 {
     "name": "Connector Importer Product",
     "summary": "Ease definition of product imports using `connector_importer`.",
-    "version": "14.0.2.1.0",
+    "version": "14.0.2.2.0",
     "category": "Tools",
     "website": "https://github.com/OCA/connector-interfaces",
     "author": "Camptocamp, Odoo Community Association (OCA)",
