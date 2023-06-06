@@ -83,10 +83,55 @@ class ImportRecordset(models.Model):
     docs_html = fields.Html(string="Docs", compute="_compute_docs_html")
     notes = fields.Html(help="Useful info for your users")
     last_run_on = fields.Datetime()
+    server_action_trigger_on = fields.Selection(
+        selection=[
+            ("never", "Never"),
+            ("last_importer_done", "End of the whole import"),
+            ("each_importer_done", "End of each importer session"),
+        ],
+        default="never",
+    )
+    server_action_ids = fields.Many2many(
+        "ir.actions.server",
+        string="Executre server actions",
+        help=(
+            "Execute a server action when done. "
+            "You can link a server action per model or a single one for import.recordset. "
+            "In that case you'll have to use low level api "
+            "to get the records that were processed. "
+            "Eg: `get_report_by_model`."
+        ),
+    )
+    server_action_importable_model_ids = fields.Many2many(
+        comodel_name="ir.model",
+        compute="_compute_importable_model_ids",
+        relation="import_recordset_server_action_importable_model",
+        column1="recordset_id",
+        column2="model_id",
+        help="Technical field",
+    )
+    importable_model_ids = fields.Many2many(
+        comodel_name="ir.model",
+        compute="_compute_importable_model_ids",
+        relation="import_recordset_importable_model",
+        column1="recordset_id",
+        column2="model_id",
+        help="Technical field",
+    )
 
     def _compute_name(self):
         for item in self:
             item.name = f"#{item.id}"
+
+    @api.depends("import_type_id.options")
+    def _compute_importable_model_ids(self):
+        _get = self.env["ir.model"]._get
+        for rec in self:
+            for config in rec.available_importers():
+                rec.importable_model_ids |= _get(config.model)
+            rec.server_action_importable_model_ids = (
+                _get(self._name) + rec.importable_model_ids
+            )
 
     def get_records(self):
         """Retrieve importable records and keep ordering."""
