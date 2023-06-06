@@ -39,3 +39,12 @@ class FakeSourceStatic(models.Model):
 
     def _sort_lines(self, lines):
         return reversed(list(lines))
+
+
+class FakeImportedModel(models.Model):
+
+    _name = "fake.imported.model"
+    _description = _name
+    _description = "Fake model"
+
+    name = fields.Char()
