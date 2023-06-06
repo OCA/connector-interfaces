@@ -165,17 +165,33 @@ class ImportRecordset(models.Model):
         data = {
             "recordset": self,
             "last_start": report.pop("_last_start"),
-            "report_by_model": OrderedDict(),
+            "report_by_model": self._get_report_by_model(),
         }
+        return data
+
+    def _get_report_by_model(self, counters_only=True):
+        report = self.get_report()
+        value_handler = (
+            len if counters_only else lambda vals: [x["odoo_record"] for x in vals]
+        )
+        res = OrderedDict()
         # count keys by model
         for config in self.available_importers():
             model = self.env["ir.model"]._get(config.model)
-            data["report_by_model"][model] = {}
+            res[model] = {}
             # be defensive here. At some point
             # we could decide to skip models on demand.
             for k, v in report.get(config.model, {}).items():
-                data["report_by_model"][model][k] = len(v)
-        return data
+                res[model][k] = value_handler(v)
+        return res
+
+    def get_report_by_model(self, model_name=None):
+        report = self._get_report_by_model(counters_only=False)
+        if model_name:
+            report = {
+                k.model: v for k, v in report.items() if k.model == model_name
+            }.get(model_name, {})
+        return report
 
     @api.depends("report_data")
     def _compute_report_html(self):
