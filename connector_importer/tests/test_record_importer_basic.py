@@ -19,11 +19,12 @@ class TestRecordImporter(TestImporterBase):
 
         return [PartnerRecordImporter, PartnerMapper]
 
-    def _get_importer(self):
+    def _get_importer(self, options=None):
+        options = options or {"importer": {}, "mapper": {}}
         with self.backend.work_on(
             self.record._name,
             components_registry=self.comp_registry,
-            options=DotDict({"importer": {}, "mapper": {}}),
+            options=DotDict(options),
         ) as work:
             return work.component(usage="record.importer", model_name="res.partner")
 
@@ -104,3 +105,18 @@ class TestRecordImporter(TestImporterBase):
         importer._mapper_name = "fake.partner.mapper"
         mapper = importer._get_mapper()
         self.assertEqual(mapper._name, "fake.partner.mapper")
+
+    def test_importer_context(self):
+        importer = self._get_importer(
+            options={"importer": {"ctx": {"key1": 1, "key2": 2}}, "mapper": {}}
+        )
+        importer._init_importer(self.recordset)
+        self.assertEqual(
+            importer._odoo_create_context(),
+            {
+                "importer_type_id": self.recordset.import_type_id.id,
+                "tracking_disable": True,
+                "key1": 1,
+                "key2": 2,
+            },
+        )
