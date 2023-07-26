@@ -93,3 +93,13 @@ class TestSourceCSV(BaseTestCase):
         self.assertItemsEqual(
             sorted(self.extra_fields), sorted(data["fields_info"].keys())
         )
+
+    @mute_logger("[importer]")
+    def test_source_with_escaped_tab(self):
+        # make sure an escaped tab is replaced with a real tab when updating
+        set_delimiter = {"csv_delimiter": "\\t"}
+        self.source.update(set_delimiter)
+        self.assertEqual(self.source.csv_delimiter, "\t")
+        # make also sure the escaped tab is replaced when creating a new source
+        new_source = self.env["import.source.csv"].create(set_delimiter)
+        self.assertEqual(new_source.csv_delimiter, "\t")
