@@ -21,7 +21,7 @@ Available addons
 ----------------
 addon | version | maintainers | summary
 --- | --- | --- | ---
-[connector_importer](connector_importer/) | 14.0.2.6.0 | [![simahawk](https://github.com/simahawk.png?size=30px)](https://github.com/simahawk) | This module takes care of import sessions.
+[connector_importer](connector_importer/) | 14.0.2.6.1 | [![simahawk](https://github.com/simahawk.png?size=30px)](https://github.com/simahawk) | This module takes care of import sessions.
 [connector_importer_demo](connector_importer_demo/) | 14.0.1.0.0 | [![simahawk](https://github.com/simahawk.png?size=30px)](https://github.com/simahawk) | Demo module for Connector Importer.
 [connector_importer_product](connector_importer_product/) | 14.0.2.3.0 | [![simahawk](https://github.com/simahawk.png?size=30px)](https://github.com/simahawk) [![sebalix](https://github.com/sebalix.png?size=30px)](https://github.com/sebalix) [![mmequignon](https://github.com/mmequignon.png?size=30px)](https://github.com/mmequignon) | Ease definition of product imports using `connector_importer`.
 [connector_importer_source_sftp](connector_importer_source_sftp/) | 14.0.1.1.0 | [![simahawk](https://github.com/simahawk.png?size=30px)](https://github.com/simahawk) [![sebalix](https://github.com/sebalix.png?size=30px)](https://github.com/sebalix) | Add import source capable of loading files from SFTP.
