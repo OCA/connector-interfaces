@@ -275,7 +275,7 @@ class ImportRecordset(models.Model):
         return res
 
     def available_importers(self):
-        return self.import_type_id.available_importers()
+        return self.import_type_id.available_importers() if self.import_type_id else ()
 
     def import_recordset(self):
         """This job will import a recordset."""
