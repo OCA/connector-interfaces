@@ -480,6 +480,11 @@ msgid "Last Modified on"
 msgstr ""
 
 #. module: connector_importer
+#: model:ir.model.fields,field_description:connector_importer.field_import_recordset__last_run_on
+msgid "Last Run On"
+msgstr ""
+
+#. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_backend__write_uid
 #: model:ir.model.fields,field_description:connector_importer.field_import_record__write_uid
 #: model:ir.model.fields,field_description:connector_importer.field_import_recordset__write_uid
@@ -707,6 +712,7 @@ msgstr ""
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_recordset__source_ref_id
 #: model:ir.model.fields,field_description:connector_importer.field_import_source_consumer_mixin__source_ref_id
+#: model_terms:ir.ui.view,arch_db:connector_importer.view_import_backend_form
 #: model_terms:ir.ui.view,arch_db:connector_importer.view_import_recordset_form
 msgid "Source"
 msgstr ""
