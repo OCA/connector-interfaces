@@ -7,7 +7,7 @@ from odoo.tools import DotDict
 try:
     from odoo.tests.common import RecordCapturer
 except ImportError:
-    from odoo.addons.connector_importer.tests.record_capturer import RecordCapturer
+    from .record_capturer import RecordCapturer
 
 from .common import TestImporterBase
 
