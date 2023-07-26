@@ -4,6 +4,11 @@
 
 from odoo.tools import DotDict
 
+try:
+    from odoo.tests.common import RecordCapturer
+except ImportError:
+    from odoo.addons.connector_importer.tests.record_capturer import RecordCapturer
+
 from .common import TestImporterBase
 
 MOD_PATH = "odoo.addons.connector_importer"
@@ -18,11 +23,11 @@ class TestRecordsetImporter(TestImporterBase):
         return res
 
     def _get_importer(self, options=None):
-        options = options or DotDict({"importer": {}, "mapper": {}})
+        options = options or {"importer": {}, "mapper": {}}
         with self.backend.work_on(
             self.record._name,
             components_registry=self.comp_registry,
-            options=options,
+            options=DotDict(options),
         ) as work:
             return work.component_by_name("importer.record", model_name="res.partner")
 
@@ -155,3 +160,28 @@ class TestRecordsetImporter(TestImporterBase):
         }
         mapper = self._get_dynamyc_mapper(options=dict(source_key_empty_skip=["ref"]))
         self.assertEqual(mapper.dynamic_fields(rec), expected)
+
+    def test_rel_create_if_missing(self):
+        opts = {
+            "parent_id": {"create_missing": True},
+            "category_id": {"create_missing": True},
+        }
+        mapper = self._get_dynamyc_mapper(options=dict(converter=opts))
+        rec = {
+            "name": "John Doe",
+            "ref": "12345",
+            "parent_id": "Parent of J. Doe",
+            "category_id": "New category",
+        }
+        with RecordCapturer(
+            self.env["res.partner"].sudo(), []
+        ) as partner_capt, RecordCapturer(
+            self.env["res.partner.category"].sudo(), []
+        ) as cat_capt:
+            res = mapper.dynamic_fields(rec)
+            parent = partner_capt.records
+            cat = cat_capt.records
+            self.assertEqual(parent.name, "Parent of J. Doe")
+            self.assertEqual(cat.name, "New category")
+            self.assertEqual(res["parent_id"], parent.id)
+            self.assertEqual(res["category_id"], [(6, 0, [cat.id])])
