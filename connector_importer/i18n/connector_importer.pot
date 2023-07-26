@@ -73,7 +73,7 @@ msgstr ""
 
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_source_csv__csv_delimiter
-msgid "CSV delimiter"
+msgid "CSV delimiter ('\\t' will be replaced with a tab character)"
 msgstr ""
 
 #. module: connector_importer
