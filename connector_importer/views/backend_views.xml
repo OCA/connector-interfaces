@@ -68,7 +68,11 @@
                     </div>
                     <notebook>
                         <page string="Recordsets">
-                            <field name="recordset_ids" nolabel="1">
+                            <field
+                                name="recordset_ids"
+                                nolabel="1"
+                                context="{'default_backend_id': active_id}"
+                            >
                                 <tree>
                                     <field name="sequence" widget="handle" />
                                     <field name="name" readonly="1" />
