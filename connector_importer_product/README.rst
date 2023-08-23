@@ -38,6 +38,12 @@ Supported imports:
 .. contents::
    :local:
 
+Known issues / Roadmap
+======================
+
+* get rid of supplier info specific importer
+* find a flexible way to define matching products
+
 Bug Tracker
 ===========
 
