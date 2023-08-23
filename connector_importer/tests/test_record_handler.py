@@ -18,7 +18,7 @@ orig_values = {
 
 class TestRecordImporter(TestImporterBase):
     @classmethod
-    def _setup_records(cls):
+    def _setup_records(cls):  # pylint: disable=missing-return
         super()._setup_records()
         cls.record = cls.env["import.record"].create({"recordset_id": cls.recordset.id})
 
