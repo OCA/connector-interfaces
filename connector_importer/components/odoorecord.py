@@ -2,6 +2,8 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
+from odoo.tools import safe_eval
+
 from odoo.addons.component.core import Component
 
 from ..utils.misc import sanitize_external_id
@@ -38,6 +40,40 @@ class OdooRecordHandler(Component):
 
     def odoo_find_domain(self, values, orig_values):
         """Domain to find the record in odoo."""
+        domain = self._odoo_find_domain_from_options(values, orig_values)
+        if not domain:
+            if not self.unique_key:
+                raise ValueError("No unique key and no domain to find this record")
+            domain = self._odoo_find_domain_from_unique_key(values, orig_values)
+        return domain
+
+    def _odoo_find_domain_from_options(self, values, orig_values):
+        """Evaluate domain from options if any."""
+        match_domain = self.work.options.record_handler.match_domain
+        if not match_domain:
+            return []
+        eval_ctx = self._domain_from_options_eval_ctx(values, orig_values)
+        domain = safe_eval.safe_eval(
+            self.work.options.record_handler.match_domain, eval_ctx
+        )
+        if not isinstance(domain, list):
+            raise ValueError("match_domain must be a list")
+        return domain
+
+    def _domain_from_options_eval_ctx(self, values, orig_values):
+        return {
+            "env": self.env,
+            "user": self.env.user,
+            "datetime": safe_eval.datetime,
+            "dateutil": safe_eval.dateutil,
+            "time": safe_eval.time,
+            "values": values,
+            "orig_values": orig_values,
+            "ref_id": lambda x: self._smart_ref(x).id,
+            "ref": lambda x: self._smart_ref(x),
+        }
+
+    def _odoo_find_domain_from_unique_key(self, values, orig_values):
         value = NO_VALUE
         if self.unique_key in values:
             value = values[self.unique_key]
@@ -45,25 +81,26 @@ class OdooRecordHandler(Component):
             value = orig_values[self.unique_key]
         if value is NO_VALUE:
             raise ValueError(
-                f"Cannot find {self.unique_key} in `values` nor `orig_values`"
+                f"Cannot find `{self.unique_key}` key in `values` nor `orig_values`"
             )
         return [(self.unique_key, "=", value)]
 
     def odoo_find(self, values, orig_values):
         """Find any existing item in odoo."""
-        if self.unique_key == "":
+        if self.unique_key and self.unique_key_is_xmlid:
             # if unique_key is None we might use as special find domain
-            return self.model
-        if self.unique_key_is_xmlid:
             xid = self._get_xmlid(values, orig_values)
             item = self.env.ref(xid, raise_if_not_found=False)
-            return item
+            return item or self.model
         item = self.model.search(
             self.odoo_find_domain(values, orig_values),
             order="create_date desc",
             limit=1,
         )
         return item
+
+    def _smart_ref(self, xid):
+        return self.env.ref(sanitize_external_id(xid))
 
     def _get_xmlid(self, values, orig_values):
         # Mappers will remove `xid::` prefix from the final values

@@ -63,7 +63,7 @@ class ImportType(models.Model):
 
     name = fields.Char(required=True, help="A meaningful human-friendly name")
     description = fields.Text()
-    key = fields.Char(required=True, help="Unique mnemonic identifier")
+    key = fields.Char(required=True, help="Unique mnemonic identifier", copy=False)
     options = fields.Text(help="YAML configuration")
     settings = fields.Text(
         string="Legacy Settings",
@@ -167,3 +167,9 @@ class ImportType(models.Model):
                 if _line == lines[-1]:
                     is_last_importer = True
                 yield (model_name.strip(), importer.strip(), is_last_importer)
+
+    def copy_data(self, default=None):
+        res = super().copy_data(default)
+        for data, rec in zip(res, self):
+            data["key"] = rec.key + "_COPY_FIXME"
+        return res

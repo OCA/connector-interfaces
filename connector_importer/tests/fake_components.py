@@ -68,3 +68,11 @@ class PartnerRecordImporterXMLID(Component):
         return res
 
     write_context = create_context
+
+
+class FakeModelMapper(Component):
+    _name = "fake.model.mapper"
+    _inherit = "importer.base.mapper"
+    _apply_on = "fake.imported.model"
+
+    direct = [("fullname", "name")]

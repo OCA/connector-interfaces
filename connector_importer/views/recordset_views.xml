@@ -9,6 +9,12 @@
                 <group col="4" name="main">
                     <group colspan="2" name="base" string="Base configuration">
                         <field name="name" readonly="1" />
+                        <field
+                            name="backend_id"
+                            options="{'no_create': True}"
+                            invisible="context.get('default_backend_id')"
+                            required="1"
+                        />
                         <field name="import_type_id" options="{'no_create': True}" />
                         <field name="override_existing" />
                     </group>
@@ -74,6 +80,31 @@
                         <field name="docs_html" readonly="1" nolabel="1" colspan="4" />
                         <separator string="Additional notes" colspan="4" />
                         <field name="notes" nolabel="1" colspan="4" />
+                    </page>
+                    <page string="Server actions">
+                        <field
+                            name="server_action_importable_model_ids"
+                            invisible="1"
+                        />
+                        <separator string="Server actions" colspan="4" />
+                        <group>
+                            <field
+                                name="server_action_trigger_on"
+                                string="Trigger on"
+                            />
+                        </group>
+                        <field
+                            name="server_action_ids"
+                            nolabel="1"
+                            colspan="4"
+                            attrs="{'invisible': [('server_action_trigger_on', '=', 'never')]}"
+                            domain="[('model_id', 'in', server_action_importable_model_ids)]"
+                        >
+                            <tree>
+                                <field name="name" />
+                                <field name="model_id" />
+                            </tree>
+                        </field>
                     </page>
                 </notebook>
             </form>

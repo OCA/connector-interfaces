@@ -31,7 +31,9 @@ class TestRecordImporterXMLID(TestImporterBase):
             {
                 "options": """
 - model: res.partner
-  importer: fake.partner.importer.xmlid
+  importer:
+    name:
+      fake.partner.importer.xmlid
                 """
             }
         )

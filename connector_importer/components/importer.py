@@ -295,13 +295,14 @@ class RecordImporter(Component):
         """Retrieve mapper options."""
         return {"override_existing": self.must_override_existing}
 
-    # TODO: make these contexts customizable via recordset settings
     def _odoo_default_context(self):
         """Default context to be used in both create and write methods"""
-        return {
+        ctx = {
             "importer_type_id": self.recordset.import_type_id.id,
             "tracking_disable": True,
         }
+        ctx.update(self.work.options.importer.get("ctx", {}))
+        return ctx
 
     def _odoo_create_context(self):
         """Inject context variables on create, merged by odoorecord handler."""
@@ -394,17 +395,32 @@ class RecordImporter(Component):
             ]
         ).format(**counters)
         self.tracker._log(msg)
-        self._trigger_finish_events(record, is_last_importer=is_last_importer)
+        self.finalize_session(record, is_last_importer=is_last_importer)
         return counters
 
-    def _trigger_finish_events(self, record, is_last_importer=False):
-        """Trigger events when the importer has done its job."""
+    def finalize_session(self, record, is_last_importer=False):
+        self._trigger_importer_events(record)
         if is_last_importer:
-            # Trigger global event for recordset
-            self.recordset._event(
-                "on_last_record_import_finished", collection=self.work.collection
-            ).notify(self, record)
-            # Trigger model specific event
-            self.model.browse()._event(
-                "on_last_record_import_finished", collection=self.work.collection
-            ).notify(self, record)
+            self._trigger_finish_events(record)
+
+    def _trigger_importer_events(self, record):
+        """Trigger events when the importer has done its job."""
+        # Trigger global event for recordset
+        self.recordset._event(
+            "on_record_import_finished", collection=self.work.collection
+        ).notify(self, record)
+        # Trigger model specific event
+        self.model.browse()._event(
+            "on_record_import_finished", collection=self.work.collection
+        ).notify(self, record)
+
+    def _trigger_finish_events(self, record):
+        """Trigger events when the importer has done its job."""
+        # Trigger global event for recordset
+        self.recordset._event(
+            "on_last_record_import_finished", collection=self.work.collection
+        ).notify(self, record)
+        # Trigger model specific event
+        self.model.browse()._event(
+            "on_last_record_import_finished", collection=self.work.collection
+        ).notify(self, record)

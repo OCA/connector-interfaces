@@ -90,3 +90,22 @@ class TestRecordset(common.TransactionCase):
         key = list(by_model.keys())[0]
         self.assertEqual(key._name, "ir.model")
         self.assertEqual(key.model, "res.partner")
+
+    def test_importable_models(self):
+        self.itype.write(
+            {
+                "options": """
+- model: res.partner
+  importer: partner.importer
+- model: res.partner.category
+- model: res.lang
+        """
+            }
+        )
+        expected = ("res.partner", "res.lang", "res.partner.category")
+        models = self.recordset.importable_model_ids.mapped("model")
+        for model in expected:
+            self.assertIn(model, models)
+        models = self.recordset.server_action_importable_model_ids.mapped("model")
+        for model in expected + ("import.recordset",):
+            self.assertIn(model, models)

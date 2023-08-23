@@ -34,14 +34,14 @@ class DynamicMapper(Component):
                 # Never convert IDs
                 continue
             fname = source_fname
-            if prefix and source_fname.startswith(prefix):
-                # Eg: prefix all supplier fields w/ `supplier_`
-                fname = fname[len(prefix) :]
-                clean_record[fname] = clean_record.pop(source_fname)
             if "::" in fname:
                 # Eg: transformers like `xid::``
                 fname = fname.split("::")[-1]
                 clean_record[fname] = clean_record.pop(source_fname)
+            if prefix and fname.startswith(prefix):
+                # Eg: prefix all supplier fields w/ `supplier.`
+                fname = fname[len(prefix) :]
+                clean_record[fname] = clean_record.pop(prefix + fname)
             if available_fields.get(fname):
                 fspec = available_fields.get(fname)
                 ftype = fspec["type"]
@@ -78,10 +78,13 @@ class DynamicMapper(Component):
         valid_keys = [k for k in record.keys() if not k.startswith("_")]
         prefix = self._source_key_prefix
         if prefix:
-            valid_keys = [k for k in valid_keys if k.startswith(prefix)]
+            valid_keys = [k for k in valid_keys if prefix in k]
         whitelist = self._source_key_whitelist
         if whitelist:
             valid_keys = [k for k in valid_keys if k in whitelist]
+        blacklist = self._source_key_blacklist
+        if blacklist:
+            valid_keys = [k for k in valid_keys if k not in blacklist]
         return tuple(valid_keys)
 
     def _required_keys(self):
@@ -90,6 +93,10 @@ class DynamicMapper(Component):
     @property
     def _source_key_whitelist(self):
         return self.work.options.mapper.get("source_key_whitelist", [])
+
+    @property
+    def _source_key_blacklist(self):
+        return self.work.options.mapper.get("source_key_blacklist", [])
 
     @property
     def _source_key_empty_skip(self):
@@ -106,11 +113,6 @@ class DynamicMapper(Component):
     def _source_key_prefix(self):
         return self.work.options.mapper.get("source_key_prefix", "")
 
-    @property
-    def _source_key_xid_module(self):
-        """Module name to use to sanitize XMLids"""
-        return self.work.options.mapper.get("source_key_xid_module", "")
-
     def _is_xmlid_key(self, fname, ftype):
         return fname.startswith("xid::") and ftype in (
             "many2one",
@@ -118,26 +120,25 @@ class DynamicMapper(Component):
             "many2many",
         )
 
-    def _dynamic_keys_mapping(self, fname):
+    def _dynamic_keys_mapping(self, fname, **options):
         return {
             "char": lambda self, rec, fname: rec[fname],
             "text": lambda self, rec, fname: rec[fname],
             "selection": lambda self, rec, fname: rec[fname],
-            "integer": convert(fname, "safe_int"),
-            "float": convert(fname, "safe_float"),
-            "boolean": convert(fname, "bool"),
-            "date": convert(fname, "date"),
-            "datetime": convert(fname, "utc_date"),
-            "many2one": backend_to_rel(fname),
-            "many2many": backend_to_rel(fname),
-            "one2many": backend_to_rel(fname),
-            "_xmlid": xmlid_to_rel(
-                fname, sanitize_default_mod_name=self._source_key_xid_module
-            ),
+            "integer": convert(fname, "safe_int", **options),
+            "float": convert(fname, "safe_float", **options),
+            "boolean": convert(fname, "bool", **options),
+            "date": convert(fname, "date", **options),
+            "datetime": convert(fname, "utc_date", **options),
+            "many2one": backend_to_rel(fname, **options),
+            "many2many": backend_to_rel(fname, **options),
+            "one2many": backend_to_rel(fname, **options),
+            "_xmlid": xmlid_to_rel(fname, **options),
         }
 
     def _get_converter(self, fname, ftype):
-        return self._dynamic_keys_mapping(fname).get(ftype)
+        options = self.work.options.mapper.get("converter", {}).get(fname, {})
+        return self._dynamic_keys_mapping(fname, **options).get(ftype)
 
     _non_mapped_keys_cache = None
 

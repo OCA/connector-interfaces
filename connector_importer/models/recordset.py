@@ -82,10 +82,55 @@ class ImportRecordset(models.Model):
     docs_html = fields.Html(string="Docs", compute="_compute_docs_html")
     notes = fields.Html(help="Useful info for your users")
     last_run_on = fields.Datetime()
+    server_action_trigger_on = fields.Selection(
+        selection=[
+            ("never", "Never"),
+            ("last_importer_done", "End of the whole import"),
+            ("each_importer_done", "End of each importer session"),
+        ],
+        default="never",
+    )
+    server_action_ids = fields.Many2many(
+        "ir.actions.server",
+        string="Executre server actions",
+        help=(
+            "Execute a server action when done. "
+            "You can link a server action per model or a single one for import.recordset. "
+            "In that case you'll have to use low level api "
+            "to get the records that were processed. "
+            "Eg: `get_report_by_model`."
+        ),
+    )
+    server_action_importable_model_ids = fields.Many2many(
+        comodel_name="ir.model",
+        compute="_compute_importable_model_ids",
+        relation="import_recordset_server_action_importable_model",
+        column1="recordset_id",
+        column2="model_id",
+        help="Technical field",
+    )
+    importable_model_ids = fields.Many2many(
+        comodel_name="ir.model",
+        compute="_compute_importable_model_ids",
+        relation="import_recordset_importable_model",
+        column1="recordset_id",
+        column2="model_id",
+        help="Technical field",
+    )
 
     def _compute_name(self):
         for item in self:
             item.name = f"#{item.id}"
+
+    @api.depends("import_type_id.options")
+    def _compute_importable_model_ids(self):
+        _get = self.env["ir.model"]._get
+        for rec in self:
+            for config in rec.available_importers():
+                rec.importable_model_ids |= _get(config.model)
+            rec.server_action_importable_model_ids = (
+                _get(self._name) + rec.importable_model_ids
+            )
 
     def get_records(self):
         """Retrieve importable records and keep ordering."""
@@ -164,17 +209,33 @@ class ImportRecordset(models.Model):
         data = {
             "recordset": self,
             "last_start": report.pop("_last_start"),
-            "report_by_model": OrderedDict(),
+            "report_by_model": self._get_report_by_model(),
         }
+        return data
+
+    def _get_report_by_model(self, counters_only=True):
+        report = self.get_report()
+        value_handler = (
+            len if counters_only else lambda vals: [x["odoo_record"] for x in vals]
+        )
+        res = OrderedDict()
         # count keys by model
         for config in self.available_importers():
             model = self.env["ir.model"]._get(config.model)
-            data["report_by_model"][model] = {}
+            res[model] = {}
             # be defensive here. At some point
             # we could decide to skip models on demand.
             for k, v in report.get(config.model, {}).items():
-                data["report_by_model"][model][k] = len(v)
-        return data
+                res[model][k] = value_handler(v)
+        return res
+
+    def get_report_by_model(self, model_name=None):
+        report = self._get_report_by_model(counters_only=False)
+        if model_name:
+            report = {
+                k.model: v for k, v in report.items() if k.model == model_name
+            }.get(model_name, {})
+        return report
 
     @api.depends("report_data")
     def _compute_report_html(self):
@@ -213,7 +274,7 @@ class ImportRecordset(models.Model):
         return res
 
     def available_importers(self):
-        return self.import_type_id.available_importers()
+        return self.import_type_id.available_importers() if self.import_type_id else ()
 
     def import_recordset(self):
         """This job will import a recordset."""
