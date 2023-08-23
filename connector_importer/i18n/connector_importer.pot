@@ -259,6 +259,16 @@ msgid ""
 msgstr ""
 
 #. module: connector_importer
+#: model:ir.model.fields.selection,name:connector_importer.selection__import_recordset__server_action_trigger_on__each_importer_done
+msgid "End of each importer session"
+msgstr ""
+
+#. module: connector_importer
+#: model:ir.model.fields.selection,name:connector_importer.selection__import_recordset__server_action_trigger_on__last_importer_done
+msgid "End of the whole import"
+msgstr ""
+
+#. module: connector_importer
 #: model:ir.model.fields.selection,name:connector_importer.selection__import_recordset__jobs_global_state__enqueued
 msgid "Enqueued"
 msgstr ""
@@ -266,6 +276,19 @@ msgstr ""
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_source_csv__example_file_ext_id
 msgid "Example File Ext"
+msgstr ""
+
+#. module: connector_importer
+#: model:ir.model.fields,help:connector_importer.field_import_recordset__server_action_ids
+msgid ""
+"Execute a server action when done. You can link a server action per model or"
+" a single one for import.recordset. In that case you'll have to use low "
+"level api to get the records that were processed. Eg: `get_report_by_model`."
+msgstr ""
+
+#. module: connector_importer
+#: model:ir.model.fields,field_description:connector_importer.field_import_recordset__server_action_ids
+msgid "Executre server actions"
 msgstr ""
 
 #. module: connector_importer
@@ -401,6 +424,11 @@ msgstr ""
 #: model:ir.actions.act_window,name:connector_importer.action_import_type
 #: model:ir.ui.menu,name:connector_importer.menu_import_settings_types
 msgid "Import types"
+msgstr ""
+
+#. module: connector_importer
+#: model:ir.model.fields,field_description:connector_importer.field_import_recordset__importable_model_ids
+msgid "Importable Model"
 msgstr ""
 
 #. module: connector_importer
@@ -553,6 +581,11 @@ msgid "Name"
 msgstr ""
 
 #. module: connector_importer
+#: model:ir.model.fields.selection,name:connector_importer.selection__import_recordset__server_action_trigger_on__never
+msgid "Never"
+msgstr ""
+
+#. module: connector_importer
 #: model:ir.model.fields.selection,name:connector_importer.selection__import_recordset__jobs_global_state__no_job
 msgid "No job"
 msgstr ""
@@ -700,6 +733,21 @@ msgid "Sequence for the handle."
 msgstr ""
 
 #. module: connector_importer
+#: model:ir.model.fields,field_description:connector_importer.field_import_recordset__server_action_importable_model_ids
+msgid "Server Action Importable Model"
+msgstr ""
+
+#. module: connector_importer
+#: model:ir.model.fields,field_description:connector_importer.field_import_recordset__server_action_trigger_on
+msgid "Server Action Trigger On"
+msgstr ""
+
+#. module: connector_importer
+#: model_terms:ir.ui.view,arch_db:connector_importer.view_import_recordset_form
+msgid "Server actions"
+msgstr ""
+
+#. module: connector_importer
 #: model:ir.ui.menu,name:connector_importer.menu_import_settings_root
 msgid "Settings"
 msgstr ""
@@ -759,6 +807,12 @@ msgid "State"
 msgstr ""
 
 #. module: connector_importer
+#: model:ir.model.fields,help:connector_importer.field_import_recordset__importable_model_ids
+#: model:ir.model.fields,help:connector_importer.field_import_recordset__server_action_importable_model_ids
+msgid "Technical field"
+msgstr ""
+
+#. module: connector_importer
 #: model:ir.model.fields,help:connector_importer.field_import_backend__job_running
 msgid "Tells you if a job is running for this backend."
 msgstr ""
@@ -781,6 +835,11 @@ msgstr ""
 #. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.recordset_docs
 msgid "Translatable"
+msgstr ""
+
+#. module: connector_importer
+#: model_terms:ir.ui.view,arch_db:connector_importer.view_import_recordset_form
+msgid "Trigger on"
 msgstr ""
 
 #. module: connector_importer
