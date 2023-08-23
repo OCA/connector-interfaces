@@ -2,12 +2,8 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
+from odoo.tests.common import RecordCapturer
 from odoo.tools import DotDict
-
-try:
-    from odoo.tests.common import RecordCapturer
-except ImportError:
-    from odoo.addons.connector_importer.tests.record_capturer import RecordCapturer
 
 from .common import TestImporterBase
 
