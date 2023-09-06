@@ -4,7 +4,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 15.0\n"
+"Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -14,20 +14,12 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: connector_importer
-#: model:ir.model.fields,help:connector_importer.field_import_type__settings
-msgid ""
-"\n"
-"            # comment me\n"
-"            product.template::template.importer.component.name\n"
-"            product.product::product.importer.component.name\n"
-"            # another one\n"
-"            product.supplierinfo::supplierinfo.importer.component.name\n"
-"        "
-msgstr ""
-
-#. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.view_import_backend_form
-msgid "<strong>JOBS RUNNING</strong>"
+msgid ""
+"<strong>JOBS RUNNING</strong>\n"
+"                            WARNING: one or more jobs are scheduled for a recorset or a record.\n"
+"                            You will not be able to run the import again or to delete this backend\n"
+"                            until you complete the jobs."
 msgstr ""
 
 #. module: connector_importer
@@ -190,11 +182,6 @@ msgid "Cron mode?"
 msgstr ""
 
 #. module: connector_importer
-#: model_terms:ir.ui.view,arch_db:connector_importer.view_import_backend_form
-msgid "Debug"
-msgstr ""
-
-#. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_backend__debug_mode
 msgid "Debug mode?"
 msgstr ""
@@ -259,6 +246,16 @@ msgid ""
 msgstr ""
 
 #. module: connector_importer
+#: model:ir.model.fields.selection,name:connector_importer.selection__import_recordset__server_action_trigger_on__each_importer_done
+msgid "End of each importer session"
+msgstr ""
+
+#. module: connector_importer
+#: model:ir.model.fields.selection,name:connector_importer.selection__import_recordset__server_action_trigger_on__last_importer_done
+msgid "End of the whole import"
+msgstr ""
+
+#. module: connector_importer
 #: model:ir.model.fields.selection,name:connector_importer.selection__import_recordset__jobs_global_state__enqueued
 msgid "Enqueued"
 msgstr ""
@@ -266,6 +263,19 @@ msgstr ""
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_source_csv__example_file_ext_id
 msgid "Example File Ext"
+msgstr ""
+
+#. module: connector_importer
+#: model:ir.model.fields,help:connector_importer.field_import_recordset__server_action_ids
+msgid ""
+"Execute a server action when done. You can link a server action per model or"
+" a single one for import.recordset. In that case you'll have to use low "
+"level api to get the records that were processed. Eg: `get_report_by_model`."
+msgstr ""
+
+#. module: connector_importer
+#: model:ir.model.fields,field_description:connector_importer.field_import_recordset__server_action_ids
+msgid "Executre server actions"
 msgstr ""
 
 #. module: connector_importer
@@ -404,6 +414,11 @@ msgid "Import types"
 msgstr ""
 
 #. module: connector_importer
+#: model:ir.model.fields,field_description:connector_importer.field_import_recordset__importable_model_ids
+msgid "Importable Model"
+msgstr ""
+
+#. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.recordset_docs
 msgid "Importable models:"
 msgstr ""
@@ -422,7 +437,6 @@ msgstr ""
 #. module: connector_importer
 #: model:ir.actions.server,name:connector_importer.ir_cron_import_cleanup_recorsets_ir_actions_server
 #: model:ir.cron,cron_name:connector_importer.ir_cron_import_cleanup_recorsets
-#: model:ir.cron,name:connector_importer.ir_cron_import_cleanup_recorsets
 msgid "Importer backend: cleanup old recordsets"
 msgstr ""
 
@@ -480,6 +494,11 @@ msgid "Last Modified on"
 msgstr ""
 
 #. module: connector_importer
+#: model:ir.model.fields,field_description:connector_importer.field_import_recordset__last_run_on
+msgid "Last Run On"
+msgstr ""
+
+#. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_backend__write_uid
 #: model:ir.model.fields,field_description:connector_importer.field_import_record__write_uid
 #: model:ir.model.fields,field_description:connector_importer.field_import_recordset__write_uid
@@ -503,11 +522,6 @@ msgid "Last start:"
 msgstr ""
 
 #. module: connector_importer
-#: model:ir.model.fields,field_description:connector_importer.field_import_type__settings
-msgid "Legacy Settings"
-msgstr ""
-
-#. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.recordset_docs
 msgid "Legend: TODO"
 msgstr ""
@@ -519,10 +533,11 @@ msgstr ""
 
 #. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.view_import_backend_form
-msgid "Make all related jobs completed"
+msgid "Make all jobs completed"
 msgstr ""
 
 #. module: connector_importer
+#. odoo-python
 #: code:addons/connector_importer/components/mapper.py:0
 #, python-format
 msgid "Malformated xml id ref: `%s`"
@@ -548,17 +563,24 @@ msgid "Name"
 msgstr ""
 
 #. module: connector_importer
+#: model:ir.model.fields.selection,name:connector_importer.selection__import_recordset__server_action_trigger_on__never
+msgid "Never"
+msgstr ""
+
+#. module: connector_importer
 #: model:ir.model.fields.selection,name:connector_importer.selection__import_recordset__jobs_global_state__no_job
 msgid "No job"
 msgstr ""
 
 #. module: connector_importer
+#. odoo-python
 #: code:addons/connector_importer/models/import_type.py:0
 #, python-format
 msgid "No options found for: {}."
 msgstr ""
 
 #. module: connector_importer
+#. odoo-python
 #: code:addons/connector_importer/components/importer.py:0
 #, python-format
 msgid "No source configured on recordset '%s'"
@@ -675,11 +697,6 @@ msgid "Required"
 msgstr ""
 
 #. module: connector_importer
-#: model_terms:ir.ui.view,arch_db:connector_importer.view_import_backend_form
-msgid "Run"
-msgstr ""
-
-#. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.view_import_recordset_search
 msgid "Search recordset"
 msgstr ""
@@ -695,6 +712,21 @@ msgid "Sequence for the handle."
 msgstr ""
 
 #. module: connector_importer
+#: model:ir.model.fields,field_description:connector_importer.field_import_recordset__server_action_importable_model_ids
+msgid "Server Action Importable Model"
+msgstr ""
+
+#. module: connector_importer
+#: model:ir.model.fields,field_description:connector_importer.field_import_recordset__server_action_trigger_on
+msgid "Server Action Trigger On"
+msgstr ""
+
+#. module: connector_importer
+#: model_terms:ir.ui.view,arch_db:connector_importer.view_import_recordset_form
+msgid "Server actions"
+msgstr ""
+
+#. module: connector_importer
 #: model:ir.ui.menu,name:connector_importer.menu_import_settings_root
 msgid "Settings"
 msgstr ""
@@ -707,6 +739,7 @@ msgstr ""
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_recordset__source_ref_id
 #: model:ir.model.fields,field_description:connector_importer.field_import_source_consumer_mixin__source_ref_id
+#: model_terms:ir.ui.view,arch_db:connector_importer.view_import_backend_form
 #: model_terms:ir.ui.view,arch_db:connector_importer.view_import_recordset_form
 msgid "Source"
 msgstr ""
@@ -753,6 +786,12 @@ msgid "State"
 msgstr ""
 
 #. module: connector_importer
+#: model:ir.model.fields,help:connector_importer.field_import_recordset__importable_model_ids
+#: model:ir.model.fields,help:connector_importer.field_import_recordset__server_action_importable_model_ids
+msgid "Technical field"
+msgstr ""
+
+#. module: connector_importer
 #: model:ir.model.fields,help:connector_importer.field_import_backend__job_running
 msgid "Tells you if a job is running for this backend."
 msgstr ""
@@ -765,6 +804,7 @@ msgid ""
 msgstr ""
 
 #. module: connector_importer
+#. odoo-python
 #: code:addons/connector_importer/utils/misc.py:0
 #, python-format
 msgid ""
@@ -773,8 +813,19 @@ msgid ""
 msgstr ""
 
 #. module: connector_importer
+#: model_terms:ir.ui.view,arch_db:connector_importer.view_import_backend_form
+msgid ""
+"This action will mark all jobs as done even if in progress. Are you sure?"
+msgstr ""
+
+#. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.recordset_docs
 msgid "Translatable"
+msgstr ""
+
+#. module: connector_importer
+#: model_terms:ir.ui.view,arch_db:connector_importer.view_import_recordset_form
+msgid "Trigger on"
 msgstr ""
 
 #. module: connector_importer
@@ -809,14 +860,6 @@ msgid "Version"
 msgstr ""
 
 #. module: connector_importer
-#: model_terms:ir.ui.view,arch_db:connector_importer.view_import_backend_form
-msgid ""
-"WARNING: one or more jobs are scheduled for a recorset or a record. <br/>\n"
-"                    You will not be able to run the import again or to delete this backend<br/>\n"
-"                    until you complete the jobs."
-msgstr ""
-
-#. module: connector_importer
 #: model:ir.model.fields.selection,name:connector_importer.selection__import_recordset__jobs_global_state__wait_dependencies
 msgid "Wait Dependencies"
 msgstr ""
@@ -841,6 +884,7 @@ msgid ""
 msgstr ""
 
 #. module: connector_importer
+#. odoo-python
 #: code:addons/connector_importer/models/backend.py:0
 #: code:addons/connector_importer/models/job_mixin.py:0
 #, python-format
