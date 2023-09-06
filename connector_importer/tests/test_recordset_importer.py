@@ -2,7 +2,9 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-import mock
+from unittest import mock
+
+from markupsafe import Markup
 
 from odoo.tools import mute_logger
 
@@ -18,6 +20,9 @@ RECORD_MODEL = MOD_PATH + ".models.record.ImportRecord"
 class TestRecordsetImporter(TestImporterBase):
     def _get_components(self):
         return [PartnerMapper, PartnerRecordImporter]
+
+    def test_docs_html(self):
+        self.assertTrue(isinstance(self.recordset.docs_html, Markup))
 
     @mute_logger("[importer]")
     @mock.patch("%s.run_import" % RECORD_MODEL)

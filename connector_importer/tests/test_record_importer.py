@@ -8,6 +8,10 @@ from .common import TestImporterBase
 
 MOD_PATH = "odoo.addons.connector_importer"
 RECORD_MODEL = MOD_PATH + ".models.record.ImportRecord"
+LOGGERS_TO_MUTE = (
+    "[importer]",
+    "odoo.addons.queue_job.utils",
+)
 
 
 class TestRecordImporter(TestImporterBase):
@@ -31,7 +35,7 @@ class TestRecordImporter(TestImporterBase):
 
         return [PartnerRecordImporter, PartnerMapper]
 
-    @mute_logger("[importer]")
+    @mute_logger(*LOGGERS_TO_MUTE)
     def test_importer_create(self):
         # set them on record
         self.record.set_data(self.fake_lines)
@@ -42,12 +46,13 @@ class TestRecordImporter(TestImporterBase):
         expected = {
             model: {"created": 10, "errored": 0, "updated": 0, "skipped": 0},
         }
-        self.assertEqual(res, expected)
+        delayable = res[model]
+        self.assertEqual(delayable.result, expected[model])
         for k, v in expected[model].items():
             self.assertEqual(len(report[model][k]), v)
         self.assertEqual(self.env[model].search_count([("ref", "like", "id_%")]), 10)
 
-    @mute_logger("[importer]")
+    @mute_logger(*LOGGERS_TO_MUTE)
     def test_importer_skip(self):
         # generate 10 records
         lines = self._fake_lines(10, keys=("id", "fullname"))
@@ -60,7 +65,8 @@ class TestRecordImporter(TestImporterBase):
         report = self.recordset.get_report()
         model = "res.partner"
         expected = {model: {"created": 8, "errored": 0, "updated": 0, "skipped": 2}}
-        self.assertEqual(res, expected)
+        delayable = res[model]
+        self.assertEqual(delayable.result, expected[model])
         for k, v in expected[model].items():
             self.assertEqual(len(report[model][k]), v)
         skipped_msg1 = report[model]["skipped"][0]["message"]
@@ -71,7 +77,7 @@ class TestRecordImporter(TestImporterBase):
         self.assertEqual(skipped_msg2, "MISSING REQUIRED SOURCE KEY=id")
         self.assertEqual(self.env[model].search_count([("ref", "like", "id_%")]), 8)
 
-    @mute_logger("[importer]")
+    @mute_logger(*LOGGERS_TO_MUTE)
     def test_importer_update(self):
         # generate 10 records
         lines = self._fake_lines(10, keys=("id", "fullname"))
@@ -80,7 +86,8 @@ class TestRecordImporter(TestImporterBase):
         report = self.recordset.get_report()
         model = "res.partner"
         expected = {model: {"created": 10, "errored": 0, "updated": 0, "skipped": 0}}
-        self.assertEqual(res, expected)
+        delayable = res[model]
+        self.assertEqual(delayable.result, expected[model])
         for k, v in expected[model].items():
             self.assertEqual(len(report[model][k]), v)
         # now run it a second time
@@ -90,7 +97,8 @@ class TestRecordImporter(TestImporterBase):
         res = self.record.run_import()
         report = self.recordset.get_report()
         expected = {model: {"created": 0, "errored": 0, "updated": 10, "skipped": 0}}
-        self.assertEqual(res, expected)
+        delayable = res[model]
+        self.assertEqual(delayable.result, expected[model])
         for k, v in expected[model].items():
             self.assertEqual(len(report[model][k]), v)
         # now run it a second time
@@ -100,7 +108,8 @@ class TestRecordImporter(TestImporterBase):
         res = self.record.run_import()
         report = self.recordset.get_report()
         expected = {model: {"created": 0, "errored": 0, "updated": 0, "skipped": 10}}
-        self.assertEqual(res, expected)
+        delayable = res[model]
+        self.assertEqual(delayable.result, expected[model])
         for k, v in expected[model].items():
             self.assertEqual(len(report[model][k]), v)
         skipped_msg1 = report[model]["skipped"][0]["message"]

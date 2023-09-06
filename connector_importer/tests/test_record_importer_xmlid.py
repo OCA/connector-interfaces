@@ -6,6 +6,11 @@ from odoo.tools import mute_logger
 
 from .common import TestImporterBase
 
+LOGGERS_TO_MUTE = (
+    "[importer]",
+    "odoo.addons.queue_job.utils",
+)
+
 
 class TestRecordImporterXMLID(TestImporterBase):
     def setUp(self):
@@ -25,13 +30,15 @@ class TestRecordImporterXMLID(TestImporterBase):
             PartnerRecordImporterXMLID,
         ]
 
-    @mute_logger("[importer]")
+    @mute_logger(*LOGGERS_TO_MUTE)
     def test_importer_create(self):
         self.import_type.write(
             {
                 "options": """
 - model: res.partner
-  importer: fake.partner.importer.xmlid
+  importer:
+    name:
+      fake.partner.importer.xmlid
                 """
             }
         )
@@ -44,7 +51,8 @@ class TestRecordImporterXMLID(TestImporterBase):
         report = self.recordset.get_report()
         model = "res.partner"
         expected = {model: {"created": 10, "errored": 0, "updated": 0, "skipped": 0}}
-        self.assertEqual(res, expected)
+        delayable = res[model]
+        self.assertEqual(delayable.result, expected[model])
         for k, v in expected[model].items():
             self.assertEqual(len(report[model][k]), v)
         self.assertEqual(self.env[model].search_count([("ref", "like", "id_%")]), 10)

@@ -20,66 +20,6 @@ class TestImportType(common.TransactionCase):
         with self.assertRaises(IntegrityError):
             self.type_model.create({"name": "Duplicated Ok", "key": "ok"})
 
-    @mute_logger("odoo.addons.connector_importer.models.import_type")
-    def test_available_importers_legacy(self):
-        """Ensure old text-like settings work with new options."""
-        itype = self.type_model.create(
-            {
-                "name": "Ok",
-                "key": "ok",
-                "settings": """
-            # skip this pls
-            res.partner::partner.importer
-            res.users::user.importer
-
-            # this one as well
-            another.one :: import.withspaces
-            """,
-            }
-        )
-        importers = tuple(itype.available_importers())
-        self.assertEqual(
-            importers,
-            (
-                {
-                    "importer": "partner.importer",
-                    "model": "res.partner",
-                    "is_last_importer": False,
-                    "context": {},
-                    "options": {
-                        "importer": {},
-                        "mapper": {},
-                        "record_handler": {},
-                        "tracking_handler": {},
-                    },
-                },
-                {
-                    "importer": "user.importer",
-                    "model": "res.users",
-                    "is_last_importer": False,
-                    "context": {},
-                    "options": {
-                        "importer": {},
-                        "mapper": {},
-                        "record_handler": {},
-                        "tracking_handler": {},
-                    },
-                },
-                {
-                    "importer": "import.withspaces",
-                    "model": "another.one",
-                    "is_last_importer": True,
-                    "context": {},
-                    "options": {
-                        "importer": {},
-                        "mapper": {},
-                        "record_handler": {},
-                        "tracking_handler": {},
-                    },
-                },
-            ),
-        )
-
     def test_available_importers_defaults(self):
         options = """
         - model: res.partner
@@ -124,16 +64,20 @@ class TestImportType(common.TransactionCase):
     def test_available_importers(self):
         options = """
         - model: res.partner
-          importer: partner.importer
+          importer:
+            name: fake.partner.importer
         - model: res.users
-          importer: user.importer
+          importer:
+            name:
+                user.importer
           options:
             importer:
               baz: True
             record_handler:
               bar: False
         - model: another.one
-          importer: import.withspaces
+          importer:
+            name: import.withspaces
           context:
             foo: True
         """
@@ -141,7 +85,9 @@ class TestImportType(common.TransactionCase):
         importers = tuple(itype.available_importers())
         expected = (
             {
-                "importer": "partner.importer",
+                "importer": {
+                    "name": "fake.partner.importer",
+                },
                 "model": "res.partner",
                 "is_last_importer": False,
                 "context": {},
@@ -153,7 +99,9 @@ class TestImportType(common.TransactionCase):
                 },
             },
             {
-                "importer": "user.importer",
+                "importer": {
+                    "name": "user.importer",
+                },
                 "model": "res.users",
                 "is_last_importer": False,
                 "context": {},
@@ -165,7 +113,9 @@ class TestImportType(common.TransactionCase):
                 },
             },
             {
-                "importer": "import.withspaces",
+                "importer": {
+                    "name": "import.withspaces",
+                },
                 "model": "another.one",
                 "is_last_importer": True,
                 "context": {"foo": 1},

@@ -2,6 +2,7 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
+from markupsafe import Markup
 
 import odoo.tests.common as common
 
@@ -29,7 +30,8 @@ class TestRecordset(common.TransactionCase):
                 "key": "ok",
                 "options": """
 - model: res.partner
-  importer: partner.importer
+  importer:
+    name: partner.importer
             """,
             }
         )
@@ -72,7 +74,7 @@ class TestRecordset(common.TransactionCase):
         self.recordset.set_report(val, reset=True)
         self.assertDictEqual(self.recordset.get_report(), val)
 
-    def test_get_report_html_data(self):
+    def test_get_report_html(self):
         val = {
             "_last_start": "2018-01-20",
             "res.partner": {
@@ -90,3 +92,24 @@ class TestRecordset(common.TransactionCase):
         key = list(by_model.keys())[0]
         self.assertEqual(key._name, "ir.model")
         self.assertEqual(key.model, "res.partner")
+        self.assertTrue(isinstance(self.recordset.report_html, Markup))
+
+    def test_importable_models(self):
+        self.itype.write(
+            {
+                "options": """
+- model: res.partner
+  importer:
+    name: partner.importer
+- model: res.partner.category
+- model: res.lang
+        """
+            }
+        )
+        expected = ("res.partner", "res.lang", "res.partner.category")
+        models = self.recordset.importable_model_ids.mapped("model")
+        for model in expected:
+            self.assertIn(model, models)
+        models = self.recordset.server_action_importable_model_ids.mapped("model")
+        for model in expected + ("import.recordset",):
+            self.assertIn(model, models)
