@@ -17,11 +17,11 @@ TODO: add repo description.
 
 [//]: # (addons)
 
-Unported addons
----------------
+Available addons
+----------------
 addon | version | maintainers | summary
 --- | --- | --- | ---
-[connector_importer](connector_importer/) | 15.0.1.4.0 (unported) | [![simahawk](https://github.com/simahawk.png?size=30px)](https://github.com/simahawk) | This module takes care of import sessions.
+[connector_importer](connector_importer/) | 16.0.1.0.0 | [![simahawk](https://github.com/simahawk.png?size=30px)](https://github.com/simahawk) | This module takes care of import sessions.
 
 [//]: # (end addons)
 
