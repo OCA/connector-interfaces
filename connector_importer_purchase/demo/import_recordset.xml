@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 Camptocamp SA
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo>
+
+  <record id="demo_import_recordset_purchase_order" model="import.recordset">
+    <field name="sequence" eval="20" />
+    <field name="backend_id" ref="demo_import_backend" />
+    <field name="source_model">import.source.csv</field>
+    <field name="source_id" ref="demo_import_source_csv_purchase_order" />
+    <field name="import_type_id" ref="import_type_purchase_order" />
+  </record>
+
+</odoo>
