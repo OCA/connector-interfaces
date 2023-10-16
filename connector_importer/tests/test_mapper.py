@@ -181,3 +181,16 @@ class TestRecordsetImporter(TestImporterBase):
             self.assertEqual(cat.name, "New category")
             self.assertEqual(res["parent_id"], parent.id)
             self.assertEqual(res["category_id"], [(6, 0, [cat.id])])
+
+    def test_dynamic_mapper_rename_keys(self):
+        rec = {
+            "another_name": "John Doe",
+        }
+        # Whitelist
+        expected = {
+            "name": "John Doe",
+        }
+        mapper = self._get_dynamyc_mapper(
+            options=dict(source_key_rename={"another_name": "name"})
+        )
+        self.assertEqual(mapper.dynamic_fields(rec), expected)
