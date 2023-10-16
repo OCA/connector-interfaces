@@ -42,6 +42,11 @@ class DynamicMapper(Component):
                 # Eg: prefix all supplier fields w/ `supplier.`
                 fname = fname[len(prefix) :]
                 clean_record[fname] = clean_record.pop(prefix + fname)
+            final_fname = self._get_field_name(fname, clean_record)
+            if final_fname != fname:
+                clean_record[final_fname] = clean_record.pop(fname)
+                fname = final_fname
+
             if available_fields.get(fname):
                 fspec = available_fields.get(fname)
                 ftype = fspec["type"]
@@ -112,6 +117,18 @@ class DynamicMapper(Component):
     @property
     def _source_key_prefix(self):
         return self.work.options.mapper.get("source_key_prefix", "")
+
+    @property
+    def _source_key_rename(self):
+        return self.work.options.mapper.get("source_key_rename", {})
+
+    def _get_field_name(self, fname, clean_record):
+        """Return final field name.
+
+        Field names can be manipulated via mapper option `source_key_rename`
+        which must be a dictionary w/ source name -> destination name.
+        """
+        return self._source_key_rename.get(fname, fname)
 
     def _is_xmlid_key(self, fname, ftype):
         return fname.startswith("xid::") and ftype in (
