@@ -42,8 +42,8 @@ class TestImportType(common.TransactionCase):
             importers,
             (
                 {
-                    "importer": "partner.importer",
                     "model": "res.partner",
+                    "importer": "partner.importer",
                     "is_last_importer": False,
                     "context": {},
                     "options": {
@@ -54,8 +54,8 @@ class TestImportType(common.TransactionCase):
                     },
                 },
                 {
-                    "importer": "user.importer",
                     "model": "res.users",
+                    "importer": "user.importer",
                     "is_last_importer": False,
                     "context": {},
                     "options": {
@@ -66,8 +66,8 @@ class TestImportType(common.TransactionCase):
                     },
                 },
                 {
-                    "importer": "import.withspaces",
                     "model": "another.one",
+                    "importer": "import.withspaces",
                     "is_last_importer": True,
                     "context": {},
                     "options": {

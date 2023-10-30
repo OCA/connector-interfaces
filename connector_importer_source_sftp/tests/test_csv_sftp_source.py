@@ -4,8 +4,7 @@
 
 import base64
 import io
-
-import mock
+from unittest import mock
 
 from odoo.tools import mute_logger
 
@@ -15,7 +14,6 @@ from .common import SFTPSourceTransactionComponentCase
 
 
 class TestSourceCSV(SFTPSourceTransactionComponentCase):
-
     extra_fields = [
         "chunk_size",
         "csv_filesize",

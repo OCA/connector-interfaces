@@ -80,7 +80,11 @@ class TestImporterMixin(object):
                 "key": "fake",
                 "options": """
 - model: res.partner
-  importer: fake.partner.importer
+  importer:
+    name: fake.partner.importer
+  options:
+    record_handler:
+        match_domain: "[('name', '=', values['name'])]"
                 """,
             }
         )
