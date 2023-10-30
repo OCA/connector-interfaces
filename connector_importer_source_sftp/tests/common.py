@@ -2,10 +2,7 @@
 # @author: Simone Orsi <simahawk@gmail.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from odoo.addons.component.tests.common import (
-    TransactionComponentCase,
-    TransactionComponentRegistryCase,
-)
+from odoo.addons.component.tests.common import TransactionComponentCase
 from odoo.addons.connector_importer.tests.common import TestImporterMixin
 
 
@@ -28,7 +25,7 @@ class SFTPSourceTransactionComponentCase(
 
 
 class SFTPSourceTransactionComponentRegistryCase(
-    TransactionComponentRegistryCase, TestImporterMixin, TestSourceCSVSFTPMixin
+    TestImporterMixin, TestSourceCSVSFTPMixin
 ):
     @classmethod
     def setUpClass(cls):
