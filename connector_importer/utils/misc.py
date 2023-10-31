@@ -66,7 +66,7 @@ def to_b64(file_content):
     """Safe convertion to b64"""
     try:
         # py > 3.9
-        return base64.encodestring(file_content)
+        return base64.encodebytes(file_content)
     except AttributeError:
         # py <= 3.9
         return base64.b64encode(file_content)
