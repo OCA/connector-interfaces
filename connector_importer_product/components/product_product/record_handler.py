@@ -33,6 +33,34 @@ class ProductProductRecordHandler(Component):
     def odoo_post_write(self, odoo_record, values, orig_values):
         self._update_template_attributes(odoo_record, values, orig_values)
 
+    def odoo_create(self, values, orig_values):
+        odoo_record = super().odoo_create(values, orig_values)
+        # Set the external ID for the template if necessary
+        # TODO: add tests
+        self._handle_template_xid(odoo_record, values, orig_values)
+        return odoo_record
+
+    def _handle_template_xid(self, odoo_record, values, orig_values):
+        """Create the xid for the template if needed.
+
+        The xid for the variant has been already created by `odoo_create`.
+        If the template is identified via xid using the column `xid::product_tmpl_id`
+        we must create this reference or other variant lines won't use the same template.
+        """
+        if self.must_generate_xmlid and orig_values.get("xid::product_tmpl_id"):
+            tmpl_xid = sanitize_external_id(orig_values.get("xid::product_tmpl_id"))
+            if not self.env.ref(tmpl_xid, raise_if_not_found=False):
+                module, id_ = tmpl_xid.split(".", 1)
+                self.env["ir.model.data"].create(
+                    {
+                        "name": id_,
+                        "module": module,
+                        "model": odoo_record.product_tmpl_id._name,
+                        "res_id": odoo_record.product_tmpl_id.id,
+                        "noupdate": False,
+                    }
+                )
+
     def _update_template_attributes(self, odoo_record, values, orig_values):
         """Update the 'attribute_line_ids' field of the related template.
 
@@ -59,13 +87,15 @@ class ProductProductRecordHandler(Component):
 
         * product attribute column values will be used to find the values
           which were already imported first by name then by XID.
-          See `_find_attr_value` docs.
+          See `_find_or_create_attr_value` docs.
         """
         TplAttrLine = self.env["product.template.attribute.line"]
         TplAttrValue = self.env["product.template.attribute.value"]
         template = odoo_record.product_tmpl_id
+        blacklist = self.work.options.mapper.get("source_key_blacklist", [])
         attr_columns = filter(
-            lambda col: col.startswith("product_attr"), orig_values.keys()
+            lambda col: col.startswith("product_attr") and col not in blacklist,
+            orig_values.keys(),
         )
         tpl_attr_values = self.env["product.template.attribute.value"]
         # Detect and gather attributes and attribute values to import
@@ -73,7 +103,8 @@ class ProductProductRecordHandler(Component):
         for attr_column in attr_columns:
             if not orig_values[attr_column]:
                 continue
-            attr_value = self._find_attr_value(orig_values, attr_column)
+            attr = self._find_attr(attr_column, orig_values)
+            attr_value = self._find_or_create_attr_value(attr, attr_column, orig_values)
             if attr_value:
                 attr_values_to_import_ids.append(attr_value.id)
         # Detect if the set of attributes among this template is wrong
@@ -163,28 +194,48 @@ class ProductProductRecordHandler(Component):
         else:
             odoo_record.product_template_attribute_value_ids = valid_tpl_attr_values
 
+    def _find_attr(self, attr_column, orig_values):
+        """Find matching attribute."""
+        attr_xid = sanitize_external_id(attr_column)
+        return self.env.ref(attr_xid)
+
     # TODO: add unit test
-    def _find_attr_value(self, orig_values, attr_column):
+    def _find_or_create_attr_value(self, attr, attr_column, orig_values):
         """Find matching attribute value.
 
-        FIXME
+        The column name is used to compute the product.attribute xid. Eg:
 
-          By computing their XID w/ the column name
-          + _value_ + the value itself.
+            * product_attr_Size -> __setup__.product_attr_Size
+            * product_attr_Color -> __setup__.product_attr_Color
 
-          For instance, a column `product_attr_Size` could have the values
-          "S" , "M", "L" and they will be converted
-          to find their matching attributes, like this:
+        The value will be used to determine the product.attribute.value.
+        The lookup happens in this order:
 
-            * S -> product_attr_Size_value_S
-            * M -> product_attr_Size_value_M
-            * L -> product_attr_Size_value_L
+        1. search by name
+        2. search by xid, assuming the value itself is already an xid.
+        3. search by composed xid, assuming the value is the last part of an xid.
+           The first part is computed as: `__setup__.$product_attr_xid_value_$col_value`.
+           For instance, a column `product_attr_Size` could have the values
+           "S" , "M", "L" and they will be converted
+           to find their matching attributes, like this:
 
-          If no attribute value matching this convention is found,
-          the value will be skipped.
+             * S -> product_attr_Size_value_S
+             * M -> product_attr_Size_value_M
+             * L -> product_attr_Size_value_L
+
+        If no attribute value matching this convention is found,
+        the value will be skipped unless `create_attribute_value_if_missing`
+        flag is passed to `record_handler` options. Eg:
+
+            - model: product.product
+              options:
+                importer:
+                  odoo_unique_key: barcode
+                mapper:
+                  name: product.product.mapper
+                record_handler:
+                  create_attribute_value_if_missing: true
         """
-        attr_xid = sanitize_external_id(attr_column)
-        attr = self.env.ref(attr_xid)
         # 1st search by name
         orig_val = orig_values[attr_column]
         model = self.env["product.attribute.value"]
@@ -196,10 +247,44 @@ class ProductProductRecordHandler(Component):
             attr_value = self.env.ref(sanitize_external_id(orig_val), False)
         if not attr_value and "_value_" not in orig_val:
             # 3rd try w/ auto generated xid
-            value = slugify_one(orig_val).replace("-", "_")
-            xid = f"{attr_column}_value_{value}"
-            attr_value_external_id = sanitize_external_id(xid)
-            attr_value = self.env.ref(attr_value_external_id, False)
+            attr_value_xid = self._make_attribute_value_xid(attr_column, orig_val)
+            attr_value = self.env.ref(attr_value_xid, False)
+        if not attr_value and self.create_attribute_value_if_missing:
+            attr_value = self._create_missing_attribute_value(
+                attr, attr_column, orig_val
+            )
         if not attr_value:
             logger.error("Cannot determine product attr value: %s", orig_val)
         return attr_value
+
+    def _make_attribute_value_xid(self, attr_column, orig_val):
+        value = slugify_one(orig_val).replace("-", "_")
+        xid = f"{attr_column}_value_{value}"
+        return sanitize_external_id(xid)
+
+    def _create_missing_attribute_value(self, attr, attr_column, orig_val):
+        rec = self.env["product.attribute.value"].create(
+            self._create_missing_attribute_value_values(attr, orig_val)
+        )
+        xid = self._make_attribute_value_xid(attr_column, orig_val)
+        module, id_ = xid.split(".", 1)
+        self.env["ir.model.data"].create(
+            {
+                "name": id_,
+                "module": module,
+                "model": rec._name,
+                "res_id": rec.id,
+                "noupdate": False,
+            }
+        )
+        logger.info("Created product.attribute.value: %s", xid)
+        return rec
+
+    def _create_missing_attribute_value_values(self, attr, orig_val):
+        return {"attribute_id": attr.id, "name": orig_val}
+
+    @property
+    def create_attribute_value_if_missing(self):
+        return self.work.options.record_handler.get(
+            "create_attribute_value_if_missing", False
+        )

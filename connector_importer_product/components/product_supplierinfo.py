@@ -2,7 +2,9 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 
 from odoo.addons.component.core import Component
+from odoo.addons.connector.components.mapper import mapping
 from odoo.addons.connector_importer.utils.mapper_utils import backend_to_rel
+from odoo.addons.connector_importer.utils.misc import sanitize_external_id
 
 
 class ProductSupplierinfoMapper(Component):
@@ -12,22 +14,31 @@ class ProductSupplierinfoMapper(Component):
     _apply_on = "product.supplierinfo"
     _usage = "importer.mapper"
 
-    direct = [
-        (
-            backend_to_rel(
-                "tmpl_default_code",
-                # See motiviation in product_product.mapper.
-                search_field="product_variant_ids.default_code",
-            ),
-            "product_tmpl_id",
-        ),
-    ]
     required = {
-        "__name": "name",
+        "__name": "partner_id",
         "__tmpl": "product_tmpl_id",
     }
 
-    # TODO: set partner supplier rank
+    @mapping
+    def product_tmpl_id(self, record):
+        """Ensure a template is found."""
+        # TODO: add test
+        value = None
+        if record.get("tmpl_default_code"):
+            handler = backend_to_rel(
+                "tmpl_default_code",
+                # See motiviation in product_product.mapper.
+                search_field="product_variant_ids.default_code",
+            )
+            value = handler(record, "product_tmpl_id")
+        elif record.get("xid::product_tmpl_id"):
+            # Special case for when products are univocally identified via xid.
+            # TODO: try to get rid of this
+            # by allowing to specify backend_to_rel options via conf
+            tmpl_xid = sanitize_external_id(record.get("xid::product_tmpl_id"))
+            rec = self.env.ref(tmpl_xid, raise_if_not_found=False)
+            value = rec.id if rec else None
+        return {"product_tmpl_id": value}
 
 
 class ProductSupplierinfoRecordHandler(Component):
