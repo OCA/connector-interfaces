@@ -71,3 +71,31 @@ class TestRecordImporter(TestImporterBase):
         self.assertEqual(
             domain, [("name", "=", values["name"]), ("age", "=", values["age"])]
         )
+
+    def test_odoo_write_purge_values(self):
+        handler = self._get_handler()
+
+        rec = self.env.ref("base.partner_admin")
+
+        new_credit = rec.credit_limit + 1
+        vals = {"name": rec.name, "credit_limit": new_credit, "bad_key": 1}
+
+        vals_copy = vals.copy()
+        handler._odoo_write_purge_values(rec, vals_copy)
+        # Only key bad_key must have been removed
+        self.assertEqual(vals_copy, {"name": rec.name, "credit_limit": new_credit})
+
+        handler.work.options["record_handler"] = {
+            "skip_fields_unchanged": True,
+        }
+        vals_copy = vals.copy()
+        handler._odoo_write_purge_values(rec, vals_copy)
+        # name is the same as the existing value, must have been removed
+        self.assertEqual(vals_copy, {"credit_limit": new_credit})
+
+        vals["credit_limit"] = str(rec.credit_limit)
+        vals_copy = vals.copy()
+        handler._odoo_write_purge_values(rec, vals_copy)
+        # Values are not converted to the field type when used for comparing, they
+        # must not be removed
+        self.assertEqual(vals_copy, {"credit_limit": str(rec.credit_limit)})
