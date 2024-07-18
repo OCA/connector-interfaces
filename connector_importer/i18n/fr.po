@@ -6,13 +6,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 15.0\n"
 "Report-Msgid-Bugs-To: \n"
-"Last-Translator: Automatically generated\n"
+"PO-Revision-Date: 2024-07-18 18:58+0000\n"
+"Last-Translator: PaoloYam <pyammoun@student.42lausanne.ch>\n"
 "Language-Team: none\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 5.6.2\n"
 
 #. module: connector_importer
 #: model:ir.model.fields,help:connector_importer.field_import_type__settings
@@ -150,7 +152,7 @@ msgstr ""
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_recordset__create_date
 msgid "Create Date"
-msgstr ""
+msgstr "Date de création"
 
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_backend__create_uid
@@ -628,7 +630,7 @@ msgstr ""
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_recordset__override_existing
 msgid "Override existing items"
-msgstr ""
+msgstr "Remplacer l'élément existant"
 
 #. module: connector_importer
 #: model:ir.model.fields.selection,name:connector_importer.selection__import_recordset__jobs_global_state__pending
