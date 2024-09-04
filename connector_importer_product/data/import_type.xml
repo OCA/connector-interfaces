@@ -66,10 +66,25 @@
     <field name="name">Import Product Supplier Info</field>
     <field name="key">product_supplierinfo</field>
     <field name="options">
+- model: res.partner
+  options:
+    importer:
+      odoo_unique_key: name
+      override_existing: false
+    mapper:
+      name: importer.mapper.dynamic
+      source_key_whitelist: supplier.name
+      source_key_rename:
+        partner_id: name
+      default_keys:
+        supplier_rank: 1
+
 - model: product.supplierinfo
-  importer:
-    name:
-      product.supplierinfo.importer
+  options:
+    importer:
+      odoo_unique_key: partner_id
+    mapper:
+      name: product.supplierinfo.mapper
     </field>
   </record>
 
@@ -106,17 +121,29 @@
       name: importer.mapper.dynamic
       source_key_prefix: supplier.
       source_key_whitelist: supplier.name
+      source_key_rename:
+        partner_id: name
       default_keys:
         supplier_rank: 1
 
 - model: product.supplierinfo
   options:
     importer:
-      odoo_unique_key: name
+      odoo_unique_key: partner_id
     mapper:
       name: product.supplierinfo.mapper
       source_key_prefix: supplier.
     </field>
+
+<!--
+  Example of pkg import in all-in-one if the unique key for product.product is `id`
+- model: product.packaging
+  options:
+    record_handler:
+      match_domain: "[('product_id', '=', ref_id(orig_values['id'])), ('qty', '=', values['qty'])]"
+    mapper:
+      name: importer.mapper.dynamic
+-->
   </record>
 
 </odoo>
