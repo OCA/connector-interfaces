@@ -9,7 +9,47 @@ from ..utils.mapper_utils import backend_to_rel, convert, xmlid_to_rel
 
 
 class DynamicMapper(Component):
-    """A mapper that dynamically converts input data to odoo fields values."""
+    """A mapper that dynamically converts input data to odoo fields values.
+
+    The behavior is affected by the options provided to the mapper work ctx.
+    Normally these options are provided by the importer component
+    that will load them from the import type yaml conf:
+
+        options:
+            mapper:
+                source_key_whitelist: []
+                source_key_blacklist: []
+                source_key_empty_skip: []
+                source_key_prefix: ""
+                source_key_rename: {}
+                converter: {}
+
+    `source_key_whitelist` and `source_key_blacklist` are used to filter the keys.
+    `source_key_empty_skip` is used to skip keys when
+        empty or no value is computed for them.
+    `source_key_prefix` is to consider only keys that start with the given prefix.
+
+        It's a sort of whitelist but it allows to filter keys dynamically
+        which is very handy when importing more than one model per import type.
+
+    `source_key_rename` is used to rename source keys to
+        destination key (the real odoo field).
+    `converter` is used to define custom converter options for specific fields.
+
+        The value must be a dict containing the params to propagate to
+            the converter function.
+        Eg: for a m2o field `partner_id` that needs to be converted to a
+            res.partner record
+        the converter option could be:
+
+            converter:
+                partner_id:
+                    create_missing: true
+                    search_field: "ref"
+
+        The options are in fact the args that the converter functions accept.
+        Have a look at the `convert` function in `mapper_utils.py` for more details.
+    """
 
     _name = "importer.mapper.dynamic"
     _inherit = "importer.base.mapper"
@@ -19,7 +59,8 @@ class DynamicMapper(Component):
     def dynamic_fields(self, record):
         """Resolve values for non mapped keys.
 
-        Source keys = destination keys.
+        :param record: a dictionary of key/value pairs coming from the source data
+            already prepared by the importer.
         """
         # TODO: add tests!
         model = self.work.model_name
