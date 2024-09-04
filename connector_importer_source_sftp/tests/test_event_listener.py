@@ -6,6 +6,7 @@ import base64
 import io
 from unittest import mock
 
+from odoo.tests.common import tagged
 from odoo.tools import mute_logger
 
 from .common import SFTPSourceTransactionComponentRegistryCase
@@ -17,6 +18,7 @@ EVENT_LISTENER_PATH = (
 SOURCE_MODEL_PATH = MOD_PATH + ".models.source_csv_sftp.ImportSourceCSVSFTP"
 
 
+@tagged("post_install", "-at_install")
 class TestRecordImporterFinishedEvent(SFTPSourceTransactionComponentRegistryCase):
     @classmethod
     def setUpClass(cls):
