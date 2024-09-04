@@ -4,8 +4,7 @@
 
 import base64
 import io
-
-import mock
+from unittest import mock
 
 from odoo.tools import mute_logger
 
