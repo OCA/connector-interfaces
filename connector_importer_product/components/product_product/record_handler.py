@@ -129,9 +129,12 @@ class ProductProductRecordHandler(Component):
         if existing_variant and attrs_to_import != existing_attrs:
             raise ValueError(
                 _(
-                    "Product '{}' has not the same attributes than '{}'. "
-                    "Unable to import it."
-                ).format(odoo_record.default_code, existing_variant.default_code)
+                    "Product '%(code)s' has not the same attributes "
+                    "than '%(existing_code)s'. "
+                    "Unable to import it.",
+                    code=odoo_record.default_code,
+                    existing_code=existing_variant.default_code,
+                )
             )
         # Prepare attributes and attribute values
         for attr_value in attr_values_to_import:
@@ -185,9 +188,12 @@ class ProductProductRecordHandler(Component):
         if combination_indices and existing_product:
             raise ValueError(
                 _(
-                    "Product '{}' seems to be a duplicate of '{}' (same attributes). "
-                    "Unable to import it."
-                ).format(odoo_record.default_code, existing_product.default_code)
+                    "Product '%(code)s' "
+                    "seems to be a duplicate of '%(existing_code)s' (same attributes). "
+                    "Unable to import it.",
+                    code=odoo_record.default_code,
+                    existing_code=existing_variant.default_code,
+                )
             )
         # It is required to set the whole template attribute values at the end
         # (and not in the loop) to not trigger internal mechanisms done by Odoo
