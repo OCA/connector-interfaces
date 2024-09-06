@@ -112,6 +112,8 @@ class ProductProductRecordHandler(Component):
         # and B, we cannot import a second variant V2 with attributes A and C
         # for instance, attributes have to be the same among all variants of a
         # template)
+        if not attr_values_to_import_ids:
+            return
         attr_values_to_import = self.env["product.attribute.value"].browse(
             attr_values_to_import_ids
         )
