@@ -26,7 +26,7 @@
     # https://github.com/OCA/server-auth/issues/424
     # https://github.com/OCA/storage/pull/247
     # https://github.com/OCA/connector-interfaces/pull/94
-    "external_dependencies": {"python": ["cryptography<37"]},
+    "external_dependencies": {"python": ["cryptography<39"]},
     "data": ["views/source_csv_sftp.xml", "security/ir.model.access.csv"],
     "demo": ["demo/storage_backend_demo.xml", "demo/import_source_demo.xml"],
 }
