@@ -54,7 +54,15 @@ class ImportMapper(Component):
         """
         req = dict(self.required)
         req.update(self.work.options.mapper.get("required_keys", {}))
+
+        if self.required_keys_ignore_mapper:
+            req = self.work.options.mapper.get("required_keys", {})
+
         return req
+
+    @property
+    def required_keys_ignore_mapper(self):
+        return self.work.options.mapper.get("required_keys_ignore_mapper", False)
 
     translatable = []
 
