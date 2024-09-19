@@ -157,19 +157,25 @@ class OdooRecordHandler(Component):
         self.update_translations(odoo_record, translatable)
         # Set the external ID if necessary
         if self.must_generate_xmlid:
-            xid = self._get_xmlid(values, orig_values)
-            if not self.env.ref(xid, raise_if_not_found=False):
-                module, id_ = xid.split(".", 1)
-                self.env["ir.model.data"].create(
-                    {
-                        "name": id_,
-                        "module": module,
-                        "model": odoo_record._name,
-                        "res_id": odoo_record.id,
-                        "noupdate": False,
-                    }
-                )
+            self.odoo_create_xmlid(odoo_record, values, orig_values)
         return odoo_record
+
+    def odoo_create_xmlid(self, odoo_record, values, orig_values):
+        xid = self._get_xmlid(values, orig_values)
+        return self._create_xmlid(odoo_record, xid)
+
+    def _create_xmlid(self, odoo_record, xid):
+        if not self.env.ref(xid, raise_if_not_found=False):
+            module, id_ = xid.split(".", 1)
+            return self.env["ir.model.data"].create(
+                {
+                    "name": id_,
+                    "module": module,
+                    "model": odoo_record._name,
+                    "res_id": odoo_record.id,
+                    "noupdate": False,
+                }
+            )
 
     def odoo_pre_write(self, odoo_record, values, orig_values):
         """Do some extra stuff before updating an existing object."""
