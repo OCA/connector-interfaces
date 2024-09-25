@@ -25,7 +25,7 @@ class TestRecordsetImporter(TestImporterBase):
         self.assertTrue(isinstance(self.recordset.docs_html, Markup))
 
     @mute_logger("[importer]")
-    @mock.patch("%s.run_import" % RECORD_MODEL)
+    @mock.patch(f"{RECORD_MODEL}.run_import")
     def test_recordset_importer(self, mocked_run_inport):
         # generate 100 records
         lines = self._fake_lines(100, keys=("id", "fullname"))

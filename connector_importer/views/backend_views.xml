@@ -14,14 +14,14 @@
                             type="object"
                             string="Import all"
                             confirm="You are about to run ALL configured recordsets. Are you sure?"
-                            attrs="{'invisible': ['|', ('job_running','=',True),('debug_mode','=',False)]}"
+                            invisible="job_running or debug_mode == False"
                         />
                         <button
                             class="oe_stat_button"
                             name="button_complete_jobs"
                             type="object"
                             string="Make all jobs completed"
-                            attrs="{'invisible': [('job_running','=',False)]}"
+                            invisible="job_running == False"
                             confirm="This action will mark all jobs as done even if in progress. Are you sure?"
                         />
                     </div>
@@ -33,23 +33,10 @@
                             <field name="cron_mode" />
                             <field name="debug_mode" />
                         </group>
-                        <group
-                            colspan="2"
-                            string="Cron"
-                            attrs="{'invisible':[('cron_mode','=',False)]}"
-                        >
-                            <field
-                                name="cron_start_date"
-                                attrs="{'required':[('cron_mode','=',True)]}"
-                            />
-                            <field
-                                name="cron_interval_number"
-                                attrs="{'required':[('cron_mode','=',True)]}"
-                            />
-                            <field
-                                name="cron_interval_type"
-                                attrs="{'required':[('cron_mode','=',True)]}"
-                            />
+                        <group colspan="2" string="Cron" invisible="cron_mode == False">
+                            <field name="cron_start_date" required="cron_mode" />
+                            <field name="cron_interval_number" required="cron_mode" />
+                            <field name="cron_interval_type" required="cron_mode" />
                             <field name="cron_id" readonly="1" />
                             <field name="cron_master_recordset_id" />
                             <field name="cron_cleanup_keep" />
@@ -59,7 +46,7 @@
                         id="jobs-running-alert"
                         class="alert alert-warning"
                         role="alert"
-                        attrs="{'invisible': [('job_running','=',False)]}"
+                        invisible="job_running == False"
                     >
                         <strong>JOBS RUNNING</strong>
                             WARNING: one or more jobs are scheduled for a recorset or a record.
@@ -71,9 +58,9 @@
                             <field
                                 name="recordset_ids"
                                 nolabel="1"
-                                context="{'default_backend_id': active_id}"
+                                context="{'default_backend_id': id}"
                             >
-                                <tree>
+                                <list>
                                     <field name="sequence" widget="handle" />
                                     <field name="name" readonly="1" />
                                     <field name="create_date" readonly="1" />
@@ -97,9 +84,9 @@
                                         type="object"
                                         class="oe_highlight btn-sm"
                                         string="Source"
-                                        attrs="{'invisible': [('source_model', '=', False)]}"
+                                        invisible="source_model == False"
                                     />
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page string="Notes">
@@ -113,15 +100,15 @@
     <record id="view_import_backend_tree" model="ir.ui.view">
         <field name="model">import.backend</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="name" />
                 <field name="version" />
-            </tree>
+            </list>
         </field>
     </record>
     <record id="action_import_backend" model="ir.actions.act_window">
         <field name="name">Import Backends</field>
         <field name="res_model">import.backend</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 </odoo>

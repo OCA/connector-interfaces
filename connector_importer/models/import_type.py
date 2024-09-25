@@ -131,6 +131,6 @@ class ImportType(models.Model):
 
     def copy_data(self, default=None):
         res = super().copy_data(default)
-        for data, rec in zip(res, self):
+        for data, rec in zip(res, self, strict=True):
             data["key"] = rec.key + "_COPY_FIXME"
         return res

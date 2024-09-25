@@ -87,6 +87,13 @@ Other contributors include:
 -  Guewen Baconnier (Camptocamp)
 -  Mykhailo Panarin (Camptocamp)
 -  Sébastien Alix (Camptocamp)
+-  Thien Vo (Trobz)
+
+Other credits
+-------------
+
+The migration of this module from 16.0 to 18.0 was financially supported
+by Camptocamp.
 
 Maintainers
 -----------

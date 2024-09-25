@@ -96,7 +96,8 @@ class ImportRecordset(models.Model):
         string="Executre server actions",
         help=(
             "Execute a server action when done. "
-            "You can link a server action per model or a single one for import.recordset. "
+            "You can link a server action per model "
+            "or a single one for import.recordset. "
             "In that case you'll have to use low level api "
             "to get the records that were processed. "
             "Eg: `get_report_by_model`."
