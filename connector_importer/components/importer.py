@@ -29,7 +29,7 @@ class RecordSetImporter(Component):
         """
         # reset recordset
         recordset._prepare_for_import_session()
-        msg = "START RECORDSET {} ({})".format(recordset.name, recordset.id)
+        msg = f"START RECORDSET {recordset.name} ({recordset.id})"
         logger.info(msg)
         # flush existing records as we are going to re-create them
         source = recordset.get_source()
@@ -202,16 +202,16 @@ class RecordImporter(Component):
         )
         unique_key = self.unique_key
         if missing:
-            msg = "MISSING REQUIRED SOURCE KEY={}".format(source_key)
+            msg = f"MISSING REQUIRED SOURCE KEY={source_key}"
             if unique_key and values.get(unique_key):
-                msg += ": {}={}".format(unique_key, values[unique_key])
+                msg += f": {unique_key}={values[unique_key]}"
             return {"message": msg}
         missing = not dest_key.startswith("__") and values.get(dest_key) is None
         is_xmlid = dest_key == unique_key and self.unique_key_is_xmlid
         if missing and not is_xmlid:
-            msg = "MISSING REQUIRED DESTINATION KEY={}".format(dest_key)
+            msg = f"MISSING REQUIRED DESTINATION KEY={dest_key}"
             if unique_key and values.get(unique_key):
-                msg += ": {}={}".format(unique_key, values[unique_key])
+                msg += f": {unique_key}={values[unique_key]}"
             return {"message": msg}
         return False
 
@@ -238,7 +238,7 @@ class RecordImporter(Component):
         ):
             msg = "ALREADY EXISTS"
             if self.unique_key:
-                msg += ": {}={}".format(self.unique_key, values[self.unique_key])
+                msg += f": {self.unique_key}={values[self.unique_key]}"
             return {
                 "message": msg,
                 "odoo_record": self.record_handler.odoo_find(values, orig_values).id,

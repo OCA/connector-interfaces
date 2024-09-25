@@ -40,7 +40,7 @@ class ImportSourceConsumerMixin(models.AbstractModel):
             item.source_ref_id = False
             if not item.source_id or not item.source_model:
                 continue
-            item.source_ref_id = "{0.source_model},{0.source_id}".format(item)
+            item.source_ref_id = f"{item.source_model},{item.source_id}"
 
     @api.model
     def _selection_source_ref_id(self):

@@ -40,13 +40,13 @@ def link_record(record_id, model="", record=None, name_field="name", target="_ne
         name = getattr(record, name_field, default)
         model = record._name
     link = (
-        """<a target="{target}" """
-        """href="/web?#id={id}&view_type=form&model={model}">{name}</a>"""
-    ).format(id=record_id, model=model, name=name, target=target)
+        f"""<a target="{target}" """
+        f"""href="/web?#id={record_id}&view_type=form&model={model}">{name}</a>"""
+    )
     return link
 
 
-class Reporter(object):
+class Reporter:
     """Produce a formatted HTML report from importer json data."""
 
     def __init__(self, jsondata, detailed=False, full_url=""):
@@ -68,7 +68,7 @@ class Reporter(object):
         self._html.append(el)
 
     def _wrap(self, tag, content):
-        return "<{tag}>{content}</{tag}>".format(tag=tag, content=content)
+        return f"<{tag}>{content}</{tag}>"
 
     def _line(self, content):
         return self._wrap("p", content)
@@ -118,9 +118,7 @@ class Reporter(object):
                 # skip messages
                 self._add(self._listing(self._data["errors"]))
         if self._full_url:
-            link = ('<a href="{}" target="_new">View full report</a>').format(
-                self._full_url
-            )
+            link = f'<a href="{self._full_url}" target="_new">View full report</a>'
             self._add(self._line(link))
 
 

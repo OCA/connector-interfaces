@@ -250,7 +250,7 @@ class ImportRecordset(models.Model):
 
     def _compute_full_report_url(self):
         for item in self:
-            item.full_report_url = "/importer/import-recordset/{}".format(item.id)
+            item.full_report_url = f"/importer/import-recordset/{item.id}"
 
     def debug_mode(self):
         return self.backend_id.debug_mode or os.getenv("IMPORTER_DEBUG_MODE")

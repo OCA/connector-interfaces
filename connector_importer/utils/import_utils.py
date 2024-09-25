@@ -77,11 +77,11 @@ def guess_csv_metadata(filecontent):
 
 
 def read_path(path):
-    with open(path, "r") as thefile:
+    with open(path) as thefile:
         return thefile.read()
 
 
-class CSVReader(object):
+class CSVReader:
     """Advanced CSV reader."""
 
     def __init__(
