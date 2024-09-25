@@ -177,7 +177,6 @@ class CSVReporter(models.AbstractModel):
         report_keys=None,
         group_by_status=True,
     ):
-
         line_handler = self._report_line_by_model_and_status
         if group_by_status:
             line_handler = self._report_line_by_status
@@ -190,8 +189,8 @@ class CSVReporter(models.AbstractModel):
 
     def _report_make_key(self, key, model=""):
         if model:
-            return "[R] {}: {}".format(model, key)
-        return "[R] {}".format(key)
+            return f"[R] {model}: {key}"
+        return f"[R] {key}"
 
     def _report_group_by_line(self, json_report, model_keys, report_keys):
         """Group report items by line number.

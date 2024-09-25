@@ -216,7 +216,7 @@ class OdooRecordHandler(Component):
         # the query construction is not vulnerable to SQL injection, as we are
         # replacing the table and column names here.
         # pylint: disable=sql-injection
-        query = "UPDATE {} SET {} = %s WHERE id = %s".format(record._table, fname)
+        query = f"UPDATE {record._table} SET {fname} = %s WHERE id = %s"
         self.env.cr.execute(query, (values[fname], record.id))
         record.invalidate_recordset([fname])
 

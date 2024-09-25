@@ -58,7 +58,5 @@ class TestRecordImporterXMLID(TestImporterBase):
         self.assertEqual(self.env[model].search_count([("ref", "like", "id_%")]), 10)
         # Check XML-IDs
         for i in range(1, count + 1):
-            partner = self.env.ref(
-                "__import__.id_{}".format(i), raise_if_not_found=False
-            )
+            partner = self.env.ref(f"__import__.id_{i}", raise_if_not_found=False)
             self.assertTrue(partner)

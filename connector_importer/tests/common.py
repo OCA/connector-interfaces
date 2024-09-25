@@ -2,7 +2,6 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-import io
 import logging
 
 import odoo.tests.common as common
@@ -19,7 +18,7 @@ logging.getLogger("passlib.registry").setLevel(logging.ERROR)
 
 def _load_filecontent(module, filepath, mode="r"):
     path = get_resource_path(module, filepath)
-    with io.open(path, mode) as fd:
+    with open(path, mode) as fd:
         return fd.read()
 
 
@@ -29,7 +28,7 @@ class BaseTestCase(common.TransactionCase):
         return _load_filecontent(*args, **kwargs)
 
 
-class MockedSource(object):
+class MockedSource:
     """A fake source for recordsets."""
 
     lines = []
@@ -50,13 +49,13 @@ def fake_lines(count, keys):
     for i in range(1, count + 1):
         item = _item.copy()
         for k in keys:
-            item[k] = "{}_{}".format(k, i)
+            item[k] = f"{k}_{i}"
         item["_line_nr"] = i
         res.append(item)
     return res
 
 
-class TestImporterMixin(object):
+class TestImporterMixin:
     def _setup_components(self):
         for mod in self._get_component_modules():
             self._load_module_components(mod)

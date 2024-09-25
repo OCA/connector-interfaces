@@ -104,7 +104,7 @@ class CSVSource(models.Model):
             source_xmlid = self.get_external_id()[self.id]
             if not source_xmlid:
                 return
-            xmlid = "{}_example_file".format(source_xmlid)
+            xmlid = f"{source_xmlid}_example_file"
         return self.env.ref(xmlid, raise_if_not_found=0)
 
     @api.depends("example_file_ext_id")
@@ -113,4 +113,4 @@ class CSVSource(models.Model):
             source.example_file_url = False
             att = source._get_example_attachment()
             if att:
-                source.example_file_url = "/web/content/{}/{}".format(att.id, att.name)
+                source.example_file_url = f"/web/content/{att.id}/{att.name}"
