@@ -37,24 +37,24 @@
         <field name="model">import.source.csv</field>
         <field name="priority" eval="99" />
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="name" />
                 <field name="csv_filename" />
                 <field name="csv_path" />
                 <field name="csv_delimiter" />
                 <field name="csv_quotechar" />
                 <field name="csv_encoding" />
-            </tree>
+            </list>
         </field>
     </record>
     <record id="action_import_source" model="ir.actions.act_window">
         <field name="name">Import sources</field>
         <field name="res_model">import.source.csv</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field
             name="view_ids"
             eval="[(5, 0, 0),
-                     (0, 0, {'view_mode': 'tree', 'view_id': ref('view_import_source_csv_tree')}),
+                     (0, 0, {'view_mode': 'list', 'view_id': ref('view_import_source_csv_tree')}),
                      (0, 0, {'view_mode': 'form', 'view_id': ref('view_import_source_csv_form')}),
                      ]"
         />

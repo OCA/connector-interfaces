@@ -1,5 +1,4 @@
 <odoo noupdate="1">
-
     <record model="queue.job.channel" id="channel_root_connector_importer">
         <field name="name">connector_importer</field>
         <field name="parent_id" ref="queue_job.channel_root" />
@@ -14,5 +13,4 @@
         <field name="method">import_recordset</field>
         <field name="channel_id" ref="channel_root_connector_importer" />
     </record>
-
 </odoo>

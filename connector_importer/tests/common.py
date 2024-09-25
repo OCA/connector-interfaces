@@ -5,7 +5,7 @@
 import logging
 
 import odoo.tests.common as common
-from odoo.modules.module import get_resource_path
+from odoo.tools.misc import file_path
 
 from odoo.addons.component.tests.common import TransactionComponentRegistryCase
 
@@ -17,7 +17,7 @@ logging.getLogger("passlib.registry").setLevel(logging.ERROR)
 
 
 def _load_filecontent(module, filepath, mode="r"):
-    path = get_resource_path(module, filepath)
+    path = file_path(module + "/" + filepath)
     with open(path, mode) as fd:
         return fd.read()
 

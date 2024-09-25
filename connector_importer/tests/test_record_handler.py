@@ -40,7 +40,9 @@ class TestRecordImporter(TestImporterBase):
         domain = handler._odoo_find_domain_from_options(values, orig_values)
         self.assertEqual(domain, [])
         handler.work.options["record_handler"] = {
-            "match_domain": "[('name', '=', values['name']), ('age', '=', orig_values['Age'])]"
+            "match_domain": """
+                [('name', '=', values['name']), ('age', '=', orig_values['Age'])]
+            """
         }
         domain = handler._odoo_find_domain_from_options(values, orig_values)
         self.assertEqual(
@@ -65,7 +67,9 @@ class TestRecordImporter(TestImporterBase):
         domain = handler.odoo_find_domain(values, orig_values)
         self.assertEqual(domain, [("age", "=", values["age"])])
         handler.work.options["record_handler"] = {
-            "match_domain": "[('name', '=', values['name']), ('age', '=', values['age'])]"
+            "match_domain": """
+                [('name', '=', values['name']), ('age', '=', values['age'])]
+            """
         }
         domain = handler.odoo_find_domain(values, orig_values)
         self.assertEqual(

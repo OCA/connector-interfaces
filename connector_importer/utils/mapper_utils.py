@@ -262,24 +262,19 @@ def backend_to_rel(  # noqa: C901
             and "x_name" in rel_model._fields
         ):
             modifier.search_field = "x_name"
-
         if allowed_length and len(search_value) != allowed_length:
             return None
-
         # alter search value if handler is given
         if search_value and search_value_handler:
             search_value = search_value_handler(search_value)
-
         if not search_value:
             return None
-
         search_operator = "="
         if column.type.endswith("2many"):
             # we need multiple values
             search_operator = "in"
-            if not isinstance(search_value, (list, tuple)):
+            if not isinstance(search_value, list | tuple):
                 search_value = [search_value]
-
         if modifier.search_operator:
             # override by param
             search_operator = modifier.search_operator
@@ -291,7 +286,7 @@ def backend_to_rel(  # noqa: C901
 
         if (
             column.type.endswith("2many")
-            and isinstance(search_value, (list, tuple))
+            and isinstance(search_value, list | tuple)
             and not len(search_value) == len(value or [])
         ):
             # make sure we consider all the values and related records

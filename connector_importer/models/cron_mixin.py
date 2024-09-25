@@ -48,10 +48,10 @@ class CronMixin(models.AbstractModel):
     def get_cron_vals(self):
         model_id = self.env["ir.model"]._get_id(self._name)
         return {
-            "name": "Cron for import backend %s" % self.name,
+            "name": f"Cron for import backend {self.name}",
             "model_id": model_id,
             "state": "code",
-            "code": "model.run_cron(%d)" % self.id,
+            "code": f"model.run_cron({self.id})",
             "interval_number": self.cron_interval_number,
             "interval_type": self.cron_interval_type,
             "nextcall": self.cron_start_date,

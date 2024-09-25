@@ -113,7 +113,9 @@ class TestRecordsetImporter(TestImporterBase):
             "name": "John Doe",
             "ref": "12345",
             "xid::parent_id": "base.res_partner_10",
-            "xid::category_id": "base.res_partner_category_0,base.res_partner_category_2",
+            "xid::category_id": """
+                base.res_partner_category_0,base.res_partner_category_2
+            """,
             "title_id": "Doctor",
         }
         expected = {
@@ -135,7 +137,9 @@ class TestRecordsetImporter(TestImporterBase):
             "foo.name": "John Doe",
             "ref": "12345",
             "xid::foo.parent_id": "base.res_partner_10",
-            "xid::foo.category_id": "base.res_partner_category_0,base.res_partner_category_2",
+            "xid::foo.category_id": """
+                base.res_partner_category_0,base.res_partner_category_2
+            """,
             "title_id": "Doctor",
         }
         expected = {
@@ -169,11 +173,10 @@ class TestRecordsetImporter(TestImporterBase):
             "parent_id": "Parent of J. Doe",
             "category_id": "New category",
         }
-        with RecordCapturer(
-            self.env["res.partner"].sudo(), []
-        ) as partner_capt, RecordCapturer(
-            self.env["res.partner.category"].sudo(), []
-        ) as cat_capt:
+        with (
+            RecordCapturer(self.env["res.partner"].sudo(), []) as partner_capt,
+            RecordCapturer(self.env["res.partner.category"].sudo(), []) as cat_capt,
+        ):
             res = mapper.dynamic_fields(rec)
             parent = partner_capt.records
             cat = cat_capt.records

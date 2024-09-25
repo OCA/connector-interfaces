@@ -72,16 +72,19 @@ class ImportSource(models.AbstractModel):
             "fields_info": self.fields_get(self._config_summary_fields),
         }
 
-    # TODO: check if still needed + use create multi
-    @api.model
-    def create(self, vals):
-        res = super().create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        res = super().create(vals_list)
         # Override to update reference to source on the consumer
-        if self.env.context.get("active_model"):
-            # update reference on consumer
-            self.env[self.env.context["active_model"]].browse(
-                self.env.context["active_id"]
-            ).source_id = res.id
+        for vals, record in zip(vals_list, res, strict=True):
+            active_model = vals.get(
+                "active_model", self.env.context.get("active_model")
+            )
+            active_id = vals.get("active_id", self.env.context.get("active_id"))
+
+            if active_model and active_id:
+                # update reference on consumer
+                self.env[active_model].browse(active_id).source_id = record.id
         return res
 
     def get_lines(self):

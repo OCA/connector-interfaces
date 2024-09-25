@@ -20,7 +20,8 @@ except ImportError:
 def get_encoding(data):
     """Try to get encoding incrementally.
 
-    See http://chardet.readthedocs.org/en/latest/usage.html#example-detecting-encoding-incrementally  # noqa
+    See http://chardet.readthedocs.org/en/latest/usage.html
+        #example-detecting-encoding-incrementally  # noqa
     """
     start = time.time()
     msg = "detecting file encoding..."
@@ -32,7 +33,7 @@ def get_encoding(data):
         if detector.done:
             break
     detector.close()
-    msg = "encoding found in %s sec" % str(time.time() - start)
+    msg = f"encoding found in {str(time.time() - start)} sec"
     msg += str(detector.result)
     logger.info(msg)
     return detector.result
