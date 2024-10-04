@@ -51,8 +51,8 @@ class TestRecordImporterXMLID(TestImporterBase):
         report = self.recordset.get_report()
         model = "res.partner"
         expected = {model: {"created": 10, "errored": 0, "updated": 0, "skipped": 0}}
-        delayable = res[model]
-        self.assertEqual(delayable.result, expected[model])
+        result = res[model]
+        self.assertEqual(result, expected[model])
         for k, v in expected[model].items():
             self.assertEqual(len(report[model][k]), v)
         self.assertEqual(self.env[model].search_count([("ref", "like", "id_%")]), 10)
