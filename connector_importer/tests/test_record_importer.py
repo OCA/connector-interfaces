@@ -46,10 +46,30 @@ class TestRecordImporter(TestImporterBase):
         expected = {
             model: {"created": 10, "errored": 0, "updated": 0, "skipped": 0},
         }
-        delayable = res[model]
-        self.assertEqual(delayable.result, expected[model])
+        result = res[model]
+        self.assertEqual(result, expected[model])
         for k, v in expected[model].items():
             self.assertEqual(len(report[model][k]), v)
+        self.assertEqual(self.env[model].search_count([("ref", "like", "id_%")]), 10)
+
+    @mute_logger(*LOGGERS_TO_MUTE)
+    def test_importer_create_debug_mode_off(self):
+        # set them on record
+        self.record.set_data(self.fake_lines)
+        self.record.backend_id.debug_mode = False
+        res = self.record._run_import(use_job=True)
+        self.recordset.get_report()
+        # in any case we'll get this per each model if the import is not broken
+        model = "res.partner"
+        expected = {
+            model: {"created": 10, "errored": 0, "updated": 0, "skipped": 0},
+        }
+        delayable = res[model]
+        result = delayable.perform()
+        self.assertEqual(result, expected[model])
+        result = {model: result}
+        for k, v in expected[model].items():
+            self.assertEqual(result[model][k], v)
         self.assertEqual(self.env[model].search_count([("ref", "like", "id_%")]), 10)
 
     @mute_logger(*LOGGERS_TO_MUTE)
@@ -65,8 +85,8 @@ class TestRecordImporter(TestImporterBase):
         report = self.recordset.get_report()
         model = "res.partner"
         expected = {model: {"created": 8, "errored": 0, "updated": 0, "skipped": 2}}
-        delayable = res[model]
-        self.assertEqual(delayable.result, expected[model])
+        result = res[model]
+        self.assertEqual(result, expected[model])
         for k, v in expected[model].items():
             self.assertEqual(len(report[model][k]), v)
         skipped_msg1 = report[model]["skipped"][0]["message"]
@@ -86,8 +106,8 @@ class TestRecordImporter(TestImporterBase):
         report = self.recordset.get_report()
         model = "res.partner"
         expected = {model: {"created": 10, "errored": 0, "updated": 0, "skipped": 0}}
-        delayable = res[model]
-        self.assertEqual(delayable.result, expected[model])
+        result = res[model]
+        self.assertEqual(result, expected[model])
         for k, v in expected[model].items():
             self.assertEqual(len(report[model][k]), v)
         # now run it a second time
@@ -97,8 +117,8 @@ class TestRecordImporter(TestImporterBase):
         res = self.record.run_import()
         report = self.recordset.get_report()
         expected = {model: {"created": 0, "errored": 0, "updated": 10, "skipped": 0}}
-        delayable = res[model]
-        self.assertEqual(delayable.result, expected[model])
+        result = res[model]
+        self.assertEqual(result, expected[model])
         for k, v in expected[model].items():
             self.assertEqual(len(report[model][k]), v)
         # now run it a second time
@@ -108,8 +128,8 @@ class TestRecordImporter(TestImporterBase):
         res = self.record.run_import()
         report = self.recordset.get_report()
         expected = {model: {"created": 0, "errored": 0, "updated": 0, "skipped": 10}}
-        delayable = res[model]
-        self.assertEqual(delayable.result, expected[model])
+        result = res[model]
+        self.assertEqual(result, expected[model])
         for k, v in expected[model].items():
             self.assertEqual(len(report[model][k]), v)
         skipped_msg1 = report[model]["skipped"][0]["message"]
