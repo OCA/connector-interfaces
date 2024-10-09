@@ -118,4 +118,5 @@ class ImportSourceCSVSFTP(models.Model):
 
     def _sftp_filepath(self, path_suffix="input"):
         base_path = (self["sftp_path_" + path_suffix] or "").rstrip("/ ")
-        return os.path.join(base_path, self.csv_filename.strip("/ "))
+        if self.csv_filename:
+            return os.path.join(base_path, self.csv_filename.strip("/ "))

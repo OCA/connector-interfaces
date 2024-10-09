@@ -3,6 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import base64
+import json
 import logging
 
 from odoo import _
@@ -17,7 +18,7 @@ def get_importer_for_config(backend, work_on_model, importer_config, **work_on_k
     # When using jobs, importer_config is loaded from the DB as a pure dict.
     # Make sure we always have a dotted dict.
     # FIXME: we should pass the import_type_id to the job and load it here.
-    importer_config = DotDict(importer_config)
+    importer_config = DotDict(json.loads(json.dumps(importer_config)))
     work_on_kw.update(
         {
             "options": importer_config.options,
