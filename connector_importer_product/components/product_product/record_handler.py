@@ -33,6 +33,19 @@ class ProductProductRecordHandler(Component):
     def odoo_post_write(self, odoo_record, values, orig_values):
         self._update_template_attributes(odoo_record, values, orig_values)
 
+    def odoo_pre_write(self, odoo_record, values, orig_values):
+        # When updating product.product records, product_tmpl_id is set to False in values
+        # if not specified in the import type. But we don't want to set it to False
+        # as the value already exists in the odoo_record
+        if (
+            "product_tmpl_id" not in orig_values
+            and "product_tmpl_id" in odoo_record._fields
+            and odoo_record.product_tmpl_id
+        ):
+            values["product_tmpl_id"] = odoo_record.product_tmpl_id.id
+
+        return super().odoo_pre_write(odoo_record, values, orig_values)
+
     def odoo_create(self, values, orig_values):
         odoo_record = super().odoo_create(values, orig_values)
         # Set the external ID for the template if necessary
@@ -112,6 +125,8 @@ class ProductProductRecordHandler(Component):
         # and B, we cannot import a second variant V2 with attributes A and C
         # for instance, attributes have to be the same among all variants of a
         # template)
+        if not attr_values_to_import_ids:
+            return
         attr_values_to_import = self.env["product.attribute.value"].browse(
             attr_values_to_import_ids
         )
