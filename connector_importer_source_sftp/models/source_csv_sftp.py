@@ -3,9 +3,12 @@
 # Copyright 2020 ACSONE SA/NV (<http://acsone.eu>)
 # @author: Simone Orsi <simahawk@gmail.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
+import logging
 import os
 
 from odoo import fields, models
+
+_logger = logging.getLogger(__name__)
 
 
 # TODO: in the future, split this to a generic mixin not tied to CSV.
@@ -93,7 +96,16 @@ class ImportSourceCSVSFTP(models.Model):
         pattern should be defined in sftp_filename_pattern field.
         """
         self.csv_filename, self.csv_file = self._sftp_get_file()
-        return super()._get_lines()
+        if self.csv_filename:
+            if self.csv_file:
+                return super()._get_lines()
+            else:
+                _logger.info(
+                    "Empty or unreadable file on SFTP server: '%s'", self.csv_filename
+                )
+        else:
+            _logger.info("No matching file found on SFTP server")
+        return []
 
     def _sftp_get_file(self):
         """Try to read the first file matching the pattern.
