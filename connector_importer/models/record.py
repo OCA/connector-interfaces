@@ -107,18 +107,20 @@ class ImportRecord(models.Model):
         # that needs to be imported
         new_self = self.with_context(queue_job__no_delay=not use_job)
         for config in self.recordset_id.available_importers():
-            result = new_self.with_delay(
-                **self._run_import_job_params(config)
-            ).import_record(config)
-            res[config.model] = result
             if self.debug_mode() or not use_job:
+                result = new_self.import_record(config)
                 # debug mode, no job here: reset it!
                 self.write({"job_id": False})
             else:
+                result = new_self.with_delay(
+                    **self._run_import_job_params(config)
+                ).import_record(config)
                 # FIXME: we should have a o2m here otherwise
                 # w/ multiple importers for the same record
                 # we keep the reference on w/ the last job.
                 self.write({"job_id": result.db_record().id})
+            res[config.model] = result
+
         return res
 
     def _run_import_job_params(self, config):
