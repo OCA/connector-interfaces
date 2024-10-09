@@ -236,20 +236,12 @@ def backend_to_rel(  # noqa: C901
     """
 
     def modifier(self, record, to_attr):
-        search_value = record.get(field)
-
-        if search_value and value_handler:
-            search_value = value_handler(self, record, search_value)
-
-        # get the real column and the model
-        column = self.model._fields[to_attr]
-        rel_model = self.env[column.comodel_name].with_context(active_test=False)
+        search_value = _get_search_value(self, record, value_handler, field)
+        column, rel_model = _get_column_and_model(self, to_attr)
 
         # handle defaults if no search value here
-        if not search_value and default_search_value:
-            search_value = default_search_value
-            if default_search_field:
-                modifier.search_field = default_search_field
+        if not search_value:
+            search_value = _handle_default_search_value()
 
         # Support Odoo studio fields dynamically.
         # When a model is created automatically from Odoo studio
@@ -282,11 +274,37 @@ def backend_to_rel(  # noqa: C901
             # override by param
             search_operator = modifier.search_operator
 
-        # finally search it
         search_args = [(modifier.search_field, search_operator, search_value)]
-
         value = rel_model.search(search_args)
 
+        value = _handle_missing_values(
+            self, column, value, search_value, rel_model, record, to_attr
+        )
+
+        # handle the final value based on col type
+        return _handle_final_value(column, value)
+
+    def _get_search_value(self, record, value_handler, field):
+        search_value = record.get(field)
+        if search_value and value_handler:
+            search_value = value_handler(self, record, search_value)
+        return search_value
+
+    def _get_column_and_model(self, to_attr):
+        column = self.model._fields[to_attr]
+        rel_model = self.env[column.comodel_name].with_context(active_test=False)
+        return column, rel_model
+
+    def _handle_default_search_value():
+        if default_search_value:
+            search_value = default_search_value
+            if default_search_field:
+                modifier.search_field = default_search_field
+            return search_value
+
+    def _handle_missing_values(
+        self, column, value, search_value, rel_model, record, to_attr
+    ):
         if (
             column.type.endswith("2many")
             and isinstance(search_value, (list, tuple))
@@ -303,7 +321,6 @@ def backend_to_rel(  # noqa: C901
             # using a `create_missing_handler`.
             value = None
 
-        # create if missing
         if not value and create_missing:
             try:
                 if create_missing_handler:
@@ -317,10 +334,10 @@ def backend_to_rel(  # noqa: C901
                     "Error: %s"
                 )
                 logger.error(msg, rel_model._name, record["_line_nr"], to_attr, str(e))
-                # raise error to make importer's savepoint ctx manager catch it
                 raise
+        return value
 
-        # handle the final value based on col type
+    def _handle_final_value(column, value):
         if value:
             if column.type == "many2one":
                 value = value[0].id
@@ -328,7 +345,6 @@ def backend_to_rel(  # noqa: C901
                 value = [(6, 0, [x.id for x in value])]
         else:
             return None
-
         return value
 
     # use method attributes to not mess up the variables' scope.
