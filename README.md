@@ -21,7 +21,7 @@ Available addons
 ----------------
 addon | version | maintainers | summary
 --- | --- | --- | ---
-[connector_importer](connector_importer/) | 16.0.1.1.1 | [![simahawk](https://github.com/simahawk.png?size=30px)](https://github.com/simahawk) | This module takes care of import sessions.
+[connector_importer](connector_importer/) | 16.0.1.1.2 | [![simahawk](https://github.com/simahawk.png?size=30px)](https://github.com/simahawk) | This module takes care of import sessions.
 [connector_importer_product](connector_importer_product/) | 16.0.1.0.0 |  | Ease definition of product imports using `connector_importer`.
 
 [//]: # (end addons)
