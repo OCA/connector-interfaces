@@ -5,7 +5,7 @@
 {
     "name": "Connector Importer",
     "summary": """This module takes care of import sessions.""",
-    "version": "16.0.1.1.2",
+    "version": "16.0.1.1.3",
     "depends": ["connector", "queue_job"],
     "author": "Camptocamp, Odoo Community Association (OCA)",
     "license": "AGPL-3",
