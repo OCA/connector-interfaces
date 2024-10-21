@@ -156,3 +156,11 @@ class TestProduct(TestImportProductBase):
                 "__setup__.product_attr_Size_value_XL", raise_if_not_found=False
             )
         )
+
+    def test_odoo_create_xmlid_if_missing(self):
+        handler = self._get_handler()
+        xid = "product.product_variant_test_1"
+        self.assertFalse(self.env.ref(xid, raise_if_not_found=False))
+        handler.unique_key = "xid"
+        handler.odoo_create_xmlid(self.prod, {"xid": xid}, {"xid": xid})
+        self.assertTrue(self.env.ref(xid, raise_if_not_found=False))

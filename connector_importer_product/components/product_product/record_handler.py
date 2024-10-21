@@ -294,3 +294,12 @@ class ProductProductRecordHandler(Component):
         return self.work.options.record_handler.get(
             "create_attribute_value_if_missing", False
         )
+
+    def odoo_create_xmlid(self, odoo_record, values, orig_values):
+        # auto-generate xid for the template too if needed
+        xmlid_rec = super().odoo_create_xmlid(odoo_record, values, orig_values)
+        if xmlid_rec:
+            # new xid for the variant created -> get a xid for the template too
+            xid = self._get_xmlid(values, orig_values)
+            tmpl_xid = f"{xid}_product_template"
+            return self._create_xmlid(odoo_record.product_tmpl_id, tmpl_xid)
