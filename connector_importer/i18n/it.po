@@ -20,8 +20,10 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:connector_importer.view_import_backend_form
 msgid ""
 "<strong>JOBS RUNNING</strong>\n"
-"                            WARNING: one or more jobs are scheduled for a recorset or a record.\n"
-"                            You will not be able to run the import again or to delete this backend\n"
+"                            WARNING: one or more jobs are scheduled for a "
+"recorset or a record.\n"
+"                            You will not be able to run the import again or "
+"to delete this backend\n"
 "                            until you complete the jobs."
 msgstr ""
 "<strong>LAVORI IN ESECUZIONE</strong>\n"
@@ -245,8 +247,8 @@ msgstr "Scarica file esempio"
 #. module: connector_importer
 #: model:ir.model.fields,help:connector_importer.field_import_recordset__override_existing
 msgid ""
-"Enable to update existing items w/ new values. If disabled, matching records"
-" will be skipped."
+"Enable to update existing items w/ new values. If disabled, matching records "
+"will be skipped."
 msgstr ""
 "Abilitare per aggiornare gli elementi esistenti con nuovi valori. Se "
 "disabilitato, i record corrispondenti verranno saltati."
@@ -254,8 +256,8 @@ msgstr ""
 #. module: connector_importer
 #: model:ir.model.fields,help:connector_importer.field_import_backend__debug_mode
 msgid ""
-"Enabling debug mode causes the import to run in real time, without using any"
-" job queue. Make sure you don't do this in production!"
+"Enabling debug mode causes the import to run in real time, without using any "
+"job queue. Make sure you don't do this in production!"
 msgstr ""
 "Abilitare la modalità debug fa sì che l'importazione venga eseguita in tempo "
 "reale, senza usare alcuna coda di lavoro. Assicurati di non farlo in "
@@ -284,9 +286,9 @@ msgstr "Esempio file esterno"
 #. module: connector_importer
 #: model:ir.model.fields,help:connector_importer.field_import_recordset__server_action_ids
 msgid ""
-"Execute a server action when done. You can link a server action per model or"
-" a single one for import.recordset. In that case you'll have to use low "
-"level api to get the records that were processed. Eg: `get_report_by_model`."
+"Execute a server action when done. You can link a server action per model or "
+"a single one for import.recordset. In that case you'll have to use low level "
+"api to get the records that were processed. Eg: `get_report_by_model`."
 msgstr ""
 "Eseguire un'azione server quando finito. Si può collegare un'azione server "
 "per modello o una singola per import.recordset. In quel caso si dovrà usare "
@@ -347,7 +349,8 @@ msgstr "ID"
 #. module: connector_importer
 #: model:ir.model.fields,help:connector_importer.field_import_backend__cron_master_recordset_id
 msgid ""
-"If an existing recordset is selected it will be used to create a new recordset each time the cron runs. \n"
+"If an existing recordset is selected it will be used to create a new "
+"recordset each time the cron runs. \n"
 "In this way you can keep every import session isolated. \n"
 "If none, all recordsets will run."
 msgstr ""
@@ -466,7 +469,6 @@ msgstr "Backend importatore"
 
 #. module: connector_importer
 #: model:ir.actions.server,name:connector_importer.ir_cron_import_cleanup_recorsets_ir_actions_server
-#: model:ir.cron,cron_name:connector_importer.ir_cron_import_cleanup_recorsets
 msgid "Importer backend: cleanup old recordsets"
 msgstr "Backend importatore: ripulisci vecchi recordset"
 
@@ -515,15 +517,6 @@ msgid "Key"
 msgstr "Chiave"
 
 #. module: connector_importer
-#: model:ir.model.fields,field_description:connector_importer.field_import_backend____last_update
-#: model:ir.model.fields,field_description:connector_importer.field_import_record____last_update
-#: model:ir.model.fields,field_description:connector_importer.field_import_recordset____last_update
-#: model:ir.model.fields,field_description:connector_importer.field_import_source_csv____last_update
-#: model:ir.model.fields,field_description:connector_importer.field_import_type____last_update
-msgid "Last Modified on"
-msgstr "Ultima modifica il"
-
-#. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_recordset__last_run_on
 msgid "Last Run On"
 msgstr "Ultima esecuzione il"
@@ -569,7 +562,6 @@ msgstr "Imposta completati tutti i lavori"
 #. module: connector_importer
 #. odoo-python
 #: code:addons/connector_importer/components/mapper.py:0
-#, python-format
 msgid "Malformated xml id ref: `%s`"
 msgstr "Riferimento ID XML malformato: `%s`"
 
@@ -605,14 +597,12 @@ msgstr "Nessun lavoro"
 #. module: connector_importer
 #. odoo-python
 #: code:addons/connector_importer/models/import_type.py:0
-#, python-format
 msgid "No options found for: {}."
 msgstr "Nessuna opzione trovata per: {}."
 
 #. module: connector_importer
 #. odoo-python
 #: code:addons/connector_importer/components/importer.py:0
-#, python-format
 msgid "No source configured on recordset '%s'"
 msgstr "Nessuna sorgente configurata per il recordset: '%s'"
 
@@ -838,14 +828,13 @@ msgstr ""
 #. module: connector_importer
 #. odoo-python
 #: code:addons/connector_importer/utils/misc.py:0
-#, python-format
 msgid ""
 "The ID reference '%s' must contain maximum one dot (or 0). They are used to "
 "refer to other modules ID, in the form: module.record_id"
 msgstr ""
 "Il riferimento ID '%s' deve contenere al massimo un punto (o 0). Sono "
-"utilizzati per fare riferimento ad altri ID di moduli, nella maschera: modulo"
-".record_id"
+"utilizzati per fare riferimento ad altri ID di moduli, nella maschera: "
+"modulo.record_id"
 
 #. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.view_import_backend_form
@@ -914,7 +903,8 @@ msgstr "Si stanno per eseguire TUTTI i recordset configurati. Si è sicuri?"
 #. module: connector_importer
 #: model:ir.model.fields,help:connector_importer.field_import_source_csv__example_file_ext_id
 msgid ""
-"You can define example file by creating attachments with an external ID matching the 'import.source.csv' record external ID:\n"
+"You can define example file by creating attachments with an external ID "
+"matching the 'import.source.csv' record external ID:\n"
 "\t${import.source.csv.ExtID}_example_file\n"
 "\n"
 "You can also specify your own external ID by filling this field."
@@ -929,6 +919,8 @@ msgstr ""
 #. odoo-python
 #: code:addons/connector_importer/models/backend.py:0
 #: code:addons/connector_importer/models/job_mixin.py:0
-#, python-format
 msgid "You must complete the job first!"
 msgstr "Bisogna prima completare il lavoro!"
+
+#~ msgid "Last Modified on"
+#~ msgstr "Ultima modifica il"
