@@ -13,7 +13,7 @@ class JobRelatedMixin(models.AbstractModel):
     _name = "job.related.mixin"
     _description = __doc__
 
-    job_id = fields.Many2one("queue.job", string="Job", readonly=True)
+    job_id = fields.Many2one("queue.job", string="Job", readonly=True, index=True)
     job_state = fields.Selection(index=True, related="job_id.state")
 
     def has_job(self):
