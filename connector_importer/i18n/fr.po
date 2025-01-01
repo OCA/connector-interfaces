@@ -6,13 +6,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 16.0\n"
 "Report-Msgid-Bugs-To: \n"
-"Last-Translator: Automatically generated\n"
+"PO-Revision-Date: 2025-01-01 17:06+0000\n"
+"Last-Translator: samibc2c <sami.bouzidi@camptocamp.com>\n"
 "Language-Team: none\n"
 "Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 5.6.2\n"
 
 #. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.view_import_backend_form
@@ -26,73 +28,73 @@ msgstr ""
 #. module: connector_importer
 #: model:ir.model.fields,help:connector_importer.field_import_type__name
 msgid "A meaningful human-friendly name"
-msgstr ""
+msgstr "Un nom significatif et convivial"
 
 #. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.view_import_recordset_form
 msgid "Additional notes"
-msgstr ""
+msgstr "Notes additionnelles"
 
 #. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.view_import_type_form
 msgid "Adv. options"
-msgstr ""
+msgstr "Options avancées"
 
 #. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.view_import_type_form
 msgid "Advanced"
-msgstr ""
+msgstr "Avancé"
 
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_record__backend_id
 #: model_terms:ir.ui.view,arch_db:connector_importer.view_import_recordset_search
 msgid "Backend"
-msgstr ""
+msgstr "Backend"
 
 #. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.view_import_recordset_form
 msgid "Base configuration"
-msgstr ""
+msgstr "Configuration de base"
 
 #. module: connector_importer
 #: model:ir.model,name:connector_importer.model_reporter_mixin
 msgid "Base mixin for reporters"
-msgstr ""
+msgstr "Base mixinpour les générateurs de rapports"
 
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_source_csv__csv_encoding
 msgid "CSV Encoding"
-msgstr ""
+msgstr "Encodage CSV"
 
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_source_csv__csv_delimiter
 msgid "CSV delimiter"
-msgstr ""
+msgstr "Délimiteur CSV"
 
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_source_csv__csv_file
 msgid "CSV file"
-msgstr ""
+msgstr "Fichier CSV"
 
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_source_csv__csv_filename
 msgid "CSV filename"
-msgstr ""
+msgstr "Nom du fichier CSV"
 
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_source_csv__csv_filesize
 msgid "CSV filesize"
-msgstr ""
+msgstr "Taille du fichier CSV"
 
 #. module: connector_importer
 #: model:ir.model,name:connector_importer.model_import_source_csv
 msgid "CSV import source"
-msgstr ""
+msgstr "Source d'importation CSV"
 
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_source_csv__csv_path
 msgid "CSV path"
-msgstr ""
+msgstr "Chemin CSV"
 
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_source_csv__csv_quotechar
@@ -105,44 +107,46 @@ msgid ""
 "CSV use only a slice of the available lines. Format: $from:$to. NOTE: "
 "recommended only for debug/test purpose."
 msgstr ""
+"Les CSV n'utilisent qu'une partie des lignes disponibles. Format : $from:$"
+"to. NOTE : recommandé uniquement à des fins de débogage/test."
 
 #. module: connector_importer
 #: model:ir.model.fields.selection,name:connector_importer.selection__import_recordset__jobs_global_state__cancelled
 msgid "Cancelled"
-msgstr ""
+msgstr "Annulé"
 
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_source__chunk_size
 #: model:ir.model.fields,field_description:connector_importer.field_import_source_csv__chunk_size
 msgid "Chunks Size"
-msgstr ""
+msgstr "Taille des blocs"
 
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_source__config_summary
 #: model:ir.model.fields,field_description:connector_importer.field_import_source_csv__config_summary
 msgid "Config Summary"
-msgstr ""
+msgstr "Résumé de la configuration"
 
 #. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.view_import_backend_form
 msgid "Configuration"
-msgstr ""
+msgstr "Configuration"
 
 #. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.view_import_recordset_form
 #: model_terms:ir.ui.view,arch_db:connector_importer.view_import_source_form
 msgid "Configure source"
-msgstr ""
+msgstr "Source de la configuration"
 
 #. module: connector_importer
 #: model:res.groups,name:connector_importer.group_importer_user
 msgid "Connector importer user"
-msgstr ""
+msgstr "Utilisateur du connector importer"
 
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_recordset__create_date
 msgid "Create Date"
-msgstr ""
+msgstr "Date de création"
 
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_backend__create_uid
@@ -151,7 +155,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:connector_importer.field_import_source_csv__create_uid
 #: model:ir.model.fields,field_description:connector_importer.field_import_type__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Créé par"
 
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_backend__create_date
@@ -159,12 +163,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:connector_importer.field_import_source_csv__create_date
 #: model:ir.model.fields,field_description:connector_importer.field_import_type__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Créé le"
 
 #. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.view_import_backend_form
 msgid "Cron"
-msgstr ""
+msgstr "Cron"
 
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_backend__cron_cleanup_keep
@@ -174,33 +178,33 @@ msgstr ""
 #. module: connector_importer
 #: model:ir.model,name:connector_importer.model_cron_mixin
 msgid "Cron Mixin"
-msgstr ""
+msgstr "Cron Mixin"
 
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_cron_mixin__cron_mode
 #: model:ir.model.fields,field_description:connector_importer.field_import_backend__cron_mode
 msgid "Cron mode?"
-msgstr ""
+msgstr "Mode du cron ?"
 
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_backend__debug_mode
 msgid "Debug mode?"
-msgstr ""
+msgstr "Mode développeur ?"
 
 #. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.recordset_docs
 msgid "Defaults"
-msgstr ""
+msgstr "Défauts"
 
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_type__description
 msgid "Description"
-msgstr ""
+msgstr "Description"
 
 #. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.recordset_docs
 msgid "Destination key"
-msgstr ""
+msgstr "Clé de destination"
 
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_backend__display_name
@@ -209,28 +213,28 @@ msgstr ""
 #: model:ir.model.fields,field_description:connector_importer.field_import_source_csv__display_name
 #: model:ir.model.fields,field_description:connector_importer.field_import_type__display_name
 msgid "Display Name"
-msgstr ""
+msgstr "Nom affiché"
 
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_recordset__docs_html
 #: model_terms:ir.ui.view,arch_db:connector_importer.view_import_recordset_form
 msgid "Docs"
-msgstr ""
+msgstr "Documents"
 
 #. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.recordset_docs
 msgid "Docs for"
-msgstr ""
+msgstr "Documemts pour"
 
 #. module: connector_importer
 #: model:ir.model.fields.selection,name:connector_importer.selection__import_recordset__jobs_global_state__done
 msgid "Done"
-msgstr ""
+msgstr "Fait"
 
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_source_csv__example_file_url
 msgid "Download example file"
-msgstr ""
+msgstr "Télécharger un fichier d'exemple"
 
 #. module: connector_importer
 #: model:ir.model.fields,help:connector_importer.field_import_recordset__override_existing
@@ -238,6 +242,9 @@ msgid ""
 "Enable to update existing items w/ new values. If disabled, matching records"
 " will be skipped."
 msgstr ""
+"Permet de mettre à jour les éléments existants avec de nouvelles valeurs. Si "
+"cette option est désactivée, les enregistrements correspondants seront "
+"ignorés."
 
 #. module: connector_importer
 #: model:ir.model.fields,help:connector_importer.field_import_backend__debug_mode
@@ -245,26 +252,28 @@ msgid ""
 "Enabling debug mode causes the import to run in real time, without using any"
 " job queue. Make sure you don't do this in production!"
 msgstr ""
+"L'activation du mode développeur entraîne l'exécution de l'importation en "
+"temps réel, sans queue job. Veillez à ne pas faire cela en production !"
 
 #. module: connector_importer
 #: model:ir.model.fields.selection,name:connector_importer.selection__import_recordset__server_action_trigger_on__each_importer_done
 msgid "End of each importer session"
-msgstr ""
+msgstr "Fin de chaque session de l'importateur"
 
 #. module: connector_importer
 #: model:ir.model.fields.selection,name:connector_importer.selection__import_recordset__server_action_trigger_on__last_importer_done
 msgid "End of the whole import"
-msgstr ""
+msgstr "Fin de l'importation totale"
 
 #. module: connector_importer
 #: model:ir.model.fields.selection,name:connector_importer.selection__import_recordset__jobs_global_state__enqueued
 msgid "Enqueued"
-msgstr ""
+msgstr "Mise en file d'attente"
 
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_source_csv__example_file_ext_id
 msgid "Example File Ext"
-msgstr ""
+msgstr "Exemple de fichier externe"
 
 #. module: connector_importer
 #: model:ir.model.fields,help:connector_importer.field_import_recordset__server_action_ids
@@ -273,21 +282,25 @@ msgid ""
 " a single one for import.recordset. In that case you'll have to use low "
 "level api to get the records that were processed. Eg: `get_report_by_model`."
 msgstr ""
+"Exécute une action serveur une fois l'opération terminée. Vous pouvez lier "
+"une action serveur par modèle ou par import.recordset. Dans ce cas, vous "
+"devrez utiliser une API de bas niveau pour obtenir les enregistrements qui "
+"ont été traités. Par exemple : `get_report_by_model`."
 
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_recordset__server_action_ids
 msgid "Executre server actions"
-msgstr ""
+msgstr "Exécute des actions serveur"
 
 #. module: connector_importer
 #: model:ir.model.fields.selection,name:connector_importer.selection__import_recordset__jobs_global_state__failed
 msgid "Failed"
-msgstr ""
+msgstr "Échec"
 
 #. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.recordset_docs
 msgid "Field"
-msgstr ""
+msgstr "Champ"
 
 #. module: connector_importer
 #: model:ir.model.fields,help:connector_importer.field_import_type__use_job
@@ -296,21 +309,25 @@ msgid ""
 "box if an importer depends on the result of a previous one (for instance to "
 "link a record to the previously created one)."
 msgstr ""
+"Pour chaque importateur utilisé dans les paramètres, un job sera créé. "
+"Décochez la case si un importateur dépend du résultat d'un autre importateur "
+"(par exemple pour lier un enregistrement à l'enregistrement créé "
+"précédemment)."
 
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_recordset__full_report_url
 msgid "Full Report Url"
-msgstr ""
+msgstr "Url du rapport complet"
 
 #. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.view_import_recordset_form
 msgid "Generate report"
-msgstr ""
+msgstr "Générer un rapport"
 
 #. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.view_import_recordset_search
 msgid "Group By"
-msgstr ""
+msgstr "Grouper par"
 
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_backend__id
@@ -319,7 +336,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:connector_importer.field_import_source_csv__id
 #: model:ir.model.fields,field_description:connector_importer.field_import_type__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: connector_importer
 #: model:ir.model.fields,help:connector_importer.field_import_backend__cron_master_recordset_id
@@ -328,6 +345,12 @@ msgid ""
 "In this way you can keep every import session isolated. \n"
 "If none, all recordsets will run."
 msgstr ""
+"Si un jeu d'enregistrements existant est sélectionné, il sera utilisé pour "
+"créer un nouveau jeu d'enregistrements à chaque fois que le cron est "
+"exécuté. \n"
+"De cette manière, vous pouvez isoler chaque session d'importation. \n"
+"Si aucun jeu de données n'est sélectionné, tous les jeux de données seront "
+"exécutés."
 
 #. module: connector_importer
 #: model:ir.model.fields,help:connector_importer.field_import_backend__cron_cleanup_keep
@@ -335,40 +358,43 @@ msgid ""
 "If this value is greater than 0 a cron will cleanup old recordsets and keep "
 "only the latest N records matching this value."
 msgstr ""
+"Si cette valeur est supérieure à 0, un cron nettoiera les anciens jeux "
+"d'enregistrements et ne conservera que les N derniers enregistrements "
+"correspondant à cette valeur."
 
 #. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.view_import_backend_form
 #: model_terms:ir.ui.view,arch_db:connector_importer.view_import_recordset_form
 msgid "Import"
-msgstr ""
+msgstr "Importer"
 
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_recordset__backend_id
 #: model_terms:ir.ui.view,arch_db:connector_importer.view_import_backend_form
 msgid "Import Backend"
-msgstr ""
+msgstr "Importation du backend"
 
 #. module: connector_importer
 #: model:ir.actions.act_window,name:connector_importer.action_import_backend
 #: model:ir.ui.menu,name:connector_importer.menu_import_backend
 msgid "Import Backends"
-msgstr ""
+msgstr "Importation du backend"
 
 #. module: connector_importer
 #: model:ir.actions.act_window,name:connector_importer.action_import_recordset
 #: model:ir.ui.menu,name:connector_importer.menu_import_recordset
 msgid "Import Recordsets"
-msgstr ""
+msgstr "Importation des jeux de données"
 
 #. module: connector_importer
 #: model_terms:ir.ui.view,arch_db:connector_importer.view_import_backend_form
 msgid "Import all"
-msgstr ""
+msgstr "Importer tout"
 
 #. module: connector_importer
 #: model:ir.model.fields,field_description:connector_importer.field_import_record__date
 msgid "Import date"
-msgstr ""
+msgstr "Date de l'import"
 
 #. module: connector_importer
 #: model:ir.model,name:connector_importer.model_import_record
