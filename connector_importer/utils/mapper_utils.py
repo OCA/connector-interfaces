@@ -14,7 +14,11 @@ from ..utils.misc import sanitize_external_id
 
 FMTS = ("%d/%m/%Y",)
 
-FMTS_DT = ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M:%S.000")
+FMTS_DT = (
+    "%Y-%m-%d",  # fallbacks to 00:00:00
+    "%Y-%m-%d %H:%M:%S",
+    "%Y-%m-%d %H:%M:%S.000",
+)
 
 
 def to_date(value, formats=FMTS):
