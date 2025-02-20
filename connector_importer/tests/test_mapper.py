@@ -152,6 +152,22 @@ class TestRecordsetImporter(TestImporterBase):
         }
         self.assertEqual(mapper.dynamic_fields(rec), expected)
 
+    def test_dynamic_mapper_values_with_slash_id(self):
+        mapper = self._get_dynamyc_mapper()
+        rec = {
+            "name": "John Doe",
+            "ref": "12345",
+            "parent_id/id": "base.res_partner_10",
+            "category_id/id": "base.res_partner_category_0",
+        }
+        expected = {
+            "name": "John Doe",
+            "ref": "12345",
+            "parent_id": self.env.ref("base.res_partner_10").id,
+            "category_id": [(6, 0, self.env.ref("base.res_partner_category_0").ids)],
+        }
+        self.assertEqual(mapper.dynamic_fields(rec), expected)
+
     def test_dynamic_mapper_skip_empty(self):
         rec = {
             "name": "John Doe",

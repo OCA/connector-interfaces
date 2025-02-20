@@ -79,6 +79,10 @@ class DynamicMapper(Component):
                 # Eg: transformers like `xid::``
                 fname = fname.split("::")[-1]
                 clean_record[fname] = clean_record.pop(source_fname)
+            if fname.endswith("/id"):
+                # that's an xmlid key
+                fname = fname[:-3]
+                clean_record[fname] = clean_record.pop(source_fname)
             if prefix and fname.startswith(prefix):
                 # Eg: prefix all supplier fields w/ `supplier.`
                 fname = fname[len(prefix) :]
@@ -172,7 +176,7 @@ class DynamicMapper(Component):
         return self._source_key_rename.get(fname, fname)
 
     def _is_xmlid_key(self, fname, ftype):
-        return fname.startswith("xid::") and ftype in (
+        return (fname.startswith("xid::") or fname.endswith("/id")) and ftype in (
             "many2one",
             "one2many",
             "many2many",
