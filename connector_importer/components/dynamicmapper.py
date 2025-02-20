@@ -51,6 +51,10 @@ class DynamicMapper(Component):
     _inherit = "importer.base.mapper"
     _usage = "importer.dynamicmapper"
 
+    def __init__(self, work_context):
+        super().__init__(work_context)
+        self._non_mapped_keys_cache = {}
+
     @mapping
     def dynamic_fields(self, record):
         """Resolve values for non mapped keys.
@@ -194,10 +198,10 @@ class DynamicMapper(Component):
         options = self.work.options.mapper.get("converter", {}).get(fname, {})
         return self._dynamic_keys_mapping(fname, **options).get(ftype)
 
-    _non_mapped_keys_cache = None
-
     def _non_mapped_keys(self, record):
-        if self._non_mapped_keys_cache is None:
+        # records might have different keys
+        cache_key = tuple(sorted(record.keys()))
+        if not self._non_mapped_keys_cache.get(cache_key):
             all_keys = set(record.keys())
             mapped_keys = set()
             # NOTE: keys coming from `@mapping` methods can't be tracked.
@@ -209,8 +213,8 @@ class DynamicMapper(Component):
                     mapped_keys.add(pair[0])
                 elif hasattr(pair[0], "_from_key"):
                     mapped_keys.add(pair[0]._from_key)
-            self._non_mapped_keys_cache = tuple(all_keys - mapped_keys)
-        return self._non_mapped_keys_cache
+            self._non_mapped_keys_cache[cache_key] = tuple(all_keys - mapped_keys)
+        return self._non_mapped_keys_cache[cache_key]
 
     def _get_defaults(self, fnames):
         return self.model.default_get(fnames)
