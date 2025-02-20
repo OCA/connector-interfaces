@@ -107,7 +107,7 @@ def convert(field, conv_type, fallback_field=None, pre_value_handler=None, **kw)
     def modifier(self, record, to_attr):
         if field not in record:
             # be gentle
-            logger.warn("Field `%s` missing in line `%s`", field, record["_line_nr"])
+            logger.warning("Field `%s` missing in line `%s`", field, record["_line_nr"])
             return None
         value = record.get(field)
         if not value and fallback_field:
