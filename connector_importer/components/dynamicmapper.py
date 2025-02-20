@@ -71,7 +71,7 @@ class DynamicMapper(Component):
         required_keys = self._required_keys()
         missing_required_keys = []
         for source_fname in self._non_mapped_keys(clean_record):
-            if source_fname in ("id", "xid::id"):
+            if source_fname in ("id", "xid::id") or source_fname.startswith("_"):
                 # Never convert IDs
                 continue
             fname = source_fname
@@ -121,7 +121,7 @@ class DynamicMapper(Component):
         return {k: v for k, v in record.items() if k in valid_keys}
 
     def _get_valid_keys(self, record):
-        valid_keys = [k for k in record.keys() if not k.startswith("_")]
+        valid_keys = [k for k in record.keys()]
         prefix = self._source_key_prefix
         if prefix:
             valid_keys = [k for k in valid_keys if prefix in k]
