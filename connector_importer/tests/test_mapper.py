@@ -49,6 +49,7 @@ class TestRecordsetImporter(TestImporterBase):
         expected = {
             "name": "John Doe",
             "ref": "12345",
+            "_foo": "something",
             "some_one": 1,
             "some_two": 2,
         }
@@ -66,6 +67,7 @@ class TestRecordsetImporter(TestImporterBase):
         mapper = self._get_dynamyc_mapper(options=dict(source_key_blacklist=["ref"]))
         expected = {
             "name": "John Doe",
+            "_foo": "something",
             "some_one": 1,
             "some_two": 2,
         }
@@ -91,6 +93,7 @@ class TestRecordsetImporter(TestImporterBase):
         expected = (
             "name",
             "ref",
+            "_foo",
             "some_one",
             "some_two",
         )
