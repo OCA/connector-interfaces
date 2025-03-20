@@ -41,7 +41,7 @@ class TestProduct(TestImportProductBase):
             [
                 {
                     "name": "TEST_1",
-                    "product_id": False,
+                    "product_id": self.env.ref("product.product_product_3").id,
                     "qty": 10,
                 },
                 {
@@ -51,12 +51,12 @@ class TestProduct(TestImportProductBase):
                 },
                 {
                     "name": "TEST_3",
-                    "product_id": False,
+                    "product_id": self.env.ref("product.product_product_3").id,
                     "qty": 6,
                 },
                 {
                     "name": "TEST_4",
-                    "product_id": False,
+                    "product_id": self.env.ref("product.product_product_3").id,
                     "qty": 4,
                 },
             ],
