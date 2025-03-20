@@ -112,7 +112,8 @@ class TestProduct(TestImportProductBase):
     def test_find_or_create_attr_value_by_xid_conventional(self):
         handler = self._get_handler()
         attr_column = "product_attr_Size"
-        # Value does not match name anymore, but it matched the conventional auto-computed xid
+        # Value does not match name anymore,
+        # but it matched the conventional auto-computed xid
         orig_values = {attr_column: "M"}
         self.prod_attr_value_M.name = "Medium"
         self.assertEqual(

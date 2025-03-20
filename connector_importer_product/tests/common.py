@@ -8,10 +8,16 @@ import logging
 from pathlib import Path
 
 from odoo.tests import tagged
+from odoo.tools import mute_logger
 
 from odoo.addons.component.tests.common import TransactionComponentCase
 
 _logger = logging.getLogger(__name__)
+
+LOGGERS_TO_MUTE = (
+    "[importer]",
+    "odoo.addons.queue_job.delay",
+)
 
 
 @tagged("post_install", "-at_install")
@@ -34,6 +40,7 @@ class TestImportProductBase(TransactionComponentCase):
             source.write({"csv_file": b64_content, "csv_filename": csv_filename})
 
     @classmethod
+    @mute_logger(*LOGGERS_TO_MUTE)
     def importer_run(cls, external_id):
         recordset = cls.env.ref(external_id)
         recordset.run_import()
