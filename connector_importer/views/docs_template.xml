@@ -68,12 +68,12 @@
                                                         <t
                                                             t-if="not source_key.startswith('__')"
                                                         >
-                                                            <t t-esc="source_key" />
+                                                            <t t-out="source_key" />
                                                         </t>
                                                     </td>
                                                     <td class="text-left">
                                                         <t
-                                                            t-esc="', '.join([key for key in dest_keys if not key.startswith('__')])"
+                                                            t-out="', '.join([key for key in dest_keys if not key.startswith('__')])"
                                                         />
                                                     </td>
                                                 </tr>
@@ -109,11 +109,11 @@
                                                     <tr>
                                                         <td class="text-left">
                                                             <t
-                                                                t-esc="importer.make_translation_key(key, lang)"
+                                                                t-out="importer.make_translation_key(key, lang)"
                                                             />
                                                         </td>
                                                         <td class="text-left">
-                                                            <t t-esc="key" />
+                                                            <t t-out="key" />
                                                         </td>
                                                     </tr>
                                                 </t>
@@ -142,10 +142,10 @@
                                             <t t-foreach="defaults.keys()" t-as="key">
                                                 <tr>
                                                     <td class="text-left">
-                                                        <t t-esc="key" />
+                                                        <t t-out="key" />
                                                     </td>
                                                     <td class="text-left">
-                                                        <t t-esc="str(defaults[key])" />
+                                                        <t t-out="str(defaults[key])" />
                                                     </td>
                                                 </tr>
                                             </t>
@@ -159,7 +159,7 @@
                 <t t-if="recordset.notes">
                     <div id="notes">
                         <h2>Notes:</h2>
-                        <div t-raw="recordset.notes" />
+                        <div t-out="recordset.notes" />
                     </div>
                 </t>
             </div>

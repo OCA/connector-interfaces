@@ -134,7 +134,7 @@ class RecordImporter(Component):
         for k, v in req.items():
             # make sure values are always tuples
             # as we support multiple dest keys
-            if not isinstance(v, (tuple, list)):
+            if not isinstance(v, tuple | list):
                 req[k] = (v,)
             all_values.extend(req[k])
         unique_key = self.unique_key

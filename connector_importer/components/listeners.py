@@ -38,7 +38,7 @@ class ImportRecordsetEventListener(Component):
         report_by_model = recordset.get_report_by_model()
         # execute actions by importer order
         for model, report in report_by_model.items():
-            action = actions.filtered(lambda x: x.model_id == model)
+            action = actions.filtered(lambda x, model=model: x.model_id == model)
             if not action:
                 continue
             record_ids = sorted(set(report["created"] + report["updated"]))

@@ -79,6 +79,11 @@ class CSVSource(models.Model):
                 # in v11 binary fields now can return the size of the file
                 item.csv_filesize = self.with_context(bin_size=True).csv_file
 
+    def _generate_csv_reader(self, reader_args):
+        """Create and return a CSV reader instance."""
+        reader = self._csv_reader_klass(**reader_args)
+        return reader
+
     def _get_lines(self):
         # read CSV
         reader_args = {
@@ -94,7 +99,7 @@ class CSVSource(models.Model):
         else:
             return iter([])
 
-        reader = self._csv_reader_klass(**reader_args)
+        reader = self._generate_csv_reader(reader_args)
         return reader.read_lines()
 
     def _get_example_attachment(self):

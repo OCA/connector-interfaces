@@ -26,7 +26,7 @@
                                 type="object"
                                 class="oe_highlight btn-sm"
                                 string="Configure source"
-                                attrs="{'invisible': [('source_model', '=', False)]}"
+                                invisible="not source_model"
                             />
                         </group>
                         <group name="source_summary" colspan="4">
@@ -97,7 +97,7 @@
                             name="server_action_ids"
                             nolabel="1"
                             colspan="4"
-                            attrs="{'invisible': [('server_action_trigger_on', '=', 'never')]}"
+                            invisible="server_action_trigger_on == 'never'"
                             domain="[('model_id', 'in', server_action_importable_model_ids)]"
                         >
                             <tree>

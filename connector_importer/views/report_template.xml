@@ -3,7 +3,7 @@
     <template id="recordset_report" name="Import Recordset Report">
         <div class="recordset_report">
             <h1>Report for <span t-translation="off" t-field="recordset.name" /></h1>
-            <p>Last start: <span t-translation="off" t-esc="last_start" /></p>
+            <p>Last start: <span t-translation="off" t-out="last_start" /></p>
             <div class="report-wrapper">
                 <t t-foreach="report_by_model.keys()" t-as="model">
                     <h4>
@@ -18,7 +18,7 @@
                             <tr>
                                 <t t-foreach="data.keys()" t-as="key">
                                     <th class="text-center">
-                                        <t t-esc="key.upper()" />
+                                        <t t-out="key.upper()" />
                                     </th>
                                 </t>
                             </tr>
@@ -26,7 +26,7 @@
                         <tbody>
                             <tr>
                                 <t t-foreach="data.keys()" t-as="key">
-                                    <td class="text-center" t-esc="data[key]" />
+                                    <td class="text-center" t-out="data[key]" />
                                 </t>
                             </tr>
                         </tbody>
@@ -40,7 +40,7 @@
             <t t-set="body_classname" t-value="import_recordset_report" />
             <h1>Report for <span t-translation="off" t-field="recordset.name" /></h1>
             <div class="report-wrapper">
-                <t t-raw="report" />
+                <t t-out="report" />
             </div>
         </t>
     </template>
