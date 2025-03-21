@@ -17,19 +17,19 @@ Connector Importer
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-OCA%2Fconnector--interfaces-lightgray.png?logo=github
-    :target: https://github.com/OCA/connector-interfaces/tree/16.0/connector_importer
+    :target: https://github.com/OCA/connector-interfaces/tree/17.0/connector_importer
     :alt: OCA/connector-interfaces
 .. |badge4| image:: https://img.shields.io/badge/weblate-Translate%20me-F47D42.png
-    :target: https://translation.odoo-community.org/projects/connector-interfaces-16-0/connector-interfaces-16-0-connector_importer
+    :target: https://translation.odoo-community.org/projects/connector-interfaces-17-0/connector-interfaces-17-0-connector_importer
     :alt: Translate me on Weblate
 .. |badge5| image:: https://img.shields.io/badge/runboat-Try%20me-875A7B.png
-    :target: https://runboat.odoo-community.org/builds?repo=OCA/connector-interfaces&target_branch=16.0
+    :target: https://runboat.odoo-community.org/builds?repo=OCA/connector-interfaces&target_branch=17.0
     :alt: Try me on Runboat
 
 |badge1| |badge2| |badge3| |badge4| |badge5|
 
-This module allows to import / update records from files using the connector
-framework (i.e. mappers) and job queues.
+This module allows to import / update records from files using the
+connector framework (i.e. mappers) and job queues.
 
 **Table of contents**
 
@@ -39,21 +39,25 @@ framework (i.e. mappers) and job queues.
 Known issues / Roadmap
 ======================
 
-* with the import of standard Odoo CSV files, a concurrency error occurs
-  when updating the `report_data` of `import_recordset` table (from the
-  importer: `self._do_report()` -> `self.recordset.set_report(...)`).
-  The job is automatically retried a second time (without concurrency errors).
-  For small files it's not a big issue, but for files with a huge amount of
-  lines it takes time to process them two times.
-* refactor the `recordset.full_report_url` field to return a QWeb report
-  instead of a home-made HTML document + display it on the recordset form.
-* move generic functions from `utils.mapper_utils` to the `connector` module
-* unit tests for record handler and tracker
-* add more test coverage for mapper utils and dynamic mapper
-* consider making dynamic mapper the default one
-* control how to generate xid (eg: from a specicic field with key `must_generate_xmlid_from_key`)
-* add manual control for backend_to_rel mappers
-* refactor source to be  a specific m2o to ease mgmt instead of a generic relation
+-  with the import of standard Odoo CSV files, a concurrency error
+   occurs when updating the report_data of import_recordset table (from
+   the importer: self._do_report() -> self.recordset.set_report(...)).
+   The job is automatically retried a second time (without concurrency
+   errors). For small files it's not a big issue, but for files with a
+   huge amount of lines it takes time to process them two times.
+-  refactor the recordset.full_report_url field to return a QWeb report
+   instead of a home-made HTML document + display it on the recordset
+   form.
+-  move generic functions from utils.mapper_utils to the connector
+   module
+-  unit tests for record handler and tracker
+-  add more test coverage for mapper utils and dynamic mapper
+-  consider making dynamic mapper the default one
+-  control how to generate xid (eg: from a specicic field with key
+   must_generate_xmlid_from_key)
+-  add manual control for backend_to_rel mappers
+-  refactor source to be a specific m2o to ease mgmt instead of a
+   generic relation
 
 Bug Tracker
 ===========
@@ -61,7 +65,7 @@ Bug Tracker
 Bugs are tracked on `GitHub Issues <https://github.com/OCA/connector-interfaces/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/OCA/connector-interfaces/issues/new?body=module:%20connector_importer%0Aversion:%2016.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/OCA/connector-interfaces/issues/new?body=module:%20connector_importer%0Aversion:%2017.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -69,24 +73,23 @@ Credits
 =======
 
 Authors
-~~~~~~~
+-------
 
 * Camptocamp
 
 Contributors
-~~~~~~~~~~~~
+------------
 
 Simone Orsi (Camptocamp) for the original implementation.
 
-
 Other contributors include:
 
-* Guewen Baconnier (Camptocamp)
-* Mykhailo Panarin (Camptocamp)
-* Sébastien Alix (Camptocamp)
+-  Guewen Baconnier (Camptocamp)
+-  Mykhailo Panarin (Camptocamp)
+-  Sébastien Alix (Camptocamp)
 
 Maintainers
-~~~~~~~~~~~
+-----------
 
 This module is maintained by the OCA.
 
@@ -106,6 +109,6 @@ Current `maintainer <https://odoo-community.org/page/maintainer-role>`__:
 
 |maintainer-simahawk| 
 
-This module is part of the `OCA/connector-interfaces <https://github.com/OCA/connector-interfaces/tree/16.0/connector_importer>`_ project on GitHub.
+This module is part of the `OCA/connector-interfaces <https://github.com/OCA/connector-interfaces/tree/17.0/connector_importer>`_ project on GitHub.
 
 You are welcome to contribute. To learn how please visit https://odoo-community.org/page/Contribute.

@@ -208,7 +208,7 @@ def backend_to_rel(  # noqa: C901
     allowed_length=None,
     create_missing=False,
     create_missing_handler=None,
-    **kw
+    **kw,
 ):
     """A modifier intended to be used on the ``direct`` mappings.
 

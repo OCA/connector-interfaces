@@ -6,7 +6,6 @@ from odoo import fields, models
 
 
 class FakeSourceConsumer(models.Model):
-
     _name = "fake.source.consumer"
     _description = _name
     _inherit = "import.source.consumer.mixin"
@@ -16,7 +15,6 @@ class FakeSourceConsumer(models.Model):
 
 
 class FakeSourceStatic(models.Model):
-
     _name = "fake.source.static"
     _description = _name
     _inherit = "import.source"
@@ -33,8 +31,8 @@ class FakeSourceStatic(models.Model):
         for i in range(1, 21):
             yield {
                 "id": i,
-                "fullname": "Fake line #{}".format(i),
-                "address": "Some fake place, {}".format(i),
+                "fullname": f"Fake line #{i}",
+                "address": f"Some fake place, {i}",
             }
 
     def _sort_lines(self, lines):
@@ -42,7 +40,6 @@ class FakeSourceStatic(models.Model):
 
 
 class FakeImportedModel(models.Model):
-
     _name = "fake.imported.model"
     _description = _name
     _description = "Fake model"
