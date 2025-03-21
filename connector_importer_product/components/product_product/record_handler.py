@@ -45,7 +45,8 @@ class ProductProductRecordHandler(Component):
 
         The xid for the variant has been already created by `odoo_create`.
         If the template is identified via xid using the column `xid::product_tmpl_id`
-        we must create this reference or other variant lines won't use the same template.
+        we must create this reference or other variant lines won't use the same
+        template.
         """
         if self.must_generate_xmlid and orig_values.get("xid::product_tmpl_id"):
             tmpl_xid = sanitize_external_id(orig_values.get("xid::product_tmpl_id"))
@@ -142,7 +143,7 @@ class ProductProductRecordHandler(Component):
             # or create it if none is found
             attr = attr_value.attribute_id
             tpl_attr_line = template.attribute_line_ids.filtered(
-                lambda l: l.attribute_id == attr
+                lambda attribute_line, attr=attr: attribute_line.attribute_id == attr
             )
             if not tpl_attr_line:
                 tpl_attr_line = TplAttrLine.create(
@@ -220,7 +221,8 @@ class ProductProductRecordHandler(Component):
         1. search by name
         2. search by xid, assuming the value itself is already an xid.
         3. search by composed xid, assuming the value is the last part of an xid.
-           The first part is computed as: `__setup__.$product_attr_xid_value_$col_value`.
+           The first part is computed as:
+           `__setup__.$product_attr_xid_value_$col_value`.
            For instance, a column `product_attr_Size` could have the values
            "S" , "M", "L" and they will be converted
            to find their matching attributes, like this:
