@@ -4,7 +4,7 @@
 from odoo.tests.common import RecordCapturer
 from odoo.tools import mute_logger
 
-from .common import TestImportProductBase
+from .common import LOGGERS_TO_MUTE, TestImportProductBase
 
 
 class TestProduct(TestImportProductBase):
@@ -98,7 +98,7 @@ class TestProduct(TestImportProductBase):
             lambda x: x.attribute_id == attr and x.product_attribute_value_id == val
         )
 
-    @mute_logger("[importer]")
+    @mute_logger(*LOGGERS_TO_MUTE)
     def test_default_code_only__different_tmpl(self):
         # Load a file that has only default codes.
         # Since we don't have any tmpl code matching, we'll get 1 tmpl+variant per line
@@ -153,7 +153,7 @@ class TestProduct(TestImportProductBase):
         # Ensure attributes are assigned properly
         self._test_attributes(records)
 
-    @mute_logger("[importer]")
+    @mute_logger(*LOGGERS_TO_MUTE)
     def test_default_code_only__same_tmpl(self):
         # Load a file that has only default codes.
         # Since we don't have any tmpl code matching, we'll get 1 tmpl+variant per line

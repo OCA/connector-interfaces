@@ -5,7 +5,7 @@
 from odoo.tests.common import RecordCapturer
 from odoo.tools import mute_logger
 
-from .common import TestImportProductBase
+from .common import LOGGERS_TO_MUTE, TestImportProductBase
 
 
 class TestProduct(TestImportProductBase):
@@ -30,7 +30,7 @@ class TestProduct(TestImportProductBase):
             [("code", "in", ("fr_FR", "it_IT"))]
         ).active = True
 
-    @mute_logger("[importer]")
+    @mute_logger(*LOGGERS_TO_MUTE)
     def test_attribute(self):
         records = []
         with RecordCapturer(self.env["product.attribute"].sudo(), []) as capt:
@@ -94,7 +94,7 @@ class TestProduct(TestImportProductBase):
             ],
         )
 
-    @mute_logger("[importer]")
+    @mute_logger(*LOGGERS_TO_MUTE)
     def test_attribute_value(self):
         self.recordset_att.run_import()
         records = []
