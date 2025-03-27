@@ -4,8 +4,6 @@
 import re
 import unicodedata
 
-from odoo import _
-
 from odoo.addons.component.core import Component
 from odoo.addons.connector_importer.log import logger
 from odoo.addons.connector_importer.utils.misc import sanitize_external_id
@@ -129,7 +127,7 @@ class ProductProductRecordHandler(Component):
         )
         if existing_variant and attrs_to_import != existing_attrs:
             raise ValueError(
-                _(
+                self.env._(
                     "Product '%(code)s' has not the same attributes "
                     "than '%(existing_code)s'. "
                     "Unable to import it.",
@@ -188,7 +186,7 @@ class ProductProductRecordHandler(Component):
         )
         if combination_indices and existing_product:
             raise ValueError(
-                _(
+                self.env._(
                     "Product '%(code)s' "
                     "seems to be a duplicate of '%(existing_code)s' (same attributes). "
                     "Unable to import it.",
