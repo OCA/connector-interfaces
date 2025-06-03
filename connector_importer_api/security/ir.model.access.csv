@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_import_souce_api,connector_importer.access_import_source_api,model_import_source_api,connector.group_connector_manager,1,1,1,1
+access_souce_api_value,connector_importer.access_source_api_value,model_source_api_value,connector.group_connector_manager,1,1,1,1
