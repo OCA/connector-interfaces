@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_import_source_form" model="ir.ui.view">
+        <field name="name">import.source base form</field>
+        <field name="model">import.source</field>
+        <field name="arch" type="xml">
+            <form string="Configure source">
+                <group col="2" name="common">
+                    <field name="chunk_size" />
+                </group>
+            </form>
+        </field>
+    </record>
+    <record id="view_import_source_csv_form" model="ir.ui.view">
+        <field name="name">import.source.csv form</field>
+        <field name="model">import.source.csv</field>
+        <field name="priority" eval="99" />
+        <field name="inherit_id" ref="view_import_source_form" />
+        <field name="arch" type="xml">
+            <group name="common" position="after">
+                <group col="2" name="info">
+                    <field name="csv_filename" />
+                    <field name="csv_file" filename="csv_filename" />
+                    <field name="csv_path" />
+                    <field name="csv_delimiter" />
+                    <field name="csv_quotechar" />
+                    <field name="csv_encoding" />
+                    <field name="csv_rows_from_to" />
+                    <field name="example_file_ext_id" />
+                    <field name="example_file_url" widget="url" />
+                </group>
+            </group>
+        </field>
+    </record>
+    <record id="view_import_source_csv_tree" model="ir.ui.view">
+        <field name="name">import.source.csv tree</field>
+        <field name="model">import.source.csv</field>
+        <field name="priority" eval="99" />
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name" />
+                <field name="csv_filename" />
+                <field name="csv_path" />
+                <field name="csv_delimiter" />
+                <field name="csv_quotechar" />
+                <field name="csv_encoding" />
+            </tree>
+        </field>
+    </record>
+    <record id="action_import_source" model="ir.actions.act_window">
+        <field name="name">Import sources</field>
+        <field name="res_model">import.source.csv</field>
+        <field name="view_mode">tree,form</field>
+        <field
+            name="view_ids"
+            eval="[(5, 0, 0),
+                     (0, 0, {'view_mode': 'tree', 'view_id': ref('view_import_source_csv_tree')}),
+                     (0, 0, {'view_mode': 'form', 'view_id': ref('view_import_source_csv_form')}),
+                     ]"
+        />
+    </record>
+</odoo>
