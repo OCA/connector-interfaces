@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- Copyright 2022 Camptocamp SA
+     License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
+<odoo noupdate="1">
+
+  <record id="import_type_product_category" model="import.type">
+    <field name="name">Product Category</field>
+    <field name="key">product_category</field>
+    <field name="options">
+- model: product.category
+  options:
+    importer:
+      odoo_unique_key: id
+    mapper:
+      name: importer.mapper.dynamic
+    </field>
+  </record>
+
+  <record id="import_type_product_attribute" model="import.type">
+    <field name="name">Product Attribute</field>
+    <field name="key">product_attribute</field>
+    <field name="options">
+- model: product.attribute
+  options:
+    importer:
+      odoo_unique_key: id
+    mapper:
+      name: importer.mapper.dynamic
+      translatable_keys:
+        - name
+    </field>
+  </record>
+
+  <record id="import_type_product_attribute_value" model="import.type">
+    <field name="name">Import Product Attribute Value</field>
+    <field name="key">product_attribute_value</field>
+    <field name="options">
+- model: product.attribute.value
+  options:
+    importer:
+      odoo_unique_key: id
+      break_on_error: true
+    mapper:
+      name: importer.mapper.dynamic
+      required_keys:
+        xid::attribute_id: attribute_id
+      translatable_keys:
+        - name
+    </field>
+  </record>
+
+  <record id="import_type_product_product" model="import.type">
+    <field name="name">Import Product</field>
+    <field name="key">product_product</field>
+    <field name="options">
+- model: product.product
+  options:
+    importer:
+      odoo_unique_key: default_code
+    mapper:
+      name: product.product.mapper
+    </field>
+  </record>
+
+  <record id="import_type_product_supplierinfo" model="import.type">
+    <field name="name">Import Product Supplier Info</field>
+    <field name="key">product_supplierinfo</field>
+    <field name="options">
+- model: res.partner
+  options:
+    importer:
+      odoo_unique_key: name
+      override_existing: false
+    mapper:
+      name: importer.mapper.dynamic
+      source_key_whitelist: supplier.name
+      source_key_rename:
+        partner_id: name
+      default_keys:
+        supplier_rank: 1
+
+- model: product.supplierinfo
+  options:
+    importer:
+      odoo_unique_key: partner_id
+    mapper:
+      name: product.supplierinfo.mapper
+    </field>
+  </record>
+
+  <record id="import_type_product_packaging" model="import.type">
+    <field name="name">Import Product Packaging</field>
+    <field name="key">product_packaging</field>
+    <field name="options">
+- model: product.packaging
+  options:
+    importer:
+      odoo_unique_key: id
+    mapper:
+      name: importer.mapper.dynamic
+    </field>
+  </record>
+
+  <record id="import_type_product_product_all_in_one" model="import.type">
+    <field name="name">Import Product - all in one</field>
+    <field name="key">product_product_all_in_one</field>
+    <field name="options">
+- model: product.product
+  options:
+    importer:
+      odoo_unique_key: barcode
+    mapper:
+      name: product.product.mapper
+
+- model: res.partner
+  options:
+    importer:
+      odoo_unique_key: name
+      override_existing: false
+    mapper:
+      name: importer.mapper.dynamic
+      source_key_prefix: supplier.
+      source_key_whitelist: supplier.name
+      source_key_rename:
+        partner_id: name
+      default_keys:
+        supplier_rank: 1
+
+- model: product.supplierinfo
+  options:
+    importer:
+      odoo_unique_key: partner_id
+    mapper:
+      name: product.supplierinfo.mapper
+      source_key_prefix: supplier.
+    </field>
+
+<!--
+  Example of pkg import in all-in-one if the unique key for product.product is `id`
+- model: product.packaging
+  options:
+    record_handler:
+      match_domain: "[('product_id', '=', ref_id(orig_values['id'])), ('qty', '=', values['qty'])]"
+    mapper:
+      name: importer.mapper.dynamic
+-->
+  </record>
+
+</odoo>
