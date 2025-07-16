@@ -32,12 +32,12 @@ Ease definition of product imports using connector_importer.
 
 Supported imports:
 
--  products
--  product attributes
--  product attribute values
--  product categories
--  product packaging
--  product supplier info
+- products
+- product attributes
+- product attribute values
+- product categories
+- product packaging
+- product supplier info
 
 **Table of contents**
 
@@ -47,8 +47,8 @@ Supported imports:
 Known issues / Roadmap
 ======================
 
--  get rid of supplier info specific importer
--  find a flexible way to define matching products
+- get rid of supplier info specific importer
+- find a flexible way to define matching products
 
 Bug Tracker
 ===========
@@ -71,10 +71,10 @@ Authors
 Contributors
 ------------
 
--  Simone Orsi <simahawk@gmail.com>
--  Sébastien Alix <sebastien.alix@camptocamp.com>
--  Jacques-Etienne Baudoux <je@bcim.be>
--  Matthieu Méquignon <matthieu.mequignon@camptocamp.com>
+- Simone Orsi <simahawk@gmail.com>
+- Sébastien Alix <sebastien.alix@camptocamp.com>
+- Jacques-Etienne Baudoux <je@bcim.be>
+- Matthieu Méquignon <matthieu.mequignon@camptocamp.com>
 
 Maintainers
 -----------
