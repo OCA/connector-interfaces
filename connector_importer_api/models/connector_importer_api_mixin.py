@@ -31,7 +31,6 @@ class ConnectorImporterApiMixin(models.AbstractModel):
             eval_code: Code to be evaluated.
             return: Boolean
         """
-        pass
 
     def _check_result_eval(self, result):
         """
@@ -41,7 +40,6 @@ class ConnectorImporterApiMixin(models.AbstractModel):
             result: Code to be evaluated.
             return: Boolean
         """
-        pass
 
     def _test_python_expr(self, code, mode_eval):
         # Evaluating expression syntax
