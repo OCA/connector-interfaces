@@ -2,7 +2,6 @@
 <!-- Copyright 2025 Binhex <https://www.binhex.cloud>
      License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
 <odoo>
-
     <record id="importer_source_api_view_form" model="ir.ui.view">
         <field name="name">importer.source.api.view.form</field>
         <field name="model">import.source.api</field>
@@ -17,48 +16,64 @@
                     <field name="type_authorization" />
                     <field
                         name="username"
-                        invisible="type_authorization != 'basic_auth'"
-                        required="type_authorization == 'basic_auth'"
+                        attrs="{
+                        'invisible' : [('type_authorization', '!=', 'basic_auth')],
+                        'required' : [('type_authorization', '=', 'basic_auth')]
+                        }"
                     />
                     <field
                         name="password"
                         type="password"
-                        invisible="type_authorization != 'basic_auth'"
-                        required="type_authorization == 'basic_auth'"
+                        attrs="{
+                        'invisible' : [('type_authorization', '!=', 'basic_auth')],
+                        'required' : [('type_authorization', '=', 'basic_auth')]
+                        }"
                     />
                     <field
                         name="type_of_token"
-                        invisible="type_authorization != 'token'"
-                        required="type_authorization == 'token'"
+                        attrs="{
+                        'invisible' : [('type_authorization', '!=', 'token')],
+                        'required' : [('type_authorization', '=', 'token')]
+                        }"
                     />
                     <field
                         name="model_id"
-                        invisible="type_of_token == 'manual'"
-                        required="type_of_token != 'manual'"
+                        attrs="{
+                        'invisible' : [('type_of_token', '!=', 'manual')],
+                        'required' : [('type_of_token', '=', 'manual')]
+                        }"
                     />
                     <field name="field_ids" invisible="1" />
                     <field
                         name="field_id"
-                        invisible="type_of_token != 'model_field'"
-                        required="type_of_token == 'model_field'"
+                        attrs="{
+                        'invisible' : [('type_of_token', '!=', 'model_field')],
+                        'required' : [('type_of_token', '=', 'model_field')]
+                        }"
                     />
                     <field
                         name="function_name"
-                        invisible="type_of_token != 'model_function'"
-                        required="type_of_token == 'model_function'"
+                        attrs="{
+                        'invisible' : [('type_of_token', '!=', 'model_function')],
+                        'required' : [('type_of_token', '=', 'model_function')]
+                        }"
                     />
                     <field name="model_name" invisible="1" />
                     <field
                         name="model_domain"
                         widget="domain"
                         options="{'model': 'model_name', 'in_dialog': True}"
-                        invisible="not model_name"
+                        attrs="{
+                        'invisible' : [('model_name', '=', 'False')],
+                        }"
                     />
                     <field
                         name="token"
-                        readonly="type_of_token != 'manual'"
-                        invisible="type_authorization != 'token'"
-                        required="type_authorization == 'token' and type_of_token == 'manual'"
+                        attrs="{
+                        'invisible' : [('type_authorization', '!=', 'token')],
+                        'required' : [('type_authorization', '=', 'token'),('type_of_token', '=', 'manual')],
+                        'readonly' : [('type_of_token', '!=', 'manual')]
+                        }"
                     />
                 </group>
                 <notebook>
@@ -80,7 +95,6 @@
             </form>
         </field>
     </record>
-
     <record id="importer_source_api_view_tree" model="ir.ui.view">
         <field name="name">importer.source.api.view.tree</field>
         <field name="model">import.source.api</field>
@@ -93,13 +107,10 @@
             </tree>
         </field>
     </record>
-
     <record id="action_import_source_api_tree" model="ir.actions.act_window">
         <field name="name">Import sources API</field>
         <field name="res_model">import.source.api</field>
         <field name="view_mode">tree,form</field>
         <field name="view_id" ref="importer_source_api_view_tree" />
     </record>
-
-
 </odoo>

@@ -4,7 +4,7 @@
 {
     "name": "Connector Importer API",
     "summary": """This module handles import sessions via API.""",
-    "version": "17.0.1.0.0",
+    "version": "16.0.1.0.0",
     "depends": ["connector_importer"],
     "author": "Binhex, Odoo Community Association (OCA)",
     "license": "AGPL-3",

@@ -24,7 +24,7 @@ class ImportSourceApi(models.Model):
     enviroment_url = fields.Char(string="Enviroment URL", required=True)
     type_request = fields.Selection(
         string="Request type",
-        selection=[("get", "GET")],
+        selection=[("get", "GET"), ("post", "POST")],
         default="get",
         required=True,
     )
