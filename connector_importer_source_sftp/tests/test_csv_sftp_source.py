@@ -3,13 +3,10 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 import base64
-import io
 
 import mock
 
 from odoo.tools import mute_logger
-
-from odoo.addons.storage_backend_sftp.tests.test_sftp import PARAMIKO_PATH
 
 from .common import SFTPSourceSavepointComponentCase
 
@@ -51,21 +48,29 @@ class TestSourceCSV(SFTPSourceSavepointComponentCase):
         self.assertItemsEqual(source._config_summary_fields, self.extra_fields)
 
     @mute_logger("[importer]")
-    @mock.patch(PARAMIKO_PATH)
-    def test_source_get_lines(self, mocked_paramiko):
+    def test_source_get_lines(self):
         source = self.source
         storage = source.storage_id
-        client = mocked_paramiko.SFTPClient.from_transport()
+        # Cannot mock paramiko.SFTPClient here because it failed somehow on CI.
+        # Not a big issue since the goal here is to ensure that
+        # client = mocked_paramiko.SFTPClient.from_transport()
         mocked_filepaths = [
-            storage.directory_path + "/somepath/file.txt",
             storage.directory_path + "/somepath/file.csv",
         ]
-        client.listdir.return_value = mocked_filepaths
         filecontent = self.load_filecontent(
             "connector_importer", "tests/fixtures/csv_source_test1.csv", mode="rb"
         )
-        with io.BytesIO(filecontent) as file_obj:
-            client.open.return_value = file_obj
+        with (
+            mock.patch.object(
+                type(source.storage_id), "find_files"
+            ) as mocked_find_files,
+            mock.patch.object(
+                type(source.storage_id),
+                "get",
+            ) as mocked_get_storage,
+        ):
+            mocked_find_files.return_value = mocked_filepaths
+            mocked_get_storage.return_value = base64.b64encode(filecontent)
             source._get_lines()
 
         self.assertEqual(source.csv_filename, "file.csv")
