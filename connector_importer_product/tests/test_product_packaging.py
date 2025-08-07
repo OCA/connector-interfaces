@@ -5,7 +5,7 @@
 from odoo.tests.common import RecordCapturer
 from odoo.tools import mute_logger
 
-from .common import TestImportProductBase
+from .common import LOGGERS_TO_MUTE, TestImportProductBase
 
 
 class TestProduct(TestImportProductBase):
@@ -20,7 +20,7 @@ class TestProduct(TestImportProductBase):
             "connector_importer_product.demo_import_recordset_product_packaging"
         )
 
-    @mute_logger("[importer]")
+    @mute_logger(*LOGGERS_TO_MUTE)
     def test_packaging(self):
         records = []
         with RecordCapturer(self.env["product.packaging"].sudo(), []) as capt:
@@ -41,7 +41,7 @@ class TestProduct(TestImportProductBase):
             [
                 {
                     "name": "TEST_1",
-                    "product_id": False,
+                    "product_id": self.env.ref("product.product_product_3").id,
                     "qty": 10,
                 },
                 {
@@ -51,12 +51,12 @@ class TestProduct(TestImportProductBase):
                 },
                 {
                     "name": "TEST_3",
-                    "product_id": False,
+                    "product_id": self.env.ref("product.product_product_3").id,
                     "qty": 6,
                 },
                 {
                     "name": "TEST_4",
-                    "product_id": False,
+                    "product_id": self.env.ref("product.product_product_3").id,
                     "qty": 4,
                 },
             ],

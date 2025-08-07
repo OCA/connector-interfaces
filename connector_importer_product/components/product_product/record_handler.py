@@ -4,8 +4,6 @@
 import re
 import unicodedata
 
-from odoo import _
-
 from odoo.addons.component.core import Component
 from odoo.addons.connector_importer.log import logger
 from odoo.addons.connector_importer.utils.misc import sanitize_external_id
@@ -33,6 +31,19 @@ class ProductProductRecordHandler(Component):
     def odoo_post_write(self, odoo_record, values, orig_values):
         self._update_template_attributes(odoo_record, values, orig_values)
 
+    def odoo_pre_write(self, odoo_record, values, orig_values):
+        # When updating product.product records, product_tmpl_id is set to False in values
+        # if not specified in the import type. But we don't want to set it to False
+        # as the value already exists in the odoo_record
+        if (
+            "product_tmpl_id" not in orig_values
+            and "product_tmpl_id" in odoo_record._fields
+            and odoo_record.product_tmpl_id
+        ):
+            values["product_tmpl_id"] = odoo_record.product_tmpl_id.id
+
+        return super().odoo_pre_write(odoo_record, values, orig_values)
+
     def odoo_create(self, values, orig_values):
         odoo_record = super().odoo_create(values, orig_values)
         # Set the external ID for the template if necessary
@@ -44,8 +55,9 @@ class ProductProductRecordHandler(Component):
         """Create the xid for the template if needed.
 
         The xid for the variant has been already created by `odoo_create`.
-        If the template is identified via xid using the column `xid::product_tmpl_id`
-        we must create this reference or other variant lines won't use the same template.
+        If the template is identified via xid using the column
+        `xid::product_tmpl_id`, we must create this reference
+        or other variant lines won't use the same template.
         """
         if self.must_generate_xmlid and orig_values.get("xid::product_tmpl_id"):
             tmpl_xid = sanitize_external_id(orig_values.get("xid::product_tmpl_id"))
@@ -112,6 +124,8 @@ class ProductProductRecordHandler(Component):
         # and B, we cannot import a second variant V2 with attributes A and C
         # for instance, attributes have to be the same among all variants of a
         # template)
+        if not attr_values_to_import_ids:
+            return
         attr_values_to_import = self.env["product.attribute.value"].browse(
             attr_values_to_import_ids
         )
@@ -128,7 +142,7 @@ class ProductProductRecordHandler(Component):
         )
         if existing_variant and attrs_to_import != existing_attrs:
             raise ValueError(
-                _(
+                self.env._(
                     "Product '%(code)s' has not the same attributes "
                     "than '%(existing_code)s'. "
                     "Unable to import it.",
@@ -142,7 +156,7 @@ class ProductProductRecordHandler(Component):
             # or create it if none is found
             attr = attr_value.attribute_id
             tpl_attr_line = template.attribute_line_ids.filtered(
-                lambda l: l.attribute_id == attr
+                lambda line, attr=attr_value.attribute_id: line.attribute_id == attr
             )
             if not tpl_attr_line:
                 tpl_attr_line = TplAttrLine.create(
@@ -187,7 +201,7 @@ class ProductProductRecordHandler(Component):
         )
         if combination_indices and existing_product:
             raise ValueError(
-                _(
+                self.env._(
                     "Product '%(code)s' "
                     "seems to be a duplicate of '%(existing_code)s' (same attributes). "
                     "Unable to import it.",
@@ -220,7 +234,8 @@ class ProductProductRecordHandler(Component):
         1. search by name
         2. search by xid, assuming the value itself is already an xid.
         3. search by composed xid, assuming the value is the last part of an xid.
-           The first part is computed as: `__setup__.$product_attr_xid_value_$col_value`.
+           The first part is computed as:
+           `__setup__.$product_attr_xid_value_$col_value`.
            For instance, a column `product_attr_Size` could have the values
            "S" , "M", "L" and they will be converted
            to find their matching attributes, like this:

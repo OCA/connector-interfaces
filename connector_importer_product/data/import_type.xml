@@ -2,11 +2,10 @@
 <!-- Copyright 2022 Camptocamp SA
      License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl). -->
 <odoo noupdate="1">
-
-  <record id="import_type_product_category" model="import.type">
-    <field name="name">Product Category</field>
-    <field name="key">product_category</field>
-    <field name="options">
+    <record id="import_type_product_category" model="import.type">
+        <field name="name">Product Category</field>
+        <field name="key">product_category</field>
+        <field name="options">
 - model: product.category
   options:
     importer:
@@ -14,12 +13,12 @@
     mapper:
       name: importer.mapper.dynamic
     </field>
-  </record>
+    </record>
 
-  <record id="import_type_product_attribute" model="import.type">
-    <field name="name">Product Attribute</field>
-    <field name="key">product_attribute</field>
-    <field name="options">
+    <record id="import_type_product_attribute" model="import.type">
+        <field name="name">Product Attribute</field>
+        <field name="key">product_attribute</field>
+        <field name="options">
 - model: product.attribute
   options:
     importer:
@@ -29,12 +28,12 @@
       translatable_keys:
         - name
     </field>
-  </record>
+    </record>
 
-  <record id="import_type_product_attribute_value" model="import.type">
-    <field name="name">Import Product Attribute Value</field>
-    <field name="key">product_attribute_value</field>
-    <field name="options">
+    <record id="import_type_product_attribute_value" model="import.type">
+        <field name="name">Import Product Attribute Value</field>
+        <field name="key">product_attribute_value</field>
+        <field name="options">
 - model: product.attribute.value
   options:
     importer:
@@ -47,12 +46,12 @@
       translatable_keys:
         - name
     </field>
-  </record>
+    </record>
 
-  <record id="import_type_product_product" model="import.type">
-    <field name="name">Import Product</field>
-    <field name="key">product_product</field>
-    <field name="options">
+    <record id="import_type_product_product" model="import.type">
+        <field name="name">Import Product</field>
+        <field name="key">product_product</field>
+        <field name="options">
 - model: product.product
   options:
     importer:
@@ -60,12 +59,12 @@
     mapper:
       name: product.product.mapper
     </field>
-  </record>
+    </record>
 
-  <record id="import_type_product_supplierinfo" model="import.type">
-    <field name="name">Import Product Supplier Info</field>
-    <field name="key">product_supplierinfo</field>
-    <field name="options">
+    <record id="import_type_product_supplierinfo" model="import.type">
+        <field name="name">Import Product Supplier Info</field>
+        <field name="key">product_supplierinfo</field>
+        <field name="options">
 - model: res.partner
   options:
     importer:
@@ -86,12 +85,12 @@
     mapper:
       name: product.supplierinfo.mapper
     </field>
-  </record>
+    </record>
 
-  <record id="import_type_product_packaging" model="import.type">
-    <field name="name">Import Product Packaging</field>
-    <field name="key">product_packaging</field>
-    <field name="options">
+    <record id="import_type_product_packaging" model="import.type">
+        <field name="name">Import Product Packaging</field>
+        <field name="key">product_packaging</field>
+        <field name="options">
 - model: product.packaging
   options:
     importer:
@@ -99,12 +98,12 @@
     mapper:
       name: importer.mapper.dynamic
     </field>
-  </record>
+    </record>
 
-  <record id="import_type_product_product_all_in_one" model="import.type">
-    <field name="name">Import Product - all in one</field>
-    <field name="key">product_product_all_in_one</field>
-    <field name="options">
+    <record id="import_type_product_product_all_in_one" model="import.type">
+        <field name="name">Import Product - all in one</field>
+        <field name="key">product_product_all_in_one</field>
+        <field name="options">
 - model: product.product
   options:
     importer:
@@ -135,7 +134,7 @@
       source_key_prefix: supplier.
     </field>
 
-<!--
+        <!--
   Example of pkg import in all-in-one if the unique key for product.product is `id`
 - model: product.packaging
   options:
@@ -144,6 +143,5 @@
     mapper:
       name: importer.mapper.dynamic
 -->
-  </record>
-
+    </record>
 </odoo>
