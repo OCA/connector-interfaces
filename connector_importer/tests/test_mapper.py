@@ -53,6 +53,7 @@ class TestRecordsetImporter(TestImporterBase):
         expected = {
             "name": "John Doe",
             "ref": "12345",
+            "_foo": "something",
             "some_one": 1,
             "some_two": 2,
         }
@@ -70,6 +71,7 @@ class TestRecordsetImporter(TestImporterBase):
         mapper = self._get_dynamyc_mapper(options=dict(source_key_blacklist=["ref"]))
         expected = {
             "name": "John Doe",
+            "_foo": "something",
             "some_one": 1,
             "some_two": 2,
         }
@@ -95,6 +97,7 @@ class TestRecordsetImporter(TestImporterBase):
         expected = (
             "name",
             "ref",
+            "_foo",
             "some_one",
             "some_two",
         )
@@ -146,6 +149,22 @@ class TestRecordsetImporter(TestImporterBase):
             "name": "John Doe",
             "parent_id": self.env.ref("base.res_partner_10").id,
             "category_id": [(6, 0, categs.ids)],
+        }
+        self.assertEqual(mapper.dynamic_fields(rec), expected)
+
+    def test_dynamic_mapper_values_with_slash_id(self):
+        mapper = self._get_dynamyc_mapper()
+        rec = {
+            "name": "John Doe",
+            "ref": "12345",
+            "parent_id/id": "base.res_partner_10",
+            "category_id/id": "base.res_partner_category_0",
+        }
+        expected = {
+            "name": "John Doe",
+            "ref": "12345",
+            "parent_id": self.env.ref("base.res_partner_10").id,
+            "category_id": [(6, 0, self.env.ref("base.res_partner_category_0").ids)],
         }
         self.assertEqual(mapper.dynamic_fields(rec), expected)
 
