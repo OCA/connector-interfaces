@@ -2,3 +2,4 @@
 - Sébastien Alix \<<sebastien.alix@camptocamp.com>\>
 - Jacques-Etienne Baudoux \<<je@bcim.be>\>
 - Matthieu Méquignon \<<matthieu.mequignon@camptocamp.com>\>
+- Ricardo Almeida Soares \<<ricardo.almeidasoares@camptocamp.com>\>
