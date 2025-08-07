@@ -14,7 +14,11 @@ from ..utils.misc import sanitize_external_id
 
 FMTS = ("%d/%m/%Y",)
 
-FMTS_DT = ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M:%S.000")
+FMTS_DT = (
+    "%Y-%m-%d",  # fallbacks to 00:00:00
+    "%Y-%m-%d %H:%M:%S",
+    "%Y-%m-%d %H:%M:%S.000",
+)
 
 
 def to_date(value, formats=FMTS):
@@ -105,7 +109,7 @@ def convert(field, conv_type, fallback_field=None, pre_value_handler=None, **kw)
     def modifier(self, record, to_attr):
         if field not in record:
             # be gentle
-            logger.warn("Field `%s` missing in line `%s`", field, record["_line_nr"])
+            logger.warning("Field `%s` missing in line `%s`", field, record["_line_nr"])
             return None
         value = record.get(field)
         if not value and fallback_field:

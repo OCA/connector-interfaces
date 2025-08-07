@@ -55,6 +55,10 @@ class DynamicMapper(Component):
     _inherit = "importer.base.mapper"
     _usage = "importer.dynamicmapper"
 
+    def __init__(self, work_context):
+        super().__init__(work_context)
+        self._non_mapped_keys_cache = {}
+
     @mapping
     def dynamic_fields(self, record):
         """Resolve values for non mapped keys.
@@ -71,13 +75,17 @@ class DynamicMapper(Component):
         required_keys = self._required_keys()
         missing_required_keys = []
         for source_fname in self._non_mapped_keys(clean_record):
-            if source_fname in ("id", "xid::id"):
+            if source_fname in ("id", "xid::id") or source_fname.startswith("_"):
                 # Never convert IDs
                 continue
             fname = source_fname
             if "::" in fname:
                 # Eg: transformers like `xid::``
                 fname = fname.split("::")[-1]
+                clean_record[fname] = clean_record.pop(source_fname)
+            if fname.endswith("/id"):
+                # that's an xmlid key
+                fname = fname[:-3]
                 clean_record[fname] = clean_record.pop(source_fname)
             if prefix and fname.startswith(prefix):
                 # Eg: prefix all supplier fields w/ `supplier.`
@@ -121,7 +129,7 @@ class DynamicMapper(Component):
         return {k: v for k, v in record.items() if k in valid_keys}
 
     def _get_valid_keys(self, record):
-        valid_keys = [k for k in record.keys() if not k.startswith("_")]
+        valid_keys = [k for k in record.keys()]
         prefix = self._source_key_prefix
         if prefix:
             valid_keys = [k for k in valid_keys if prefix in k]
@@ -172,7 +180,7 @@ class DynamicMapper(Component):
         return self._source_key_rename.get(fname, fname)
 
     def _is_xmlid_key(self, fname, ftype):
-        return fname.startswith("xid::") and ftype in (
+        return (fname.startswith("xid::") or fname.endswith("/id")) and ftype in (
             "many2one",
             "one2many",
             "many2many",
@@ -198,10 +206,10 @@ class DynamicMapper(Component):
         options = self.work.options.mapper.get("converter", {}).get(fname, {})
         return self._dynamic_keys_mapping(fname, **options).get(ftype)
 
-    _non_mapped_keys_cache = None
-
     def _non_mapped_keys(self, record):
-        if self._non_mapped_keys_cache is None:
+        # records might have different keys
+        cache_key = tuple(sorted(record.keys()))
+        if not self._non_mapped_keys_cache.get(cache_key):
             all_keys = set(record.keys())
             mapped_keys = set()
             # NOTE: keys coming from `@mapping` methods can't be tracked.
@@ -213,8 +221,8 @@ class DynamicMapper(Component):
                     mapped_keys.add(pair[0])
                 elif hasattr(pair[0], "_from_key"):
                     mapped_keys.add(pair[0]._from_key)
-            self._non_mapped_keys_cache = tuple(all_keys - mapped_keys)
-        return self._non_mapped_keys_cache
+            self._non_mapped_keys_cache[cache_key] = tuple(all_keys - mapped_keys)
+        return self._non_mapped_keys_cache[cache_key]
 
     def _get_defaults(self, fnames):
         return self.model.default_get(fnames)
