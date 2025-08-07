@@ -142,22 +142,25 @@ class OdooRecordHandler(Component):
     def odoo_create(self, values, orig_values):
         """Create a new odoo record."""
         self.odoo_pre_create(values, orig_values)
-        # TODO: remove keys that are not model's fields
+        values_for_create = values.copy()
+        self._odoo_purge_no_field_values(values_for_create)
         odoo_record = self.model.with_context(**self.create_context()).create(
-            values.copy()
+            values_for_create
         )
         # force uid
-        if self.override_create_uid and values.get("create_uid"):
+        if self.override_create_uid and values_for_create.get("create_uid"):
             self._force_value(odoo_record, values, "create_uid")
         # force create date
-        if self.override_create_date and values.get("create_date"):
-            self._force_value(odoo_record, values, "create_date")
-        self.odoo_post_create(odoo_record, values, orig_values)
-        translatable = self.importer.collect_translatable(values, orig_values)
+        if self.override_create_date and values_for_create.get("create_date"):
+            self._force_value(odoo_record, values_for_create, "create_date")
+        self.odoo_post_create(odoo_record, values_for_create, orig_values)
+        translatable = self.importer.collect_translatable(
+            values_for_create, orig_values
+        )
         self.update_translations(odoo_record, translatable)
         # Set the external ID if necessary
         if self.must_generate_xmlid:
-            xid = self._get_xmlid(values, orig_values)
+            xid = self._get_xmlid(values_for_create, orig_values)
             if not self.env.ref(xid, raise_if_not_found=False):
                 module, id_ = xid.split(".", 1)
                 self.env["ir.model.data"].create(
@@ -194,6 +197,7 @@ class OdooRecordHandler(Component):
         # copy values to not affect original values (mainly for introspection)
         values_for_write = values.copy()
         # purge unneeded values
+        self._odoo_purge_no_field_values(values_for_write)
         self._odoo_write_purge_values(odoo_record, values_for_write)
         # hook before write
         self.odoo_pre_write(odoo_record, values_for_write, orig_values)
@@ -220,12 +224,14 @@ class OdooRecordHandler(Component):
         self.env.cr.execute(query, (values[fname], record.id))
         record.invalidate_recordset([fname])
 
-    def _odoo_write_purge_values(self, odoo_record, values):
+    def _odoo_purge_no_field_values(self, values):
         # remove non fields values
         field_names = tuple(values.keys())
         for fname in field_names:
             if fname not in self.model._fields:
                 values.pop(fname)
+
+    def _odoo_write_purge_values(self, odoo_record, values):
         # remove fields having the same value
         field_names = tuple(values.keys())
         if self.work.options.record_handler.skip_fields_unchanged:
