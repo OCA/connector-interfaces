@@ -28,7 +28,7 @@ Unported addons
 ---------------
 addon | version | maintainers | summary
 --- | --- | --- | ---
-[connector_importer_product](connector_importer_product/) | 16.0.1.0.0 (unported) |  | Ease definition of product imports using `connector_importer`.
+[connector_importer_product](connector_importer_product/) | 18.0.1.0.0 (unported) |  | Ease definition of product imports using `connector_importer`.
 
 [//]: # (end addons)
 
