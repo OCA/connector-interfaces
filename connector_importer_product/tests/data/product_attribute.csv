@@ -1,0 +1,4 @@
+id,name,name:fr,name:it,create_variant,sequence,display_type
+product_attr_test1,TEST_1,TEST_1 FR,TEST_1 IT,always,,select
+product_attr_test2,TEST_2,TEST_2 FR,TEST_2 IT,always,,
+product_attr_test3,TEST_3,TEST_3 FR,TEST_3 IT,always,,

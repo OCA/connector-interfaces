@@ -1,0 +1,6 @@
+id,default_code,name,name:fr,name:it,barcode,uom_id,height,length,width,weight,list_price,standard_price,type,categ_id,product_attr_test1,product_attr_test2,product_attr_test3
+product_test1_1,VARIANT_TEST_1_1,TEST 1.1,TEST 1.1,TEST 1.1,,uom.product_uom_categ_unit,,,,,,,consu,product.product_category_all,product_attr_value_test1_value1,product_attr_value_test2_value1,
+product_test1_2,VARIANT_TEST_1_2,TEST 1.2,TEST 1.2,TEST 1.2,,uom.product_uom_categ_unit,,,,,,,consu,product.product_category_all,product_attr_value_test1_value1,product_attr_value_test2_value1,
+product_test2_1,VARIANT_TEST_2_1,TEST 2.1,TEST 2.1,TEST 2.1,,uom.product_uom_categ_unit,,,,,,,consu,product.product_category_all,product_attr_value_test1_value1,product_attr_value_test2_value1,
+product_test2_2,VARIANT_TEST_2_2,TEST 2.2,TEST 2.2,TEST 2.2,,uom.product_uom_categ_unit,,,,,,,consu,product.product_category_all,product_attr_value_test1_value1,product_attr_value_test2_value2,
+product_test2_3,VARIANT_TEST_2_3,TEST 2.3,TEST 2.3,TEST 2.3,,uom.product_uom_categ_unit,,,,,,,consu,product.product_category_all,product_attr_value_test1_value1,product_attr_value_test2_value3,product_attr_value_test3_value1

@@ -1,0 +1,13 @@
+id,name,name:fr,name:it,html_color,is_custom,sequence,xid::attribute_id
+product_attr_value_test1_value1,VALUE_1_1,VALUE_1_1 FR,VALUE_1_1 IT,,,,product_attr_test1
+product_attr_value_test1_value2,VALUE_1_2,VALUE_1_2 FR,VALUE_1_2 IT,,,,product_attr_test1
+product_attr_value_test1_value3,VALUE_1_3,VALUE_1_3 FR,VALUE_1_3 IT,,,,product_attr_test1
+product_attr_value_test1_value4,VALUE_1_4,VALUE_1_4 FR,VALUE_1_4 IT,,,,product_attr_test1
+product_attr_value_test2_value1,VALUE_2_1,VALUE_2_1 FR,VALUE_2_1 IT,,,,product_attr_test2
+product_attr_value_test2_value2,VALUE_2_2,VALUE_2_2 FR,VALUE_2_2 IT,,,,product_attr_test2
+product_attr_value_test2_value3,VALUE_2_3,VALUE_2_3 FR,VALUE_2_3 IT,,,,product_attr_test2
+product_attr_value_test2_value4,VALUE_2_4,VALUE_2_4 FR,VALUE_2_4 IT,,,,product_attr_test2
+product_attr_value_test3_value1,VALUE_3_1,VALUE_3_1 FR,VALUE_3_1 IT,,,,product_attr_test3
+product_attr_value_test3_value2,VALUE_3_2,VALUE_3_2 FR,VALUE_3_2 IT,,,,product_attr_test3
+product_attr_value_test3_value3,VALUE_3_3,VALUE_3_3 FR,VALUE_3_3 IT,,,,product_attr_test3
+product_attr_value_test3_value4,VALUE_3_4,VALUE_3_4 FR,VALUE_3_4 IT,,,,product_attr_test3
