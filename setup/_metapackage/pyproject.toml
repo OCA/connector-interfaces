@@ -1,8 +1,9 @@
 [project]
 name = "odoo-addons-oca-connector-interfaces"
-version = "18.0.20241022.0"
+version = "18.0.20250826.0"
 dependencies = [
     "odoo-addon-connector_importer==18.0.*",
+    "odoo-addon-connector_importer_product==18.0.*",
 ]
 classifiers=[
     "Programming Language :: Python",
