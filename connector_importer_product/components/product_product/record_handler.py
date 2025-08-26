@@ -32,9 +32,9 @@ class ProductProductRecordHandler(Component):
         self._update_template_attributes(odoo_record, values, orig_values)
 
     def odoo_pre_write(self, odoo_record, values, orig_values):
-        # When updating product.product records, product_tmpl_id is set to False in values
-        # if not specified in the import type. But we don't want to set it to False
-        # as the value already exists in the odoo_record
+        # When updating product.product records, product_tmpl_id is set to False in
+        # values if not specified in the import type. But we don't want to set it to
+        # False as the value already exists in the odoo_record
         if (
             "product_tmpl_id" not in orig_values
             and "product_tmpl_id" in odoo_record._fields
