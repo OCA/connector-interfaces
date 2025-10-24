@@ -17,11 +17,11 @@
                     <field name="move_file_after_import" />
                     <field
                         name="sftp_path_success"
-                        attrs="{'invisible': [('move_file_after_import', '=', False)]}"
+                        invisible="not move_file_after_import"
                     />
                     <field
                         name="sftp_path_error"
-                        attrs="{'invisible': [('move_file_after_import', '=', False)]}"
+                        invisible="not move_file_after_import"
                     />
                     <field name="send_back_error_report" />
                 </group>
