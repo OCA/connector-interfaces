@@ -15,6 +15,8 @@ class TestSourceCSVSFTPMixin:
         cls.source = cls.env.ref(
             "connector_importer_source_sftp.demo_import_source_csv_sftp"
         )
+        # Force to solve issue with server_environment
+        cls.source.storage_id.backend_type = "sftp"
 
 
 class SFTPSourceTransactionComponentCase(
