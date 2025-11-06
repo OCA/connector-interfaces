@@ -37,10 +37,7 @@ class ImportSourceConsumerMixin(models.AbstractModel):
     @api.depends("source_model", "source_id")
     def _compute_source_ref_id(self):
         for item in self:
-            item.source_ref_id = False
-            if not item.source_id or not item.source_model:
-                continue
-            item.source_ref_id = f"{item.source_model},{item.source_id}"
+            item.source_ref_id = item.get_source()
 
     @api.model
     def _selection_source_ref_id(self):
@@ -68,4 +65,8 @@ class ImportSourceConsumerMixin(models.AbstractModel):
 
     def get_source(self):
         """Return the source to the consumer."""
-        return self.source_ref_id
+        if not self.source_model:
+            return None
+        elif not self.source_id:
+            return self.env[self.source_model]
+        return self.env[self.source_model].browse(self.source_id)
