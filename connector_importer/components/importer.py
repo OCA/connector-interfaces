@@ -345,7 +345,8 @@ class RecordImporter(Component):
             except Exception as err:
                 logger.exception(err)
                 values = {}
-                self.tracker.log_error(values, line, odoo_record, message=err)
+                message = f"{type(err).__name__}: {str(err)}"
+                self.tracker.log_error(values, line, odoo_record, message=message)
                 if self.must_break_on_error:
                     raise
                 continue
