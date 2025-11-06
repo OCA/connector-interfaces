@@ -142,7 +142,7 @@ class DynamicMapper(Component):
         return tuple(valid_keys)
 
     def _required_keys(self):
-        return [k for k, v in self.model.fields_get().items() if v["required"]]
+        return [k for k, v in self.model.fields_get().items() if v.get("required")]
 
     @property
     def _source_key_whitelist(self):
