@@ -100,12 +100,18 @@ class ImportSourceCSVSFTP(models.Model):
             if self.csv_file:
                 return super()._get_lines()
             else:
-                _logger.info(
-                    "Empty or unreadable file on SFTP server: '%s'", self.csv_filename
+                raise Exception(
+                    self.env._(
+                        "Empty or unreadable file on SFTP server: '%s'",
+                        self.csv_filename,
+                    )
                 )
-        else:
-            _logger.info("No matching file found on SFTP server")
-        return []
+        raise FileNotFoundError(
+            self.env._(
+                "No matching file found on SFTP server for pattern: '%s'",
+                self.sftp_filename_pattern,
+            )
+        )
 
     def _sftp_get_file(self):
         """Try to read the first file matching the pattern.
