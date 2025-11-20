@@ -2,9 +2,17 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
+from textwrap import dedent
+
+from odoo.tests import RecordCapturer
 from odoo.tools import DotDict, mute_logger
 
 from .common import TestImporterBase
+
+LOGGERS_TO_MUTE = (
+    "[importer]",
+    "odoo.addons.queue_job.utils",
+)
 
 
 class TestRecordImporter(TestImporterBase):
@@ -120,3 +128,56 @@ class TestRecordImporter(TestImporterBase):
                 "key2": 2,
             },
         )
+
+    @mute_logger(*LOGGERS_TO_MUTE)
+    def test_importer_create_and_update(self):
+        self.import_type.write(
+            {
+                "options": dedent(
+                    """
+                    - model: res.partner
+                      options:
+                        importer:
+                          odoo_unique_key: id
+                          override_existing: false
+                          break_on_error: true
+                        mapper:
+                          name: importer.mapper.dynamic
+                    """
+                ),
+            }
+        )
+        # generate 10 records
+        count = 10
+        lines = self._fake_lines(count, keys=("id", "name"))
+        # Make sure id is an XML-id for all lines
+        for line in lines:
+            line["id"] = f"__import__.{line['id']}"
+        # set them on record
+        self.record.set_data(lines)
+        with RecordCapturer(self.env["res.partner"].sudo(), []) as rc:
+            res = self.record.run_import()
+        records = rc.records
+        # Check created records
+        self.assertEqual(len(records), 10)
+        # Check response
+        expected = {
+            "res.partner": {"created": 10, "errored": 0, "updated": 0, "skipped": 0}
+        }
+        self.assertEqual(res, expected)
+        # Check XML-IDs
+        for i in range(1, count + 1):
+            partner = self.env.ref(f"__import__.id_{i}", raise_if_not_found=False)
+            self.assertTrue(partner)
+        # Now update them
+        self.recordset.override_existing = False
+        self.record.set_data(lines)
+        with RecordCapturer(self.env["res.partner"].sudo(), []) as rc:
+            res = self.record.run_import()
+        # Check no created records
+        self.assertFalse(rc.records)
+        # Check response
+        expected = {
+            "res.partner": {"created": 0, "errored": 0, "updated": 0, "skipped": 10}
+        }
+        self.assertEqual(res, expected)
