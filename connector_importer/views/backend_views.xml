@@ -14,7 +14,7 @@
                             type="object"
                             string="Import all"
                             confirm="You are about to run ALL configured recordsets. Are you sure?"
-                            invisible="job_running or debug_mode == False"
+                            invisible="job_running and not debug_mode"
                         />
                         <button
                             class="oe_stat_button"
