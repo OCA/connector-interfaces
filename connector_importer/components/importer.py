@@ -234,7 +234,8 @@ class RecordImporter(Component):
         ):
             msg = "ALREADY EXISTS"
             if self.unique_key:
-                msg += f": {self.unique_key}={values[self.unique_key]}"
+                key = values.get(self.unique_key) or orig_values.get(self.unique_key)
+                msg += f": {self.unique_key}={key}"
             return {
                 "message": msg,
                 "odoo_record": self.record_handler.odoo_find(values, orig_values).id,
