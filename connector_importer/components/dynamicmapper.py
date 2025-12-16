@@ -96,7 +96,14 @@ class DynamicMapper(Component):
                 clean_record[final_fname] = clean_record.pop(fname)
                 fname = final_fname
 
-            if available_fields.get(fname):
+            if fname not in available_fields:
+                logger.warning("Field `%s` not found in model `%s`", fname, model)
+                continue
+
+            # If the value is empty, simply set to False
+            # Otherwise, convert it to the appropriate type
+            value = False
+            if clean_record[fname]:
                 fspec = available_fields.get(fname)
                 ftype = fspec["type"]
                 if self._is_xmlid_key(source_fname, ftype):
@@ -104,16 +111,20 @@ class DynamicMapper(Component):
                 converter = self._get_converter(fname, ftype)
                 if converter:
                     value = converter(self, clean_record, fname)
-                    if not value:
-                        if source_fname in self._source_key_empty_skip:
-                            continue
-                        if fname in required_keys:
-                            missing_required_keys.append(fname)
-                    vals[fname] = value
                 else:
                     logger.debug(
-                        "Dynamic mapper cannot find converte for field `%s`", fname
+                        "Dynamic mapper cannot find converter for field `%s`", fname
                     )
+
+            # If there's no value, handle skip empty or required keys
+            if not value:
+                if source_fname in self._source_key_empty_skip:
+                    continue
+                if fname in required_keys:
+                    missing_required_keys.append(fname)
+
+            vals[fname] = value
+
         if missing_required_keys:
             vals.update(self._get_defaults(missing_required_keys))
             for k in missing_required_keys:
