@@ -168,6 +168,18 @@ class TestRecordsetImporter(TestImporterBase):
         }
         self.assertEqual(mapper.dynamic_fields(rec), expected)
 
+    def test_dynamic_mapper_empty_value(self):
+        mapper = self._get_dynamyc_mapper()
+        rec = {
+            "name": "John Doe",
+            "ref": "",
+        }
+        expected = {
+            "name": "John Doe",
+            "ref": False,
+        }
+        self.assertEqual(mapper.dynamic_fields(rec), expected)
+
     def test_dynamic_mapper_skip_empty(self):
         rec = {
             "name": "John Doe",
