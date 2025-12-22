@@ -188,9 +188,9 @@ class DynamicMapper(Component):
 
     def _dynamic_keys_mapping(self, fname, **options):
         return {
-            "char": lambda self, rec, fname: rec[fname],
-            "text": lambda self, rec, fname: rec[fname],
-            "selection": lambda self, rec, fname: rec[fname],
+            "char": convert(fname, **options),
+            "text": convert(fname, **options),
+            "selection": convert(fname, **options),
             "integer": convert(fname, "safe_int", **options),
             "float": convert(fname, "safe_float", **options),
             "boolean": convert(fname, "bool", **options),

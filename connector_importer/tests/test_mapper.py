@@ -216,3 +216,24 @@ class TestRecordsetImporter(TestImporterBase):
             options=dict(source_key_rename={"another_name": "name"})
         )
         self.assertEqual(mapper.dynamic_fields(rec), expected)
+
+    def test_dynamic_mapper_convert_selection_with_value(self):
+        """Test that the importer converts a selection field with a tech value."""
+        rec = {"type": "invoice"}
+        expected = {"type": "invoice"}
+        mapper = self._get_dynamyc_mapper()
+        self.assertEqual(mapper.dynamic_fields(rec), expected)
+
+    def test_dynamic_mapper_convert_selection_with_label(self):
+        """Test that the importer converts a selection field with a label value."""
+        rec = {"type": "Invoice Address"}
+        expected = {"type": "invoice"}
+        mapper = self._get_dynamyc_mapper()
+        self.assertEqual(mapper.dynamic_fields(rec), expected)
+
+    def test_dynamic_mapper_convert_selection_with_wrong_value(self):
+        """Test that the importer converts a selection field with a wrong value."""
+        rec = {"type": "wrong"}
+        mapper = self._get_dynamyc_mapper()
+        with self.assertRaises(TypeError):
+            mapper.dynamic_fields(rec)
