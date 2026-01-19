@@ -95,10 +95,11 @@ CONV_MAPPING = {
 }
 
 
-def convert(field, conv_type, fallback_field=None, pre_value_handler=None, **kw):
-    """Convert the source field to a defined ``conv_type``
-    (ex. str) before returning it.
-    You can also use predefined converters like 'date'.
+def convert(field, conv_type=None, fallback_field=None, pre_value_handler=None, **kw):
+    """Convert the source field to the target format.
+
+    Use ``conv_type`` to provide a predefined converter like 'date' or 'safe_float',
+    or a custom converter function.
     Use ``fallback_field`` to provide a field of the same type
     to be used in case the base field has no value.
     """
@@ -119,7 +120,12 @@ def convert(field, conv_type, fallback_field=None, pre_value_handler=None, **kw)
         # do not use `if not value` otherwise you override all zero values
         if value is None:
             return None
-        return conv_type(value, **kw)
+        # If a specific converter is provided, use it.
+        if conv_type:
+            return conv_type(value, **kw)
+        # Otherwise, fallback to the core Odoo's ir.fields.converter
+        conv = self.env["ir.fields.converter"].for_model(self.model)
+        return conv({field: value}, log=None).get(field)
 
     modifier._from_key = field
     return modifier
