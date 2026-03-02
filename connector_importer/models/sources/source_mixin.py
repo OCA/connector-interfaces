@@ -113,14 +113,11 @@ class ImportSource(models.AbstractModel):
 
     def get_config_view_id(self):
         """Retrieve configuration view."""
-        # Allow sudo to access ``ir.ui.view`` while
-        # the user with ``group_connector_manager`` may not have access to it.
-        return (
-            self.env["ir.ui.view"]
-            .sudo()
-            .search([("model", "=", self._name), ("type", "=", "form")], limit=1)
-            .id
-        )
+        # DEPRECATED, use get_formview_id instead
+        return self.get_formview_id()
+    
+    def get_formview_id(self, access_uid=None):
+        return self.env["ir.ui.view"].default_view(self._name, "form") or False
 
     def get_reporter(self):
         """Retrieve a specific reporter for this source.
