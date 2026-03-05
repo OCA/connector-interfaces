@@ -25,7 +25,10 @@ class TestRecordImporterFinishedEvent(SFTPSourceTransactionComponentRegistryCase
         super().setUpClass()
         cls.fake_lines = cls._fake_lines(cls, 10, keys=("id", "fullname"))
         cls.recordset.write(
-            {"source_model": "import.source.csv.sftp", "source_id": cls.source.id}
+            {
+                "source_model": cls.source._source_type,
+                "source_id": cls.source.id,
+            }
         )
         cls.record = cls.env["import.record"].create({"recordset_id": cls.recordset.id})
 
