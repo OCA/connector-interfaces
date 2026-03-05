@@ -63,7 +63,7 @@ class ProductProductRecordHandler(Component):
             tmpl_xid = sanitize_external_id(orig_values.get("xid::product_tmpl_id"))
             if not self.env.ref(tmpl_xid, raise_if_not_found=False):
                 module, id_ = tmpl_xid.split(".", 1)
-                self.env["ir.model.data"].create(
+                self.env["ir.model.data"].sudo().create(
                     {
                         "name": id_,
                         "module": module,
@@ -289,7 +289,7 @@ class ProductProductRecordHandler(Component):
         )
         xid = self._make_attribute_value_xid(attr_column, orig_val)
         module, id_ = xid.split(".", 1)
-        self.env["ir.model.data"].create(
+        self.env["ir.model.data"].sudo().create(
             {
                 "name": id_,
                 "module": module,

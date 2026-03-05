@@ -163,7 +163,7 @@ class OdooRecordHandler(Component):
             xid = self._get_xmlid(values_for_create, orig_values)
             if not self.env.ref(xid, raise_if_not_found=False):
                 module, id_ = xid.split(".", 1)
-                self.env["ir.model.data"].create(
+                self.env["ir.model.data"].sudo().create(
                     {
                         "name": id_,
                         "module": module,
