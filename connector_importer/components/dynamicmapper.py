@@ -228,6 +228,7 @@ class DynamicMapper(Component):
         return {
             "char": lambda self, rec, fname: rec[fname],
             "text": lambda self, rec, fname: rec[fname],
+            "json": convert(fname, "json", **options),
             "selection": lambda self, rec, fname: rec[fname],
             "integer": convert(fname, "safe_int", **options),
             "float": convert(fname, "safe_float", **options),

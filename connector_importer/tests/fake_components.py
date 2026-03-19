@@ -70,6 +70,21 @@ class PartnerRecordImporterXMLID(Component):
     write_context = create_context
 
 
+class ProductRecordMapper(Component):
+    _name = "fake.product.mapper"
+    _inherit = "importer.mapper.dynamic"
+    _apply_on = "product.product"
+
+    odoo_unique_key = "id"
+    default_keys = {"auto_compute_default_code": False}
+    source_key_whitelist = [
+        "_name",
+        "_default_code",
+        "standard_price",
+        "analytic_distribution",
+    ]
+
+
 class FakeModelMapper(Component):
     _name = "fake.model.mapper"
     _inherit = "importer.base.mapper"
