@@ -44,3 +44,4 @@ class FakeImportedModel(models.Model):
     _description = "Fake model"
 
     name = fields.Char()
+    json_value = fields.Json()

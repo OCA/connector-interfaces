@@ -156,6 +156,21 @@ The mapper will:
 - import only the key `supplier.name`
 - set the default value of `supplier_rank` to 1
 
+Values for `Json` fields are decoded from their serialized form: both
+JSON (eg: `{"12": 100.0}`) and python literals (eg: `{'12': 100.0}`)
+are supported. Empty values are converted to an empty dict. By default,
+a value that cannot be decoded raises an error and the line is reported
+as errored. To log a warning and import an empty dict instead, use the
+`converter` option:
+
+    - model: account.move.line
+        options:
+            mapper:
+                name: importer.mapper.dynamic
+                converter:
+                    analytic_distribution:
+                        raise_if_not_valid: false
+
 ## The record_handler
 
 The record handler is the component that will handle the record create
