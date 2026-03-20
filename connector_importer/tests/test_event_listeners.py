@@ -21,8 +21,10 @@ class TestRecordImporter(TestImporterBase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls.env = cls.env(context=dict(cls.env.context, tracking_disable=True))
         cls.loader = FakeModelLoader(cls.env, cls.__module__)
         cls.loader.backup_registry()
+        cls.addClassCleanup(cls.loader.restore_registry)
         # fmt: off
         from .fake_models import FakeImportedModel
         cls.loader.update_registry((FakeImportedModel,))
@@ -66,6 +68,11 @@ log(msg)
             """
             }
         )
+
+    def check_attrs(self):
+        # Remove check_attrs cleanup if exists to avoid conflict with FakeModelLoader.
+        # since superClass uses it for its own puposes not relevant for our tests.
+        pass
 
     @classmethod
     def tearDownClass(cls):

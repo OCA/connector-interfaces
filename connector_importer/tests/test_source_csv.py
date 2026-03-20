@@ -15,8 +15,10 @@ class TestSourceCSV(BaseTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        cls.env = cls.env(context=dict(cls.env.context, tracking_disable=True))
         cls.loader = FakeModelLoader(cls.env, cls.__module__)
         cls.loader.backup_registry()
+        cls.addClassCleanup(cls.loader.restore_registry)
         # fmt: off
         from .fake_models import FakeSourceConsumer
         cls.loader.update_registry((
@@ -25,6 +27,11 @@ class TestSourceCSV(BaseTestCase):
         # fmt: on
         cls.source = cls._create_source()
         cls.consumer = cls._create_consumer()
+
+    def check_attrs(self):
+        # Remove check_attrs cleanup if exists to avoid conflict with FakeModelLoader.
+        # since superClass uses it for its own puposes not relevant for our tests.
+        pass
 
     @classmethod
     def tearDownClass(cls):

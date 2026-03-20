@@ -94,9 +94,14 @@ class DynamicMapper(Component):
             # If the value is empty, simply set to False
             # Otherwise, convert it to the appropriate type
             value = False
-            if clean_record[fname]:
-                fspec = available_fields.get(fname)
-                ftype = fspec["type"]
+            fspec = available_fields.get(fname)
+            ftype = fspec.get("type") if fspec else None
+
+            # For JSON fields, always convert even if empty (empty dict/list is valid)
+            # For other field types, only convert if value is truthy
+            should_convert = clean_record[fname] or ftype == "json"
+
+            if should_convert:
                 if self._is_xmlid_key(source_fname, ftype):
                     ftype = "_xmlid"
                 converter = self._get_converter(fname, ftype)
