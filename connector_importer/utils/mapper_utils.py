@@ -2,7 +2,7 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-import json
+import logging
 from ast import literal_eval
 from datetime import datetime
 
@@ -13,6 +13,17 @@ from odoo.tools.misc import str2bool
 
 from ..log import logger
 from ..utils.misc import sanitize_external_id
+
+_logger = logging.getLogger(__name__)
+
+try:
+    import orjson as json
+except ImportError:
+    _logger.info(
+        "orjson not found, using built-in json library. "
+        "Consider installing orjson for better performance."
+    )
+    import json
 
 FMTS = ("%d/%m/%Y",)
 
