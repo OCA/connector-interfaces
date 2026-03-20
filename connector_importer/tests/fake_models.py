@@ -8,7 +8,7 @@ from odoo import fields, models
 class FakeSourceConsumer(models.Model):
     _name = "fake.source.consumer"
     _description = "Fake source consumer"
-    _inherit = "import.source.consumer.mixin"
+    _inherit = ["import.source.consumer.mixin"]
 
     name = fields.Char()
 
