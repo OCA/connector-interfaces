@@ -2,11 +2,16 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-import json
 from ast import literal_eval
 from datetime import datetime
 
 import pytz
+
+try:
+    # optional, faster JSON decoding
+    import orjson as json
+except ImportError:
+    import json
 
 from odoo import fields
 from odoo.tools.misc import str2bool
