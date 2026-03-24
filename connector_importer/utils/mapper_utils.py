@@ -2,6 +2,8 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
+import logging
+from ast import literal_eval
 from datetime import datetime
 
 import pytz
@@ -12,6 +14,17 @@ from odoo.tools.misc import str2bool
 from ..log import logger
 from ..utils.misc import sanitize_external_id
 
+_logger = logging.getLogger(__name__)
+
+try:
+    import orjson as json
+except ImportError:
+    _logger.info(
+        "orjson not found, using built-in json library. "
+        "Consider installing orjson for better performance."
+    )
+    import json
+
 FMTS = ("%d/%m/%Y",)
 
 FMTS_DT = (
@@ -19,6 +32,28 @@ FMTS_DT = (
     "%Y-%m-%d %H:%M:%S",
     "%Y-%m-%d %H:%M:%S.000",
 )
+
+
+def to_json(value, raise_if_not_valid=False, **kw):
+    """Safely convert to json."""
+    if isinstance(value, dict | list):
+        return value
+    if not value:
+        return {}
+    try:
+        return json.loads(value)
+    except (TypeError, ValueError, json.JSONDecodeError):
+        try:
+            # Accept Python-style serialized dict/list values.
+            return literal_eval(value)
+        except (SyntaxError, ValueError) as exc:
+            logger.warning(
+                "Cannot decode JSON value: %s",
+                value,
+            )
+            if raise_if_not_valid:
+                raise exc
+            return {}
 
 
 def to_date(value, formats=FMTS):
@@ -92,6 +127,7 @@ CONV_MAPPING = {
     "safe_float": to_safe_float,
     "safe_int": to_safe_int,
     "bool": lambda x: str2bool(x, default=False),
+    "json": to_json,
 }
 
 

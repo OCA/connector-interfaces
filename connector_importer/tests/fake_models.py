@@ -7,9 +7,8 @@ from odoo import fields, models
 
 class FakeSourceConsumer(models.Model):
     _name = "fake.source.consumer"
-    _description = _name
-    _inherit = "import.source.consumer.mixin"
     _description = "Fake source consumer"
+    _inherit = ["import.source.consumer.mixin"]
 
     name = fields.Char()
 
@@ -41,7 +40,8 @@ class FakeSourceStatic(models.Model):
 
 class FakeImportedModel(models.Model):
     _name = "fake.imported.model"
-    _description = _name
     _description = "Fake model"
 
     name = fields.Char()
+    ref = fields.Char(index=True)
+    analytic_distribution = fields.Json()

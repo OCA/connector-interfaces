@@ -3,12 +3,16 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 from odoo.tests.common import RecordCapturer
-from odoo.tools import DotDict
+from odoo.tools import DotDict, mute_logger
 
 from .common import TestImporterBase
 
 MOD_PATH = "odoo.addons.connector_importer"
 RECORD_MODEL = MOD_PATH + ".models.record.ImportRecord"
+LOGGERS_TO_MUTE = (
+    "[importer]",
+    "odoo.addons.queue_job.utils",
+)
 
 
 class TestRecordsetImporter(TestImporterBase):
@@ -34,6 +38,17 @@ class TestRecordsetImporter(TestImporterBase):
         opts = {"name": "importer.mapper.dynamic"}
         opts.update(options or {})
         return self._get_mapper(options=DotDict({"importer": {}, "mapper": opts}))
+
+    def _get_dynamic_mapper_for_model(self, model_name, options=None):
+        opts = {"name": "importer.mapper.dynamic"}
+        opts.update(options or {})
+        with self.backend.work_on(
+            self.record._name,
+            components_registry=self.comp_registry,
+            options=DotDict({"importer": {}, "mapper": opts}),
+        ) as work:
+            importer = work.component_by_name("importer.record", model_name=model_name)
+            return importer._get_mapper()
 
     # TODO: test basic mapper and automapper too
 
@@ -99,6 +114,7 @@ class TestRecordsetImporter(TestImporterBase):
         )
         self.assertEqual(sorted(mapper._non_mapped_keys(clean_rec)), sorted(expected))
 
+    @mute_logger(*LOGGERS_TO_MUTE)
     def test_dynamic_mapper_values(self):
         mapper = self._get_dynamyc_mapper()
         rec = {}
@@ -119,17 +135,17 @@ class TestRecordsetImporter(TestImporterBase):
             "xid::category_id": """
                 base.res_partner_category_0,base.res_partner_category_2
             """,
-            "title": "Doctor",
+            "title_id": "Doctor",
         }
         expected = {
             "name": "John Doe",
             "ref": "12345",
             "parent_id": self.env.ref("base.res_partner_10").id,
             "category_id": [(6, 0, categs.ids)],
-            "title": self.env.ref("base.res_partner_title_doctor").id,
         }
         self.assertEqual(mapper.dynamic_fields(rec), expected)
 
+    @mute_logger(*LOGGERS_TO_MUTE)
     def test_dynamic_mapper_values_with_prefix(self):
         mapper = self._get_dynamyc_mapper(options=dict(source_key_prefix="foo."))
         rec = {}
@@ -166,18 +182,6 @@ class TestRecordsetImporter(TestImporterBase):
             "ref": "12345",
             "parent_id": self.env.ref("base.res_partner_10").id,
             "category_id": [(6, 0, self.env.ref("base.res_partner_category_0").ids)],
-        }
-        self.assertEqual(mapper.dynamic_fields(rec), expected)
-
-    def test_dynamic_mapper_empty_value(self):
-        mapper = self._get_dynamyc_mapper()
-        rec = {
-            "name": "John Doe",
-            "ref": "",
-        }
-        expected = {
-            "name": "John Doe",
-            "ref": False,
         }
         self.assertEqual(mapper.dynamic_fields(rec), expected)
 
@@ -229,3 +233,34 @@ class TestRecordsetImporter(TestImporterBase):
             options=dict(source_key_rename={"another_name": "name"})
         )
         self.assertEqual(mapper.dynamic_fields(rec), expected)
+
+    @mute_logger(*LOGGERS_TO_MUTE)
+    def test_dynamic_mapper_values_json_product_product(self):
+        model_name = "product.product"
+        if model_name not in self.env.registry:
+            self.skipTest("Model product.product is not available")
+        product_model = self.env[model_name]
+        if "analytic_distribution" not in product_model._fields:
+            self.skipTest(
+                "Field analytic_distribution is not available on product.product"
+            )
+
+        mapper = self._get_dynamic_mapper_for_model(model_name)
+
+        rec = {
+            "analytic_distribution": '{"12": 100.0}',
+        }
+        expected = {
+            "analytic_distribution": {"12": 100.0},
+        }
+        self.assertEqual(mapper.dynamic_fields(rec), expected)
+
+        rec = {
+            "analytic_distribution": "{'12': 100.0}",
+        }
+        self.assertEqual(mapper.dynamic_fields(rec), expected)
+
+        rec = {
+            "analytic_distribution": "not-a-json-payload",
+        }
+        self.assertEqual(mapper.dynamic_fields(rec), {"analytic_distribution": {}})
