@@ -117,7 +117,7 @@ class ImportSource(models.AbstractModel):
         return self.get_formview_id()
     
     def get_formview_id(self, access_uid=None):
-        return self.env["ir.ui.view"].default_view(self._name, "form") or False
+        return self.env["ir.ui.view"].sudo().default_view(self._name, "form") or False
 
     def get_reporter(self):
         """Retrieve a specific reporter for this source.
