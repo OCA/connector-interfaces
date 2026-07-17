@@ -360,7 +360,7 @@ class ImportRecordset(models.Model):
             }
         )
         logger.info(
-            ("Report file updated on recordset={}. " "Filename: {}").format(
+            ("Report file updated on recordset={}. Filename: {}").format(
                 self.id, metadata["complete_filename"]
             )
         )
