@@ -2,7 +2,7 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from odoo import _, exceptions, fields, models
+from odoo import exceptions, fields, models
 
 from odoo.addons.queue_job.job import DONE
 
@@ -24,7 +24,7 @@ class JobRelatedMixin(models.AbstractModel):
 
     def _check_delete(self):
         if self.has_job() and not self.job_done():
-            raise exceptions.Warning(_("You must complete the job first!"))
+            raise exceptions.UserError(self.env._("You must complete the job first!"))
 
     def unlink(self):
         for item in self:

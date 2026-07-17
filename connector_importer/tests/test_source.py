@@ -5,7 +5,7 @@
 
 from unittest import mock
 
-from odoo_test_helper import FakeModelLoader
+from odoo.orm.model_classes import add_to_registry
 
 from .common import BaseTestCase
 
@@ -17,22 +17,17 @@ class TestSource(BaseTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.loader = FakeModelLoader(cls.env, cls.__module__)
-        cls.loader.backup_registry()
-        # fmt: off
         from .fake_models import FakeSourceConsumer, FakeSourceStatic
-        cls.loader.update_registry((
-            FakeSourceConsumer,
-            FakeSourceStatic
-        ))
-        # fmt: on
+
+        model_names = ["fake.source.consumer", "fake.source.static"]
+        add_to_registry(cls.registry, FakeSourceConsumer)
+        add_to_registry(cls.registry, FakeSourceStatic)
+        cls.registry._setup_models__(cls.env.cr, model_names)
+        cls.registry.init_models(cls.env.cr, model_names, {"models_to_check": True})
+        for model_name in model_names:
+            cls.addClassCleanup(cls.registry.__delitem__, model_name)
         cls.source = cls._create_source()
         cls.consumer = cls._create_consumer()
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.loader.restore_registry()
-        return super().tearDownClass()
 
     @classmethod
     def _create_source(cls):

@@ -159,7 +159,7 @@
                 <t t-if="recordset.notes">
                     <div id="notes">
                         <h2>Notes:</h2>
-                        <div t-raw="recordset.notes" />
+                        <div t-out="recordset.notes" />
                     </div>
                 </t>
             </div>

@@ -21,13 +21,13 @@ Connector Importer
     :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
     :alt: License: AGPL-3
 .. |badge3| image:: https://img.shields.io/badge/github-OCA%2Fconnector--interfaces-lightgray.png?logo=github
-    :target: https://github.com/OCA/connector-interfaces/tree/18.0/connector_importer
+    :target: https://github.com/OCA/connector-interfaces/tree/19.0/connector_importer
     :alt: OCA/connector-interfaces
 .. |badge4| image:: https://img.shields.io/badge/weblate-Translate%20me-F47D42.png
-    :target: https://translation.odoo-community.org/projects/connector-interfaces-18-0/connector-interfaces-18-0-connector_importer
+    :target: https://translation.odoo-community.org/projects/connector-interfaces-19-0/connector-interfaces-19-0-connector_importer
     :alt: Translate me on Weblate
 .. |badge5| image:: https://img.shields.io/badge/runboat-Try%20me-875A7B.png
-    :target: https://runboat.odoo-community.org/builds?repo=OCA/connector-interfaces&target_branch=18.0
+    :target: https://runboat.odoo-community.org/builds?repo=OCA/connector-interfaces&target_branch=19.0
     :alt: Try me on Runboat
 
 |badge1| |badge2| |badge3| |badge4| |badge5|
@@ -37,12 +37,12 @@ connector framework and job queue.
 
 To run an import you need at least:
 
-- a backend, hosts the global configuration of the import.
-- a recordset, hosts the configuration of the import for specific models
-  and source
-- a source, provides the data to import
-- an import type, describes which models you want to import and how to
-  import them
+-  a backend, hosts the global configuration of the import.
+-  a recordset, hosts the configuration of the import for specific
+   models and source
+-  a source, provides the data to import
+-  an import type, describes which models you want to import and how to
+   import them
 
 **Table of contents**
 
@@ -101,9 +101,9 @@ Exaple of configuration:
 In this example we have 3 models to import one after the other using the
 same source file:
 
-- product.product
-- res.partner
-- product.supplierinfo
+-  product.product
+-  res.partner
+-  product.supplierinfo
 
 The import will run in the order of the configuration: first
 product.product, then res.partner and finally product.supplierinfo. For
@@ -114,10 +114,10 @@ import for each component: ``importer``, ``mapper``, ``record_handler``,
 
 The are 4 main components in the import configuration:
 
-- importer
-- mapper
-- record_handler
-- tracking_handler
+-  importer
+-  mapper
+-  record_handler
+-  tracking_handler
 
 Each of them is responsible for a specific part of the import.
 
@@ -145,32 +145,32 @@ customize it you'll have to declare it at an higher level, next to the
 
 The importer accepts the following options:
 
-- ``odoo_unique_key``: the field that will be used to find the record in
-  Odoo. If the record is found it will be updated, otherwise it will be
-  created.
+-  ``odoo_unique_key``: the field that will be used to find the record
+   in Odoo. If the record is found it will be updated, otherwise it will
+   be created.
 
-     NOTE: the value in the column declared as ``odoo_unique_key`` will
-     be treated as xid only if the name of the column is ``ìd`` or if it
-     starts with ``xid::``.
+      NOTE: the value in the column declared as ``odoo_unique_key`` will
+      be treated as xid only if the name of the column is ``ìd`` or if
+      it starts with ``xid::``.
 
-- ``break_on_error``: if set to True the import will stop if an error
-  occurs. Default is False.
+-  ``break_on_error``: if set to True the import will stop if an error
+   occurs. Default is False.
 
-- ``override_existing``: if set to True the existing records will be
-  updated. Default is True.
+-  ``override_existing``: if set to True the existing records will be
+   updated. Default is True.
 
-- ``translation_key_sep``: the separator used to split the translation
-  key. Default is ``:``. See below for information about translation
-  keys.
+-  ``translation_key_sep``: the separator used to split the translation
+   key. Default is ``:``. See below for information about translation
+   keys.
 
-- ``translation_use_regional_lang``: if set to True the importer will
-  use the regional language, eg: fr_CH vs fr.
+-  ``translation_use_regional_lang``: if set to True the importer will
+   use the regional language, eg: fr_CH vs fr.
 
-- ``ctx``: a dictionary of values to inject in the context of the
-  import.
+-  ``ctx``: a dictionary of values to inject in the context of the
+   import.
 
-- ``write_only``: if set to True the importer will not create new
-  records, it will only update existing ones. Default is False.
+-  ``write_only``: if set to True the importer will not create new
+   records, it will only update existing ones. Default is False.
 
 The mapper
 ----------
@@ -182,25 +182,25 @@ The most flexible mapper is the ``importer.mapper.dynamic`` that will
 map the data based on the model introspection and some options that you
 can define. The dynamic mapper accepts the following options:
 
-- ``name``: the name of the mapper to use. If no name is defined the
-  default mapper for the model will be used.
-- ``source_key_prefix``: a prefix to add to the source key. This is
-  useful when you want to map the same source key to different
-  destination fields.
-- ``source_key_whitelist``: a list of source keys to import. If not
-  defined all the keys will be imported.
-- ``source_key_blacklist``: a list of source keys to exclude from the
-  import.
-- ``source_key_rename``: a dictionary of source keys to rename. The key
-  is the source key and the value is the new key.
-- ``default_keys``: a dictionary of default values to set on the
-  destination record. The key is the field name and the value is the
-  default value.
-- ``translation_keys``: a list of keys that will be used to translate
-  the data. See below for information about translation keys.
-- ``required_keys``: a list of keys that are required. If one of the
-  keys is missing the record will be skipped. Please refer to the
-  documentation of the mapper to see advanced options.
+-  ``name``: the name of the mapper to use. If no name is defined the
+   default mapper for the model will be used.
+-  ``source_key_prefix``: a prefix to add to the source key. This is
+   useful when you want to map the same source key to different
+   destination fields.
+-  ``source_key_whitelist``: a list of source keys to import. If not
+   defined all the keys will be imported.
+-  ``source_key_blacklist``: a list of source keys to exclude from the
+   import.
+-  ``source_key_rename``: a dictionary of source keys to rename. The key
+   is the source key and the value is the new key.
+-  ``default_keys``: a dictionary of default values to set on the
+   destination record. The key is the field name and the value is the
+   default value.
+-  ``translation_keys``: a list of keys that will be used to translate
+   the data. See below for information about translation keys.
+-  ``required_keys``: a list of keys that are required. If one of the
+   keys is missing the record will be skipped. Please refer to the
+   documentation of the mapper to see advanced options.
 
 Considering the example above:
 
@@ -217,9 +217,9 @@ Considering the example above:
 
 The mapper will:
 
-- import only keys starting with ``supplier.`` ignoring the rest
-- import only the key ``supplier.name``
-- set the default value of ``supplier_rank`` to 1
+-  import only keys starting with ``supplier.`` ignoring the rest
+-  import only the key ``supplier.name``
+-  set the default value of ``supplier_rank`` to 1
 
 The record_handler
 ------------------
@@ -227,10 +227,10 @@ The record_handler
 The record handler is the component that will handle the record create
 or update in Odoo. This component is responsible for:
 
-- finding the record in Odoo
-- creating the record if not found
-- updating the record if found
-- handling the translations
+-  finding the record in Odoo
+-  creating the record if not found
+-  updating the record if found
+-  handling the translations
 
 If no ``name`` is defined the importer will use the default record
 handler for the model which is capable of handling any model. If you
@@ -250,46 +250,46 @@ fallback to the matching domain. See below.
 
 The record handler accepts the following options:
 
-- ``name``: the name of the record handler to use. If no name is defined
-  the default record handler for the model will be used.
+-  ``name``: the name of the record handler to use. If no name is
+   defined the default record handler for the model will be used.
 
-- ``match_domain``: a domain to match the record in Odoo. When no
-  odoo_unique_key is provided by the importer you must provide a
-  match_domain.
+-  ``match_domain``: a domain to match the record in Odoo. When no
+   odoo_unique_key is provided by the importer you must provide a
+   match_domain.
 
-     This key accepts a snippet returning a domain. The snippet will be
-     evaluated in the context of the import and will receive:
+      This key accepts a snippet returning a domain. The snippet will be
+      evaluated in the context of the import and will receive:
 
-     - ``orig_values``: the values from the source
+      -  ``orig_values``: the values from the source
 
-     - ``values``: values computed by the mapper for the record
+      -  ``values``: values computed by the mapper for the record
 
-     - ``env``
+      -  ``env``
 
-     - ``user``
+      -  ``user``
 
-     - ``datetime``
+      -  ``datetime``
 
-     - ``dateutil``
+      -  ``dateutil``
 
-     - ``time``
+      -  ``time``
 
-     - ``ref_id``: a function to get a record ID from a reference
+      -  ``ref_id``: a function to get a record ID from a reference
 
-     - ``ref``: a function to get a record from a reference
+      -  ``ref``: a function to get a record from a reference
 
-          Example:
+            Example:
 
-          ::
+            ::
 
-             match_domain: |
-                 [('name', '=', values.get('name'))]
+               match_domain: |
+                   [('name', '=', values.get('name'))]
 
-- ``must_generate_xmlid``: if set to True the importer will generate an
-  XML ID for the record. Default is True if the unique key is an xmlid.
+-  ``must_generate_xmlid``: if set to True the importer will generate an
+   XML ID for the record. Default is True if the unique key is an xmlid.
 
-- ``skip_fields_unchanged``: if set to True the importer will skip the
-  fields that are unchanged. Default is False.
+-  ``skip_fields_unchanged``: if set to True the importer will skip the
+   fields that are unchanged. Default is False.
 
 Translations
 ------------
@@ -304,21 +304,22 @@ translate the data using the language code as context.
 Known issues / Roadmap
 ======================
 
-- with the import of standard Odoo CSV files, a concurrency error occurs
-  when updating the report_data of import_recordset table (from the
-  importer: self._do_report() -> self.recordset.set_report(...)). The
-  job is automatically retried a second time (without concurrency
-  errors). For small files it's not a big issue, but for files with a
-  huge amount of lines it takes time to process them two times.
-- move generic functions from utils.mapper_utils to the connector module
-- unit tests for record handler and tracker
-- add more test coverage for mapper utils and dynamic mapper
-- consider making dynamic mapper the default one
-- control how to generate xid (eg: from a specicic field with key
-  must_generate_xmlid_from_key)
-- add manual control for backend_to_rel mappers
-- refactor source to be a specific m2o to ease mgmt instead of a generic
-  relation
+-  with the import of standard Odoo CSV files, a concurrency error
+   occurs when updating the report_data of import_recordset table (from
+   the importer: self._do_report() -> self.recordset.set_report(...)).
+   The job is automatically retried a second time (without concurrency
+   errors). For small files it's not a big issue, but for files with a
+   huge amount of lines it takes time to process them two times.
+-  move generic functions from utils.mapper_utils to the connector
+   module
+-  unit tests for record handler and tracker
+-  add more test coverage for mapper utils and dynamic mapper
+-  consider making dynamic mapper the default one
+-  control how to generate xid (eg: from a specicic field with key
+   must_generate_xmlid_from_key)
+-  add manual control for backend_to_rel mappers
+-  refactor source to be a specific m2o to ease mgmt instead of a
+   generic relation
 
 Bug Tracker
 ===========
@@ -326,7 +327,7 @@ Bug Tracker
 Bugs are tracked on `GitHub Issues <https://github.com/OCA/connector-interfaces/issues>`_.
 In case of trouble, please check there if your issue has already been reported.
 If you spotted it first, help us to smash it by providing a detailed and welcomed
-`feedback <https://github.com/OCA/connector-interfaces/issues/new?body=module:%20connector_importer%0Aversion:%2018.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
+`feedback <https://github.com/OCA/connector-interfaces/issues/new?body=module:%20connector_importer%0Aversion:%2019.0%0A%0A**Steps%20to%20reproduce**%0A-%20...%0A%0A**Current%20behavior**%0A%0A**Expected%20behavior**>`_.
 
 Do not contact contributors directly about support or help with technical issues.
 
@@ -345,10 +346,10 @@ Simone Orsi (Camptocamp) for the original implementation.
 
 Other contributors include:
 
-- Guewen Baconnier (Camptocamp)
-- Mykhailo Panarin (Camptocamp)
-- Sébastien Alix (Camptocamp)
-- Thien Vo (Trobz)
+-  Guewen Baconnier (Camptocamp)
+-  Mykhailo Panarin (Camptocamp)
+-  Sébastien Alix (Camptocamp)
+-  Thien Vo (Trobz)
 
 Other credits
 -------------
@@ -377,6 +378,6 @@ Current `maintainer <https://odoo-community.org/page/maintainer-role>`__:
 
 |maintainer-simahawk| 
 
-This module is part of the `OCA/connector-interfaces <https://github.com/OCA/connector-interfaces/tree/18.0/connector_importer>`_ project on GitHub.
+This module is part of the `OCA/connector-interfaces <https://github.com/OCA/connector-interfaces/tree/19.0/connector_importer>`_ project on GitHub.
 
 You are welcome to contribute. To learn how please visit https://odoo-community.org/page/Contribute.

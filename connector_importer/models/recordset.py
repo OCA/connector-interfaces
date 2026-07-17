@@ -376,14 +376,15 @@ class ImportRecordset(models.Model):
 
     @api.depends("import_type_id")
     def _compute_docs_html(self):
-        if not is_component_registry_ready(self.env.cr.dbname):
+        comp_registry = self.env.context.get("components_registry")
+        if not comp_registry and not is_component_registry_ready(self.env.cr.dbname):
             # We cannot render anything if we cannot load components
             self.docs_html = False
             return
         qweb = self.env["ir.qweb"].sudo()
         for item in self:
             item.docs_html = False
-            if isinstance(item.id, models.NewId) or not item.backend_id:
+            if not isinstance(item.id, int) or not item.backend_id:
                 # Surprise surprise: when editing a new recordset
                 # if you hit `configure source` btn
                 # the record will be saved but the backend can be null :S

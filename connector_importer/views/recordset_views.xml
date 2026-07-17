@@ -131,7 +131,7 @@
                 <field name="import_type_id" string="Type" />
                 <field name="create_date" />
                 <field name="job_state" />
-                <group expand="0" string="Group By">
+                <group>
                     <filter
                         name="by_backend"
                         string="Backend"

@@ -4,7 +4,7 @@
 
 import logging
 
-from odoo import _, api, exceptions, fields, models
+from odoo import api, exceptions, fields, models
 
 cleanup_logger = logging.getLogger("[recordset-cleanup]")
 
@@ -71,7 +71,7 @@ class ImporterBackend(models.Model):
 
     def _check_delete(self):
         if not self.debug_mode and self.job_running:
-            raise exceptions.Warning(_("You must complete the job first!"))
+            raise exceptions.UserError(self.env._("You must complete the job first!"))
 
     def _compute_job_running(self):
         for item in self:

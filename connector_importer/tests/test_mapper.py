@@ -16,7 +16,35 @@ class TestRecordsetImporter(TestImporterBase):
     def _setup_records(cls):
         res = super()._setup_records()
         cls.record = cls.env["import.record"].create({"recordset_id": cls.recordset.id})
+        # Create test data w/ known xmlids instead of relying on demo data.
+        cls.test_parent = cls._create_with_xmlid(
+            "res.partner", "test_import_parent", {"name": "Test Import Parent"}
+        )
+        cls.test_categ_1 = cls._create_with_xmlid(
+            "res.partner.category",
+            "test_import_category_1",
+            {"name": "Test Category 1"},
+        )
+        cls.test_categ_2 = cls._create_with_xmlid(
+            "res.partner.category",
+            "test_import_category_2",
+            {"name": "Test Category 2"},
+        )
+        cls.test_country = cls.env.ref("base.be")
         return res
+
+    @classmethod
+    def _create_with_xmlid(cls, model, name, vals):
+        record = cls.env[model].create(vals)
+        cls.env["ir.model.data"].create(
+            {
+                "name": name,
+                "module": "connector_importer",
+                "model": model,
+                "res_id": record.id,
+            }
+        )
+        return record
 
     def _get_importer(self, options=None):
         options = options or {"importer": {}, "mapper": {}}
@@ -109,24 +137,23 @@ class TestRecordsetImporter(TestImporterBase):
         expected = rec.copy()
         self.assertEqual(mapper.dynamic_fields(rec), expected)
         mapper = self._get_dynamyc_mapper()
-        categs = self.env.ref("base.res_partner_category_0") + self.env.ref(
-            "base.res_partner_category_2"
-        )
+        categs = self.test_categ_1 + self.test_categ_2
         rec = {
             "name": "John Doe",
             "ref": "12345",
-            "xid::parent_id": "base.res_partner_10",
-            "xid::category_id": """
-                base.res_partner_category_0,base.res_partner_category_2
-            """,
-            "title": "Doctor",
+            "xid::parent_id": "connector_importer.test_import_parent",
+            "xid::category_id": (
+                "connector_importer.test_import_category_1,"
+                "connector_importer.test_import_category_2"
+            ),
+            "country_id": "Belgium",
         }
         expected = {
             "name": "John Doe",
             "ref": "12345",
-            "parent_id": self.env.ref("base.res_partner_10").id,
+            "parent_id": self.test_parent.id,
             "category_id": [(6, 0, categs.ids)],
-            "title": self.env.ref("base.res_partner_title_doctor").id,
+            "country_id": self.test_country.id,
         }
         self.assertEqual(mapper.dynamic_fields(rec), expected)
 
@@ -134,21 +161,20 @@ class TestRecordsetImporter(TestImporterBase):
         mapper = self._get_dynamyc_mapper(options=dict(source_key_prefix="foo."))
         rec = {}
         expected = {}
-        categs = self.env.ref("base.res_partner_category_0") + self.env.ref(
-            "base.res_partner_category_2"
-        )
+        categs = self.test_categ_1 + self.test_categ_2
         rec = {
             "foo.name": "John Doe",
             "ref": "12345",
-            "xid::foo.parent_id": "base.res_partner_10",
-            "xid::foo.category_id": """
-                base.res_partner_category_0,base.res_partner_category_2
-            """,
-            "title_id": "Doctor",
+            "xid::foo.parent_id": "connector_importer.test_import_parent",
+            "xid::foo.category_id": (
+                "connector_importer.test_import_category_1,"
+                "connector_importer.test_import_category_2"
+            ),
+            "country_id": "Belgium",
         }
         expected = {
             "name": "John Doe",
-            "parent_id": self.env.ref("base.res_partner_10").id,
+            "parent_id": self.test_parent.id,
             "category_id": [(6, 0, categs.ids)],
         }
         self.assertEqual(mapper.dynamic_fields(rec), expected)
@@ -158,14 +184,14 @@ class TestRecordsetImporter(TestImporterBase):
         rec = {
             "name": "John Doe",
             "ref": "12345",
-            "parent_id/id": "base.res_partner_10",
-            "category_id/id": "base.res_partner_category_0",
+            "parent_id/id": "connector_importer.test_import_parent",
+            "category_id/id": "connector_importer.test_import_category_1",
         }
         expected = {
             "name": "John Doe",
             "ref": "12345",
-            "parent_id": self.env.ref("base.res_partner_10").id,
-            "category_id": [(6, 0, self.env.ref("base.res_partner_category_0").ids)],
+            "parent_id": self.test_parent.id,
+            "category_id": [(6, 0, self.test_categ_1.ids)],
         }
         self.assertEqual(mapper.dynamic_fields(rec), expected)
 

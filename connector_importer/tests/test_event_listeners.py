@@ -4,8 +4,7 @@
 
 from unittest import mock
 
-from odoo_test_helper import FakeModelLoader
-
+from odoo.orm.model_classes import add_to_registry
 from odoo.tools import mute_logger
 
 from odoo.addons.component.core import WorkContext
@@ -21,13 +20,15 @@ class TestRecordImporter(TestImporterBase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.loader = FakeModelLoader(cls.env, cls.__module__)
-        cls.loader.backup_registry()
-        # fmt: off
         from .fake_models import FakeImportedModel
-        cls.loader.update_registry((FakeImportedModel,))
+
+        add_to_registry(cls.registry, FakeImportedModel)
+        cls.registry._setup_models__(cls.env.cr, ["fake.imported.model"])
+        cls.registry.init_models(
+            cls.env.cr, ["fake.imported.model"], {"models_to_check": True}
+        )
+        cls.addClassCleanup(cls.registry.__delitem__, "fake.imported.model")
         cls.fake_imported_model = cls.env[FakeImportedModel._name]
-        # fmt: on
         # generate 20 records
         cls.fake_lines = cls._fake_lines(cls, 20, keys=("id", "fullname"))
         cls.action_recset = cls.env["ir.actions.server"].create(
@@ -66,11 +67,6 @@ log(msg)
             """
             }
         )
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.loader.restore_registry()
-        super().tearDownClass()
 
     def setUp(self):
         super().setUp()
@@ -158,7 +154,11 @@ log(msg)
             collection=self.backend,
             model_name="import.recordset",
         ).component_by_name("recordset.event.listener")
-        record_ids = self.env["res.partner"].search([], limit=10).ids
+        record_ids = (
+            self.env["res.partner"]
+            .create([{"name": f"Test Partner {i}"} for i in range(1, 4)])
+            .ids
+        )
         action = self.action_partner
         # When mocking the ctx is not preserved as we pass the action straight.
         # Hence, we must replicate the same ctx that will be passed by the listener.

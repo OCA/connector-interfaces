@@ -89,9 +89,15 @@ class TestImporterMixin:
         )
 
     def _patch_get_source(self, lines, chunk_size=5):
-        self.env["import.recordset"]._patch_method(
-            "get_source", lambda x: MockedSource(lines, chunk_size=chunk_size)
+        from unittest.mock import patch
+
+        patcher = patch.object(
+            type(self.env["import.recordset"]),
+            "get_source",
+            lambda self: MockedSource(lines, chunk_size=chunk_size),
         )
+        patcher.start()
+        self.addCleanup(patcher.stop)
 
     def _fake_lines(self, count, keys=None):
         return fake_lines(count, keys=keys or [])

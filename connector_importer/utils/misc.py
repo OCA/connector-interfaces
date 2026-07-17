@@ -38,12 +38,12 @@ def sanitize_external_id(external_id, default_mod_name=None):
     if len(id_parts) == 2:
         if "." in id_parts[1]:
             raise UserError(
-                _(
+                _(  # pylint: disable=prefer-env-translation
                     "The ID reference '%s' must contain maximum one dot (or 0). "
                     "They are used to refer to other modules ID, "
-                    "in the form: module.record_id"
+                    "in the form: module.record_id",
+                    external_id,
                 )
-                % (external_id,)
             )
     else:
         default_mod_name = default_mod_name or "__setup__"

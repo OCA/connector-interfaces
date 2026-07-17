@@ -1,7 +1,7 @@
 # Author: Simone Orsi
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
-from odoo import _, exceptions
+from odoo import exceptions
 
 from odoo.addons.component.core import Component
 
@@ -35,7 +35,7 @@ class RecordSetImporter(Component):
         source = recordset.get_source()
         if not source:
             raise exceptions.UserError(
-                _("No source configured on recordset '%s'") % recordset.name
+                self.env._("No source configured on recordset '%s'", recordset.name)
             )
         for chunk in source.get_lines():
             # create chuncked records and run their imports

@@ -3,7 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 
-from odoo import _, exceptions
+from odoo import exceptions
 
 from odoo.addons.component.core import Component
 from odoo.addons.connector.components.mapper import mapping
@@ -107,7 +107,7 @@ class ImportMapper(Component):
                 real_val = v.replace("_xmlid::", "").strip()
                 if not real_val or ":" not in real_val:
                     raise exceptions.UserError(
-                        _("Malformated xml id ref: `%s`") % real_val
+                        self.env._("Malformated xml id ref: `%s`", real_val)
                     )
                 xmlid, field_value = real_val.split(":")
                 v = self.env.ref(xmlid)[field_value]

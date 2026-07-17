@@ -30,7 +30,7 @@ class TestBackendCron(common.TransactionCase):
         self.assertEqual(cron.nextcall, expected_nextcall)
         self.assertEqual(cron.interval_type, "days")
         self.assertEqual(cron.interval_number, 2)
-        self.assertEqual(cron.code, "model.run_cron(%d)" % self.bknd.id)
+        self.assertEqual(cron.code, f"model.run_cron({self.bknd.id})")
 
     def test_backend_cron_update(self):
         expected_nextcall = fields.Datetime.from_string("2018-05-01")

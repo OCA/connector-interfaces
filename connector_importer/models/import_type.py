@@ -4,7 +4,7 @@
 
 import logging
 
-from odoo import _, api, exceptions, fields, models
+from odoo import api, exceptions, fields, models
 from odoo.tools import DotDict
 
 _logger = logging.getLogger(__name__)
@@ -74,9 +74,10 @@ class ImportType(models.Model):
         ),
         default=True,
     )
-    _sql_constraints = [
-        ("key_uniq", "unique (key)", "Import type `key` must be unique!")
-    ]
+    _key_uniq = models.Constraint(
+        "unique (key)",
+        "Import type `key` must be unique!",
+    )
     # TODO: provide default source and configuration policy
     # for an import type to ease bootstrapping recordsets from UI.
     # default_source_model_id = fields.Many2one()
@@ -90,8 +91,8 @@ class ImportType(models.Model):
             # TODO: validate yaml schema (maybe w/ Cerberus?)
         if no_options:
             raise exceptions.UserError(
-                _("No options found for: {}.").format(
-                    ", ".join(no_options.mapped("name"))
+                self.env._(
+                    "No options found for: %s.", ", ".join(no_options.mapped("name"))
                 )
             )
 
