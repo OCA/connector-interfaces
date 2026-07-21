@@ -8,7 +8,7 @@
                 t-if="fields_info[fname]['type'] != 'many2one'"
                 t-esc="source[fname]"
             />
-                <span t-else="'" t-esc="source[fname].display_name" />
+                <span t-else="" t-esc="source[fname].display_name" />
                 <br />
             </t>
         </div>

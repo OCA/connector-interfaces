@@ -76,7 +76,7 @@ class ImporterBackend(models.Model):
     def _compute_job_running(self):
         for item in self:
             running = False
-            for recordset in self.recordset_ids:
+            for recordset in item.recordset_ids:
                 if recordset.has_job() and not recordset.job_done():
                     running = True
                     break
@@ -126,7 +126,7 @@ class ImporterBackend(models.Model):
             )[: backend.cron_cleanup_keep]
             # always keep this
             to_keep |= backend.cron_master_recordset_id
-            to_clean = backend.recordset_ids - to_keep
+            to_clean |= backend.recordset_ids - to_keep
         if to_clean:
             msg = "Cleaning up {}".format(",".join(to_clean.mapped("name")))
             cleanup_logger.info(msg)

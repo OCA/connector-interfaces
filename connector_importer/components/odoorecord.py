@@ -237,5 +237,5 @@ class OdooRecordHandler(Component):
         if self.work.options.record_handler.skip_fields_unchanged:
             current_values = odoo_record.read(field_names, load="_classic_write")
             for k, v in current_values.items():
-                if values[k] != v:
+                if values[k] == v:
                     values.pop(k)
