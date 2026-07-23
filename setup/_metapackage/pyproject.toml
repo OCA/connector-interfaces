@@ -1,0 +1,11 @@
+[project]
+name = "odoo-addons-oca-connector-interfaces"
+version = "19.0.20260723.0"
+dependencies = [
+    "odoo-addon-connector_importer==19.0.*",
+]
+classifiers=[
+    "Programming Language :: Python",
+    "Framework :: Odoo",
+    "Framework :: Odoo :: 19.0",
+]
