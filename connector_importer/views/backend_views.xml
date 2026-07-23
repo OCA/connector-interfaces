@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <!-- backend  -->
+    <record id="view_import_backend_form" model="ir.ui.view">
+        <field name="model">import.backend</field>
+        <field name="arch" type="xml">
+            <form string="Import Backend">
+                <sheet>
+                    <field name="job_running" invisible="1" />
+                    <div class="oe_button_box" name="button_box">
+                        <button
+                            class="oe_stat_button"
+                            name="run_all"
+                            type="object"
+                            string="Import all"
+                            confirm="You are about to run ALL configured recordsets. Are you sure?"
+                            invisible="job_running and not debug_mode"
+                        />
+                        <button
+                            class="oe_stat_button"
+                            name="button_complete_jobs"
+                            type="object"
+                            string="Make all jobs completed"
+                            invisible="job_running == False"
+                            confirm="This action will mark all jobs as done even if in progress. Are you sure?"
+                        />
+                    </div>
+                    <h1>Import</h1>
+                    <group col="4">
+                        <group colspan="2" string="Configuration">
+                            <field name="name" />
+                            <field name="version" />
+                            <field name="cron_mode" />
+                            <field name="debug_mode" />
+                        </group>
+                        <group colspan="2" string="Cron" invisible="cron_mode == False">
+                            <field name="cron_start_date" required="cron_mode" />
+                            <field name="cron_interval_number" required="cron_mode" />
+                            <field name="cron_interval_type" required="cron_mode" />
+                            <field name="cron_id" readonly="1" />
+                            <field name="cron_master_recordset_id" />
+                            <field name="cron_cleanup_keep" />
+                        </group>
+                    </group>
+                    <div
+                        id="jobs-running-alert"
+                        class="alert alert-warning"
+                        role="alert"
+                        invisible="job_running == False"
+                    >
+                        <strong>JOBS RUNNING</strong>
+                            WARNING: one or more jobs are scheduled for a recorset or a record.
+                            You will not be able to run the import again or to delete this backend
+                            until you complete the jobs.
+                    </div>
+                    <notebook>
+                        <page string="Recordsets">
+                            <field
+                                name="recordset_ids"
+                                nolabel="1"
+                                context="{'default_backend_id': id}"
+                            >
+                                <list>
+                                    <field name="sequence" widget="handle" />
+                                    <field name="name" readonly="1" />
+                                    <field name="create_date" readonly="1" />
+                                    <field name="last_run_on" readonly="1" />
+                                    <field name="import_type_id" />
+                                    <field
+                                        name="override_existing"
+                                        string="Override existing"
+                                    />
+                                    <field name="job_state" />
+                                    <field name="jobs_global_state" />
+                                    <button
+                                        name="run_import"
+                                        type="object"
+                                        class="oe_highlight"
+                                        string="Import"
+                                    />
+                                    <field name="source_model" invisible="1" />
+                                    <button
+                                        name="open_source_config"
+                                        type="object"
+                                        class="oe_highlight btn-sm"
+                                        string="Source"
+                                        invisible="source_model == False"
+                                    />
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes">
+                            <field name="notes" nolabel="1" />
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="view_import_backend_tree" model="ir.ui.view">
+        <field name="model">import.backend</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name" />
+                <field name="version" />
+            </list>
+        </field>
+    </record>
+    <record id="action_import_backend" model="ir.actions.act_window">
+        <field name="name">Import Backends</field>
+        <field name="res_model">import.backend</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>
