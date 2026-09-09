@@ -2,7 +2,6 @@
 <!-- Copyright 2025 Binhex <https://www.binhex.cloud>
      License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl). -->
 <odoo>
-
     <record id="source_api_value_view_tree" model="ir.ui.view">
         <field name="name">source.api.value.view.tree</field>
         <field name="model">source.api.value</field>
@@ -15,5 +14,4 @@
             </tree>
         </field>
     </record>
-
 </odoo>
