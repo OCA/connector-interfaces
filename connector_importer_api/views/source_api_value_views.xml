@@ -6,12 +6,12 @@
         <field name="name">source.api.value.view.tree</field>
         <field name="model">source.api.value</field>
         <field name="arch" type="xml">
-            <tree editable="bottom">
+            <list editable="bottom">
                 <field name="name" />
                 <field name="value" />
                 <field name="eval_value" />
                 <field name="description" optional="hide" />
-            </tree>
+            </list>
         </field>
     </record>
 </odoo>

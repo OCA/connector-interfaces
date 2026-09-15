@@ -45,6 +45,8 @@ class ConnectorImporterApiMixin(models.AbstractModel):
 
     def _test_python_expr(self, code, mode_eval):
         # Evaluating expression syntax
+        if not code:
+            return True
         msg = test_python_expr(expr=code, mode=mode_eval)
         if msg:
             raise ValidationError(msg)
