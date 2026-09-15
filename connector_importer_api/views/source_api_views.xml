@@ -12,7 +12,9 @@
                     <field name="enviroment" />
                     <field name="enviroment_url" />
                     <field name="type_request" groups="base.group_no_one" />
+                    <field name="stream" invisible="stream_invisible" />
                     <field name="url" />
+                    <field name="timeout" />
                     <field name="type_authorization" />
                     <field
                         name="username"
@@ -62,6 +64,13 @@
                 </group>
                 <notebook>
                     <page string="Params" name="source_api_params">
+                        <group>
+                            <field
+                                name="params_code"
+                                widget="json_editor"
+                                invisible="params_code_invisible"
+                            />
+                        </group>
                         <field
                             name="param_ids"
                             nolabel="1"

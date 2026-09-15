@@ -11,7 +11,7 @@ class SourceApiValue(models.Model):
     name = fields.Char(string="Key", required=True)
     value = fields.Char()
     eval_value = fields.Text(
-        default=lambda self: self._get_default_code(), string="Value"
+        default=lambda self: self._get_default_code(), string="Value (Evaluated)"
     )
     description = fields.Char()
     source_api_params_id = fields.Many2one("import.source.api")

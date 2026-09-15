@@ -3,3 +3,4 @@
 
 from . import test_connector_importer_api_common
 from . import test_source_api
+from . import test_api_post

@@ -1,10 +1,17 @@
 # Copyright 2025 Binhex <https://www.binhex.cloud>
+# Copyright 2026 ACSONE SA/NV
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
-
+import base64
+import json
 from ast import literal_eval
+from contextlib import contextmanager
 from itertools import chain
 
+import requests
+
 from odoo import Command, api, fields, models
+
+from ...exceptions.exceptions import InvalidAPIData
 
 
 class ImportSourceApi(models.Model):
@@ -24,7 +31,7 @@ class ImportSourceApi(models.Model):
     enviroment_url = fields.Char(string="Enviroment URL", required=True)
     type_request = fields.Selection(
         string="Request type",
-        selection=[("get", "GET")],
+        selection=[("get", "GET"), ("post", "POST")],
         default="get",
         required=True,
     )
@@ -33,6 +40,12 @@ class ImportSourceApi(models.Model):
         "source.api.value",
         "source_api_params_id",
         string="Params",
+    )
+    params_code = fields.Json(
+        help="This is used for POST API calls in order to allow JSON parameters."
+    )
+    params_code_invisible = fields.Boolean(
+        compute="_compute_params_code_invisible",
     )
     type_authorization = fields.Selection(
         string="Authorization type",
@@ -69,6 +82,31 @@ class ImportSourceApi(models.Model):
         "source_api_header_id",
         string="Headers",
     )
+    stream = fields.Boolean(
+        help="Check this if your POST endpoint has stream capabilites."
+    )
+    stream_invisible = fields.Boolean(compute="_compute_stream_invisible")
+    timeout = fields.Integer(
+        help="This is the request timeout in seconds",
+        default=5,
+        required=True,
+    )
+
+    @api.depends("type_request")
+    def _compute_stream_invisible(self):
+        for record in self:
+            if record.type_request == "get":
+                record.stream_invisible = True
+            else:
+                record.stream_invisible = False
+
+    @api.depends("type_request")
+    def _compute_params_code_invisible(self):
+        for record in self:
+            if record.type_request == "get":
+                record.params_code_invisible = True
+            else:
+                record.params_code_invisible = False
 
     def _compute_name(self):
         res = super()._compute_name()
@@ -138,14 +176,21 @@ class ImportSourceApi(models.Model):
     def _get_headers(self):
         token = self._get_token()
         headers = {}
-        if token:
+        if token and self.type_authorization == "token":
             headers.update({"Authorization": f"Bearer {token}"})
+        if self.type_request == "post" and self.type_authorization == "basic_auth":
+            # Basic auth for POST requests are provided in headers
+            token = self._get_basic_auth_header()
+            headers.update({"Authorization": f"Basic {token}"})
         for header in self.header_ids:
             headers.update({header.name: header.value})
         return headers
 
-    def _get_params(self):
+    def _get_params(self) -> dict:
         params = {}
+        # Json parameters have sense only in POST requests
+        if self.type_request == "post" and self.params_code:
+            params = self.params_code
         for param in self.param_ids:
             params.update({param.name: param.value})
         return params
@@ -155,6 +200,18 @@ class ImportSourceApi(models.Model):
 
     def _get_url(self):
         return f"{self.enviroment_url}{self.url}"
+
+    def _get_basic_auth_header(self):
+        """
+        Encode Basic Auth Header for POST requests
+        """
+        credentials = f"{self.username}:{self.password}"
+        auth = (
+            base64.b64encode(credentials.encode("utf-8"))
+            .decode("utf-8")
+            .replace("\n", "")
+        )
+        return auth
 
     def _process_values(self):
         """
@@ -168,7 +225,62 @@ class ImportSourceApi(models.Model):
         The method must return a list of dictionaries or an empty list.
 
         """
-        return []
+
+        data = self._get_data()
+        if data and not isinstance(data, dict):
+            raise InvalidAPIData(
+                self.env,
+                self.env._(
+                    "Import '%(importer_name)s' cannot process data values",
+                    importer_name=self.name,
+                ),
+            )
+        data = json.dumps(data)
+        params = self._get_params()
+        if params and not isinstance(params, dict):
+            raise InvalidAPIData(
+                self.env,
+                self.env._(
+                    "Import '%(importer_name)s' cannot process params values",
+                    importer_name=self.name,
+                ),
+            )
+        params = json.dumps(params)
+        headers = self._get_headers()
+        url = self._get_url()
+
+        if self.type_request == "post":
+            with self._get_post_result(
+                url, data=data, params=params, headers=headers, stream=self.stream
+            ) as results:
+                yield results
+        else:
+            return requests.get(
+                url, data=data, params=params, headers=headers, timeout=self.timeout
+            )
+
+    @contextmanager
+    def _get_post_result(self, url, data, params, headers, stream=False):
+        if stream:
+            # Iterate on response lines
+            with requests.post(
+                url,
+                data=data,
+                params=params,
+                headers=headers,
+                stream=self.stream,
+                timeout=self.timeout,
+            ) as results:
+                for result in results.iter_lines():
+                    result_data = json.loads(result)
+                    yield result_data
+        else:
+            response = requests.post(
+                url, data=data, params=params, headers=headers, timeout=self.timeout
+            )
+            result_data = response.json()
+            yield result_data
 
     def _get_lines(self):
-        return self._process_values()
+        result = self._process_values()
+        return result

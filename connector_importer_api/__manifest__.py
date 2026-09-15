@@ -5,9 +5,7 @@
     "name": "Connector Importer API",
     "summary": """This module handles import sessions via API.""",
     "version": "18.0.1.0.0",
-    "depends": [
-        "connector_importer",
-    ],
+    "depends": ["connector_importer", "web_json_widget"],
     "author": "Binhex, Odoo Community Association (OCA)",
     "license": "AGPL-3",
     "category": "Connector",
