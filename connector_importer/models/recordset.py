@@ -5,6 +5,7 @@
 import base64
 import json
 import os
+import threading
 from collections import OrderedDict
 
 from odoo import api, fields, models
@@ -321,7 +322,10 @@ class ImportRecordset(models.Model):
         """queue a job for creating records (import.record items)"""
         job_method = self.with_delay().import_recordset
         if self.debug_mode():
-            logger.warning("### DEBUG MODE ACTIVE: WILL NOT USE QUEUE ###")
+            if not getattr(
+                threading.current_thread(), "testing", False
+            ):  # pragma: no cover
+                logger.warning("### DEBUG MODE ACTIVE: WILL NOT USE QUEUE ###")
             job_method = self.import_recordset
 
         for item in self:

@@ -5,6 +5,7 @@
 import base64
 import json
 import os
+import threading
 
 from odoo import api, fields, models
 
@@ -75,7 +76,9 @@ class ImportRecord(models.Model):
     def _should_use_jobs(self):
         self.ensure_one()
         debug_mode = self.debug_mode()
-        if debug_mode:
+        if debug_mode and not getattr(
+            threading.current_thread(), "testing", False
+        ):  # pragma: no cover
             logger.warning("### DEBUG MODE ACTIVE: WILL NOT USE QUEUE ###")
         use_job = self.recordset_id.import_type_id.use_job
         if debug_mode:
