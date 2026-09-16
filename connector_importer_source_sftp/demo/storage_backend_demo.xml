@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo noupdate="1">
+    <record id="demo_storage_backend_sftp" model="storage.backend">
+        <field name="name">SFTP Backend</field>
+        <field name="backend_type">sftp</field>
+        <field name="sftp_login">foo</field>
+        <field name="sftp_password">pass</field>
+        <field name="sftp_server">localhost</field>
+        <field name="sftp_port">2222</field>
+        <field name="directory_path">upload</field>
+    </record>
+</odoo>

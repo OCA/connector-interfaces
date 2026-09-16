@@ -1,0 +1,238 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* connector_importer_source_sftp
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 18.0\n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: 2025-12-17 12:42+0000\n"
+"Last-Translator: mymage <stefano.consolaro@mymage.it>\n"
+"Language-Team: none\n"
+"Language: it\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 5.10.4\n"
+
+#. module: connector_importer_source_sftp
+#: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_csv_sftp__csv_encoding
+msgid "CSV Encoding"
+msgstr "Codifica CSV"
+
+#. module: connector_importer_source_sftp
+#: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_csv_sftp__csv_delimiter
+msgid "CSV delimiter"
+msgstr "Delimitatore CSV"
+
+#. module: connector_importer_source_sftp
+#: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_csv_sftp__csv_file
+msgid "CSV file"
+msgstr "Fila CSV"
+
+#. module: connector_importer_source_sftp
+#: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_csv_sftp__csv_filename
+msgid "CSV filename"
+msgstr "Nome file CSV"
+
+#. module: connector_importer_source_sftp
+#: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_csv_sftp__csv_filesize
+msgid "CSV filesize"
+msgstr "Dimensione file CSV"
+
+#. module: connector_importer_source_sftp
+#: model:ir.model,name:connector_importer_source_sftp.model_import_source_csv_sftp
+msgid "CSV import source through SFTP"
+msgstr "Importazione origine CSV attraverso SFTP"
+
+#. module: connector_importer_source_sftp
+#: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_csv_sftp__csv_path
+msgid "CSV path"
+msgstr "Percorso CSV"
+
+#. module: connector_importer_source_sftp
+#: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_csv_sftp__csv_quotechar
+msgid "CSV quotechar"
+msgstr "Carattere virgolette CSV"
+
+#. module: connector_importer_source_sftp
+#: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_csv_sftp__csv_rows_from_to
+msgid ""
+"CSV use only a slice of the available lines. Format: $from:$to. NOTE: "
+"recommended only for debug/test purpose."
+msgstr ""
+"CSV usa solo una parte delle linee disponibili. Formato: $from:$to. NOTA: "
+"consigliato solo per scopi di debug/test."
+
+#. module: connector_importer_source_sftp
+#: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_csv_sftp__chunk_size
+msgid "Chunks Size"
+msgstr "Dimensione pezzo"
+
+#. module: connector_importer_source_sftp
+#: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_csv_sftp__config_summary
+msgid "Config Summary"
+msgstr "Riepilogo configurazione"
+
+#. module: connector_importer_source_sftp
+#: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_csv_sftp__create_uid
+msgid "Created by"
+msgstr "Creato da"
+
+#. module: connector_importer_source_sftp
+#: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_csv_sftp__create_date
+msgid "Created on"
+msgstr "Creato il"
+
+#. module: connector_importer_source_sftp
+#: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_csv_sftp__display_name
+msgid "Display Name"
+msgstr "Nome visualizzato"
+
+#. module: connector_importer_source_sftp
+#: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_csv_sftp__example_file_url
+msgid "Download example file"
+msgstr "Scarica file esempio"
+
+#. module: connector_importer_source_sftp
+#. odoo-python
+#: code:addons/connector_importer_source_sftp/models/source_csv_sftp.py:0
+msgid "Empty or unreadable file on SFTP server: '%s'"
+msgstr "File vuoto o non leggibile sul server SFTP: '%s'"
+
+#. module: connector_importer_source_sftp
+#: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_csv_sftp__example_file_ext_id
+msgid "Example File Ext"
+msgstr "Esempio file esterno"
+
+#. module: connector_importer_source_sftp
+#: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_csv_sftp__id
+msgid "ID"
+msgstr "ID"
+
+#. module: connector_importer_source_sftp
+#: model:ir.model.fields,help:connector_importer_source_sftp.field_import_source_csv_sftp__send_back_error_report
+msgid ""
+"If enabled, the CSV report will be generated and put in the error folder"
+msgstr ""
+"Se abilitata, il resoconto CSV verrà generato e inserito nella cartella "
+"errori"
+
+#. module: connector_importer_source_sftp
+#: model:ir.model.fields,help:connector_importer_source_sftp.field_import_source_csv_sftp__move_file_after_import
+msgid ""
+"If enabled, the file processed will be moved to success/error folders "
+"depending on the result of the import"
+msgstr ""
+"Se abilitata, il file elaborato verrà spostato nelle cartelle successo/"
+"errore in funzione del risultato dell'impostazione"
+
+#. module: connector_importer_source_sftp
+#: model:ir.model,name:connector_importer_source_sftp.model_import_source_consumer_mixin
+msgid "Import source consumer"
+msgstr "Origine consumatore importazione"
+
+#. module: connector_importer_source_sftp
+#: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_csv_sftp__write_uid
+msgid "Last Updated by"
+msgstr "Ultimo aggiornamento di"
+
+#. module: connector_importer_source_sftp
+#: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_csv_sftp__write_date
+msgid "Last Updated on"
+msgstr "Ultimo aggiornamento il"
+
+#. module: connector_importer_source_sftp
+#: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_csv_sftp__move_file_after_import
+msgid "Move File After Import"
+msgstr "Sposta il file dopo l'importazione"
+
+#. module: connector_importer_source_sftp
+#: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_csv_sftp__name
+msgid "Name"
+msgstr "Nome"
+
+#. module: connector_importer_source_sftp
+#. odoo-python
+#: code:addons/connector_importer_source_sftp/models/source_csv_sftp.py:0
+msgid "No matching file found on SFTP server for pattern: '%s'"
+msgstr "Nessun file corrispondente trovato nel server SFTP per lo schema: '%s'"
+
+#. module: connector_importer_source_sftp
+#: model:ir.model.fields,help:connector_importer_source_sftp.field_import_source_csv_sftp__sftp_filename_pattern
+msgid "Regex pattern to match CSV file names."
+msgstr "Schema regex per la corrispondenza del nome del file CSV."
+
+#. module: connector_importer_source_sftp
+#: model_terms:ir.ui.view,arch_db:connector_importer_source_sftp.view_import_source_csv_form
+msgid "SFTP"
+msgstr "SFTP"
+
+#. module: connector_importer_source_sftp
+#: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_csv_sftp__sftp_filename_pattern
+msgid "SFTP Filename pattern"
+msgstr "Schema nome file SFTP"
+
+#. module: connector_importer_source_sftp
+#: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_csv_sftp__sftp_path_error
+msgid "SFTP Folder path - Error"
+msgstr "Percorso cartella SFTP - Errore"
+
+#. module: connector_importer_source_sftp
+#: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_csv_sftp__sftp_path_input
+msgid "SFTP Folder path - Input"
+msgstr "Ingresso - Percorso cartella SFTP"
+
+#. module: connector_importer_source_sftp
+#: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_csv_sftp__sftp_path_success
+msgid "SFTP Folder path - Success"
+msgstr "Successo - Percorso cartella SFTP"
+
+#. module: connector_importer_source_sftp
+#: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_csv_sftp__send_back_error_report
+msgid "Send Back Error Report"
+msgstr "Restituisci il resoconto degli errori"
+
+#. module: connector_importer_source_sftp
+#: model:ir.model.fields,field_description:connector_importer_source_sftp.field_import_source_csv_sftp__storage_id
+msgid "Storage backend"
+msgstr "Backend deposito"
+
+#. module: connector_importer_source_sftp
+#: model:ir.model.fields,help:connector_importer_source_sftp.field_import_source_csv_sftp__sftp_path_input
+msgid "Where to find CSV files to import. Eg: `/mnt/csv/res_partner/pending/`"
+msgstr ""
+"Dove trovare il file CSV da importare: Es. `/mnt/csv/res_partner/pending/`"
+
+#. module: connector_importer_source_sftp
+#: model:ir.model.fields,help:connector_importer_source_sftp.field_import_source_csv_sftp__sftp_path_error
+msgid ""
+"Where to move CSV files if errors occurred when `Move file after import` is "
+"enabled. Eg: `/mnt/csv/res_partner/error/`"
+msgstr ""
+"Dove spostare i file CSV se si sono verificati errori quando è abilitato `"
+"Sposta file dopo l'importazione`. Ad esempio: `/mnt/csv/res_partner/error/`"
+
+#. module: connector_importer_source_sftp
+#: model:ir.model.fields,help:connector_importer_source_sftp.field_import_source_csv_sftp__sftp_path_success
+msgid ""
+"Where to move CSV files if no errors occurred when `Move file after import` "
+"is enabled. Eg: `/mnt/csv/res_partner/done/`"
+msgstr ""
+"Dove spostare i file CSV se non si sono verificati errori quando è abilitato "
+"`Sposta file dopo l'importazione`. Ad esempio: `/mnt/csv/res_partner/done/`"
+
+#. module: connector_importer_source_sftp
+#: model:ir.model.fields,help:connector_importer_source_sftp.field_import_source_csv_sftp__example_file_ext_id
+msgid ""
+"You can define example file by creating attachments with an external ID matching the 'import.source.csv' record external ID:\n"
+"\t${import.source.csv.ExtID}_example_file\n"
+"\n"
+"You can also specify your own external ID by filling this field."
+msgstr ""
+"Si può definire un file di esempio creando allegati con un ID esterno "
+"corrispondente all'ID esterno del record 'import.source.csv':\n"
+"${import.source.csv.ExtID}_example_file\n"
+"\n"
+"Si può anche specificare l'ID esterno compilando questo campo."
