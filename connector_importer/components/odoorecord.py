@@ -235,7 +235,10 @@ class OdooRecordHandler(Component):
         # remove fields having the same value
         field_names = tuple(values.keys())
         if self.work.options.record_handler.skip_fields_unchanged:
-            current_values = odoo_record.read(field_names, load="_classic_write")
+            current_values_list = odoo_record.read(field_names, load="_classic_write")
+            current_values = current_values_list[0]
             for k, v in current_values.items():
-                if values[k] != v:
+                # Some fields like 'id' are loaded by read() and are not necessary in
+                # write values.
+                if k in values and values[k] == v:
                     values.pop(k)

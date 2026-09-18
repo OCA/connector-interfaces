@@ -28,10 +28,11 @@ class TestRecordImporter(TestImporterBase):
         return [PartnerRecordImporter, PartnerMapper]
 
     def _get_handler(self):
+        options = DotDict({"record_handler": DotDict({"skip_fields_unchanged": True})})
         with self.backend.work_on(
             self.record._name,
             components_registry=self.comp_registry,
-            options=DotDict({"record_handler": {}}),
+            options=options,
         ) as work:
             return work.component(usage="odoorecord.handler", model_name="res.partner")
 
@@ -75,3 +76,10 @@ class TestRecordImporter(TestImporterBase):
         self.assertEqual(
             domain, [("name", "=", values["name"]), ("age", "=", values["age"])]
         )
+
+    def test_skip_fields_unchanged(self):
+        handler = self._get_handler()
+        partner = self.env["res.partner"].create({"name": "John", "ref": "123456789"})
+        write_values = {"id": partner.id, "name": "Jack", "ref": "123456789"}
+        handler._odoo_write_purge_values(partner, write_values)
+        self.assertEqual({"name": "Jack"}, write_values)
