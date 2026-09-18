@@ -4,7 +4,6 @@
 import base64
 import json
 from ast import literal_eval
-from contextlib import contextmanager
 from itertools import chain
 
 import requests
@@ -250,16 +249,14 @@ class ImportSourceApi(models.Model):
         url = self._get_url()
 
         if self.type_request == "post":
-            with self._get_post_result(
+            return self._get_post_result(
                 url, data=data, params=params, headers=headers, stream=self.stream
-            ) as results:
-                yield results
+            )
         else:
             return requests.get(
                 url, data=data, params=params, headers=headers, timeout=self.timeout
             )
 
-    @contextmanager
     def _get_post_result(self, url, data, params, headers, stream=False):
         if stream:
             # Iterate on response lines
@@ -279,7 +276,7 @@ class ImportSourceApi(models.Model):
                 url, data=data, params=params, headers=headers, timeout=self.timeout
             )
             result_data = response.json()
-            yield result_data
+            return result_data
 
     def _get_lines(self):
         result = self._process_values()
