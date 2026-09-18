@@ -16,6 +16,28 @@ class RecordSetImporter(Component):
     _usage = "recordset.importer"
     _apply_on = "import.recordset"
 
+    def _set_data_and_run(self, env, chunk, recordset):
+        # Use of specific env variable as cannot be changed on self (Component)
+        record = env["import.record"].create({"recordset_id": recordset.id})
+        # store data
+        record.set_data(chunk)
+        record.run_import()
+
+    def _create_and_run(self, chunk, recordset, new_cr=False):
+        # create chuncked records and run their imports
+        new_env = self.env
+        if new_cr:
+            with self.env.registry.cursor() as the_cursor:
+                new_env = self.env(cr=the_cursor)
+                self._set_data_and_run(new_env, chunk, recordset)
+                new_env.cr.commit()
+        else:
+            self._set_data_and_run(new_env, chunk, recordset)
+
+    def create_and_run(self, chunk, recordset):
+        # This allows to run in another manner (another cursor if using streamed chunks)
+        self._create_and_run(chunk, recordset)
+
     def run(self, recordset, **kw):
         """Run recordset job.
 
@@ -38,11 +60,7 @@ class RecordSetImporter(Component):
                 _("No source configured on recordset '%s'") % recordset.name
             )
         for chunk in source.get_lines():
-            # create chuncked records and run their imports
-            record = self.env["import.record"].create({"recordset_id": recordset.id})
-            # store data
-            record.set_data(chunk)
-            record.run_import()
+            self.create_and_run(chunk, recordset)
 
 
 class RecordImporter(Component):
