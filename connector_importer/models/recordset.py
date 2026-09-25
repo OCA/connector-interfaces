@@ -78,12 +78,13 @@ class ImportRecordset(models.Model):
             "If any of the sub jobs is not DONE or FAILED "
             "we assume the global state is PENDING."
         ),
+        copy=False,
     )
-    report_file = fields.Binary()
-    report_filename = fields.Char()
+    report_file = fields.Binary(copy=False)
+    report_filename = fields.Char(copy=False)
     docs_html = fields.Html(string="Docs", compute="_compute_docs_html")
     notes = fields.Html(help="Useful info for your users")
-    last_run_on = fields.Datetime()
+    last_run_on = fields.Datetime(copy=False)
     server_action_trigger_on = fields.Selection(
         selection=[
             ("never", "Never"),
