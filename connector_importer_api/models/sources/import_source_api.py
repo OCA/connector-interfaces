@@ -71,9 +71,9 @@ class ImportSourceApi(models.Model):
     )
     token = fields.Char()
     model_id = fields.Many2one("ir.model")
-    model_name = fields.Char(related="model_id.model")
+    model_name = fields.Char(string="Model Name", related="model_id.model")
     field_ids = fields.Many2many(
-        "ir.model.fields", compute="_compute_field_ids", store=True
+        "ir.model.fields", string="Fields", compute="_compute_field_ids", store=True
     )
     field_id = fields.Many2one("ir.model.fields", domain="[('id', 'in', field_ids)]")
     function_name = fields.Char()
