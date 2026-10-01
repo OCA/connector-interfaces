@@ -40,6 +40,8 @@ class ImportSourceApi(models.Model):
         "source_api_params_id",
         string="Params",
     )
+    data_code = fields.Json(help="This is used in order to pass data to API calls.")
+    data_code_invisible = fields.Boolean(compute="_compute_data_code_invisible")
     params_code = fields.Json(
         help="This is used for POST API calls in order to allow JSON parameters."
     )
@@ -98,6 +100,14 @@ class ImportSourceApi(models.Model):
                 record.stream_invisible = True
             else:
                 record.stream_invisible = False
+
+    @api.depends("type_request")
+    def _compute_data_code_invisible(self):
+        for record in self:
+            if record.type_request == "get":
+                record.data_code_invisible = True
+            else:
+                record.data_code_invisible = False
 
     @api.depends("type_request")
     def _compute_params_code_invisible(self):
@@ -195,7 +205,7 @@ class ImportSourceApi(models.Model):
         return params
 
     def _get_data(self):
-        return {}
+        return self.data_code
 
     def _get_url(self):
         return f"{self.enviroment_url}{self.url}"
@@ -276,7 +286,7 @@ class ImportSourceApi(models.Model):
                 url, data=data, params=params, headers=headers, timeout=self.timeout
             )
             result_data = response.json()
-            return result_data
+            yield result_data
 
     def _get_lines(self):
         result = self._process_values()

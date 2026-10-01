@@ -84,6 +84,15 @@
                             context="{'tree_view_ref': 'connector_importer_api.source_api_value_view_tree'}"
                         />
                     </page>
+                    <page string="Data" name="source_api_data">
+                        <group>
+                            <field
+                                name="data_code"
+                                widget="json_editor"
+                                invisible="data_code_invisible"
+                            />
+                        </group>
+                    </page>
                 </notebook>
             </form>
         </field>
