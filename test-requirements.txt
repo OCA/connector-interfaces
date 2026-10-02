@@ -1,1 +1,4 @@
 odoo_test_helper
+
+odoo-addon-web-json-widget @ git+https://github.com/OCA/web@refs/pull/3231/head#subdirectory=web_json_widget
+odoo-addon-connector-importer @ git+https://github.com/OCA/connector-interfaces@refs/pull/189/head#subdirectory=connector_importer
