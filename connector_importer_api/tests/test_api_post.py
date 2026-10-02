@@ -1,5 +1,6 @@
 # Copyright 2026 ACSONE SA/NV <https://acsone.eu>
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl).
+import io
 import json
 from unittest.mock import patch
 
@@ -46,6 +47,8 @@ class TestSourceApiPost(TestConnectorImporterApiBase):
         with patch.object(requests, "post") as mock_post:
             response = Response()
             response.status_code = 200
+            response._content = b'{"status": "ok"}'
+            response.raw = io.BytesIO(response._content)
             response.json = lambda: {"status": "ok"}
             mock_post.return_value = response
             results = self.source_import_api._get_lines()
