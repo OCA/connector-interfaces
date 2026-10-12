@@ -111,9 +111,43 @@ class OdooRecordHandler(Component):
         """Return true if the items exists."""
         return bool(self.odoo_find(values, orig_values))
 
+    def _update_html_translate_fields(self, odoo_record, translatable):
+        """
+        As Odoo does not manage well html translatable fields
+        (with the lang in context at write()), extract those values and
+        use update_raw() method.
+        """
+        html_translatable = {}
+        for lang, values in translatable.items():
+            for field, value in values.items():
+                if (
+                    field in odoo_record._fields
+                    and odoo_record._fields[field].type == "html"
+                    and odoo_record._fields[field].translate
+                ):
+                    if field in html_translatable:
+                        html_translatable[field].update({lang: value})
+                    else:
+                        html_translatable[field] = {lang: value}
+
+        # Pop field in translatable
+        for field, values in html_translatable.items():
+            for lang, _term in values.items():
+                if field in translatable[lang]:
+                    translatable[lang].pop(field)
+
+        if html_translatable:
+            for field, values in html_translatable.items():
+                field_record = odoo_record._fields.get(field)
+                odoo_record.env.cache.update_raw(
+                    odoo_record, field_record, [values], dirty=True
+                )
+                odoo_record.modified([field])
+
     def update_translations(self, odoo_record, translatable, ctx=None):
         """Write translations on given record."""
         ctx = ctx or {}
+        self._update_html_translate_fields(odoo_record, translatable)
         for lang, values in translatable.items():
             odoo_record.with_context(lang=lang, **self.write_context()).write(
                 values.copy()
