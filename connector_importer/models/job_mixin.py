@@ -24,7 +24,7 @@ class JobRelatedMixin(models.AbstractModel):
 
     def _check_delete(self):
         if self.has_job() and not self.job_done():
-            raise exceptions.Warning(_("You must complete the job first!"))
+            raise exceptions.UserError(_("You must complete the job first!"))
 
     def unlink(self):
         for item in self:
