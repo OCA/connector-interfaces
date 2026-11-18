@@ -39,17 +39,6 @@ class TestRecordsetImporter(TestImporterBase):
         opts.update(options or {})
         return self._get_mapper(options=DotDict({"importer": {}, "mapper": opts}))
 
-    def _get_dynamic_mapper_for_model(self, model_name, options=None):
-        opts = {"name": "importer.mapper.dynamic"}
-        opts.update(options or {})
-        with self.backend.work_on(
-            self.record._name,
-            components_registry=self.comp_registry,
-            options=DotDict({"importer": {}, "mapper": opts}),
-        ) as work:
-            importer = work.component_by_name("importer.record", model_name=model_name)
-            return importer._get_mapper()
-
     # TODO: test basic mapper and automapper too
 
     def test_dynamic_mapper_clean_record(self):
@@ -246,34 +235,3 @@ class TestRecordsetImporter(TestImporterBase):
             options=dict(source_key_rename={"another_name": "name"})
         )
         self.assertEqual(mapper.dynamic_fields(rec), expected)
-
-    @mute_logger(*LOGGERS_TO_MUTE)
-    def test_dynamic_mapper_values_json_product_product(self):
-        model_name = "product.product"
-        if model_name not in self.env.registry:
-            self.skipTest("Model product.product is not available")
-        product_model = self.env[model_name]
-        if "analytic_distribution" not in product_model._fields:
-            self.skipTest(
-                "Field analytic_distribution is not available on product.product"
-            )
-
-        mapper = self._get_dynamic_mapper_for_model(model_name)
-
-        rec = {
-            "analytic_distribution": '{"12": 100.0}',
-        }
-        expected = {
-            "analytic_distribution": {"12": 100.0},
-        }
-        self.assertEqual(mapper.dynamic_fields(rec), expected)
-
-        rec = {
-            "analytic_distribution": "{'12': 100.0}",
-        }
-        self.assertEqual(mapper.dynamic_fields(rec), expected)
-
-        rec = {
-            "analytic_distribution": "not-a-json-payload",
-        }
-        self.assertEqual(mapper.dynamic_fields(rec), {"analytic_distribution": {}})

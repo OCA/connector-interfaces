@@ -2,9 +2,16 @@
 # Copyright 2018 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
+from ast import literal_eval
 from datetime import datetime
 
 import pytz
+
+try:
+    # optional, faster JSON decoding
+    import orjson as json
+except ImportError:
+    import json
 
 from odoo import fields
 from odoo.tools.misc import str2bool
@@ -86,12 +93,54 @@ def to_safe_int(value):
         return 0
 
 
+def to_json(value, raise_if_not_valid=True):
+    """Convert a serialized value to a JSON-compatible python object.
+
+    Strings are decoded as JSON first, then as python literals
+    (eg: ``{'a': 1}``): only dict and list literals are accepted.
+    Empty values are converted to an empty dict.
+
+    :param value: the source value
+    :param raise_if_not_valid: if disabled, invalid values are logged
+        and converted to an empty dict instead of raising an error.
+    """
+    if isinstance(value, dict | list):
+        return value
+    if not value:
+        return {}
+    try:
+        return json.loads(value)
+    except (TypeError, ValueError, RecursionError):
+        try:
+            res = literal_eval(value)
+        except (
+            TypeError,
+            ValueError,
+            SyntaxError,
+            MemoryError,
+            RecursionError,
+        ) as err:
+            return _invalid_json(value, raise_if_not_valid, err=err)
+        if isinstance(res, dict | list):
+            return res
+        return _invalid_json(value, raise_if_not_valid)
+
+
+def _invalid_json(value, raise_if_not_valid, err=None):
+    """Raise an error or log a warning and return an empty dict."""
+    if raise_if_not_valid:
+        raise ValueError(f"Cannot decode JSON value: {value}") from err
+    logger.warning("Cannot decode JSON value: %s", value)
+    return {}
+
+
 CONV_MAPPING = {
     "date": to_date,
     "utc_date": to_utc_datetime,
     "safe_float": to_safe_float,
     "safe_int": to_safe_int,
     "bool": lambda x: str2bool(x, default=False),
+    "json": to_json,
 }
 
 
