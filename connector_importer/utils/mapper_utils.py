@@ -97,7 +97,8 @@ def to_json(value, raise_if_not_valid=True):
     """Convert a serialized value to a JSON-compatible python object.
 
     Strings are decoded as JSON first, then as python literals
-    (eg: ``{'a': 1}``). Empty values are converted to an empty dict.
+    (eg: ``{'a': 1}``): only dict and list literals are accepted.
+    Empty values are converted to an empty dict.
 
     :param value: the source value
     :param raise_if_not_valid: if disabled, invalid values are logged
@@ -109,14 +110,28 @@ def to_json(value, raise_if_not_valid=True):
         return {}
     try:
         return json.loads(value)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError, RecursionError):
         try:
-            return literal_eval(value)
-        except (TypeError, ValueError, SyntaxError) as err:
-            if raise_if_not_valid:
-                raise ValueError(f"Cannot decode JSON value: {value}") from err
-            logger.warning("Cannot decode JSON value: %s", value)
-            return {}
+            res = literal_eval(value)
+        except (
+            TypeError,
+            ValueError,
+            SyntaxError,
+            MemoryError,
+            RecursionError,
+        ) as err:
+            return _invalid_json(value, raise_if_not_valid, err=err)
+        if isinstance(res, dict | list):
+            return res
+        return _invalid_json(value, raise_if_not_valid)
+
+
+def _invalid_json(value, raise_if_not_valid, err=None):
+    """Raise an error or log a warning and return an empty dict."""
+    if raise_if_not_valid:
+        raise ValueError(f"Cannot decode JSON value: {value}") from err
+    logger.warning("Cannot decode JSON value: %s", value)
+    return {}
 
 
 CONV_MAPPING = {

@@ -1,6 +1,8 @@
 # Copyright 2026 Camptocamp SA
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
+import re
+
 from odoo_test_helper import FakeModelLoader
 
 from odoo.tools import DotDict, mute_logger
@@ -57,6 +59,19 @@ class TestDynamicMapperJson(TestImporterBase):
             logs.output,
             ["WARNING:[importer]:Cannot decode JSON value: not-a-json-payload"],
         )
+
+    def test_to_json_not_valid_literal(self):
+        """Python literals other than dict and list are invalid."""
+        for value in ("{1, 2}", "(1, 2)", "b'abc'"):
+            with self.assertRaisesRegex(
+                ValueError, f"Cannot decode JSON value: {re.escape(value)}"
+            ):
+                to_json(value)
+
+    def test_to_json_not_valid_nesting(self):
+        """Too deeply nested values are invalid."""
+        with self.assertRaisesRegex(ValueError, r"Cannot decode JSON value: \[\[\["):
+            to_json("[" * 100000)
 
     def test_dynamic_mapper_json(self):
         """JSON fields are converted from their serialized value."""
